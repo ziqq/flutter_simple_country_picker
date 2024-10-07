@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
-/// Default indent
-const double kDefaultIndent = 10;
+/// Default flag size
+const double kDefaultFlagSize = 25;
 
 /// Default padding
 const double kDefaultPadding = 16;
 
-/// Default margin
-const double kDefaultBorderRadius = 10;
+/// Default indent
+const double kDefaultIndent = 10;
+
+/// Default radius
+const double kDefaultRadius = 10;
 
 /// Default text style
 const TextStyle kDefaultTextStyle = TextStyle(fontSize: 16);
