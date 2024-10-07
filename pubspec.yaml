@@ -1,0 +1,74 @@
+name: flutter_simple_country_picker
+
+description: >
+  The Flutter package that provides an easy-to-use country selection widget. It allows users to select a country from a comprehensive list of countries, making it simple to integrate country picking functionality into your Flutter applications. The package supports Android, iOS, and web platforms, and offers customization options for fonts and styles. Made with ❤️ by ziqq.
+
+version: 0.0.1-pre.0
+
+homepage: https://github.com/ziqq
+repository: https://github.com/ziqq/flutter_simple_country_picker
+
+issue_tracker: https://github.com/ziqq/flutter_simple_country_picker/issues
+
+funding:
+  - https://www.buymeacoffee.com/ziqq
+  - https://www.patreon.com/ziqq
+  - https://boosty.to/ziqq
+
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
+#screenshots:
+#  - description: 'Example of using the library.'
+#    path: example.png
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  collection: ^1.18.0
+  cupertino_icons: ^1.0.8
+
+  # Annotations
+  meta: ^1.9.1
+
+  # Utilities
+  stack_trace: ^1.11.1
+  platform_info: ^5.0.0
+  mask_text_input_formatter: ^2.9.0
+
+  # Web
+  web: ^1.0.0
+
+dev_dependencies:
+  # Integration tests for Flutter
+  integration_test:
+    sdk: flutter
+  # Unit & Widget tests for Flutter
+  flutter_test:
+    sdk: flutter
+
+  # Linting
+  flutter_lints: ^4.0.0
+
+  # Code generation
+  build_runner: ^2.4.13
+  pubspec_generator: ^4.0.0
+
+  # Test utilities
+  # https://github.com/dart-lang/mockito/issues/732
+  # https://github.com/dart-lang/mockito/pull/738
+  # https://github.com/dart-lang/mockito/issues/755
+  #mockito:
+  #  git:
+  #    url: https://github.com/dart-lang/mockito.git
+  #    ref: master
