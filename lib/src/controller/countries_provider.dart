@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:flutter_simple_country_picker/src/constant/country_code/country_codes.dart';
 
 /// {@template countries_provider}
 /// CountriesProvider
@@ -9,7 +10,7 @@ import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart
 class CountriesProvider {
   /// {@macro countries_provider}
   CountriesProvider()
-      : _countries = contries.map(Country.fromJson).toList(growable: false);
+      : _countries = countryCodes.map(Country.fromJson).toList();
 
   final List<Country> _countries;
 

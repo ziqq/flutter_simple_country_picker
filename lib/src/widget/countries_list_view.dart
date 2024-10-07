@@ -1,10 +1,10 @@
 // ignore_for_file: unused_element
 
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:flutter_simple_country_picker/src/controller/countries_controller.dart';
+import 'package:flutter_simple_country_picker/src/controller/countries_state.dart';
 import 'package:flutter_simple_country_picker/src/util/util.dart';
 import 'package:flutter_simple_country_picker/src/widget/status_bar_gesture_detector.dart';
 
@@ -63,83 +63,35 @@ class CountriesListView extends StatefulWidget {
 
 /// State for [CountriesListView].
 class _CountriesListViewState extends State<CountriesListView> {
-  final CountriesProvider _countryService = CountriesProvider();
+  // final CountriesProvider _countryProvider = CountriesProvider();
   final ScrollController _scrollController = ScrollController();
 
-  late bool _searchAutofocus;
-  late List<Country> _countryList;
-  late List<Country> _filteredList;
-  late TextEditingController _searchController;
+  late final CountriesController _controller;
 
+  // late List<Country> _countriesList;
+  // late List<Country> _filteredList;
   // List<Country>? _favoriteList;
+  // late bool _searchAutofocus;
+  // late TextEditingController _searchController;
 
   @override
   void initState() {
     super.initState();
-    _searchController = TextEditingController();
-    final stopwatch = Stopwatch()..start();
+    _controller = CountriesController(
+      provider: CountriesProvider(),
+      exclude: widget.exclude,
+      showPhoneCode: widget.showPhoneCode,
+    )..getCountries();
 
-    _countryList = _countryService.getAll();
-
-    // Remove duplicates country if not use phone code
-    if (!widget.showPhoneCode) {
-      final ids = _countryList.map((e) => e.countryCode).toSet();
-      _countryList.retainWhere((c) => ids.remove(c.countryCode));
-    }
-
-    // if (widget.favorite != null) {
-    //   _favoriteList = _countryService.findCountriesByCode(widget.favorite!);
-    // }
-
-    if (widget.exclude != null) {
-      _countryList.removeWhere(
-        (e) => widget.exclude!.contains(e.countryCode),
-      );
-    }
-
-    if (widget.countryFilter != null) {
-      _countryList.removeWhere(
-        (e) => !widget.countryFilter!.contains(e.countryCode),
-      );
-    }
-
-    _filteredList = <Country>[];
-
-    if (widget.showWorldWide) {
-      _filteredList.add(Country.worldWide);
-    }
-
-    _filteredList.addAll(_countryList);
-
-    _searchAutofocus = widget.searchAutofocus;
-    log(
-      '${(stopwatch..stop()).elapsedMicroseconds} μs',
-      name: 'CountriesListView > initState',
-      level: 100,
-    );
+    // _searchController = TextEditingController();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _searchController.dispose();
+    _controller.dispose();
+    // _searchController.dispose();
     _scrollController.dispose();
-  }
-
-  void _filterSearchResults(String query) {
-    final localizations = CountriesLocalization.of(context);
-
-    var searchResult = <Country>[];
-
-    if (query.isEmpty) {
-      searchResult.addAll(_countryList);
-    } else {
-      searchResult = _countryList
-          .where((c) => c.startsWith(query, localizations))
-          .toList();
-    }
-
-    setState(() => _filteredList = List.unmodifiable(searchResult));
   }
 
   @override
@@ -150,36 +102,50 @@ class _CountriesListViewState extends State<CountriesListView> {
 
     final countryPickerTheme = CountryPickerTheme.of(context);
 
-    final header = Container(
-      color: countryPickerTheme.stickyHeaderBackgroundColor,
-      padding: EdgeInsets.symmetric(
-        horizontal: countryPickerTheme.padding,
-        vertical: countryPickerTheme.padding / 2,
-      ),
-      child: Material(
-        color: countryPickerTheme.stickyHeaderBackgroundColor,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: CupertinoSearchTextField(
-                placeholder: searchPlaceholder,
-                autofocus: _searchAutofocus,
-                controller: _searchController,
-                onChanged: _filterSearchResults,
-                suffixInsets: EdgeInsetsDirectional.only(
-                  end: countryPickerTheme.indent / 2,
+    final Widget header = ColoredBox(
+      color: countryPickerTheme.stickyHeaderBackgroundColor ?? Colors.white,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: countryPickerTheme.padding,
+          vertical: countryPickerTheme.padding / 2,
+        ),
+        child: Material(
+          color: countryPickerTheme.stickyHeaderBackgroundColor,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: ValueListenableBuilder<CountriesState>(
+                  valueListenable: _controller,
+                  builder: (context, state, _) => CupertinoSearchTextField(
+                    autofocus: widget.searchAutofocus,
+                    placeholder: searchPlaceholder,
+                    controller: _controller.searchController,
+                    onChanged: (query) => _controller.search(t),
+                    onSuffixTap: () {
+                      _controller.searchController.clear();
+                      _controller.search(t);
+                    },
+                    suffixInsets: EdgeInsetsDirectional.only(
+                      end: countryPickerTheme.indent / 2,
+                    ),
+                    prefixInsets: EdgeInsetsDirectional.only(
+                      start: countryPickerTheme.padding / 2,
+                    ),
+                    style: countryPickerTheme.searchTextStyle,
+                  ),
                 ),
-                style: countryPickerTheme.searchTextStyle,
               ),
-            ),
-            SizedBox(width: countryPickerTheme.indent),
-            CupertinoButton(
-              padding: EdgeInsets.zero,
-              child: Text(cancelButtonText),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
+              SizedBox(width: countryPickerTheme.indent),
+              CupertinoButton(
+                padding: EdgeInsets.zero,
+                child: Text(cancelButtonText),
+                onPressed: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -204,11 +170,14 @@ class _CountriesListViewState extends State<CountriesListView> {
               controller: _scrollController,
               slivers: <Widget>[
                 PinnedHeaderSliver(child: header),
-                SliverList.builder(
-                  itemCount: _countryList.length,
-                  itemBuilder: (context, index) => _CountryListItem(
-                    country: _countryList[index],
-                    onSelect: widget.onSelect,
+                ValueListenableBuilder<CountriesState>(
+                  valueListenable: _controller,
+                  builder: (context, state, _) => SliverList.builder(
+                    itemCount: state.countries.length,
+                    itemBuilder: (context, index) => _CountryListItem(
+                      country: state.countries[index],
+                      onSelect: widget.onSelect,
+                    ),
                   ),
                 )
               ],
@@ -220,9 +189,9 @@ class _CountriesListViewState extends State<CountriesListView> {
   }
 }
 
-/// {@template country_list_view}
-/// _CountryListItem widget.
-/// {@endtemplate}
+/// CountryListItem widget.
+///
+/// {@macro countries_list_view}
 class _CountryListItem extends StatelessWidget {
   const _CountryListItem({
     required this.country,
@@ -288,6 +257,9 @@ class _CountryListItem extends StatelessWidget {
   }
 }
 
+/// Flag widget.
+///
+/// {@macro countries_list_view}
 class _Flag extends StatelessWidget {
   const _Flag({
     required this.country,
@@ -316,5 +288,3 @@ class _Flag extends StatelessWidget {
     );
   }
 }
-
-class _CountryListController extends ChangeNotifier {}
