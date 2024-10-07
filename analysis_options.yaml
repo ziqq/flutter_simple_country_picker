@@ -1,39 +1,12 @@
-include: package:lints/recommended.yaml
+include: package:flutter_lints/flutter.yaml
 
 analyzer:
   exclude:
-    # Build
-    - "build/**"
-    # Codegen
-    - "lib/**.g.dart"
-    - "**.g.dart"
-    - "**.gr.dart"
-    - "**.gql.dart"
-    - "**.freezed.dart"
-    - "**.config.dart"
-    - "**.mocks.dart"
-    - "**.gen.dart"
-    - "**.pb.dart"
-    - "**.pbenum.dart"
-    - "**.pbjson.dart"
-    # Test
+    # Tests
     - "test/**.mocks.dart"
     - ".test_coverage.dart"
     # Assets
     - "assets/**"
-    # Flutter Version Manager
-    - ".fvm/**"
-    # Tools
-    - ".dart_tool/**"
-    - "scripts/**"
-    - "tool/**"
-    # Platform
-    - "ios/**"
-    - "android/**"
-    - "web/**"
-    - "macos/**"
-    - "windows/**"
-    - "linux/**"
 
   # Enable the following options to enable strong mode.
   language:
@@ -57,7 +30,7 @@ analyzer:
     empty_catches: warning
 
     # Error
-    prefer_relative_imports: error
+    always_use_package_imports: error
     avoid_relative_lib_imports: error
     avoid_slow_async_io: error
     avoid_types_as_parameter_names: error
@@ -68,15 +41,15 @@ linter:
   rules:
     # Public packages
     public_member_api_docs: true
-    # lines_longer_than_80_chars: true
+    lines_longer_than_80_chars: true
 
     # Enabling rules
-    prefer_relative_imports: true
+    always_use_package_imports: true
     avoid_relative_lib_imports: true
 
     # Disable rules
     sort_pub_dependencies: false
-    always_use_package_imports: false
+    prefer_relative_imports: false
     prefer_final_locals: false
     avoid_escaping_inner_quotes: false
     curly_braces_in_flow_control_structures: false
@@ -155,8 +128,6 @@ linter:
     use_full_hex_values_for_flutter_colors: true
     use_raw_strings: true
     use_string_buffers: true
-    use_colored_box: true
-    use_decorated_box: true
     valid_regexps: true
     void_checks: true
 
