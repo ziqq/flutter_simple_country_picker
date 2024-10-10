@@ -12,9 +12,10 @@ analyzer:
     # Assets
     - "assets/**"
     # Generated
-    - "lib/src/core/localization/generated/**"
-    - "lib/src/core/constants/generated/**"
-    - "lib/src/core/model/generated/**"
+    - "lib/src/constants/generated/**"
+    - "lib/src/localization/generated/**"
+    - "lib/src/localization/generated/intl/**"
+    - "lib/src/model/generated/**"
     - "**/generated/**"
     # - '**/lib/l10n/**.arb'
     - "**.g.dart"
