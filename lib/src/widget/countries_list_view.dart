@@ -268,6 +268,7 @@ class _CountriesListState extends State<_CountriesList> {
   @override
   void dispose() {
     super.dispose();
+    _grouped.dispose();
     widget.controller.removeListener(_groupByName);
   }
 
