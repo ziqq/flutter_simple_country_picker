@@ -36,7 +36,7 @@ version: ## Check fvm flutter version
 .PHONY: format
 format: ## Format code
 				@echo "╠ RUN FORMAT THE CODE"
-				@fvm dart format -o none --line-length 120 --set-exit-if-changed lib/ $(find -name '*.dart' -not -name '*messages_ru.dart*') || (echo "👀 Format code error 👀"; exit 1)
+				@fvm dart format --fix -l 80 . || (echo "👀 Format code error 👀"; exit 1)
 				@echo "╠ CODE FORMATED SUCCESSFULLY"
 
 .PHONY: fix
