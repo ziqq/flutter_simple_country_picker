@@ -93,13 +93,13 @@ sealed class Pubspec {
   static const PubspecVersion version = (
     /// Non-canonical string representation of the version as provided
     /// in the pubspec.yaml file.
-    representation: r'0.0.1-pre.01',
+    representation: r'0.0.1-pre.0',
 
     /// Returns a 'canonicalized' representation
     /// of the application version.
     /// This represents the version string in accordance with
     /// Semantic Versioning (SemVer) standards.
-    canonical: r'0.0.1-pre.1',
+    canonical: r'0.0.1-pre.0',
 
     /// MAJOR version when you make incompatible API changes.
     /// The major version number: 1 in "1.2.3".
@@ -115,7 +115,7 @@ sealed class Pubspec {
     patch: 1,
 
     /// The pre-release identifier: "foo" in "1.2.3-foo".
-    preRelease: <String>[r'pre', r'1'],
+    preRelease: <String>[r'pre', r'0'],
 
     /// The build identifier: "foo" in "1.2.3+foo".
     build: <String>[],
@@ -125,12 +125,12 @@ sealed class Pubspec {
   static final DateTime timestamp = DateTime.utc(
     2024,
     10,
-    4,
-    8,
-    53,
-    59,
-    22,
-    338,
+    10,
+    13,
+    14,
+    7,
+    101,
+    223,
   );
 
   /// Name
@@ -165,8 +165,7 @@ sealed class Pubspec {
   /// Think of the description as the sales pitch for your package.
   /// Users see it when they [browse for packages](https://pub.dev/packages).
   /// The description is plain text: no markdown or HTML.
-  static const String description =
-      r'The Flutter package that provides an easy-to-use country selection widget. It allows users to select a country from a comprehensive list of countries, making it simple to integrate country picking functionality into your Flutter applications. The package supports Android, iOS, and web platforms, and offers customization options for fonts and styles. Made with ❤️ by ziqq.';
+  static const String description = r'The Flutter package that provides an easy-to-use country selection widget. It allows users to select a country from a comprehensive list of countries, making it simple to integrate country picking functionality into your Flutter applications. The package supports Android, iOS, and web platforms, and offers customization options for fonts and styles. Made with ❤️ by ziqq.';
 
   /// Homepage
   ///
@@ -193,8 +192,7 @@ sealed class Pubspec {
   /// While providing a repository is optional,
   /// please provide it or homepage (or both).
   /// It helps users understand where your package is coming from.
-  static const String repository =
-      r'https://github.com/ziqq/flutter_simple_country_picker';
+  static const String repository = r'https://github.com/ziqq/flutter_simple_country_picker';
 
   /// Issue tracker
   ///
@@ -207,8 +205,7 @@ sealed class Pubspec {
   /// If issue_tracker is missing but repository is present and points to GitHub,
   /// then the pub.dev site uses the default issue tracker
   /// (https://github.com/<user>/<repository>/issues).
-  static const String issueTracker =
-      r'https://github.com/ziqq/flutter_simple_country_picker/issues';
+  static const String issueTracker = r'https://github.com/ziqq/flutter_simple_country_picker/issues';
 
   /// Documentation
   ///
@@ -392,7 +389,10 @@ sealed class Pubspec {
   static const Map<String, Object> platforms = <String, Object>{
     'android': r'',
     'ios': r'',
+    'linux': r'',
+    'macos': r'',
     'web': r'',
+    'windows': r'',
   };
 
   /// Dependencies
@@ -421,6 +421,10 @@ sealed class Pubspec {
     'flutter': <String, Object>{
       'sdk': r'flutter',
     },
+    'flutter_localizations': <String, Object>{
+      'sdk': r'flutter',
+    },
+    'intl': r'^0.19.0',
     'collection': r'^1.18.0',
     'cupertino_icons': r'^1.0.8',
     'meta': r'^1.9.1',
@@ -495,5 +499,14 @@ sealed class Pubspec {
     'dependencies': dependencies,
     'dev_dependencies': devDependencies,
     'dependency_overrides': dependencyOverrides,
+    'flutter_intl': <String, Object>{
+      'enabled': true,
+      'class_name': r'GeneratedLocalization',
+      'main_locale': r'ru',
+      'arb_dir': r'lib/src/localization',
+      'output_dir': r'lib/src/localization/generated',
+      'use_deferred_loading': false,
+    },
   };
+
 }
