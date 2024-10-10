@@ -31,10 +31,18 @@ class _CountryPickerPreviewState extends State<CountryPickerPreview> {
   String _countryCode = '7';
   String? _mask = '000 000 0000';
 
+  void _onSelect(Country country) {
+    l.i('Selected country $country');
+    setState(() {
+      _country = '${country.flagEmoji} ${country.nameLocalized}';
+      _countryCode = country.phoneCode;
+      _mask = country.mask;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final brightness = Theme.of(context).brightness;
     return Scaffold(
       body: SafeArea(
         child: CustomScrollView(
@@ -42,10 +50,9 @@ class _CountryPickerPreviewState extends State<CountryPickerPreview> {
             SliverAppBar(
               pinned: true,
               title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Country picker: CountryPickerPreview',
+                    'Country Picker Preview',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   Text(
@@ -54,18 +61,7 @@ class _CountryPickerPreviewState extends State<CountryPickerPreview> {
                   ),
                 ],
               ),
-              actions: [
-                IconButton(
-                  icon: brightness == Brightness.light
-                      ? const Icon(Icons.dark_mode_rounded)
-                      : const Icon(Icons.light_mode_rounded),
-                  onPressed: () {
-                    themeModeSwitcher.value = brightness == Brightness.light
-                        ? ThemeMode.dark
-                        : ThemeMode.light;
-                  },
-                ),
-              ],
+              actions: const [AppThemeModeSwitcherButton()],
             ),
             SliverPadding(
               padding: EdgeInsets.symmetric(
@@ -87,15 +83,7 @@ class _CountryPickerPreviewState extends State<CountryPickerPreview> {
                         favorite: ['RU'],
                         exclude: ['KN', 'MF'],
                         showPhoneCode: true,
-                        onSelect: (country) {
-                          l.i('Selected country $country');
-                          setState(() {
-                            _country =
-                                '${country.flagEmoji} ${country.nameLocalized}';
-                            _countryCode = country.phoneCode;
-                            _mask = country.mask;
-                          });
-                        },
+                        onSelect: _onSelect,
                         onDone: () => l.i('onDone called...'),
                       );
                     },
@@ -131,9 +119,7 @@ class _CountryPickerPreviewState extends State<CountryPickerPreview> {
                         favorite: ['RU'],
                         // Optional. Shows phone code before the country name.
                         showPhoneCode: true,
-                        onSelect: (country) {
-                          l.i('Selected country $country');
-                        },
+                        onSelect: _onSelect,
                       ),
                       child: const Text('Show full picker'),
                     ),
@@ -155,9 +141,7 @@ class _CountryPickerPreviewState extends State<CountryPickerPreview> {
                         filter: _filter,
                         // Optional. Shows phone code before the country name.
                         showPhoneCode: true,
-                        onSelect: (country) {
-                          l.i('Selected country $country');
-                        },
+                        onSelect: _onSelect,
                       ),
                       child: const Text('Show filtered picker'),
                     ),

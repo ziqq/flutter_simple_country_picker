@@ -40,7 +40,6 @@ class _CountyPhoneInputPreviewState extends State<CountyPhoneInputPreview> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final brightness = Theme.of(context).brightness;
     return Scaffold(
       body: SafeArea(
         child: CustomScrollView(
@@ -51,7 +50,7 @@ class _CountyPhoneInputPreviewState extends State<CountyPhoneInputPreview> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Country picker: CountyPhoneInputPreview',
+                    'County Phone Input Preview',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   Text(
@@ -60,18 +59,7 @@ class _CountyPhoneInputPreviewState extends State<CountyPhoneInputPreview> {
                   ),
                 ],
               ),
-              actions: [
-                IconButton(
-                  icon: brightness == Brightness.light
-                      ? const Icon(Icons.dark_mode_rounded)
-                      : const Icon(Icons.light_mode_rounded),
-                  onPressed: () {
-                    themeModeSwitcher.value = brightness == Brightness.light
-                        ? ThemeMode.dark
-                        : ThemeMode.light;
-                  },
-                ),
-              ],
+              actions: const [AppThemeModeSwitcherButton()],
             ),
             SliverPadding(
               padding: EdgeInsets.symmetric(

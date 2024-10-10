@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 
-/// {@template app}
 /// App theme mode
-/// {@endtemplate}
 final themeModeSwitcher = ValueNotifier(ThemeMode.system);
 
 /// {@template app}
@@ -99,4 +98,27 @@ class _AppState extends State<App> {
           home: widget.home,
         ),
       );
+}
+
+/// AppThemeModeSwitcherButton widget.
+class AppThemeModeSwitcherButton extends StatelessWidget {
+  /// {@macro app}
+  const AppThemeModeSwitcherButton({super.key});
+
+  ThemeMode _decodeBrightness(Brightness brightness) =>
+      brightness == Brightness.light ? ThemeMode.dark : ThemeMode.light;
+
+  @override
+  Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
+    return IconButton(
+      icon: brightness == Brightness.light
+          ? const Icon(Icons.dark_mode_rounded)
+          : const Icon(Icons.light_mode_rounded),
+      onPressed: () {
+        HapticFeedback.heavyImpact();
+        themeModeSwitcher.value = _decodeBrightness(brightness);
+      },
+    );
+  }
 }
