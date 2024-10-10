@@ -63,6 +63,7 @@ final contries = [
     'name': 'Russia',
     'example': '9123456789',
     'display_name': 'Russia (RU) [+7]',
+    'mask': '000 000 0000',
     'full_example_with_plus_sign': '+79123456789',
     'display_name_no_e164_cc': 'Russia (RU)',
     'e164_key': '7-RU-0'
@@ -76,7 +77,7 @@ final contries = [
     'name': 'Kazakhstan',
     'example': '7710009998',
     'display_name': 'Kazakhstan (KZ) [+7]',
-    'mask': null,
+    'mask': '000 000 0000',
     'full_example_with_plus_sign': '+77710009998',
     'display_name_no_e164_cc': 'Kazakhstan (KZ)',
     'e164_key': '7-KZ-0'
@@ -90,7 +91,7 @@ final contries = [
     'name': 'Armenia',
     'example': '77123456',
     'display_name': 'Armenia (AM) [+374]',
-    'mask': '00 000 000',
+    'mask': '00 000000',
     'full_example_with_plus_sign': '+37477123456',
     'display_name_no_e164_cc': 'Armenia (AM)',
     'e164_key': '374-AM-0'
@@ -118,7 +119,7 @@ final contries = [
     'name': 'Kyrgyzstan',
     'example': '700123456',
     'display_name': 'Kyrgyzstan (KG) [+996]',
-    'mask': null,
+    'mask': '000 000000',
     'full_example_with_plus_sign': '+996700123456',
     'display_name_no_e164_cc': 'Kyrgyzstan (KG)',
     'e164_key': '996-KG-0'
@@ -132,7 +133,7 @@ final contries = [
     'name': 'Moldova',
     'example': '65012345',
     'display_name': 'Moldova (MD) [+373]',
-    'mask': null,
+    'mask': '00 000 000',
     'full_example_with_plus_sign': '+37365012345',
     'display_name_no_e164_cc': 'Moldova (MD)',
     'e164_key': '373-MD-0'
@@ -146,7 +147,7 @@ final contries = [
     'name': 'Tajikistan',
     'example': '917123456',
     'display_name': 'Tajikistan (TJ) [+992]',
-    'mask': '000 000 00',
+    'mask': '00 000 0000',
     'full_example_with_plus_sign': '+992917123456',
     'display_name_no_e164_cc': 'Tajikistan (TJ)',
     'e164_key': '992-TJ-0'
@@ -160,7 +161,7 @@ final contries = [
     'name': 'Uzbekistan',
     'example': '912345678',
     'display_name': 'Uzbekistan (UZ) [+998]',
-    'mask': '000 000 000',
+    'mask': '00 000 0000',
     'full_example_with_plus_sign': '+998912345678',
     'display_name_no_e164_cc': 'Uzbekistan (UZ)',
     'e164_key': '998-UZ-0'
