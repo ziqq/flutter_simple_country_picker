@@ -54,8 +54,8 @@ abstract final class CountriesParser {
   /// Returns a single country if it matches the given [phoneCode] (e164_cc).
   ///
   /// Throws a [StateError] if no matching element is found.
-  static Country parsePhoneCode(String phoneCode) =>
-      _getFromPhoneCode(phoneCode);
+  static Country parsePhoneCode(String phoneCode, String e164Key) =>
+      _getFromPhoneCode(phoneCode, e164Key);
 
   /// Returns a single country that matches the given [countryCode] (iso2_cc).
   ///
@@ -71,9 +71,9 @@ abstract final class CountriesParser {
   /// Returns a single country that matches the given [phoneCode] (e164_cc).
   ///
   /// Returns null if no matching element is found.
-  static Country? tryParsePhoneCode(String phoneCode) {
+  static Country? tryParsePhoneCode(String phoneCode, String e164Key) {
     try {
-      return parsePhoneCode(phoneCode);
+      return parsePhoneCode(phoneCode, e164Key);
     } on Object catch (_) {
       return null;
     }
@@ -123,16 +123,18 @@ abstract final class CountriesParser {
     }
   }
 
-  /// Returns a country that matches the [countryCode] (e164_cc).
-  static Country _getFromPhoneCode(String phoneCode) => Country.fromJson(
-        countryCodes.singleWhere(
-          (j) => j['e164_cc'] == phoneCode,
+  /// Returns a country that matches
+  /// the [countryCode] (e164_cc) and [e164Key] (e164Key)
+  static Country _getFromPhoneCode(String phoneCode, String e164Key) =>
+      Country.fromJson(
+        countries.singleWhere(
+          (j) => j['e164_cc'] == phoneCode && j['e164_key'] == e164Key,
         ),
       );
 
   /// Returns a country that matches the [countryCode] (iso2_cc).
   static Country _getFromCode(String countryCode) => Country.fromJson(
-        countryCodes.singleWhere(
+        countries.singleWhere(
           (j) => j['iso2_cc'] == countryCode,
         ),
       );

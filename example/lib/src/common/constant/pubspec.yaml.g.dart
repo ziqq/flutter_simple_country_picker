@@ -126,11 +126,11 @@ sealed class Pubspec {
     2024,
     10,
     10,
-    13,
-    14,
-    7,
-    101,
-    223,
+    15,
+    37,
+    32,
+    681,
+    403,
   );
 
   /// Name
@@ -389,10 +389,6 @@ sealed class Pubspec {
   static const Map<String, Object> platforms = <String, Object>{
     'android': r'',
     'ios': r'',
-    'linux': r'',
-    'macos': r'',
-    'web': r'',
-    'windows': r'',
   };
 
   /// Dependencies
@@ -428,10 +424,8 @@ sealed class Pubspec {
     'collection': r'^1.18.0',
     'cupertino_icons': r'^1.0.8',
     'meta': r'^1.9.1',
-    'stack_trace': r'^1.11.1',
     'platform_info': r'^5.0.0',
     'mask_text_input_formatter': r'^2.9.0',
-    'web': r'^1.0.0',
   };
 
   /// Developer dependencies
@@ -445,6 +439,7 @@ sealed class Pubspec {
     'flutter_lints': r'^4.0.0',
     'build_runner': r'^2.4.13',
     'pubspec_generator': r'^4.0.0',
+    'mockito': r'^5.4.4',
   };
 
   /// Dependency overrides

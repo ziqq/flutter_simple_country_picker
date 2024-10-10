@@ -59,11 +59,11 @@ class CountriesController extends ValueNotifier<CountriesState> {
   List<Country> originalCountries = [];
 
   /// Get countries
-  /// List<String> countryCodes
+  /// List<String> countries
   void getCountries() => _handle(() async {
         final stopwatch = Stopwatch()..start();
         try {
-          final countries = _provider.getAll();
+          final countries = await _provider.getAll();
           originalCountries = List.unmodifiable(countries);
 
           // Get favorite countries
@@ -160,7 +160,7 @@ class CountriesController extends ValueNotifier<CountriesState> {
     _setState(CountriesState.loading(value.countries));
     try {
       await fn();
-    } on Object {
+    } on Object catch (e, __) {
       _setState(CountriesState.error(value.countries));
     }
   }
