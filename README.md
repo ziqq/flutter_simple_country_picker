@@ -45,9 +45,10 @@ showCountryPicker(
 );
 ```
 
-### For localization:
 
-Add the `CountriesLocalization.delegate` in the list of your app delegates.
+## Installation
+
+Add the `CountriesLocalization.delegate` in the list of your app delegates. Set supported locales [Locale('ru'), Locale('en')]. And set your locale `ru` or `en`.
 
 ```Dart
 MaterialApp(
