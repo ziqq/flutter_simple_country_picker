@@ -1,0 +1,72 @@
+name: example
+
+description: A example application for flutter_simple_country_picker package.
+
+version: 1.0.0
+
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: '>=3.24.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Utilyties
+  async: any
+  meta: any
+  l: ^4.0.2
+
+  cupertino_icons: ^1.0.8
+
+  flutter_simple_country_picker:
+    path: ../
+
+dev_dependencies:
+  # Unit & Widget tests for Flutter
+  flutter_test:
+    sdk: flutter
+  # Integration tests for Flutter
+  integration_test:
+    sdk: flutter
+
+  # Linting
+  flutter_lints: ^4.0.0
+
+  # Code generation
+  build_runner: ^2.4.13
+  flutter_gen_runner: ^5.7.0
+  flutter_launcher_icons: ^0.14.1
+  flutter_native_splash: ^2.4.1
+  pubspec_generator: ^4.1.0-pre.1
+
+flutter:
+  generate: true
+  uses-material-design: true
+
+  fonts:
+    - family: SF-Pro-Rounded
+      fonts:
+        - asset: assets/fonts/SF-Pro/SF-Pro-Rounded-Black.otf
+          weight: 900
+        - asset: assets/fonts/SF-Pro/SF-Pro-Rounded-Heavy.otf
+          weight: 800
+        - asset: assets/fonts/SF-Pro/SF-Pro-Rounded-Bold.otf
+          weight: 700
+        - asset: assets/fonts/SF-Pro/SF-Pro-Rounded-Semibold.otf
+          weight: 600
+        - asset: assets/fonts/SF-Pro/SF-Pro-Rounded-Medium.otf
+          weight: 500
+        - asset: assets/fonts/SF-Pro/SF-Pro-Rounded-Regular.otf
+          weight: 400
+        - asset: assets/fonts/SF-Pro/SF-Pro-Rounded-Light.otf
+          weight: 300
+
+flutter_gen:
+  output: lib/src/common/constant/
+  exclude: test
+  line_length: 120

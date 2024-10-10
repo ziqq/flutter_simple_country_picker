@@ -1,0 +1,7 @@
+ignore:
+  - cupertino_icons
+  - flutter_localizations
+  - integration_test
+
+exclude:
+  - "example/**"

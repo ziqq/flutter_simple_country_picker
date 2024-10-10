@@ -18,10 +18,10 @@ funding:
 platforms:
   android:
   ios:
-  linux:
-  macos:
-  web:
-  windows:
+  # linux:
+  # macos:
+  # web:
+  # windows:
 
 #screenshots:
 #  - description: 'Example of using the library.'
@@ -35,6 +35,11 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Localization
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.19.0
+
   collection: ^1.18.0
   cupertino_icons: ^1.0.8
 
@@ -42,12 +47,11 @@ dependencies:
   meta: ^1.9.1
 
   # Utilities
-  stack_trace: ^1.11.1
   platform_info: ^5.0.0
   mask_text_input_formatter: ^2.9.0
 
   # Web
-  web: ^1.0.0
+  # web: ^1.0.0
 
 dev_dependencies:
   # Integration tests for Flutter
@@ -72,3 +76,12 @@ dev_dependencies:
   #  git:
   #    url: https://github.com/dart-lang/mockito.git
   #    ref: master
+
+
+flutter_intl:
+  enabled: true
+  class_name: GeneratedLocalization
+  main_locale: ru
+  arb_dir: lib/src/localization
+  output_dir: lib/src/localization/generated
+  use_deferred_loading: false
