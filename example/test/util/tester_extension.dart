@@ -46,10 +46,11 @@ extension WidgetTesterExtension on WidgetTester {
     }
   }
 
-  /// Returns a function that takes a screenshot of the current state of the app.
+  /// Returns a function that takes a screenshot
+  /// of the current state of the app.
   Future<List<int>> Function([String? name]) screenshot({
-    /// The [_$pixelRatio] describes the scale between the logical pixels and the
-    /// size of the output image. It is independent of the
+    /// The [_$pixelRatio] describes the scale between the logical pixels
+    /// and the size of the output image. It is independent of the
     /// [dart:ui.FlutterView.devicePixelRatio] for the device, so specifying 1.0
     /// (the default) will give you a 1:1 mapping between logical pixels and the
     /// output pixels in the image.

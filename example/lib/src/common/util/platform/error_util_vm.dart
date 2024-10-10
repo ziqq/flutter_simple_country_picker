@@ -3,8 +3,12 @@
 
 /*
  * Sentry.captureException(exception, stackTrace: stackTrace, hint: hint);
- * FirebaseCrashlytics.instance
- *   .recordError(exception, stackTrace ?? StackTrace.current, reason: hint, fatal: fatal);
+ * FirebaseCrashlytics.instance.recordError(
+ *  exception,
+ *  stackTrace ?? StackTrace.current,
+ *  reason: hint,
+ *  fatal: fatal,
+ * );
  * */
 ///
 Future<void> $captureException(
@@ -14,7 +18,6 @@ Future<void> $captureException(
   bool fatal,
 ) =>
     Future<void>.value();
-// FirebaseCrashlytics.instance.recordError(exception, stackTrace, reason: hint, fatal: fatal);
 
 /*
  * Sentry.captureMessage(
@@ -27,7 +30,10 @@ Future<void> $captureException(
  *   ],
  * );
  * (warning || stackTrace != null)
- *   ? FirebaseCrashlytics.instance.recordError(message, stackTrace ?? StackTrace.current);
+ *   ? FirebaseCrashlytics.instance.recordError(
+ *      message,
+ *      stackTrace ?? StackTrace.current,
+ *     );
  *   : FirebaseCrashlytics.instance.log('$message${hint != null ? '\r\n$hint' : ''}');
  * */
 ///

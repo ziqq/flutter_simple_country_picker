@@ -108,6 +108,7 @@ class _CountryPickerPreviewState extends State<CountryPickerPreview> {
                         horizontal: kDefaultPadding,
                       ),
                       onPressed: () {
+                        // ignore: lines_longer_than_80_chars
                         l.i("PHONE: +$_countryCode${_controller.text.replaceAll(" ", "")}");
                       },
                       child: const Text('Submit'),
