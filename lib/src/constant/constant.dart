@@ -13,7 +13,10 @@ const double kDefaultIndent = 10;
 const double kDefaultRadius = 10;
 
 /// Default text style
-const TextStyle kDefaultTextStyle = TextStyle(fontSize: 16);
+const TextStyle kDefaultTextStyle = TextStyle(
+  fontSize: 16,
+  fontWeight: FontWeight.normal,
+);
 
 /// Default phone mask
 const String kDefaultPhoneMask = '000 000 0000';

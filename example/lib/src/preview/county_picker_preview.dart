@@ -8,6 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:l/l.dart';
 
+/// Filtered countries
+final _filter =
+    List<String>.unmodifiable(['RU', 'AM', 'BY', 'KG', 'MD', 'TJ', 'UZ']);
+
 /// {@template county_picker_preview}
 /// CountryPickerPreview widget.
 /// {@endtemplate}
@@ -113,7 +117,7 @@ class _CountryPickerPreviewState extends State<CountryPickerPreview> {
                   SizedBox(
                     width: double.infinity,
                     child: CupertinoButton.filled(
-                      key: const ValueKey<String>('select_country_button'),
+                      key: const ValueKey<String>('full_picker_button'),
                       padding: const EdgeInsets.symmetric(
                         horizontal: kDefaultPadding,
                       ),
@@ -130,7 +134,31 @@ class _CountryPickerPreviewState extends State<CountryPickerPreview> {
                           l.i('Selected country $country');
                         },
                       ),
-                      child: const Text('Show example picker'),
+                      child: const Text('Show full picker'),
+                    ),
+                  ),
+                  const SizedBox(height: kDefaultPadding),
+                  SizedBox(
+                    width: double.infinity,
+                    child: CupertinoButton.filled(
+                      key: const ValueKey<String>('filtered_picker_button'),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: kDefaultPadding,
+                      ),
+                      onPressed: () => showCountryPicker(
+                        context: context,
+                        isScrollControlled: false,
+                        // Optional.
+                        // Can be used to exclude (remove) one ore more country
+                        // from the countries list (optional).
+                        filter: _filter,
+                        // Optional. Shows phone code before the country name.
+                        showPhoneCode: true,
+                        onSelect: (country) {
+                          l.i('Selected country $country');
+                        },
+                      ),
+                      child: const Text('Show filtered picker'),
                     ),
                   ),
                   if (MediaQuery.of(context).viewPadding.bottom == 0) ...[

@@ -17,6 +17,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   /// {@macro country_picker_theme}
   factory CountryPickerTheme({
     required Color? backgroundColor,
+    required Color? barrierColor,
     required Color? dividerColor,
     required Color? stickyHeaderBackgroundColor,
     required TextStyle? textStyle,
@@ -32,7 +33,8 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     indent ??= kDefaultIndent;
     radius ??= kDefaultRadius;
     return CountryPickerTheme.raw(
-      backgroundColor: backgroundColor,
+      backgroundColor: backgroundColor ?? CupertinoColors.systemBackground,
+      barrierColor: barrierColor ?? kCupertinoModalBarrierColor,
       dividerColor: dividerColor,
       stickyHeaderBackgroundColor: stickyHeaderBackgroundColor,
       inputDecoration: inputDecoration,
@@ -48,6 +50,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   /// Create a [CountryPickerTheme] given a set of exact values.
   const CountryPickerTheme.raw({
     required this.backgroundColor,
+    required this.barrierColor,
     required this.dividerColor,
     required this.stickyHeaderBackgroundColor,
     required this.inputDecoration,
@@ -76,15 +79,17 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   /// as well as from theme data from [PullDownMenuItem].
   @internal
   factory CountryPickerTheme.resolve(
-    BuildContext context, {
-    required CountryPickerTheme? other,
-  }) {
+    BuildContext context, [
+    CountryPickerTheme? other,
+  ]) {
     final defaults = CountryPickerTheme.defaults(context);
     final theme = CountryPickerTheme.maybeOf(context);
     return CountryPickerTheme(
       backgroundColor: other?.backgroundColor ??
           theme?.backgroundColor ??
           defaults.backgroundColor,
+      barrierColor:
+          other?.barrierColor ?? theme?.barrierColor ?? defaults.barrierColor,
       dividerColor:
           other?.dividerColor ?? theme?.dividerColor ?? defaults.dividerColor,
       stickyHeaderBackgroundColor: other?.stickyHeaderBackgroundColor ??
@@ -130,6 +135,12 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   /// If null [backgroundColor]
   /// defaults to [BottomSheetThemeData.backgroundColor].
   final Color? backgroundColor;
+
+  /// The country bottom sheet's barrierColor color.
+  ///
+  /// If null [barrierColor]
+  /// defaults to [kCupertinoModalBarrierColor].
+  final Color? barrierColor;
 
   /// The divider color.
   ///
@@ -182,6 +193,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   @override
   CountryPickerTheme copyWith({
     Color? backgroundColor,
+    Color? barrierColor,
     Color? dividerColor,
     Color? stickyHeaderBackgroundColor,
     InputDecoration? inputDecoration,
@@ -194,6 +206,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   }) =>
       CountryPickerTheme(
         backgroundColor: backgroundColor ?? this.backgroundColor,
+        barrierColor: barrierColor ?? this.barrierColor,
         dividerColor: dividerColor ?? this.dividerColor,
         stickyHeaderBackgroundColor:
             stickyHeaderBackgroundColor ?? this.stickyHeaderBackgroundColor,
@@ -215,6 +228,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     if (other is! CountryPickerTheme || identical(this, other)) return this;
     return CountryPickerTheme(
       backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t),
+      barrierColor: Color.lerp(barrierColor, other.barrierColor, t),
       dividerColor: Color.lerp(dividerColor, other.dividerColor, t),
       stickyHeaderBackgroundColor: Color.lerp(
         stickyHeaderBackgroundColor,
@@ -247,6 +261,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   @override
   int get hashCode => Object.hashAll([
         backgroundColor,
+        barrierColor,
         dividerColor,
         inputDecoration,
         stickyHeaderBackgroundColor,
@@ -280,37 +295,52 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     super.debugFillProperties(properties);
     properties
       ..add(
-        ColorProperty('backgroundColor', backgroundColor, defaultValue: null),
+        ColorProperty(
+          'backgroundColor',
+          backgroundColor,
+          defaultValue: CupertinoColors.systemBackground,
+        ),
       )
       ..add(
-        ColorProperty('dividerColor', dividerColor, defaultValue: null),
+        ColorProperty(
+          'barrierColor',
+          barrierColor,
+          defaultValue: kCupertinoModalBarrierColor,
+        ),
+      )
+      ..add(
+        ColorProperty(
+          'dividerColor',
+          dividerColor,
+          defaultValue: CupertinoColors.opaqueSeparator,
+        ),
       )
       ..add(
         DiagnosticsProperty<InputDecoration?>(
           'inputDecoration',
           inputDecoration,
-          defaultValue: null,
+          defaultValue: const InputDecoration(),
         ),
       )
       ..add(
         ColorProperty(
           'stickyHeaderBackgroundColor',
           stickyHeaderBackgroundColor,
-          defaultValue: null,
+          defaultValue: CupertinoColors.systemGroupedBackground,
         ),
       )
       ..add(
         DiagnosticsProperty<TextStyle?>(
           'textStyle',
           textStyle,
-          defaultValue: null,
+          defaultValue: kDefaultTextStyle,
         ),
       )
       ..add(
         DiagnosticsProperty<TextStyle?>(
           'searchTextStyle',
           searchTextStyle,
-          defaultValue: null,
+          defaultValue: kDefaultTextStyle,
         ),
       )
       ..add(
@@ -402,13 +432,14 @@ class _CountryPickerTheme$Default extends CountryPickerTheme {
   _CountryPickerTheme$Default(
     this.context, {
     Color? backgroundColor,
+    Color? barrierColor,
     Color? dividerColor,
     Color? stickyHeaderBackgroundColor,
     TextStyle? textStyle,
     TextStyle? searchTextStyle,
     InputDecoration? inputDecoration,
     double? radius,
-    double? padding = 16,
+    double? padding,
     double? indent,
     double? flagSize,
   }) : super.raw(
@@ -417,15 +448,24 @@ class _CountryPickerTheme$Default extends CountryPickerTheme {
                 CupertinoColors.secondarySystemBackground,
                 context,
               ),
-          searchTextStyle: searchTextStyle ?? const TextStyle(fontSize: 16),
-          backgroundColor: backgroundColor ?? Colors.white,
-          dividerColor: dividerColor ?? Colors.white,
+          searchTextStyle: searchTextStyle ?? kDefaultTextStyle,
+          backgroundColor: backgroundColor ??
+              CupertinoDynamicColor.resolve(
+                CupertinoColors.systemBackground,
+                context,
+              ),
+          barrierColor: barrierColor ?? kCupertinoModalBarrierColor,
+          dividerColor: dividerColor ??
+              CupertinoDynamicColor.resolve(
+                CupertinoColors.opaqueSeparator,
+                context,
+              ),
           inputDecoration: inputDecoration ?? const InputDecoration(),
-          radius: radius ?? 10,
-          indent: indent ?? 10,
-          padding: padding ?? 16,
-          flagSize: flagSize ?? 24,
-          textStyle: textStyle ?? const TextStyle(fontSize: 16),
+          radius: radius ?? kDefaultRadius,
+          indent: indent ?? kDefaultIndent,
+          padding: padding ?? kDefaultPadding,
+          flagSize: flagSize ?? kDefaultFlagSize,
+          textStyle: textStyle ?? kDefaultTextStyle,
         );
 
   /// A build context used to resolve [CupertinoDynamicColor]s defined in this

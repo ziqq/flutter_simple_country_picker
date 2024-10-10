@@ -29,10 +29,10 @@ class CountriesProvider {
 
   /// Returns a list with all the countries that mach the given codes list.
   List<Country> findCountriesByCode(List<String> codes) {
-    final codes0 = codes.map((c) => c.toUpperCase()).toList();
+    final $codes = codes.map((c) => c.toUpperCase()).toList();
     final countries = <Country>[];
 
-    for (final code in codes0) {
+    for (final code in $codes) {
       final country = findByCode(code);
       if (country != null) {
         countries.add(country);

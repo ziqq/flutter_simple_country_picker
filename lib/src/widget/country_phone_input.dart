@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/constant.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:meta/meta.dart';
 import 'package:platform_info/platform_info.dart';
 
 final _kDefaultFilter = {'0': RegExp('[0-9]')};
@@ -15,6 +16,7 @@ final _kDefaultFilter = {'0': RegExp('[0-9]')};
 /// {@template country_phone_input}
 /// CountryPhoneInput widget.
 /// {@endtemplate}
+@experimental
 class CountryPhoneInput extends StatefulWidget {
   /// {@macro country_phone_input}
   const CountryPhoneInput({
@@ -121,33 +123,34 @@ class CountryPhoneInputState extends State<CountryPhoneInput> {
 
   @override
   Widget build(BuildContext context) {
-    final customThemeData = widget.countryPickerThemeData;
+    final pickerTheme = widget.countryPickerThemeData;
 
-    final defaultTextStyle = (widget.textStyle ?? Theme.of(context).textTheme.bodyLarge)?.copyWith(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        letterSpacing: platform.iOS ? -0.3 : 0,
-        color: CupertinoDynamicColor.resolve(
-          CupertinoColors.label,
-          context,
-        ),
-        fontFamily: platform.iOS ? 'SF-Pro-Rounded' : null);
+    final defaultTextStyle =
+        (widget.textStyle ?? Theme.of(context).textTheme.bodyLarge)?.copyWith(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            letterSpacing: platform.iOS ? -0.3 : 0,
+            color: CupertinoDynamicColor.resolve(
+              CupertinoColors.label,
+              context,
+            ));
 
-    final effectiveBackgroundColor =
-        customThemeData?.backgroundColor ?? CupertinoDynamicColor.resolve(CupertinoColors.systemBackground, context);
+    final effectiveBackgroundColor = pickerTheme?.backgroundColor ??
+        CupertinoDynamicColor.resolve(
+            CupertinoColors.systemBackground, context);
 
-    final effectiveDividerColor =
-        customThemeData?.dividerColor ?? CupertinoDynamicColor.resolve(CupertinoColors.opaqueSeparator, context);
+    final effectiveDividerColor = pickerTheme?.dividerColor ??
+        CupertinoDynamicColor.resolve(CupertinoColors.opaqueSeparator, context);
 
-    final effectiveHintColor = customThemeData?.inputDecoration?.hintStyle?.color ??
+    final effectiveHintColor = pickerTheme?.inputDecoration?.hintStyle?.color ??
         CupertinoDynamicColor.resolve(CupertinoColors.placeholderText, context);
 
-    final effectiveCountryNamePadding = customThemeData != null
+    final effectiveCountryNamePadding = pickerTheme != null
         ? EdgeInsets.only(
-            top: customThemeData.indent,
-            bottom: customThemeData.indent,
-            left: customThemeData.padding,
-            right: customThemeData.padding / 2,
+            top: pickerTheme.indent,
+            bottom: pickerTheme.indent,
+            left: pickerTheme.padding,
+            right: pickerTheme.padding / 2,
           )
         : const EdgeInsets.only(
             top: kDefaultIndent,
@@ -156,10 +159,10 @@ class CountryPhoneInputState extends State<CountryPhoneInput> {
             right: kDefaultPadding / 2,
           );
 
-    final effectiveInputPadding = customThemeData != null
+    final effectiveInputPadding = pickerTheme != null
         ? EdgeInsets.symmetric(
-            horizontal: customThemeData.padding / 2,
-            vertical: customThemeData.indent,
+            horizontal: pickerTheme.padding / 2,
+            vertical: pickerTheme.indent,
           )
         : const EdgeInsets.symmetric(
             horizontal: kDefaultPadding / 2,

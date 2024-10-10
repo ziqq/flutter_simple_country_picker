@@ -1,5 +1,6 @@
-import 'dart:developer';
+import 'dart:developer' as dev;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/controller/countries_state.dart';
@@ -49,6 +50,9 @@ class CountriesController extends ValueNotifier<CountriesState> {
   /// Search controller
   final TextEditingController searchController;
 
+  /// Get the state
+  CountriesState get state => value;
+
   /// Original countries
   @internal
   @visibleForTesting
@@ -62,44 +66,85 @@ class CountriesController extends ValueNotifier<CountriesState> {
           final countries = _provider.getAll();
           originalCountries = List.unmodifiable(countries);
 
-          if (_exclude != null && _exclude!.isNotEmpty) {
-            countries.removeWhere((e) => _exclude!.contains(e.countryCode));
-          }
-
-          // Remove duplicates country if not use phone code
-          if (!_showPhoneCode) {
-            final ids = countries.map((e) => e.countryCode).toSet();
-            countries.retainWhere((c) => ids.remove(c.countryCode));
-          }
-
+          // Get favorite countries
           if (_favorite != null && _favorite!.isNotEmpty) {
-            // ignore: unused_local_variable
-            final favorites = _provider.findCountriesByCode(_favorite!);
+            // final favorites = _provider.findCountriesByCode(_favorite!);
           }
 
-          if (_filter != null && _filter!.isNotEmpty) {
-            countries.removeWhere((e) => !_filter!.contains(e.countryCode));
+          final $countries = <Country>[];
+          final seenCountryCodes = <String>{};
+
+          for (var i = 0; i < countries.length; i++) {
+            final country = countries[i];
+
+            // Check elapsed time and yield control if necessary
+            if (stopwatch.elapsedMilliseconds > 8) {
+              await Future<void>.delayed(Duration.zero);
+              stopwatch.reset();
+            }
+
+            // Remove excluded countries
+            if (_exclude != null && _exclude!.contains(country.countryCode)) {
+              continue;
+            }
+
+            // Remove duplicates if not using phone code
+            if (!_showPhoneCode) {
+              if (!seenCountryCodes.add(country.countryCode)) continue;
+            }
+
+            // Filter countries
+            if (_filter != null && !_filter!.contains(country.countryCode)) {
+              continue;
+            }
+
+            // Add country to the filtered list
+            $countries.add(country);
           }
 
-          _setState(CountriesState.idle(countries.toList(growable: false)));
+          // Remove excluded countries
+          // if (_exclude != null && _exclude!.isNotEmpty) {
+          //   countries.removeWhere((e) => _exclude!.contains(e.countryCode));
+          // }
+
+          // // Remove duplicates country if not use phone code
+          // if (!_showPhoneCode) {
+          //   final ids = countries.map((e) => e.countryCode).toSet();
+          //   countries.retainWhere((c) => ids.remove(c.countryCode));
+          // }
+
+          // // Get favorite countries
+          // if (_favorite != null && _favorite!.isNotEmpty) {
+          //   // ignore: unused_local_variable
+          //   final favorites = _provider.findCountriesByCode(_favorite!);
+          // }
+
+          // // Filter countries
+          // if (_filter != null && _filter!.isNotEmpty) {
+          //   countries.removeWhere((e) => !_filter!.contains(e.countryCode));
+          // }
+
+          _setState(CountriesState.idle($countries.toList(growable: false)));
         } finally {
-          log(
-            '${(stopwatch..stop()).elapsedMicroseconds} μs',
-            name: 'get_countries',
-            level: 100,
-          );
+          if (kDebugMode) {
+            dev.log(
+              '${(stopwatch..stop()).elapsedMicroseconds} μs',
+              name: 'get_countries',
+              level: 100,
+            );
+          }
         }
       });
 
   /// Search countries
-  void search(CountriesLocalization? localizations) => _handle(() async {
+  void search(CountriesLocalization? localization) => _handle(() async {
         var newCountries = <Country>[];
 
         if (searchController.text.isEmpty) {
           newCountries.addAll(originalCountries);
         } else {
           newCountries = originalCountries
-              .where((c) => c.startsWith(searchController.text, localizations))
+              .where((c) => c.startsWith(searchController.text, localization))
               .toList();
         }
 

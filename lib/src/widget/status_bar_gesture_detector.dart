@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 
 /// {@template scroll_to_top_status_bar}
 /// Widget that that will make the [scrollController] to scroll the top
@@ -20,6 +21,7 @@ import 'package:flutter/material.dart';
 ///   );
 /// ```
 /// {@endtemplate}
+@internal
 class StatusBarGestureDetector extends StatefulWidget {
   /// {@macro scroll_to_top_status_bar}
   const StatusBarGestureDetector({
@@ -37,6 +39,18 @@ class StatusBarGestureDetector extends StatefulWidget {
   @override
   State<StatusBarGestureDetector> createState() =>
       _StatusBarGestureDetectorState();
+
+  /// Duration of the scroll animation
+  static Duration duration = const Duration(milliseconds: 1000);
+
+  /// Scroll to top
+  static void scrollToTop(ScrollController controller) {
+    controller.animateTo(
+      0.0, // ignore: prefer_int_literals
+      curve: Curves.easeOutCirc,
+      duration: duration,
+    );
+  }
 }
 
 /// State of [StatusBarGestureDetector].
@@ -60,7 +74,8 @@ class _StatusBarGestureDetectorState extends State<StatusBarGestureDetector> {
           height: view.padding.top / view.devicePixelRatio,
           width: double.infinity,
           child: GestureDetector(
-            // iOS accessibility automatically adds scroll-to-top to the clock in the status bar
+            // iOS accessibility automatically
+            // adds scroll-to-top to the clock in the status bar
             excludeFromSemantics: true,
             behavior: HitTestBehavior.opaque,
             onTap: () => widget.onTap(context),

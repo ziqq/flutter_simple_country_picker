@@ -1,8 +1,21 @@
+// ignore_for_file: sort_constructors_first
+
 import 'package:flutter/material.dart';
-import 'package:flutter_simple_country_picker/src/constant/countries_localization.dart';
-import 'package:flutter_simple_country_picker/src/controller/countries_parser.dart';
+import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/util/util.dart';
 import 'package:meta/meta.dart';
+
+/// {@template country}
+/// CountryHelper class
+/// {@endtemplate}
+/// Country Singleton class
+class CountryHelper {
+  static final CountryHelper _internalSingleton = CountryHelper._internal();
+
+  /// {@macro country}
+  factory CountryHelper() => _internalSingleton;
+  CountryHelper._internal();
+}
 
 /// {@template country}
 /// The country Model that has all the country
@@ -99,7 +112,21 @@ class Country {
 
   /// Get the country name localized
   String? getTranslatedName(BuildContext context) =>
-      CountriesLocalization.of(context)?.countryName(countryCode: countryCode);
+      CountriesLocalization.of(context).getCountryNameByCode(countryCode);
+
+  /// Check if the country starts with a query
+  bool startsWith(String query, CountriesLocalization? localization) {
+    var $query = query.toLowerCase();
+    if (query.startsWith('+')) $query = query.replaceAll('+', '').trim();
+    return phoneCode.startsWith($query) ||
+        name.toLowerCase().startsWith($query) ||
+        countryCode.toLowerCase().startsWith($query) ||
+        (localization
+                ?.getCountryNameByCode(countryCode)
+                ?.toLowerCase()
+                .startsWith($query) ??
+            false);
+  }
 
   /// Copy the country with new values
   @useResult
@@ -171,24 +198,6 @@ class Country {
     data['display_name_no_e164_cc'] = displayNameNoCountryCode;
     data['e164_key'] = e164Key;
     return data;
-  }
-
-  /// Check if the country starts with a query
-  bool startsWith(String query, CountriesLocalization? localizations) {
-    // ignore: no_leading_underscores_for_local_identifiers
-    var _query = query;
-
-    if (query.startsWith('+')) {
-      _query = query.replaceAll('+', '').trim();
-    }
-    return phoneCode.startsWith(_query.toLowerCase()) ||
-        name.toLowerCase().startsWith(_query.toLowerCase()) ||
-        countryCode.toLowerCase().startsWith(_query.toLowerCase()) ||
-        (localizations
-                ?.countryName(countryCode: countryCode)
-                ?.toLowerCase()
-                .startsWith(_query.toLowerCase()) ??
-            false);
   }
 
   /// Check to world wide
