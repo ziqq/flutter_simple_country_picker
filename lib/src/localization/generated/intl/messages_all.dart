@@ -19,10 +19,10 @@ import 'package:intl/src/intl_helpers.dart';
 import 'messages_en.dart' as messages_en;
 import 'messages_ru.dart' as messages_ru;
 
-typedef Future<dynamic> LibraryLoader();
+typedef LibraryLoader = Future<dynamic> Function();
 Map<String, LibraryLoader> _deferredLibraries = {
-  'en': () => new SynchronousFuture(null),
-  'ru': () => new SynchronousFuture(null),
+  'en': () => SynchronousFuture(null),
+  'ru': () => SynchronousFuture(null),
 };
 
 MessageLookupByLibrary? _findExact(String localeName) {
@@ -42,13 +42,13 @@ Future<bool> initializeMessages(String localeName) {
       localeName, (locale) => _deferredLibraries[locale] != null,
       onFailure: (_) => null);
   if (availableLocale == null) {
-    return new SynchronousFuture(false);
+    return SynchronousFuture(false);
   }
   var lib = _deferredLibraries[availableLocale];
-  lib == null ? new SynchronousFuture(false) : lib();
-  initializeInternalMessageLookup(() => new CompositeMessageLookup());
+  lib == null ? SynchronousFuture(false) : lib();
+  initializeInternalMessageLookup(() => CompositeMessageLookup());
   messageLookup.addLocale(availableLocale, _findGeneratedMessagesFor);
-  return new SynchronousFuture(true);
+  return SynchronousFuture(true);
 }
 
 bool _messagesExistFor(String locale) {
