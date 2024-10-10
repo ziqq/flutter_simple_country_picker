@@ -18,10 +18,10 @@ funding:
 platforms:
   android:
   ios:
-  linux:
-  macos:
-  web:
-  windows:
+  # linux:
+  # macos:
+  # web:
+  # windows:
 
 #screenshots:
 #  - description: 'Example of using the library.'
