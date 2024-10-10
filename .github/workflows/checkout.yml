@@ -1,0 +1,49 @@
+name: Checkout
+
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+      - "master"
+      #- "dev"
+      #- "develop"
+      #- "feature/**"
+      #- "bugfix/**"
+      #- "hotfix/**"
+      #- "support/**"
+    paths:
+      - "lib/**.dart"
+      - "test/**.dart"
+      - "example/**.dart"
+      - .github/workflows/*.yml
+      - "pubspec.yaml"
+      - "example/pubspec.yaml"
+  pull_request:
+    branches:
+      - "main"
+      - "master"
+      - "dev"
+      - "develop"
+      - "feature/**"
+      - "bugfix/**"
+      - "hotfix/**"
+      - "support/**"
+    paths:
+      - "lib/**.dart"
+      - "test/**.dart"
+      - "example/**.dart"
+      - .github/workflows/*.yml
+      - "pubspec.yaml"
+      - "example/pubspec.yaml"
+
+
+jobs:
+  checkout:
+    uses: ziqq/flutter_ci_workflows/.github/workflows/checkout.yml@main
+  testing:
+    needs: [checkout]
+    uses: ziqq/flutter_ci_workflows/.github/workflows/testing_with_codecov_report.yml@main
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
