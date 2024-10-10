@@ -506,7 +506,7 @@ packages:
     source: hosted
     version: "1.10.0"
   stack_trace:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: stack_trace
       sha256: "73713990125a6d93122541237550ee3352a2d84baad52d375a4cad2eb9b7ce0b"
@@ -602,7 +602,7 @@ packages:
     source: hosted
     version: "1.1.0"
   web:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: web
       sha256: cd3543bd5798f6ad290ea73d210f423502e71900302dde696f8bff84bf89a1cb
