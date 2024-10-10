@@ -2,11 +2,44 @@ include: package:flutter_lints/flutter.yaml
 
 analyzer:
   exclude:
+    # Build
+    - "build/**"
     # Tests
     - "test/**.mocks.dart"
     - ".test_coverage.dart"
+    - ".coverage/**"
+    - "coverage/**"
     # Assets
     - "assets/**"
+    # Generated
+    - "lib/src/core/localization/generated/**"
+    - "lib/src/core/constants/generated/**"
+    - "lib/src/core/model/generated/**"
+    - "**/generated/**"
+    # - '**/lib/l10n/**.arb'
+    - "**.g.dart"
+    - "**.gr.dart"
+    - "**.gql.dart"
+    - "**.freezed.dart"
+    - "**.config.dart"
+    - "**.mocks.dart"
+    - "**.gen.dart"
+    - "**.pb.dart"
+    - "**.pbenum.dart"
+    - "**.pbjson.dart"
+    # Flutter Version Manager
+    - ".fvm/**"
+    # Tools
+    - ".dart_tool/**"
+    - "scripts/**"
+    - "tool/**"
+    # Platform
+    - "ios/**"
+    - "android/**"
+    - "web/**"
+    - "macos/**"
+    - "windows/**"
+    - "linux/**"
 
   # Enable the following options to enable strong mode.
   language:
