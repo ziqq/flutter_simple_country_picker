@@ -63,18 +63,8 @@ Example usage of the `showCountryPicker` function:
 ```Dart
 showCountryPicker(
   context: context,
-  exclude: ['RU', 'EN'],    // Optional. List of countries to exclude from the list.
-  filter: ['RU', 'EN'],     // Optional. List of countries to filter the list.
-  favorite: ['RU', 'EN'],   // Optional. List of countries to show at the top of the list.
-  showPhoneCode: true,      // Optional. Displays the phone code before the country name.
-  showWorldWide: true,      // Optional. Shows the "World Wide" option at the beginning of the list.
-  useAutofocus: true,       // Optional. Automatically opens the keyboard when the picker is loaded.
-  showSearch: true,         // Optional. Enables or disables the search bar.
-  isDismissible: true,      // Optional. Allows the user to close the modal by swiping it down.
-  isScrollControlled: true, // Optional. Controls the scrolling behavior of the modal window.
-  useHaptickFeedback: true, // Optional. Enables haptic feedback.
-  useSafeArea: true,        // Optional. Enables the safe area for the modal window.
-  onDone: () {              // Optional. Callback when the CountryPicker is dismissed, whether a country is selected or not.
+  exclude: ['RU', 'EN'],
+  onDone: () {
     print('CountryPicker dismissed');
   },
   onSelect: (Country country) {
@@ -82,6 +72,8 @@ showCountryPicker(
   },
 );
 ```
+
+Optional argumets of the `showCountryPicker` function:
 
 | Argument            | Description                                                                         |
 |---------------------|-------------------------------------------------------------------------------------|
@@ -96,6 +88,7 @@ showCountryPicker(
 | `isScrollControlled`| Controls the scrolling behavior of the modal window.                                |
 | `useHaptickFeedback`| Enables haptic feedback.                                                            |
 | `useSafeArea`       | Enables the safe area for the modal window.                                         |
+| `onSelect`          | Callback when the select a country. |
 | `onDone`            | Callback when the CountryPicker is dismissed, whether a country is selected or not. |
 
 
