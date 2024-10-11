@@ -1,11 +1,13 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:meta/meta.dart';
 
 /// {@template countries_state}
 /// Countries state.
 /// {@endtemplate}
+@immutable
 @internal
-sealed class CountriesState {
+abstract base class CountriesState {
   /// {@macro countries_state}
   CountriesState._(this.countries);
 
@@ -16,14 +18,17 @@ sealed class CountriesState {
 
   factory CountriesState.error(List<Country> countries) = CountriesState$Error;
 
-  /// Is loading state.
-  abstract final bool isLoading;
+  /// Type of state
+  abstract final String type;
 
-  /// Is idle state.
-  abstract final bool isIdle;
+  /// Check if is Idle.
+  bool get isIdle => this is CountriesState$Idle;
 
-  /// Is error state.
-  abstract final bool isError;
+  /// Check if is Processing.
+  bool get isLoading => this is CountriesState$Loading;
+
+  /// Check if is Failed.
+  bool get isError => this is CountriesState$Error;
 
   /// List of countries.
   final List<Country> countries;
@@ -34,49 +39,50 @@ sealed class CountriesState {
 
   /// Get country by [countryCode]
   Country? getByCountryCode(String countryCode) => _table[countryCode];
+
+  @override
+  int get hashCode => Object.hash(type, countries);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CountriesState &&
+          type == other.type &&
+          listEquals(countries, other.countries));
+
+  @override
+  String toString() => 'CountriesState{type: $type}';
 }
 
 /// {@macro countries_state}
 ///
 /// Loading state.
-class CountriesState$Loading extends CountriesState {
+final class CountriesState$Loading extends CountriesState {
   /// {@macro countries_state}
   CountriesState$Loading(super.countries) : super._();
 
   @override
-  bool get isError => false;
-  @override
-  bool get isIdle => false;
-  @override
-  bool get isLoading => true;
+  String get type => 'loading';
 }
 
 /// {@macro countries_state}
 ///
 /// Idle state.
-class CountriesState$Idle extends CountriesState {
+final class CountriesState$Idle extends CountriesState {
   /// {@macro countries_state}
   CountriesState$Idle(super.countries) : super._();
 
   @override
-  bool get isError => false;
-  @override
-  bool get isIdle => true;
-  @override
-  bool get isLoading => false;
+  String get type => 'idle';
 }
 
 /// {@macro countries_state}
 ///
 /// Error state.
-class CountriesState$Error extends CountriesState {
+final class CountriesState$Error extends CountriesState {
   /// {@macro countries_state}
   CountriesState$Error(super.countries) : super._();
 
   @override
-  bool get isError => true;
-  @override
-  bool get isIdle => false;
-  @override
-  bool get isLoading => false;
+  String get type => 'error';
 }

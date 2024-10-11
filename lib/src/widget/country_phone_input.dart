@@ -1,290 +1,219 @@
-// autor - <a.a.ustinoff@gmail.com> Anton Ustinoff
+import 'dart:developer' as dev;
 
-import 'dart:ui' as ui show PointMode;
-
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
-import 'package:flutter_simple_country_picker/src/constant/constant.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:meta/meta.dart';
-import 'package:platform_info/platform_info.dart';
 
-final _kDefaultFilter = {'0': RegExp('[0-9]')};
+/// Default height for [CountryPhoneInput].
+const double _kDefaultCountyInputHeight = 56;
 
-/// {@template country_phone_input}
-/// CountryPhoneInput widget.
-/// {@endtemplate}
 @experimental
-class CountryPhoneInput extends StatefulWidget {
-  /// {@macro country_phone_input}
+void _log(String message) =>
+    kDebugMode ? dev.log(message, name: 'county_phone_input') : null;
+
+/// {@template county_input}
+/// CountryInput widget.
+/// {@endtemplate}
+class CountryPhoneInput extends StatelessWidget {
+  /// {@macro county_input}
   const CountryPhoneInput({
-    this.autofocus = true,
-    this.country = '🇷🇺 Россия',
-    this.countryCode = '7',
-    this.mask,
-    this.textStyle,
-    this.countryPickerThemeData,
-    this.controller,
-    this.onTap,
-    this.onLongPress,
-    this.onChanged,
+    required this.countryCode,
+    this.countryFlag,
+    this.placeholder = 'Phone number',
+    this.onDone,
+    this.onSelect,
+    this.exclude,
+    this.favorite,
+    this.filter,
+    this.showPhoneCode = false,
+    this.showWorldWide = false,
+    this.useAutofocus = false,
+    this.useHaptickFeedback = true,
+    this.useSafeArea = false,
+    this.showSearch,
     super.key,
   });
 
-  /// {@macro flutter.widgets.editableText.autofocus}
-  final bool autofocus;
-
-  /// The country name.
-  final String country;
-
-  /// The country code.
+  /// Current country code.
   final String countryCode;
 
-  /// An optional argument for customizing the mask.
-  final String? mask;
+  /// Current country flag as emoji.
+  final String? countryFlag;
 
-  /// An optional argument for customizing the [Text] widget.
-  final TextStyle? textStyle;
+  /// Placeholder text.
+  final String? placeholder;
 
-  /// An optional argument for customizing the [CountryPhoneInput].
-  final CountryPickerTheme? countryPickerThemeData;
+  /// Called when the country was selected.
+  final VoidCallback? onDone;
 
-  /// Controls the text being edited.
-  ///
-  /// If null, this widget will create its own [TextEditingController].
-  final TextEditingController? controller;
+  /// Called when the country be select.
+  final ValueChanged<Country>? onSelect;
 
-  /// Called when the country name is tapped.
-  final VoidCallback? onTap;
+  /// List of country codes to exclude.
+  final List<String>? exclude;
 
-  /// Called when the country name is long pressed.
-  final VoidCallback? onLongPress;
+  /// List of favorite country codes.
+  final List<String>? favorite;
 
-  /// Called when the text being edited changes.
-  final void Function(String)? onChanged;
+  /// List of filtered country codes.
+  final List<String>? filter;
 
-  @override
-  State<CountryPhoneInput> createState() => CountryPhoneInputState();
-}
+  /// Show phone code in countires list.
+  final bool showPhoneCode;
 
-/// Stete of [CountryPhoneInput]
-class CountryPhoneInputState extends State<CountryPhoneInput> {
-  late String? _mask;
-  late String _country;
-  late String _countryCode;
+  /// Show "World Wide" in countires list.
+  final bool showWorldWide;
 
-  late final TextEditingController _effectiveController;
-  late final MaskTextInputFormatter _maskFormatter;
+  /// Use autofocus for the search countryies input field.
+  final bool useAutofocus;
 
-  @override
-  void initState() {
-    super.initState();
+  /// Use haptic feedback?
+  final bool useHaptickFeedback;
 
-    _country = widget.country;
-    _countryCode = widget.countryCode;
-    _mask = widget.mask ?? kDefaultPhoneMask;
+  /// Use safe area?
+  final bool useSafeArea;
 
-    _effectiveController = widget.controller ?? TextEditingController();
-
-    _maskFormatter = MaskTextInputFormatter(
-      mask: _mask,
-      filter: _kDefaultFilter,
-      initialText: _effectiveController.text,
-    );
-  }
-
-  @override
-  void dispose() {
-    _effectiveController.dispose();
-    super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(covariant CountryPhoneInput oldWidget) {
-    if (widget.countryCode != oldWidget.countryCode) {
-      _countryCode = widget.countryCode;
-    }
-    if (widget.country != oldWidget.country) {
-      _country = widget.country;
-    }
-    if (widget.mask != oldWidget.mask) {
-      _mask = widget.mask ?? kDefaultPhoneMask;
-      _effectiveController.text = '';
-
-      _maskFormatter.updateMask(
-        mask: _mask,
-        filter: _kDefaultFilter,
-      );
-    }
-    super.didUpdateWidget(oldWidget);
-  }
+  /// Show countryies search bar?
+  final bool? showSearch;
 
   @override
   Widget build(BuildContext context) {
-    final pickerTheme = widget.countryPickerThemeData;
-
-    final defaultTextStyle =
-        (widget.textStyle ?? Theme.of(context).textTheme.bodyLarge)?.copyWith(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            letterSpacing: platform.iOS ? -0.3 : 0,
-            color: CupertinoDynamicColor.resolve(
-              CupertinoColors.label,
-              context,
-            ));
-
-    final effectiveBackgroundColor = pickerTheme?.backgroundColor ??
-        CupertinoDynamicColor.resolve(
-            CupertinoColors.systemBackground, context);
-
-    final effectiveDividerColor = pickerTheme?.dividerColor ??
-        CupertinoDynamicColor.resolve(CupertinoColors.opaqueSeparator, context);
-
-    final effectiveHintColor = pickerTheme?.inputDecoration?.hintStyle?.color ??
-        CupertinoDynamicColor.resolve(CupertinoColors.placeholderText, context);
-
-    final effectiveCountryNamePadding = pickerTheme != null
-        ? EdgeInsets.only(
-            top: pickerTheme.indent,
-            bottom: pickerTheme.indent,
-            left: pickerTheme.padding,
-            right: pickerTheme.padding / 2,
-          )
-        : const EdgeInsets.only(
-            top: kDefaultIndent,
-            bottom: kDefaultIndent,
-            left: kDefaultPadding,
-            right: kDefaultPadding / 2,
-          );
-
-    final effectiveInputPadding = pickerTheme != null
-        ? EdgeInsets.symmetric(
-            horizontal: pickerTheme.padding / 2,
-            vertical: pickerTheme.indent,
-          )
-        : const EdgeInsets.symmetric(
-            horizontal: kDefaultPadding / 2,
-            vertical: kDefaultIndent,
-          );
-
-    return Material(
-      color: effectiveBackgroundColor,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Divider(height: 1, thickness: 1, color: effectiveDividerColor),
-
-          // Country name with flag
-          GestureDetector(
-            onTap: () {
-              HapticFeedback.lightImpact();
-              widget.onTap?.call();
+    final pickerTheme = CountryPickerTheme.resolve(context);
+    final textStyle =
+        pickerTheme.textStyle ?? Theme.of(context).textTheme.bodyLarge;
+    final painter = _CountryPhoneInput$BackgroundPainter(
+      color: pickerTheme.secondaryBackgroundColor,
+      radius: pickerTheme.radius,
+    );
+    const constraints = BoxConstraints(
+      minHeight: _kDefaultCountyInputHeight,
+      minWidth: _kDefaultCountyInputHeight,
+    );
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: () => showCountryPicker(
+            context: context,
+            exclude: exclude,
+            favorite: favorite,
+            filter: filter,
+            showPhoneCode: showPhoneCode,
+            showWorldWide: showWorldWide,
+            useAutofocus: useAutofocus,
+            useHaptickFeedback: useHaptickFeedback,
+            useSafeArea: useSafeArea,
+            showSearch: showSearch,
+            onSelect: (country) {
+              _log('Selected country $country');
+              onSelect?.call(country);
+              // setState(() {
+              //   _country = '${country.countryFlag} ${country.nameLocalized}';
+              //   _countryCode = country.phoneCode;
+              //   _mask = country.mask;
+              // });
             },
-            onLongPress: widget.onLongPress,
-            child: Container(
-              width: double.infinity,
-              padding: effectiveCountryNamePadding,
-              child: Text(
-                _country,
-                style: defaultTextStyle?.copyWith(
-                  fontWeight: FontWeight.w500,
+            onDone: () {
+              _log('onDone called...');
+              onDone?.call();
+            },
+          ),
+          child: CustomPaint(
+            painter: painter,
+            child: ConstrainedBox(
+              constraints: constraints,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: pickerTheme.padding),
+                child: Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (countryFlag != null && countryFlag!.isNotEmpty) ...[
+                        Text('$countryFlag', style: textStyle),
+                      ],
+                      Text('+$countryCode', style: textStyle),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-
-          // Divider
-          SizedBox(
-            height: 1,
+        ),
+        SizedBox(width: pickerTheme.indent),
+        Flexible(
+          child: ConstrainedBox(
+            constraints: constraints,
             child: CustomPaint(
-              size: Size(MediaQuery.of(context).size.width, 1),
-              painter: _CustomDividerPainter(
-                color: effectiveDividerColor,
+              painter: painter,
+              child: Center(
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: placeholder,
+                    hintStyle: textStyle,
+                    contentPadding: EdgeInsets.only(
+                      right: pickerTheme.padding,
+                      left: pickerTheme.padding,
+                    ),
+                    border: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                    focusedErrorBorder: InputBorder.none,
+                  ),
+                ),
               ),
             ),
           ),
-
-          // Input with mask
-          Row(
-            children: [
-              Padding(
-                padding: effectiveInputPadding,
-                child: Text(
-                  '+ $_countryCode',
-                  style: defaultTextStyle,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              SizedBox(
-                height: 30,
-                child: VerticalDivider(
-                  color: effectiveDividerColor,
-                  thickness: 1,
-                ),
-              ),
-              Flexible(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: effectiveInputPadding.horizontal / 2.5,
-                  ),
-                  child: TextFormField(
-                    autofocus: widget.autofocus,
-                    controller: _effectiveController,
-                    inputFormatters: [_maskFormatter],
-                    keyboardType: TextInputType.number,
-                    style: defaultTextStyle,
-                    cursorColor: defaultTextStyle?.color,
-                    cursorHeight: defaultTextStyle?.fontSize,
-                    onChanged: (_) => widget.onChanged?.call(
-                      '+ $_countryCode ${_effectiveController.text}',
-                    ),
-                    decoration: InputDecoration(
-                      hintText: _mask,
-                      border: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      focusedErrorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      errorStyle: const TextStyle(height: 0, fontSize: 0),
-                      hintStyle: defaultTextStyle?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: effectiveHintColor,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Divider(height: 1, thickness: 1, color: effectiveDividerColor),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
-class _CustomDividerPainter extends CustomPainter {
-  _CustomDividerPainter({this.color});
+/// Background painter for [CountryPhoneInput].
+///
+/// {@macro county_input}
+class _CountryPhoneInput$BackgroundPainter extends CustomPainter {
+  /// Creates a [CustomPaint] that paints a rounded rectangle.
+  const _CountryPhoneInput$BackgroundPainter({
+    this.color,
+    this.radius,
+  });
+
+  /// The color to fill in the background of the rounded rectangle.
   final Color? color;
+
+  /// The radius of the rounded corners of the rectangle.
+  final double? radius;
+
+  /// The radii of the rounded corners of the rectangle.
+  // final BorderRadius borderRadius;
+
+  /// The border to draw around the rounded rectangle.
+  // final Border border;
+
+  /// The size of the gap in the border where the label is.
+  // final double gapExtent;
+
+  /// The fraction of the border along the gap that should be painted.
+  // final double gapPercentage;
+
+  /// The text direction to use for painting the border.
+  // final TextDirection? textDirection;
 
   @override
   void paint(Canvas canvas, Size size) {
-    const pointMode = ui.PointMode.polygon;
-    final points = [
-      Offset.zero,
-      const Offset(22, 0),
-      const Offset(30, 8),
-      const Offset(38, 0),
-      Offset(size.width, 0),
-    ];
-    final paint = Paint()
-      ..color = color ?? Colors.black
-      ..strokeWidth = 1
-      ..strokeCap = StrokeCap.round;
-    canvas.drawPoints(pointMode, points, paint);
+    final effectiveRadius = Radius.circular(radius ?? 10);
+    final paint = Paint()..color = color ?? Colors.grey;
+    final rrect = RRect.fromLTRBR(
+      0,
+      0,
+      size.width,
+      size.height,
+      effectiveRadius,
+    );
+    canvas.drawRRect(rrect, paint);
   }
 
   @override

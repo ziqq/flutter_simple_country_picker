@@ -72,5 +72,5 @@ void showCountryPicker({
         useAutofocus: useAutofocus,
       ),
     ),
-  ).then<void>((_) => onDone?.call());
+  ).whenComplete(() => onDone?.call());
 }

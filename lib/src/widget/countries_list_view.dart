@@ -141,7 +141,7 @@ class _CountriesListViewState extends State<CountriesListView> {
       children: [
         // --- Search bar --- //
         ColoredBox(
-          color: pickerTheme.stickyHeaderBackgroundColor ?? Colors.white,
+          color: pickerTheme.secondaryBackgroundColor ?? Colors.white,
           child: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: pickerTheme.padding,
@@ -313,7 +313,7 @@ class _CountriesListState extends State<_CountriesList> {
                 minHeight: 13 * 2,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: pickerTheme.stickyHeaderBackgroundColor,
+                    color: pickerTheme.secondaryBackgroundColor,
                   ),
                   child: Padding(
                     padding: EdgeInsets.symmetric(

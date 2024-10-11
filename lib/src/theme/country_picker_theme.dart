@@ -19,7 +19,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     required Color? backgroundColor,
     required Color? barrierColor,
     required Color? dividerColor,
-    required Color? stickyHeaderBackgroundColor,
+    required Color? secondaryBackgroundColor,
     required TextStyle? textStyle,
     required TextStyle? searchTextStyle,
     InputDecoration? inputDecoration,
@@ -36,7 +36,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       backgroundColor: backgroundColor ?? CupertinoColors.systemBackground,
       barrierColor: barrierColor ?? kCupertinoModalBarrierColor,
       dividerColor: dividerColor,
-      stickyHeaderBackgroundColor: stickyHeaderBackgroundColor,
+      secondaryBackgroundColor: secondaryBackgroundColor,
       inputDecoration: inputDecoration,
       searchTextStyle: searchTextStyle,
       textStyle: textStyle,
@@ -52,7 +52,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     required this.backgroundColor,
     required this.barrierColor,
     required this.dividerColor,
-    required this.stickyHeaderBackgroundColor,
+    required this.secondaryBackgroundColor,
     required this.inputDecoration,
     required this.searchTextStyle,
     required this.textStyle,
@@ -92,9 +92,9 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
           other?.barrierColor ?? theme?.barrierColor ?? defaults.barrierColor,
       dividerColor:
           other?.dividerColor ?? theme?.dividerColor ?? defaults.dividerColor,
-      stickyHeaderBackgroundColor: other?.stickyHeaderBackgroundColor ??
-          theme?.stickyHeaderBackgroundColor ??
-          defaults.stickyHeaderBackgroundColor,
+      secondaryBackgroundColor: other?.secondaryBackgroundColor ??
+          theme?.secondaryBackgroundColor ??
+          defaults.secondaryBackgroundColor,
       inputDecoration: other?.inputDecoration ??
           theme?.inputDecoration ??
           defaults.inputDecoration,
@@ -149,9 +149,9 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
 
   /// The country bottom sheet's sticky header background color.
   ///
-  /// If null, [stickyHeaderBackgroundColor]
+  /// If null, [secondaryBackgroundColor]
   /// defaults to [CupertinoColors.secondarySystemBackground].
-  final Color? stickyHeaderBackgroundColor;
+  final Color? secondaryBackgroundColor;
 
   /// The style to use for country name text.
   ///
@@ -195,7 +195,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     Color? backgroundColor,
     Color? barrierColor,
     Color? dividerColor,
-    Color? stickyHeaderBackgroundColor,
+    Color? secondaryBackgroundColor,
     InputDecoration? inputDecoration,
     TextStyle? searchTextStyle,
     TextStyle? textStyle,
@@ -208,8 +208,8 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         backgroundColor: backgroundColor ?? this.backgroundColor,
         barrierColor: barrierColor ?? this.barrierColor,
         dividerColor: dividerColor ?? this.dividerColor,
-        stickyHeaderBackgroundColor:
-            stickyHeaderBackgroundColor ?? this.stickyHeaderBackgroundColor,
+        secondaryBackgroundColor:
+            secondaryBackgroundColor ?? this.secondaryBackgroundColor,
         inputDecoration: inputDecoration ?? this.inputDecoration,
         searchTextStyle: searchTextStyle ?? this.searchTextStyle,
         textStyle: textStyle ?? this.textStyle,
@@ -230,9 +230,9 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t),
       barrierColor: Color.lerp(barrierColor, other.barrierColor, t),
       dividerColor: Color.lerp(dividerColor, other.dividerColor, t),
-      stickyHeaderBackgroundColor: Color.lerp(
-        stickyHeaderBackgroundColor,
-        other.stickyHeaderBackgroundColor,
+      secondaryBackgroundColor: Color.lerp(
+        secondaryBackgroundColor,
+        other.secondaryBackgroundColor,
         t,
       ),
       searchTextStyle: TextStyle.lerp(
@@ -264,7 +264,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         barrierColor,
         dividerColor,
         inputDecoration,
-        stickyHeaderBackgroundColor,
+        secondaryBackgroundColor,
         searchTextStyle,
         textStyle,
         flagSize,
@@ -280,7 +280,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     return other is CountryPickerTheme &&
         other.backgroundColor == backgroundColor &&
         other.dividerColor == dividerColor &&
-        other.stickyHeaderBackgroundColor == stickyHeaderBackgroundColor &&
+        other.secondaryBackgroundColor == secondaryBackgroundColor &&
         other.searchTextStyle == searchTextStyle &&
         other.inputDecoration == inputDecoration &&
         other.textStyle == textStyle &&
@@ -324,8 +324,8 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       )
       ..add(
         ColorProperty(
-          'stickyHeaderBackgroundColor',
-          stickyHeaderBackgroundColor,
+          'secondaryBackgroundColor',
+          secondaryBackgroundColor,
           defaultValue: CupertinoColors.systemGroupedBackground,
         ),
       )
@@ -434,7 +434,7 @@ class _CountryPickerTheme$Default extends CountryPickerTheme {
     Color? backgroundColor,
     Color? barrierColor,
     Color? dividerColor,
-    Color? stickyHeaderBackgroundColor,
+    Color? secondaryBackgroundColor,
     TextStyle? textStyle,
     TextStyle? searchTextStyle,
     InputDecoration? inputDecoration,
@@ -443,7 +443,7 @@ class _CountryPickerTheme$Default extends CountryPickerTheme {
     double? indent,
     double? flagSize,
   }) : super.raw(
-          stickyHeaderBackgroundColor: stickyHeaderBackgroundColor ??
+          secondaryBackgroundColor: secondaryBackgroundColor ??
               CupertinoDynamicColor.resolve(
                 CupertinoColors.secondarySystemBackground,
                 context,
