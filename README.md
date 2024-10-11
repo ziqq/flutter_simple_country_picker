@@ -26,7 +26,7 @@ The Flutter package that provides an easy-to-use country selection widget. It al
 
 
 
-## Example
+## Installation
 
  In your dart file, import the library:
 
@@ -34,19 +34,8 @@ The Flutter package that provides an easy-to-use country selection widget. It al
  import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
  ```
 
-Show country picker using `showCountryPicker`:
-```Dart
-showCountryPicker(
-  context: context,
-  showPhoneCode: true, // Optional. Shows phone code before the country name.
-  onSelect: (Country country) {
-    print('Select country: ${country.displayName}');
-  },
-);
-```
 
-
-## Installation
+## Example
 
 Add the `CountriesLocalization.delegate` in the list of your app delegates. Set supported locales [Locale('ru'), Locale('en')]. And set your locale `ru` or `en`.
 
@@ -68,6 +57,46 @@ MaterialApp(
   home: HomePage(),
 );
 ```
+
+Example usage of the `showCountryPicker` function:
+
+```Dart
+showCountryPicker(
+  context: context,
+  exclude: ['RU', 'EN'],    // Optional. List of countries to exclude from the list.
+  filter: ['RU', 'EN'],     // Optional. List of countries to filter the list.
+  favorite: ['RU', 'EN'],   // Optional. List of countries to show at the top of the list.
+  showPhoneCode: true,      // Optional. Displays the phone code before the country name.
+  showWorldWide: true,      // Optional. Shows the "World Wide" option at the beginning of the list.
+  useAutofocus: true,       // Optional. Automatically opens the keyboard when the picker is loaded.
+  showSearch: true,         // Optional. Enables or disables the search bar.
+  isDismissible: true,      // Optional. Allows the user to close the modal by swiping it down.
+  isScrollControlled: true, // Optional. Controls the scrolling behavior of the modal window.
+  useHaptickFeedback: true, // Optional. Enables haptic feedback.
+  useSafeArea: true,        // Optional. Enables the safe area for the modal window.
+  onDone: () {              // Optional. Callback when the CountryPicker is dismissed, whether a country is selected or not.
+    print('CountryPicker dismissed');
+  },
+  onSelect: (Country country) {
+    print('Selected country: ${country.displayName}');
+  },
+);
+```
+
+| Argument            | Description                                                                         |
+|---------------------|-------------------------------------------------------------------------------------|
+| `exclude`           | List of countries to exclude from the list.                                         |
+| `filter`            | List of countries to filter the list.                                               |
+| `favorite`          | List of countries to show at the top of the list.                                   |
+| `showPhoneCode`     | Displays the phone code before the country name.                                    |
+| `showWorldWide`     | Shows the "World Wide" option at the beginning of the list.                         |
+| `useAutofocus`      | Automatically opens the keyboard when the picker is loaded.                         |
+| `showSearch`        | Enables or disables the search bar.                                                 |
+| `isDismissible`     | Allows the user to close the modal by swiping it down.                              |
+| `isScrollControlled`| Controls the scrolling behavior of the modal window.                                |
+| `useHaptickFeedback`| Enables haptic feedback.                                                            |
+| `useSafeArea`       | Enables the safe area for the modal window.                                         |
+| `onDone`            | Callback when the CountryPicker is dismissed, whether a country is selected or not. |
 
 
 ## All countries list
@@ -143,7 +172,7 @@ MaterialApp(
 | 🇪🇷     | Eritrea                        | +291       | 00 000 000        |
 | 🇪🇪     | Estonia                        | +372       | 000 000 00        |
 | 🇪🇹     | Ethiopia                       | +251       | 00 000 000        |
-| 🇫🇰     | Falkland Islands               | +500       | 000 000            |
+| 🇫🇰     | Falkland Islands               | +500       | 000 000           |
 | 🇫🇴     | Faroe Islands                  | +298       | 000 000           |
 | 🇫🇯     | Fiji                           | +679       | 000 000           |
 | 🇫🇮     | Finland                        | +358       | 00 000 000        |
