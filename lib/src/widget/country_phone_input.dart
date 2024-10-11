@@ -1,16 +1,17 @@
 // autor - <a.a.ustinoff@gmail.com> Anton Ustinoff
 
+import 'dart:async';
 import 'dart:ui' as ui show PointMode;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/constant.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:meta/meta.dart';
 import 'package:platform_info/platform_info.dart';
 
+/// Default phone mask filter.
 final _kDefaultFilter = {'0': RegExp('[0-9]')};
 
 /// {@template country_phone_input}
@@ -69,14 +70,14 @@ class CountryPhoneInput extends StatefulWidget {
   State<CountryPhoneInput> createState() => CountryPhoneInputState();
 }
 
-/// Stete of [CountryPhoneInput]
+/// Stete for widget [CountryPhoneInput]
 class CountryPhoneInputState extends State<CountryPhoneInput> {
+  late final MaskTextInputFormatter _maskFormatter;
+  late final TextEditingController _controller;
+
   late String? _mask;
   late String _country;
   late String _countryCode;
-
-  late final TextEditingController _effectiveController;
-  late final MaskTextInputFormatter _maskFormatter;
 
   @override
   void initState() {
@@ -86,110 +87,88 @@ class CountryPhoneInputState extends State<CountryPhoneInput> {
     _countryCode = widget.countryCode;
     _mask = widget.mask ?? kDefaultPhoneMask;
 
-    _effectiveController = widget.controller ?? TextEditingController();
+    _controller = widget.controller ?? TextEditingController();
 
     _maskFormatter = MaskTextInputFormatter(
       mask: _mask,
       filter: _kDefaultFilter,
-      initialText: _effectiveController.text,
+      initialText: _controller.text,
     );
   }
 
   @override
   void dispose() {
-    _effectiveController.dispose();
+    if (widget.controller == null) _controller.dispose();
     super.dispose();
   }
 
   @override
-  void didUpdateWidget(covariant CountryPhoneInput oldWidget) {
-    if (widget.countryCode != oldWidget.countryCode) {
-      _countryCode = widget.countryCode;
+  void didUpdateWidget(CountryPhoneInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.controller, widget.controller)) {
+      final current = _controller;
+      if (oldWidget.controller == null) scheduleMicrotask(current.dispose);
+      _controller = widget.controller ?? TextEditingController();
     }
+
     if (widget.country != oldWidget.country) {
       _country = widget.country;
     }
-    if (widget.mask != oldWidget.mask) {
-      _mask = widget.mask ?? kDefaultPhoneMask;
-      _effectiveController.text = '';
 
-      _maskFormatter.updateMask(
-        mask: _mask,
-        filter: _kDefaultFilter,
-      );
+    if (widget.countryCode != oldWidget.countryCode) {
+      _countryCode = widget.countryCode;
     }
-    super.didUpdateWidget(oldWidget);
+
+    if (widget.mask != oldWidget.mask) {
+      _controller.text = '';
+      _mask = widget.mask ?? kDefaultPhoneMask;
+      _maskFormatter.updateMask(mask: _mask, filter: _kDefaultFilter);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final pickerTheme = widget.countryPickerThemeData;
+    final pickerTheme =
+        CountryPickerTheme.resolve(context, widget.countryPickerThemeData);
+    final inputPadding = EdgeInsets.symmetric(
+        horizontal: pickerTheme.padding / 2, vertical: pickerTheme.indent);
 
-    final defaultTextStyle =
-        (widget.textStyle ?? Theme.of(context).textTheme.bodyLarge)?.copyWith(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            letterSpacing: platform.iOS ? -0.3 : 0,
-            color: CupertinoDynamicColor.resolve(
-              CupertinoColors.label,
-              context,
-            ));
-
-    final effectiveBackgroundColor = pickerTheme?.backgroundColor ??
-        CupertinoDynamicColor.resolve(
-            CupertinoColors.systemBackground, context);
-
-    final effectiveDividerColor = pickerTheme?.dividerColor ??
-        CupertinoDynamicColor.resolve(CupertinoColors.opaqueSeparator, context);
-
-    final effectiveHintColor = pickerTheme?.inputDecoration?.hintStyle?.color ??
-        CupertinoDynamicColor.resolve(CupertinoColors.placeholderText, context);
-
-    final effectiveCountryNamePadding = pickerTheme != null
-        ? EdgeInsets.only(
-            top: pickerTheme.indent,
-            bottom: pickerTheme.indent,
-            left: pickerTheme.padding,
-            right: pickerTheme.padding / 2,
-          )
-        : const EdgeInsets.only(
-            top: kDefaultIndent,
-            bottom: kDefaultIndent,
-            left: kDefaultPadding,
-            right: kDefaultPadding / 2,
-          );
-
-    final effectiveInputPadding = pickerTheme != null
-        ? EdgeInsets.symmetric(
-            horizontal: pickerTheme.padding / 2,
-            vertical: pickerTheme.indent,
-          )
-        : const EdgeInsets.symmetric(
-            horizontal: kDefaultPadding / 2,
-            vertical: kDefaultIndent,
-          );
+    final textStyle = widget.textStyle ?? Theme.of(context).textTheme.bodyLarge;
+    final defaultTextStyle = textStyle?.copyWith(
+      fontSize: 20,
+      fontWeight: FontWeight.w600,
+      letterSpacing: platform.iOS ? -0.3 : 0,
+      color: CupertinoDynamicColor.resolve(
+        CupertinoColors.label,
+        context,
+      ),
+    );
 
     return Material(
-      color: effectiveBackgroundColor,
+      color: pickerTheme.backgroundColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Divider(height: 1, thickness: 1, color: effectiveDividerColor),
+          Divider(height: 1, thickness: 1, color: pickerTheme.dividerColor),
 
           // Country name with flag
           GestureDetector(
-            onTap: () {
-              HapticFeedback.lightImpact();
-              widget.onTap?.call();
-            },
+            onTap: widget.onTap,
             onLongPress: widget.onLongPress,
-            child: Container(
+            child: SizedBox(
               width: double.infinity,
-              padding: effectiveCountryNamePadding,
-              child: Text(
-                _country,
-                style: defaultTextStyle?.copyWith(
-                  fontWeight: FontWeight.w500,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  top: pickerTheme.indent,
+                  bottom: pickerTheme.indent,
+                  left: pickerTheme.padding,
+                  right: pickerTheme.padding / 2,
+                ),
+                child: Text(
+                  _country,
+                  style: defaultTextStyle?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
@@ -200,9 +179,7 @@ class CountryPhoneInputState extends State<CountryPhoneInput> {
             height: 1,
             child: CustomPaint(
               size: Size(MediaQuery.of(context).size.width, 1),
-              painter: _CustomDividerPainter(
-                color: effectiveDividerColor,
-              ),
+              painter: _CustomDividerPainter(color: pickerTheme.dividerColor),
             ),
           ),
 
@@ -210,7 +187,7 @@ class CountryPhoneInputState extends State<CountryPhoneInput> {
           Row(
             children: [
               Padding(
-                padding: effectiveInputPadding,
+                padding: inputPadding,
                 child: Text(
                   '+ $_countryCode',
                   style: defaultTextStyle,
@@ -220,25 +197,25 @@ class CountryPhoneInputState extends State<CountryPhoneInput> {
               SizedBox(
                 height: 30,
                 child: VerticalDivider(
-                  color: effectiveDividerColor,
+                  color: pickerTheme.dividerColor,
                   thickness: 1,
                 ),
               ),
               Flexible(
                 child: Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: effectiveInputPadding.horizontal / 2.5,
+                    horizontal: inputPadding.horizontal / 2.5,
                   ),
                   child: TextFormField(
                     autofocus: widget.autofocus,
-                    controller: _effectiveController,
+                    controller: _controller,
                     inputFormatters: [_maskFormatter],
                     keyboardType: TextInputType.number,
                     style: defaultTextStyle,
                     cursorColor: defaultTextStyle?.color,
                     cursorHeight: defaultTextStyle?.fontSize,
                     onChanged: (_) => widget.onChanged?.call(
-                      '+ $_countryCode ${_effectiveController.text}',
+                      '+ $_countryCode ${_controller.text}',
                     ),
                     decoration: InputDecoration(
                       hintText: _mask,
@@ -251,7 +228,7 @@ class CountryPhoneInputState extends State<CountryPhoneInput> {
                       errorStyle: const TextStyle(height: 0, fontSize: 0),
                       hintStyle: defaultTextStyle?.copyWith(
                         fontWeight: FontWeight.w500,
-                        color: effectiveHintColor,
+                        color: pickerTheme.inputDecoration?.hintStyle?.color,
                       ),
                     ),
                   ),
@@ -259,7 +236,7 @@ class CountryPhoneInputState extends State<CountryPhoneInput> {
               ),
             ],
           ),
-          Divider(height: 1, thickness: 1, color: effectiveDividerColor),
+          Divider(height: 1, thickness: 1, color: pickerTheme.dividerColor),
         ],
       ),
     );
