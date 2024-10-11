@@ -1,19 +1,14 @@
-/*
- * Simplified navigator that allows to change the pages declaratively.
- * https://gist.github.com/PlugFox/053d267fe59bc65da0d6fb9e9dd7e374
- * https://dartpad.dev?id=053d267fe59bc65da0d6fb9e9dd7e374
- * Mike Matiunin <plugfox@gmail.com>, 01 April 2024
- */
-
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
 
 /// {@template example_navigator}
-/// Simplified navigator that allows to change the pages declaratively.
+/// Simplified example navigator that allows to change the pages declaratively.
+///
 /// You can add a custom controller with interceptors and other features.
+///
 /// You can pass controller down the widget tree to change the pages
-///  from anywhere with InheritedWidget.
+/// from anywhere with InheritedWidget.
 /// {@endtemplate}
 class ExampleNavigator extends StatefulWidget {
   /// {@macro example_navigator}
@@ -30,14 +25,17 @@ class ExampleNavigator extends StatefulWidget {
   final ValueNotifier<List<Page<Object?>>>? controller;
 
   /// Change the pages declaratively.
-  static void change(BuildContext context,
-          List<Page<Object?>> Function(List<Page<Object?>>) fn) =>
+  static void change(
+    BuildContext context,
+    List<Page<Object?>> Function(List<Page<Object?>>) fn,
+  ) =>
       context.findAncestorStateOfType<_ExampleNavigatorState>()?.change(fn);
 
   @override
   State<ExampleNavigator> createState() => _ExampleNavigatorState();
 }
 
+/// State for widget [ExampleNavigator].
 class _ExampleNavigatorState extends State<ExampleNavigator> {
   late ValueNotifier<List<Page<Object?>>> _controller;
 
@@ -109,43 +107,20 @@ class _ExampleNavigatorState extends State<ExampleNavigator> {
       );
 }
 
-// void main() => runZonedGuarded<void>(
-//   () => runApp(App(controller: ValueNotifier<List<Page<Object?>>>([]))),
-//   (error, stackTrace) => l.e('Top level exception: error\nstackTrace'),
-// );
-
-/// {@template example_navigator}
-/// Example app with a custom navigator.
-/// {@endtemplate}
-class App extends StatelessWidget {
-  /// {@macro example_navigator}
-  const App({required this.controller, super.key});
-
-  /// Custom controller to change the pages declaratively.
-  final ValueNotifier<List<Page<Object?>>> controller;
-
-  @override
-  Widget build(BuildContext context) => MaterialApp(
-        title: 'Declarative Navigator Example',
-        theme: ThemeData.dark(),
-        debugShowCheckedModeBanner: false,
-        builder: (context, _) => ExampleNavigator(
-          home: AppPages.pickerPreview.page,
-          controller: controller,
-        ),
-      );
-}
-
-/// {@template example_navigator}
+/// {@template app_pages}
 /// Pages and screens of the example app.
 /// {@endtemplate}
 enum AppPages {
-  /// Input preview
+  /// Country input preview
   inputPreview('County Phone Input Preview'),
 
-  /// Picker preview
+  /// Country form preview
+  formPreview('County Form Preview'),
+
+  /// Country picker preview
   pickerPreview('Country Picker Preview');
 
+  /// {@macro app_pages}
   const AppPages(this.title);
 
   /// Page title

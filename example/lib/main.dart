@@ -24,7 +24,6 @@ void main() => appZone(
                   (progress: progress, message: message),
               onSuccess: (_) async {
                 await app.loadLibrary();
-                // CountyPhoneInputPreview();
                 runApp(app.App(home: const CountryPickerPreview()));
               },
               onError: (error, stackTrace) async {

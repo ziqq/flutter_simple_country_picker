@@ -66,6 +66,39 @@ class _AppState extends State<App> {
   /// Disable recreate widget tree
   final Key _builderKey = GlobalKey();
 
+  /// Supported locales
+  final List<Locale> _supportedLocales = <Locale>[
+    const Locale('en'),
+    const Locale('ar'),
+    const Locale('es'),
+    const Locale('de'),
+    const Locale('fr'),
+    const Locale('el'),
+    const Locale('et'),
+    const Locale('nb'),
+    const Locale('nn'),
+    const Locale('pl'),
+    const Locale('pt'),
+    const Locale('ru'),
+    const Locale('hi'),
+    const Locale('ne'),
+    const Locale('uk'),
+    const Locale('hr'),
+    const Locale('tr'),
+    const Locale('lv'),
+    const Locale('lt'),
+    const Locale('ku'),
+    const Locale('nl'),
+    const Locale('it'),
+    // Generic Simplified Chinese 'zh_Hans'
+    const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
+    // Generic traditional Chinese 'zh_Hant'
+    const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+  ];
+
+  /// App locale
+  final ValueNotifier<Locale> locale = ValueNotifier(const Locale('en'));
+
   /// App theme mode
   final ValueNotifier<ThemeMode> themeMode = ValueNotifier(ThemeMode.system);
 
@@ -78,57 +111,33 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) => ValueListenableBuilder(
         valueListenable: themeMode,
-        builder: (context, themeMode, _) => MaterialApp(
-          title: 'Country picker example',
-          debugShowCheckedModeBanner: false,
-          themeMode: themeMode,
-          theme: _themeLight,
-          darkTheme: _themeDark,
-          locale: const Locale('ru'),
-          supportedLocales: const [
-            Locale('en'),
-            Locale('ar'),
-            Locale('es'),
-            Locale('de'),
-            Locale('fr'),
-            Locale('el'),
-            Locale('et'),
-            Locale('nb'),
-            Locale('nn'),
-            Locale('pl'),
-            Locale('pt'),
-            Locale('ru'),
-            Locale('hi'),
-            Locale('ne'),
-            Locale('uk'),
-            Locale('hr'),
-            Locale('tr'),
-            Locale('lv'),
-            Locale('lt'),
-            Locale('ku'),
-            Locale('nl'),
-            Locale('it'),
-            // Generic Simplified Chinese 'zh_Hans'
-            Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
-            // Generic traditional Chinese 'zh_Hant'
-            Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
-          ],
-          localizationsDelegates: const [
-            GlobalCupertinoLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
+        builder: (context, themeMode, _) => ValueListenableBuilder(
+          valueListenable: locale,
+          builder: (context, locale, _) => MaterialApp(
+            title: 'Country picker example',
+            debugShowCheckedModeBanner: false,
+            themeMode: themeMode,
+            theme: _themeLight,
+            darkTheme: _themeDark,
+            locale: locale,
+            supportedLocales: _supportedLocales,
+            localizationsDelegates: const [
+              GlobalCupertinoLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
 
-            /// Add [CountriesLocalization] in app [localizationsDelegates]
-            CountriesLocalization.delegate,
-          ],
-          builder: (context, _) => MediaQuery(
-            key: _builderKey,
-            data: MediaQuery.of(context).copyWith(
-              textScaler: TextScaler.noScaling,
-            ),
-            child: ExampleNavigator(
-              key: const ValueKey<String>('home'),
-              home: MaterialPage(child: widget.home),
+              /// Add [CountriesLocalization] in app [localizationsDelegates]
+              CountriesLocalization.delegate,
+            ],
+            builder: (context, _) => MediaQuery(
+              key: _builderKey,
+              data: MediaQuery.of(context).copyWith(
+                textScaler: TextScaler.noScaling,
+              ),
+              child: ExampleNavigator(
+                key: const ValueKey<String>('home'),
+                home: MaterialPage(child: widget.home),
+              ),
             ),
           ),
         ),
@@ -153,6 +162,35 @@ class AppThemeModeSwitcherButton extends StatelessWidget {
       onPressed: () {
         HapticFeedback.heavyImpact();
         App.of(context)?.themeMode.value = _decodeBrightness(brightness);
+      },
+    );
+  }
+}
+
+/// AppLocaleSwitcherButton widget.
+///
+/// Switch app locale.
+class AppLocaleSwitcherButton extends StatelessWidget {
+  /// {@macro app}
+  const AppLocaleSwitcherButton({
+    super.key, // ignore: unused_element
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context);
+    return IconButton(
+      icon: Text(
+        locale.languageCode.toUpperCase(),
+        style: Theme.of(context)
+            .textTheme
+            .bodyMedium
+            ?.copyWith(fontWeight: FontWeight.w500),
+      ),
+      // ignore: unnecessary_lambdas
+      onPressed: () {
+        HapticFeedback.heavyImpact();
+        // App.of(context)?.locale.value = _decodeBrightness(brightness);
       },
     );
   }
