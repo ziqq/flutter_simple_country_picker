@@ -62,13 +62,13 @@ get: ## Get dependencies
 				@echo "╠ DEPENDENCIES GETED SUCCESSFULLY"
 
 .PHONY: analyze
-analyze: get format ## Analyze code
+analyze: get ## Analyze code
 				@echo "╠ RUN ANALYZE THE CODE..."
 				@fvm dart analyze --fatal-infos --fatal-warnings
 				@echo "╠ ANALYZED CODE SUCCESSFULLY"
 
 .PHONY: check
-check: analyze ## Check code
+check: analyze test-unit ## Check code
 				@echo "╠ RUN CECK CODE..."
 				@fvm dart pub publish --dry-run
 				@fvm dart pub global activate pana
