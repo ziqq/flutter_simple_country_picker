@@ -6,6 +6,7 @@ description: >
 version: 0.0.1-pre.0
 
 homepage: https://github.com/ziqq
+
 repository: https://github.com/ziqq/flutter_simple_country_picker
 
 issue_tracker: https://github.com/ziqq/flutter_simple_country_picker/issues
@@ -40,13 +41,11 @@ dependencies:
     sdk: flutter
   intl: ^0.19.0
 
-  collection: ^1.18.0
-  cupertino_icons: ^1.0.8
-
   # Annotations
   meta: ^1.9.1
 
   # Utilities
+  collection: ^1.18.0
   platform_info: ^5.0.0
   mask_text_input_formatter: ^2.9.0
 
@@ -70,7 +69,6 @@ dev_dependencies:
 
   # Test utilities
   mockito: ^5.4.4
-
 
 flutter_intl:
   enabled: true
