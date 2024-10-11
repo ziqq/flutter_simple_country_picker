@@ -7,6 +7,30 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 
+/// App light theme.
+final ThemeData _themeLight = ThemeData.light().copyWith(
+  cupertinoOverrideTheme: const CupertinoThemeData(
+    primaryColor: CupertinoColors.black,
+    primaryContrastingColor: CupertinoColors.white,
+  ),
+  scaffoldBackgroundColor: CupertinoColors.systemBackground,
+  appBarTheme: const AppBarTheme(
+    backgroundColor: CupertinoColors.systemBackground,
+  ),
+);
+
+/// App dark theme.
+final ThemeData _themeDark = ThemeData.dark().copyWith(
+  cupertinoOverrideTheme: const CupertinoThemeData(
+    primaryColor: CupertinoColors.white,
+    primaryContrastingColor: CupertinoColors.black,
+  ),
+  scaffoldBackgroundColor: CupertinoColors.systemBackground.darkColor,
+  appBarTheme: AppBarTheme(
+    backgroundColor: CupertinoColors.systemBackground.darkColor,
+  ),
+);
+
 /// {@template app}
 /// App widget.
 /// {@endtemplate}
@@ -55,29 +79,11 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) => ValueListenableBuilder(
         valueListenable: themeMode,
         builder: (context, themeMode, _) => MaterialApp(
-          title: 'Country picker: example',
+          title: 'Country picker example',
           debugShowCheckedModeBanner: false,
-          theme: ThemeData.light().copyWith(
-            cupertinoOverrideTheme: const CupertinoThemeData(
-              primaryColor: CupertinoColors.black,
-              primaryContrastingColor: CupertinoColors.white,
-            ),
-            scaffoldBackgroundColor: CupertinoColors.systemBackground,
-            appBarTheme: const AppBarTheme(
-              backgroundColor: CupertinoColors.systemBackground,
-            ),
-          ),
-          darkTheme: ThemeData.dark().copyWith(
-            cupertinoOverrideTheme: const CupertinoThemeData(
-              primaryColor: CupertinoColors.white,
-              primaryContrastingColor: CupertinoColors.black,
-            ),
-            scaffoldBackgroundColor: CupertinoColors.systemBackground.darkColor,
-            appBarTheme: AppBarTheme(
-              backgroundColor: CupertinoColors.systemBackground.darkColor,
-            ),
-          ),
           themeMode: themeMode,
+          theme: _themeLight,
+          darkTheme: _themeDark,
           locale: const Locale('ru'),
           supportedLocales: const [
             Locale('en'),
