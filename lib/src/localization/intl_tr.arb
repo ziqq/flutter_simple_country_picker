@@ -1,0 +1,20 @@
+{
+  "@@locale": "tr",
+  "localeCode": "tr_TR",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "tr",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "Türkçe",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "search": "Arama",
+  "cancel": "İptal"
+}
