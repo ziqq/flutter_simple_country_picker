@@ -7,12 +7,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/src/constant/constant.dart';
 import 'package:flutter_simple_country_picker/src/theme/country_picker_theme.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:meta/meta.dart';
 import 'package:platform_info/platform_info.dart';
 
 /// Default phone mask filter.
-final _kDefaultFilter = {'0': RegExp('[0-9]')};
+// final _kDefaultFilter = {'0': RegExp('[0-9]')};
 
 /// {@template country_phone_input}
 /// CountryPhoneInputExperimental widget.
@@ -74,7 +73,7 @@ class CountryPhoneInputExperimental extends StatefulWidget {
 /// Stete for widget [CountryPhoneInputExperimental]
 class _CountryPhoneInputExperimentalState
     extends State<CountryPhoneInputExperimental> {
-  late final MaskTextInputFormatter _maskFormatter;
+  // late final MaskTextInputFormatter _maskFormatter;
   late final TextEditingController _controller;
 
   late String? _mask;
@@ -91,11 +90,11 @@ class _CountryPhoneInputExperimentalState
 
     _controller = widget.controller ?? TextEditingController();
 
-    _maskFormatter = MaskTextInputFormatter(
-      mask: _mask,
-      filter: _kDefaultFilter,
-      initialText: _controller.text,
-    );
+    // _maskFormatter = MaskTextInputFormatter(
+    //   mask: _mask,
+    //   filter: _kDefaultFilter,
+    //   initialText: _controller.text,
+    // );
   }
 
   @override
@@ -124,7 +123,7 @@ class _CountryPhoneInputExperimentalState
     if (widget.mask != oldWidget.mask) {
       _controller.text = '';
       _mask = widget.mask ?? kDefaultPhoneMask;
-      _maskFormatter.updateMask(mask: _mask, filter: _kDefaultFilter);
+      // _maskFormatter.updateMask(mask: _mask, filter: _kDefaultFilter);
     }
   }
 
@@ -211,7 +210,7 @@ class _CountryPhoneInputExperimentalState
                   child: TextFormField(
                     autofocus: widget.autofocus,
                     controller: _controller,
-                    inputFormatters: [_maskFormatter],
+                    // inputFormatters: [_maskFormatter],
                     keyboardType: TextInputType.number,
                     style: defaultTextStyle,
                     cursorColor: defaultTextStyle?.color,
