@@ -90,7 +90,7 @@ class _AppState extends State<App> {
     const Locale('ku'),
     const Locale('nl'),
     const Locale('it'),
-    // Generic Simplified Chinese 'zh_Hans'
+    // Generic simplified Chinese 'zh_Hans'
     const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
     // Generic traditional Chinese 'zh_Hant'
     const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
