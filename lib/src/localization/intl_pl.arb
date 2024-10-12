@@ -1,0 +1,20 @@
+{
+  "@@locale": "pl",
+  "localeCode": "pl_PL",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "pl",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "Polski",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "search": "Szukaj",
+  "cancel": "Anuluj"
+}

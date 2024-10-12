@@ -1,0 +1,20 @@
+{
+  "@@locale": "tw",
+  "localeCode": "zh_TW",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "tw",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "繁體中文",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "search": "搜尋",
+  "cancel": "取消"
+}

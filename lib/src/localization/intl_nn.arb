@@ -1,0 +1,20 @@
+{
+  "@@locale": "nn",
+  "localeCode": "nn_NO",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "nn",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "Norsk Nynorsk",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "search": "Søk",
+  "cancel": "Avbryt"
+}

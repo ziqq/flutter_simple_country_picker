@@ -1,0 +1,20 @@
+{
+  "@@locale": "lv",
+  "localeCode": "lv_LV",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "lv",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "Latviešu",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "search": "Meklēšana",
+  "cancel": "Atcelt"
+}
