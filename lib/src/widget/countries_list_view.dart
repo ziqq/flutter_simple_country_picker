@@ -2,7 +2,9 @@ import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:flutter_simple_country_picker/src/constant/typedef.dart';
 import 'package:flutter_simple_country_picker/src/controller/countries_controller.dart';
+import 'package:flutter_simple_country_picker/src/controller/countries_provider.dart';
 import 'package:flutter_simple_country_picker/src/controller/countries_state.dart';
 import 'package:flutter_simple_country_picker/src/util/util.dart';
 import 'package:flutter_simple_country_picker/src/widget/status_bar_gesture_detector.dart';
@@ -37,6 +39,7 @@ class CountriesListView extends StatefulWidget {
   /// {@macro country_list_view}
   const CountriesListView({
     this.onSelect,
+    this.selected,
     this.exclude,
     this.favorite,
     this.filter,
@@ -60,10 +63,11 @@ class CountriesListView extends StatefulWidget {
   /// An optional argument for initially expanding virtual keyboard
   final bool useAutofocus;
 
-  /// Called when a country is select.
-  ///
-  /// The country picker passes the new value to the callback.
-  final ValueChanged<Country>? onSelect;
+  /// {@macro select_country_callback}
+  final SelectCountryCallback? onSelect;
+
+  /// {@macro select_country_notifier}
+  final SelectedCountry? selected;
 
   /// An optional [exclude] argument can be used to exclude(remove) one ore more
   /// country from the countries list. It takes a list of country code(iso2).
@@ -213,6 +217,7 @@ class _CountriesListViewState extends State<CountriesListView> {
             slivers: <Widget>[
               _CountriesList(
                 controller: _controller,
+                selected: widget.selected,
                 onSelect: widget.onSelect,
               ),
             ],
@@ -243,12 +248,19 @@ class _CountriesList extends StatefulWidget {
   /// {@macro countries_list_view}
   const _CountriesList({
     required this.controller,
+    this.selected,
     this.onSelect,
     super.key, // ignore: unused_element
   });
 
+  /// Countries controller.
   final CountriesController controller;
-  final ValueChanged<Country>? onSelect;
+
+  /// {@macro select_country_callback}
+  final SelectCountryCallback? onSelect;
+
+  /// {@macro select_country_notifier}
+  final SelectedCountry? selected;
 
   @override
   State<_CountriesList> createState() => _CountriesListState();
@@ -370,11 +382,18 @@ class _CountriesListState extends State<_CountriesList> {
               ),
             );
           else
-            return SliverList.builder(
-              itemCount: state.countries.length,
-              itemBuilder: (context, index) => _CountryListItem.simple(
-                country: state.countries[index],
-                onSelect: widget.onSelect,
+            return ValueListenableBuilder(
+              valueListenable: widget.selected ?? ValueNotifier(null),
+              builder: (context, selected, _) => SliverList.builder(
+                itemCount: state.countries.length,
+                itemBuilder: (context, index) {
+                  final country = state.countries[index];
+                  return _CountryListItem.simple(
+                    country: country,
+                    onSelect: widget.onSelect,
+                    selected: selected == country,
+                  );
+                },
               ),
             );
         },
@@ -387,19 +406,24 @@ class _CountriesListState extends State<_CountriesList> {
 class _CountryListItem extends StatelessWidget {
   const _CountryListItem({
     required this.country,
-    this.useBorder = false,
-    this.simple = false,
     this.onSelect,
+    this.simple = false,
+    this.selected = false,
+    this.useBorder = false,
     super.key, // ignore: unused_element
   });
 
   const factory _CountryListItem.simple({
     required Country country,
-    ValueChanged<Country>? onSelect,
+    SelectCountryCallback? onSelect,
+    bool selected,
   }) = _CountryListItem$Simple;
 
   /// Use simple variant?
   final bool simple;
+
+  /// Is selected?
+  final bool selected;
 
   /// Use boder?
   final bool useBorder;
@@ -407,10 +431,8 @@ class _CountryListItem extends StatelessWidget {
   /// Current country.
   final Country country;
 
-  /// Called when a country is select.
-  ///
-  /// The country picker passes the new value to the callback.
-  final ValueChanged<Country>? onSelect;
+  /// {@macro select_country_callback}
+  final SelectCountryCallback? onSelect;
 
   @override
   Widget build(BuildContext context) {
@@ -441,6 +463,23 @@ class _CountryListItem extends StatelessWidget {
         ),
     };
 
+    final Widget? effectiveTrailing = switch ((simple, selected)) {
+      (true, true) => Icon(
+          CupertinoIcons.checkmark_circle_fill,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      (true, false) => null,
+      (false, _) => Text(
+          '${isRtl ? '' : '+'}${country.phoneCode}${isRtl ? '+' : ''}',
+          style: effectiveTextStyle?.copyWith(
+            color: CupertinoDynamicColor.resolve(
+              CupertinoColors.secondaryLabel,
+              context,
+            ),
+          ),
+        ),
+    };
+
     return Material(
       // Add Material Widget with transparent color
       // so the ripple effect of InkWell will show on tap
@@ -453,11 +492,8 @@ class _CountryListItem extends StatelessWidget {
         child: ListTile(
           dense: true,
           minLeadingWidth: 0,
-          contentPadding: EdgeInsets.only(
-            left: pickerTheme.padding,
-            right: pickerTheme.padding,
-            top: simple ? pickerTheme.padding / 8 : 0,
-            bottom: simple ? pickerTheme.padding / 8 : pickerTheme.padding / 4,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: pickerTheme.padding,
           ),
           shape: useBorder && !simple
               ? Border(
@@ -468,18 +504,8 @@ class _CountryListItem extends StatelessWidget {
                 )
               : null,
           leading: _Flag(country: country),
-          trailing: simple
-              ? null
-              : Text(
-                  '${isRtl ? '' : '+'}${country.phoneCode}${isRtl ? '+' : ''}',
-                  style: effectiveTextStyle?.copyWith(
-                    color: CupertinoDynamicColor.resolve(
-                      CupertinoColors.secondaryLabel,
-                      context,
-                    ),
-                  ),
-                ),
           title: effectiveTitle,
+          trailing: effectiveTrailing,
           subtitle: simple ? null : Text(country.name),
         ),
       ),
@@ -492,6 +518,7 @@ class _CountryListItem$Simple extends _CountryListItem {
   /// {@macro countries_list_view}
   const _CountryListItem$Simple({
     required super.country,
+    super.selected = false,
     super.onSelect,
   }) : super(simple: true, useBorder: false);
 }

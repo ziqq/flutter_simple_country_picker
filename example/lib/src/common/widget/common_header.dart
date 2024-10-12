@@ -1,3 +1,4 @@
+import 'package:example/src/common/constant/constants.dart';
 import 'package:example/src/common/constant/pubspec.yaml.g.dart';
 import 'package:example/src/common/widget/app.dart';
 import 'package:flutter/material.dart';
@@ -25,13 +26,23 @@ class CommonHeader extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) => AppBar(
+        centerTitle: true,
         title: _Header(title),
-        leading: const AppLocaleSwitcherButton(),
+        leading: const Row(
+          children: [
+            SizedBox(width: kDefaultPadding),
+            AppLocaleSwitcherButton(),
+          ],
+        ),
         actions: const [AppThemeModeSwitcherButton()],
       );
 }
 
+/// Title widget of [CommonHeader].
+///
+/// {@macro common_header}
 class _Header extends StatelessWidget {
+  /// {@macro common_header}
   const _Header(
     this.title, {
     super.key, // ignore: unused_element
@@ -43,10 +54,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
         children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
+          Text(title, style: Theme.of(context).textTheme.titleLarge),
           Text(
             'Version: ${Pubspec.version.canonical}',
             style: Theme.of(context).textTheme.bodyMedium,

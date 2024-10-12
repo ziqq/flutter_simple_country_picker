@@ -179,19 +179,29 @@ class AppLocaleSwitcherButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context);
-    return IconButton(
-      icon: Text(
-        locale.languageCode.toUpperCase(),
-        style: Theme.of(context)
-            .textTheme
-            .bodyMedium
-            ?.copyWith(fontWeight: FontWeight.w500),
+    return SizedBox(
+      width: 40,
+      height: 28,
+      child: CupertinoButton(
+        color: CupertinoDynamicColor.resolve(
+          CupertinoColors.secondarySystemFill,
+          context,
+        ),
+        minSize: 0,
+        padding: EdgeInsets.zero,
+        child: Text(
+          locale.languageCode.toUpperCase(),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(fontWeight: FontWeight.w600),
+        ),
+        // ignore: unnecessary_lambdas
+        onPressed: () {
+          HapticFeedback.heavyImpact();
+          // App.of(context)?.locale.value = _decodeBrightness(brightness);
+        },
       ),
-      // ignore: unnecessary_lambdas
-      onPressed: () {
-        HapticFeedback.heavyImpact();
-        // App.of(context)?.locale.value = _decodeBrightness(brightness);
-      },
     );
   }
 }

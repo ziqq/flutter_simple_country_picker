@@ -1,16 +1,9 @@
-import 'dart:developer' as dev;
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter_simple_country_picker/src/constant/typedef.dart';
 
 /// Default height for [CountryPhoneInput].
 const double _kDefaultCountyInputHeight = 56;
-
-@experimental
-void _log(String message) =>
-    kDebugMode ? dev.log(message, name: 'county_phone_input') : null;
 
 /// {@template county_input}
 /// CountryInput widget.
@@ -23,14 +16,15 @@ class CountryPhoneInput extends StatelessWidget {
     this.placeholder = 'Phone number',
     this.onDone,
     this.onSelect,
+    this.selected,
     this.exclude,
     this.favorite,
     this.filter,
+    this.isScrollControlled = false,
     this.showPhoneCode = false,
     this.showWorldWide = false,
     this.useAutofocus = false,
     this.useHaptickFeedback = true,
-    this.useSafeArea = false,
     this.showSearch,
     super.key,
   });
@@ -47,8 +41,11 @@ class CountryPhoneInput extends StatelessWidget {
   /// Called when the country was selected.
   final VoidCallback? onDone;
 
-  /// Called when the country be select.
-  final ValueChanged<Country>? onSelect;
+  /// {@macro select_country_callback}
+  final SelectCountryCallback? onSelect;
+
+  /// {@macro select_country_notifier}
+  final SelectedCountry? selected;
 
   /// List of country codes to exclude.
   final List<String>? exclude;
@@ -59,23 +56,23 @@ class CountryPhoneInput extends StatelessWidget {
   /// List of filtered country codes.
   final List<String>? filter;
 
+  /// Controls the scrolling behavior of the modal window.
+  final bool isScrollControlled;
+
   /// Show phone code in countires list.
   final bool showPhoneCode;
 
   /// Show "World Wide" in countires list.
   final bool showWorldWide;
 
+  /// Show countryies search bar?
+  final bool? showSearch;
+
   /// Use autofocus for the search countryies input field.
   final bool useAutofocus;
 
   /// Use haptic feedback?
   final bool useHaptickFeedback;
-
-  /// Use safe area?
-  final bool useSafeArea;
-
-  /// Show countryies search bar?
-  final bool? showSearch;
 
   @override
   Widget build(BuildContext context) {
@@ -98,25 +95,15 @@ class CountryPhoneInput extends StatelessWidget {
             exclude: exclude,
             favorite: favorite,
             filter: filter,
+            isScrollControlled: isScrollControlled,
+            showSearch: showSearch,
             showPhoneCode: showPhoneCode,
             showWorldWide: showWorldWide,
             useAutofocus: useAutofocus,
             useHaptickFeedback: useHaptickFeedback,
-            useSafeArea: useSafeArea,
-            showSearch: showSearch,
-            onSelect: (country) {
-              _log('Selected country $country');
-              onSelect?.call(country);
-              // setState(() {
-              //   _country = '${country.countryFlag} ${country.nameLocalized}';
-              //   _countryCode = country.phoneCode;
-              //   _mask = country.mask;
-              // });
-            },
-            onDone: () {
-              _log('onDone called...');
-              onDone?.call();
-            },
+            selected: selected,
+            onSelect: onSelect,
+            onDone: onDone,
           ),
           child: CustomPaint(
             painter: painter,

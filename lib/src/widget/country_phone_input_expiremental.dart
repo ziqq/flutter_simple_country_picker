@@ -5,8 +5,8 @@ import 'dart:ui' as ui show PointMode;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/constant.dart';
+import 'package:flutter_simple_country_picker/src/theme/country_picker_theme.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:meta/meta.dart';
 import 'package:platform_info/platform_info.dart';

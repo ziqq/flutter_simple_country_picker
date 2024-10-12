@@ -1,8 +1,13 @@
+## 0.0.1-pre.3
+- **ADDED**: Selected country to show mark intro list of countries
+- **FIXED**: `Android`
+- **FIXED**: `ios`
+
 ## 0.0.1-pre.2
-  - Add localizations
+- **ADDED**:  localizations
 
 ## 0.0.1-pre.1
-  - Refactoring
+- Refactoring
 
 ## 0.0.1-pre.0
-  - Initial publication
+- Initial publication
