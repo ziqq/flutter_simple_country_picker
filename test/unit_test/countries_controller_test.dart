@@ -77,6 +77,7 @@ void main() => group('CountriesController -', () {
         controller = CountriesController(
           provider: provider,
           filter: ['CA', 'MX'],
+          showPhoneCode: false,
         )..getCountries();
 
         await Future<void>.delayed(Duration.zero);
@@ -95,10 +96,13 @@ void main() => group('CountriesController -', () {
           mockCountry.copyWith(name: 'Mexico', countryCode: 'MX'),
         ];
 
-        controller.originalCountries = countries;
+        when(provider.getAll()).thenReturn(countries);
 
-        controller.searchController.text = 'Can';
-        controller.search(null);
+        await Future.sync(() => controller.getCountries());
+
+        controller
+          ..searchController.text = 'Can'
+          ..search();
 
         expect(controller.state.countries, [
           mockCountry.copyWith(name: 'Canada', countryCode: 'CA'),
@@ -112,10 +116,12 @@ void main() => group('CountriesController -', () {
           mockCountry.copyWith(name: 'Mexico', countryCode: 'MX'),
         ];
 
-        controller.originalCountries = countries;
+        when(provider.getAll()).thenReturn(countries);
+        await Future.sync(() => controller.getCountries());
 
-        controller.searchController.text = '';
-        controller.search(null);
+        controller
+          ..searchController.clear()
+          ..search();
 
         expect(controller.state.countries, countries);
       });

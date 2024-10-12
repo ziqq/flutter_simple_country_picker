@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_code/country_codes.dart';
+import 'package:meta/meta.dart';
 
 /// {@template countries_provider}
 /// CountriesProvider
 ///
 /// This class provides a list of countries.
 /// {@endtemplate}
+@internal
 class CountriesProvider {
   /// {@macro countries_provider}
   CountriesProvider() : _countries = countries.map(Country.fromJson).toList();

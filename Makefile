@@ -92,7 +92,8 @@ run-genhtml: ## Runs generage coverage html
 .PHONY: test-unit
 test-unit: ## Runs unit tests
 				@echo "╠ RUNNING UNIT TESTS..."
-				@fvm flutter test --coverage test/flutter_simple_country_picker_test.dart || (echo "Error while running tests"; exit 1)
+				@fvm flutter test --coverage test/flutter_simple_country_picker_test.dart
+				@lcov --remove coverage/lcov.info 'lib/src/localization/*' -o coverage/lcov.info
 				@genhtml coverage/lcov.info --output=coverage -o coverage/html || (echo "Error while running genhtml with coverage"; exit 2)
 				@echo "╠ UNIT TESTS SUCCESSFULLY"
 

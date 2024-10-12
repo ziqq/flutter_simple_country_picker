@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/constant.dart';
+import 'package:flutter_simple_country_picker/src/constant/typedef.dart';
+import 'package:flutter_simple_country_picker/src/theme/country_picker_theme.dart';
 import 'package:flutter_simple_country_picker/src/widget/countries_list_view.dart';
 
 /// {@template show_country_picker}
@@ -11,8 +12,10 @@ import 'package:flutter_simple_country_picker/src/widget/countries_list_view.dar
 /// The function called with parameter the country that the user has selected.
 /// If the user cancels the bottom sheet, the function is not call.
 ///
-///  An optional [exclude] argument can be used to exclude(remove) one ore more
-///  country from the countries list. It takes a list of country code(iso2).
+/// An optional [selected] argument can be used to set the selected country.
+///
+/// An optional [exclude] argument can be used to exclude(remove) one ore more
+/// country from the countries list. It takes a list of country code(iso2).
 ///
 /// An optional [filter] argument can be used to filter the
 /// list of countries. It takes a list of country code(iso2).
@@ -36,8 +39,13 @@ import 'package:flutter_simple_country_picker/src/widget/countries_list_view.dar
 /// {@endtemplate}
 void showCountryPicker({
   required BuildContext context,
+
+  /// {@macro select_country_callback}
+  SelectCountryCallback? onSelect,
+
+  /// {@macro select_country_notifier}
+  SelectedCountry? selected,
   VoidCallback? onDone,
-  ValueChanged<Country>? onSelect,
   List<String>? exclude,
   List<String>? favorite,
   List<String>? filter,
@@ -66,6 +74,7 @@ void showCountryPicker({
         exclude: exclude,
         favorite: favorite,
         filter: filter,
+        selected: selected,
         onSelect: onSelect,
         showSearch: showSearch,
         showPhoneCode: showPhoneCode,

@@ -21,6 +21,8 @@ class CountryFormPreview extends StatefulWidget {
 /// State for [CountryFormPreview].
 class _CountryPickerPreviewState extends State<CountryFormPreview> {
   final TextEditingController _controller = TextEditingController();
+  // ignore: prefer_final_fields
+  ValueNotifier<Country?> _selected = ValueNotifier(null);
 
   String _country = '🇷🇺 Россия'; // ignore: unused_field
   String _countryCode = '7'; // ignore: prefer_final_fields
@@ -30,8 +32,16 @@ class _CountryPickerPreviewState extends State<CountryFormPreview> {
   String? get _completedPhoneNumber =>
       '+$_countryCode${_controller.text.replaceAll(" ", "")}';
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    _selected.dispose();
+    super.dispose();
+  }
+
   void _onSelect(Country country) {
     l.i('Selected country $country');
+    _selected.value = country;
     setState(() {
       _country = '${country.flagEmoji} ${country.nameLocalized}';
       _countryCode = country.phoneCode;
@@ -75,6 +85,7 @@ class _CountryPickerPreviewState extends State<CountryFormPreview> {
                     countryFlag: _countryFlag,
                     filter: kFilteredCountries,
                     onSelect: _onSelect,
+                    selected: _selected,
                   ),
                   const SizedBox(height: kDefaultPadding),
 

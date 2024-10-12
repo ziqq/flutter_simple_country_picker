@@ -6,6 +6,8 @@
 import 'dart:async' as _i3;
 
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart'
+    as _i4;
+import 'package:flutter_simple_country_picker/src/controller/countries_provider.dart'
     as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
@@ -27,24 +29,24 @@ import 'package:mockito/mockito.dart' as _i1;
 /// See the documentation for Mockito's code generation for more information.
 class MockCountriesProvider extends _i1.Mock implements _i2.CountriesProvider {
   @override
-  _i3.FutureOr<List<_i2.Country>> getAll() => (super.noSuchMethod(
+  _i3.FutureOr<List<_i4.Country>> getAll() => (super.noSuchMethod(
         Invocation.method(
           #getAll,
           [],
         ),
-        returnValue: _i3.Future<List<_i2.Country>>.value(<_i2.Country>[]),
+        returnValue: _i3.Future<List<_i4.Country>>.value(<_i4.Country>[]),
         returnValueForMissingStub:
-            _i3.Future<List<_i2.Country>>.value(<_i2.Country>[]),
-      ) as _i3.FutureOr<List<_i2.Country>>);
+            _i3.Future<List<_i4.Country>>.value(<_i4.Country>[]),
+      ) as _i3.FutureOr<List<_i4.Country>>);
 
   @override
-  List<_i2.Country> findCountriesByCode(List<String>? codes) =>
+  List<_i4.Country> findCountriesByCode(List<String>? codes) =>
       (super.noSuchMethod(
         Invocation.method(
           #findCountriesByCode,
           [codes],
         ),
-        returnValue: <_i2.Country>[],
-        returnValueForMissingStub: <_i2.Country>[],
-      ) as List<_i2.Country>);
+        returnValue: <_i4.Country>[],
+        returnValueForMissingStub: <_i4.Country>[],
+      ) as List<_i4.Country>);
 }

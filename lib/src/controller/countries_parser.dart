@@ -24,11 +24,13 @@ import 'package:flutter_simple_country_picker/src/constant/country_code/strings/
 import 'package:flutter_simple_country_picker/src/constant/country_code/strings/tr.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_code/strings/tw.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_code/strings/uk.dart';
+import 'package:meta/meta.dart';
 
 /// {@template countries_parser}
 /// Used to parse simple string representations of countries, commonly used in
 /// databases and other forms of storage, to a Country object.
 /// {@endtemplate}
+@internal
 abstract final class CountriesParser {
   /// {@macro countries_parser}
   const CountriesParser._();

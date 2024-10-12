@@ -1,5 +1,3 @@
-// ignore_for_file: always_put_required_named_parameters_first
-
 import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
@@ -22,11 +20,11 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     required Color? secondaryBackgroundColor,
     required TextStyle? textStyle,
     required TextStyle? searchTextStyle,
-    InputDecoration? inputDecoration,
     required double? flagSize,
     required double? padding,
     required double? indent,
     required double? radius,
+    InputDecoration? inputDecoration,
   }) {
     flagSize ??= kDefaultFlagSize;
     padding ??= kDefaultPadding;

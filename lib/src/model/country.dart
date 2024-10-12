@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:flutter_simple_country_picker/src/controller/countries_parser.dart';
 import 'package:flutter_simple_country_picker/src/util/util.dart';
 import 'package:meta/meta.dart';
 

@@ -1,5 +1,7 @@
-import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:flutter_simple_country_picker/src/controller/countries_parser.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../util/mocks.dart';
 
 void main() {
   group('CountriesParser -', () {
@@ -94,7 +96,10 @@ void main() {
     group('parseCountryName() -', () {
       test(' returns correct country by name in default locale', () {
         const countryName = 'Russia';
-        final country = CountriesParser.parseCountryName(countryName);
+        final country = CountriesParser.parseCountryName(
+          countryName,
+          locales: supportedLocales,
+        );
         expect(country.countryCode, 'RU');
         expect(country.name, countryName);
       });
@@ -102,7 +107,10 @@ void main() {
       test('throws an error when country name is invalid', () {
         const invalidCountryName = 'InvalidCountry';
         expect(
-          () => CountriesParser.parseCountryName(invalidCountryName),
+          () => CountriesParser.parseCountryName(
+            invalidCountryName,
+            locales: supportedLocales,
+          ),
           throwsArgumentError,
         );
       });
