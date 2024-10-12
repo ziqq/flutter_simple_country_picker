@@ -1,8 +1,11 @@
+## 0.0.1-pre.3
+- **FIXED**: `Android`
+
 ## 0.0.1-pre.2
-  - Add localizations
+- **ADDED**:  localizations
 
 ## 0.0.1-pre.1
-  - Refactoring
+- Refactoring
 
 ## 0.0.1-pre.0
-  - Initial publication
+- Initial publication

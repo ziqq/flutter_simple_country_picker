@@ -453,11 +453,8 @@ class _CountryListItem extends StatelessWidget {
         child: ListTile(
           dense: true,
           minLeadingWidth: 0,
-          contentPadding: EdgeInsets.only(
-            left: pickerTheme.padding,
-            right: pickerTheme.padding,
-            top: simple ? pickerTheme.padding / 8 : 0,
-            bottom: simple ? pickerTheme.padding / 8 : pickerTheme.padding / 4,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: pickerTheme.padding,
           ),
           shape: useBorder && !simple
               ? Border(

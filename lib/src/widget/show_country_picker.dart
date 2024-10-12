@@ -47,7 +47,7 @@ void showCountryPicker({
   bool showWorldWide = false,
   bool useAutofocus = false,
   bool useHaptickFeedback = true,
-  bool useSafeArea = false,
+  bool useSafeArea = true,
   bool? showSearch,
 }) {
   final pickerTheme = CountryPickerTheme.maybeOf(context);
@@ -56,6 +56,7 @@ void showCountryPicker({
   if (useHaptickFeedback) HapticFeedback.mediumImpact().ignore();
   showModalBottomSheet<void>(
     context: context,
+    useSafeArea: useSafeArea,
     isDismissible: isDismissible,
     isScrollControlled: isScrollControlled,
     barrierColor: pickerTheme?.barrierColor,
