@@ -1,8 +1,8 @@
-<!-- [![Pub Version](https://img.shields.io/pub/v/flutter_simple_country_picker?color=blueviolet)](https://pub.dev/packages/flutter_simple_country_picker)
+[![Pub Version](https://img.shields.io/pub/v/flutter_simple_country_picker?color=blueviolet)](https://pub.dev/packages/flutter_simple_country_picker)
 [![popularity](https://img.shields.io/pub/popularity/flutter_simple_country_picker?logo=dart)](https://pub.dev/packages/flutter_simple_country_picker/score)
 [![likes](https://img.shields.io/pub/likes/flutter_simple_country_picker?logo=dart)](https://pub.dev/packages/flutter_simple_country_picker/score)
-[![codecov](https://codecov.io/gh/ziqq/flutter_simple_country_picker/graph/badge.svg?token=S5CVNZKDAE)](https://codecov.io/gh/ziqq/flutter_simple_country_picker)
-[![style: flutter lints](https://img.shields.io/badge/style-flutter__lints-blue)](https://pub.dev/packages/flutter_lints) -->
+[![codecov](https://codecov.io/gh/ziqq/flutter_simple_country_picker/graph/badge.svg?token=fpn56ea0L8)](https://codecov.io/gh/ziqq/flutter_simple_country_picker)
+[![style: flutter lints](https://img.shields.io/badge/style-flutter__lints-blue)](https://pub.dev/packages/flutter_lints)
 
 
 
@@ -361,3 +361,9 @@ If you want to support the development of our library, there are several ways yo
 ## Contributions
 
 Contributions of any kind are more than welcome! Feel free to fork and improve country_code_picker in any way you want, make a pull request, or open an issue.
+
+
+
+## Coverage
+
+<img src="https://codecov.io/gh/ziqq/flutter_simple_country_picker/graphs/sunburst.svg?token=fpn56ea0L8" width="375" />
