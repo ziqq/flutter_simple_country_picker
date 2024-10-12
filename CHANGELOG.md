@@ -1,5 +1,6 @@
 ## 0.0.1-pre.3
 - **FIXED**: `Android`
+- **FIXED**: `ios`
 
 ## 0.0.1-pre.2
 - **ADDED**:  localizations
