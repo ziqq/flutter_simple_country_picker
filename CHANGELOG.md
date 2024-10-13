@@ -1,3 +1,6 @@
+## 0.0.1-pre.4
+- **ADDED**: `CountryInputFormatter`
+
 ## 0.0.1-pre.3
 - **ADDED**: Selected country to show mark intro list of countries
 - **FIXED**: `Android`
