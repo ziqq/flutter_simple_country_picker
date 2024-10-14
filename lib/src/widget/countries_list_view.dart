@@ -2,11 +2,10 @@ import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
-import 'package:flutter_simple_country_picker/src/constant/typedef.dart';
 import 'package:flutter_simple_country_picker/src/controller/countries_controller.dart';
 import 'package:flutter_simple_country_picker/src/controller/countries_provider.dart';
 import 'package:flutter_simple_country_picker/src/controller/countries_state.dart';
-import 'package:flutter_simple_country_picker/src/util/util.dart';
+import 'package:flutter_simple_country_picker/src/util/countries_util.dart';
 import 'package:flutter_simple_country_picker/src/widget/status_bar_gesture_detector.dart';
 
 /// {@template country_list_view}
@@ -92,8 +91,6 @@ class _CountriesListViewState extends State<CountriesListView> {
   final ScrollController _scrollController = ScrollController();
   late final CountriesController _controller;
 
-  bool _useGroup(List<Country> countries) => countries.length > 8;
-
   @override
   void initState() {
     super.initState();
@@ -107,10 +104,16 @@ class _CountriesListViewState extends State<CountriesListView> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _controller.initListeners(CountriesLocalization.of(context));
+  }
+
+  @override
   void dispose() {
-    super.dispose();
     _scrollController.dispose();
     _controller.dispose();
+    super.dispose();
   }
 
   void _unfocus() {
@@ -160,12 +163,8 @@ class _CountriesListViewState extends State<CountriesListView> {
                     builder: (context, state, _) => CupertinoSearchTextField(
                       placeholder: localization.search,
                       autofocus: widget.useAutofocus,
-                      controller: _controller.searchController,
-                      onChanged: (_) => _controller.search(localization),
-                      onSuffixTap: () {
-                        _controller.searchController.clear();
-                        _controller.search(localization);
-                      },
+                      controller: _controller.search,
+                      onSuffixTap: _controller.search?.clear,
                       suffixInsets: EdgeInsetsDirectional.only(
                         end: pickerTheme.indent / 2,
                       ),
@@ -231,7 +230,7 @@ class _CountriesListViewState extends State<CountriesListView> {
         backgroundColor: pickerTheme.backgroundColor,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight + 5),
-          child: widget.showSearch && _useGroup(state.countries)
+          child: widget.showSearch && _controller.useGroup
               ? _buildSearchBar()
               : _buildDivider(),
         ),
@@ -284,11 +283,6 @@ class _CountriesListState extends State<_CountriesList> {
     widget.controller.removeListener(_groupByName);
   }
 
-  bool _useGroup(List<Country> countries) {
-    final parent = context.findAncestorStateOfType<_CountriesListViewState>();
-    return parent?._useGroup(countries) ?? false;
-  }
-
   Map<String, List<Country>>? _getGroupedCountries() {
     if (!mounted) return null;
     final localization = CountriesLocalization.of(context);
@@ -306,9 +300,7 @@ class _CountriesListState extends State<_CountriesList> {
   }
 
   void _groupByName() {
-    if (!mounted) return;
-    final state = widget.controller.state;
-    if (!_useGroup(state.countries)) return;
+    if (!mounted || !widget.controller.useGroup) return;
     final pickerTheme = CountryPickerTheme.resolve(context);
     final countries = _getGroupedCountries();
     var grouped = <Widget>[];
@@ -374,7 +366,7 @@ class _CountriesListState extends State<_CountriesList> {
             return const SliverFillRemaining(
               child: Center(child: CircularProgressIndicator.adaptive()),
             );
-          else if (_useGroup(state.countries))
+          else if (widget.controller.useGroup)
             return ValueListenableBuilder(
               valueListenable: _grouped,
               builder: (_, grouped, __) => SliverMainAxisGroup(
@@ -547,7 +539,7 @@ class _Flag extends StatelessWidget {
       child: Text(
         country.iswWorldWide
             ? '\uD83C\uDF0D'
-            : Util.countryCodeToEmoji(country.countryCode),
+            : CountriesUtil.countryCodeToEmoji(country.countryCode),
         style: TextStyle(fontSize: pickerTheme.flagSize ?? 25),
       ),
     );

@@ -12,7 +12,7 @@ import 'package:meta/meta.dart';
 /// Countries controller.
 /// {@endtemplate}
 @internal
-class CountriesController extends ValueNotifier<CountriesState> {
+final class CountriesController extends ValueNotifier<CountriesState> {
   /// {@macro countries_controller}
   CountriesController({
     required CountriesProvider provider,
@@ -26,7 +26,7 @@ class CountriesController extends ValueNotifier<CountriesState> {
         _favorite = favorite,
         _filter = filter,
         _showPhoneCode = showPhoneCode,
-        searchController = TextEditingController(),
+        search = TextEditingController(),
         super(CountriesState.idle(countries ?? []));
 
   /// Countries provider.
@@ -49,21 +49,43 @@ class CountriesController extends ValueNotifier<CountriesState> {
   /// Note: Can't provide both [filter] and [exclude]
   final List<String>? _filter;
 
-  /// Search controller
-  final TextEditingController searchController;
+  /// Search controller.
+  TextEditingController? search;
 
-  /// Get the state
+  /// Search listener.
+  void Function()? _listener;
+
+  /// Get the state.
   CountriesState get state => value;
 
-  /// Original countries
-  List<Country> _$original = [];
+  /// Original countries list.
+  List<Country> _original = [];
+
+  bool _useGroup = true;
+
+  /// Use group in countries list or not.
+  ///
+  /// Defalut is `true`.
+  bool get useGroup => _useGroup;
+
+  /// Add listener to search controller and provide localization.
+  ///
+  /// Localization is used to search countries by localized name.
+  void initListeners(CountriesLocalization? localization) {
+    if (_listener != null) {
+      search?.removeListener(_listener!);
+      _listener = null;
+    }
+    _listener = () => _onSearch(localization);
+    search?.addListener(_listener!);
+  }
 
   /// Get countries
   void getCountries() => _handle(() async {
         final stopwatch = Stopwatch()..start();
         try {
           final countries = await _provider.getAll();
-          _$original = List.unmodifiable(countries);
+          _original = List.unmodifiable(countries);
 
           // Get favorite countries
           if (_favorite != null && _favorite!.isNotEmpty) {
@@ -103,6 +125,8 @@ class CountriesController extends ValueNotifier<CountriesState> {
             $countries.add(country);
           }
 
+          _useGroup = $countries.length > 8;
+
           _setState(CountriesState.idle($countries.toList(growable: false)));
         } finally {
           if (kDebugMode) {
@@ -116,14 +140,15 @@ class CountriesController extends ValueNotifier<CountriesState> {
       });
 
   /// Search countries
-  void search([CountriesLocalization? localization]) => _handle(() async {
+  void _onSearch([CountriesLocalization? localization]) => _handle(() async {
         var newCountries = <Country>[];
 
-        if (searchController.text.isEmpty) {
-          newCountries.addAll(_$original);
+        final searchText = search?.text ?? '';
+        if (searchText.isEmpty) {
+          newCountries.addAll(_original);
         } else {
-          newCountries = _$original
-              .where((c) => c.startsWith(searchController.text, localization))
+          newCountries = _original
+              .where((c) => c.startsWith(searchText, localization))
               .toList();
         }
 
@@ -142,5 +167,12 @@ class CountriesController extends ValueNotifier<CountriesState> {
     } on Object catch (e, __) {
       _setState(CountriesState.error(value.countries));
     }
+  }
+
+  @override
+  void dispose() {
+    if (_listener != null) search?.removeListener(_listener!);
+    search?.dispose();
+    super.dispose();
   }
 }

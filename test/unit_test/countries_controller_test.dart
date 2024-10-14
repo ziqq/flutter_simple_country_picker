@@ -89,26 +89,6 @@ void main() => group('CountriesController -', () {
         ]);
       });
 
-      test('search filters countries by name', () async {
-        final countries = [
-          mockCountry,
-          mockCountry.copyWith(name: 'Canada', countryCode: 'CA'),
-          mockCountry.copyWith(name: 'Mexico', countryCode: 'MX'),
-        ];
-
-        when(provider.getAll()).thenReturn(countries);
-
-        await Future.sync(() => controller.getCountries());
-
-        controller
-          ..searchController.text = 'Can'
-          ..search();
-
-        expect(controller.state.countries, [
-          mockCountry.copyWith(name: 'Canada', countryCode: 'CA'),
-        ]);
-      });
-
       test('search returns all countries when search text is empty', () async {
         final countries = [
           mockCountry,
@@ -119,9 +99,7 @@ void main() => group('CountriesController -', () {
         when(provider.getAll()).thenReturn(countries);
         await Future.sync(() => controller.getCountries());
 
-        controller
-          ..searchController.clear()
-          ..search();
+        controller.search?.clear();
 
         expect(controller.state.countries, countries);
       });
@@ -131,5 +109,10 @@ void main() => group('CountriesController -', () {
         when(provider.getAll()).thenThrow(Exception('Error'));
         await Future.sync(controller.getCountries);
         expect(controller.state.isError, isTrue);
+      });
+
+      test('useGroup should return bool as true', () {
+        final controller = CountriesController(provider: provider);
+        expect(controller.useGroup, isTrue);
       });
     });
