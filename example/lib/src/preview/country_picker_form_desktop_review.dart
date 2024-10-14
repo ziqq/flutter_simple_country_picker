@@ -6,6 +6,7 @@ import 'package:example/src/common/util/country_picker_state_mixin.dart';
 import 'package:example/src/common/widget/common_padding.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
@@ -44,30 +45,6 @@ class _CountryPickerForm$DesktopPreviewState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-
-    Widget child({
-      required Widget prefix,
-      required Widget child,
-    }) =>
-        CupertinoFormRow(
-          prefix: Align(
-            alignment: Alignment.centerLeft,
-            child: prefix,
-          ),
-          padding: const EdgeInsets.only(
-            left: kDefaultPadding,
-            right: kDefaultPadding / 1.5,
-          ),
-          child: SizedBox(
-            height: 44,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 5),
-              child: child,
-            ),
-          ),
-        );
-
     return Padding(
       padding: CommonPadding.of(context),
       child: Column(
@@ -108,31 +85,81 @@ class _CountryPickerForm$DesktopPreviewState
               ),
               children: [
                 CountryPickerDesktop(
-                  countryCode: countryCode,
-                  countryFlag: countryFlag,
                   onSelect: onSelect,
                   selected: selected,
                 ),
-                child(
-                  prefix: Text(
-                    '+$countryCode',
-                    style: textTheme.bodyLarge?.copyWith(height: 1),
-                  ),
-                  child: CupertinoTextField(
-                    controller: controller,
-                    placeholder: mask,
-                    padding: EdgeInsets.zero,
-                    keyboardType: TextInputType.phone,
-                    style: textTheme.bodyLarge,
-                    decoration: const BoxDecoration(
-                      color: Colors.transparent,
-                    ),
-                  ),
+                CountryInputDesktop(
+                  controller: controller,
+                  inputFormatters: [formater],
+                  selected: selected,
                 ),
               ],
             ),
-          )
+          ),
         ],
+      ),
+    );
+  }
+}
+
+/// {@template country_input_desktop}
+/// CountryInputDesktop widget.
+/// {@endtemplate}
+class CountryInputDesktop extends StatelessWidget {
+  /// {@macro country_input_desktop}
+  const CountryInputDesktop({
+    required this.selected,
+    this.controller,
+    this.inputFormatters,
+    super.key, // ignore: unused_element
+  });
+
+  /// Controller for the phone number input field.
+  final TextEditingController? controller;
+
+  /// Input formatters for the phone number input field.
+  final List<TextInputFormatter>? inputFormatters;
+
+  /// Selected country.
+  final ValueNotifier<Country> selected;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return ClipRRect(
+      borderRadius: const BorderRadius.all(Radius.circular(10)),
+      child: ValueListenableBuilder(
+        valueListenable: selected,
+        builder: (context, selectedCountry, _) => CupertinoFormRow(
+          prefix: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              '+${selectedCountry.phoneCode}',
+              style: textTheme.bodyLarge?.copyWith(height: 1),
+            ),
+          ),
+          padding: const EdgeInsets.only(
+            left: kDefaultPadding,
+            right: kDefaultPadding / 1.5,
+          ),
+          child: SizedBox(
+            height: 44,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 5),
+              child: CupertinoTextField(
+                controller: controller,
+                inputFormatters: inputFormatters,
+                placeholder: selectedCountry.mask,
+                style: textTheme.bodyLarge,
+                padding: EdgeInsets.zero,
+                keyboardType: TextInputType.phone,
+                decoration: const BoxDecoration(
+                  color: Colors.transparent,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -144,8 +171,6 @@ class _CountryPickerForm$DesktopPreviewState
 class CountryPickerDesktop extends StatefulWidget {
   /// {@macro county_input}
   const CountryPickerDesktop({
-    required this.countryCode,
-    this.countryFlag,
     this.placeholder = 'Phone number',
     this.onDone,
     this.onSelect,
@@ -161,12 +186,6 @@ class CountryPickerDesktop extends StatefulWidget {
     this.showSearch,
     super.key,
   });
-
-  /// Current country code.
-  final String countryCode;
-
-  /// Current country flag as emoji.
-  final String? countryFlag;
 
   /// Placeholder text.
   final String? placeholder;
@@ -237,7 +256,7 @@ class _CountryPickerDesktopState extends State<CountryPickerDesktop> {
   Widget _buttonBuilder(
     BuildContext context,
     Future<void> Function() showMenu,
-    Country $selected,
+    Country selected,
   ) {
     final textStyle = Theme.of(context).textTheme.bodyLarge;
     return GestureDetector(
@@ -248,7 +267,7 @@ class _CountryPickerDesktopState extends State<CountryPickerDesktop> {
           prefix: Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              $selected.flagEmoji,
+              selected.flagEmoji,
               style: textStyle?.copyWith(height: 1.6),
             ),
           ),
@@ -264,7 +283,7 @@ class _CountryPickerDesktopState extends State<CountryPickerDesktop> {
                 children: [
                   Expanded(
                     child: Text(
-                      $selected.name,
+                      selected.name,
                       style: textStyle?.copyWith(height: 1),
                     ),
                   ),

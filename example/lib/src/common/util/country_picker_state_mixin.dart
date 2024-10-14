@@ -8,29 +8,44 @@ import 'package:l/l.dart';
 
 /// CountryPickerPreviewStateMixin.
 ///
+/// Provide:
+///
+/// - [controller] - phone controller.
+/// - [selected] - selected country.
+/// - [country] - selected country name.
+/// - [countryCode] - selected country code.
+/// - [countryFlag] - selected country flag.
+/// - [mask] - selected country mask.
+/// - [completedPhoneNumber] - completed phone number.
+/// - [onSelect] - select the country.
+/// - [onSubmit] - submit the form.
+///
 /// {@macro county_picker_form_preview}
 mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
   /// Phone controller
   final TextEditingController controller = TextEditingController();
 
   /// Selected country
-  final ValueNotifier<Country?> selected = ValueNotifier(null);
+  final ValueNotifier<Country> selected = ValueNotifier(Country.mock());
 
-  /// Selected country name
-  String country = 'Россия';
+  /// Selected country
+  Country get _selectedCountry => selected.value;
 
-  /// Selected country code
-  String countryCode = '7';
-
-  /// Selected country flag
-  String countryFlag = '🇷🇺';
-
-  /// Selected country mask
-  String? mask = '000 000 0000';
+  /// Country input formater
+  late final CountryInputFormater formater;
 
   /// Completed phone number
   String? get completedPhoneNumber =>
-      '+$countryCode${controller.text.replaceAll(" ", "")}';
+      '+${_selectedCountry.countryCode}${controller.text.replaceAll(" ", "")}';
+
+  @override
+  void initState() {
+    super.initState();
+    formater = CountryInputFormater(
+      mask: _selectedCountry.mask,
+      filter: {'0': RegExp('[0-9]')},
+    );
+  }
 
   @override
   void dispose() {
@@ -41,19 +56,16 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
 
   /// Select the country.
   void onSelect(Country newCountry) {
-    l.i('Selected country $country');
+    l.i('Selected country $newCountry');
+    controller.clear();
     selected.value = newCountry;
+    formater.updateMask(mask: newCountry.mask);
     setState(() {
-      country = '${newCountry.flagEmoji} ${newCountry.nameLocalized}';
-      countryCode = newCountry.phoneCode;
-      countryFlag = newCountry.flagEmoji;
-      mask = newCountry.mask;
+      // country = '${newCountry.flagEmoji} ${newCountry.nameLocalized}';
+      // countryCode = newCountry.phoneCode;
+      // countryFlag = newCountry.flagEmoji;
+      // mask = newCountry.mask;
     });
-    l
-      ..i('country: $country')
-      ..i('countryCode: $countryCode')
-      ..i('countryFlag: $countryFlag')
-      ..i('mask: $mask');
   }
 
   /// Submit the form.
