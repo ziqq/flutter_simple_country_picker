@@ -35,7 +35,7 @@ class CountryInputFormatter implements TextInputFormatter {
   }) : _type = type {
     updateMask(
       mask: mask,
-      filter: filter ?? {'#': RegExp(r'\d'), 'A': RegExp(r'\D')},
+      filter: filter ?? {'#': RegExp(r'\d')},
       newValue: initialText == null
           ? null
           : TextEditingValue(
@@ -81,14 +81,17 @@ class CountryInputFormatter implements TextInputFormatter {
     if (mask == null || mask.isEmpty) {
       throw ArgumentError('Mask cannot be null or empty');
     }
-    if (filter == null || filter.isEmpty) {
-      throw ArgumentError('Filter cannot be null or empty');
+    if (filter == null) {
+      if (_maskFilter == null || _maskFilter!.isEmpty) {
+        throw ArgumentError('Filter cannot be null or empty');
+      }
+    } else if (filter.isEmpty) {
+      throw ArgumentError('Filter cannot be empty');
+    } else {
+      _updateFilter(filter);
     }
     _mask = mask;
-    _updateFilter(filter);
-    if (type != null) {
-      _type = type;
-    }
+    if (type != null) _type = type;
     _calcMaskLength();
     var targetValue = newValue;
     if (targetValue == null) {
@@ -112,7 +115,7 @@ class CountryInputFormatter implements TextInputFormatter {
   String getUnmaskedText() => _resultTextArray.toString();
 
   /// Checks if the mask is fully filled.
-  bool isFill() => _resultTextArray.length == _maskLength;
+  bool get isFill => _resultTextArray.length == _maskLength;
 
   /// Clears the masked text.
   void clear() {
@@ -143,16 +146,7 @@ class CountryInputFormatter implements TextInputFormatter {
       _resultTextArray.clear();
     }
 
-    var beforeSelectionStart = oldValue.selection.start;
-    var beforeSelectionEnd = oldValue.selection.end;
-
-    _handleTextReplacement(
-      oldValue,
-      newValue,
-      beforeSelectionStart,
-      beforeSelectionEnd,
-    );
-
+    _handleTextReplacement(oldValue, newValue);
     _buildMaskedText();
 
     var cursorPosition = _calculateCursorPosition();
@@ -167,45 +161,72 @@ class CountryInputFormatter implements TextInputFormatter {
   void _handleTextReplacement(
     TextEditingValue oldValue,
     TextEditingValue newValue,
-    int beforeSelectionStart,
-    int beforeSelectionEnd,
   ) {
     var replacementText = newValue.text;
-    if (replacementText.length > _maskLength) {
-      replacementText = replacementText.substring(0, _maskLength);
+
+    // Collect only valid characters
+    final validChars = <String>[];
+    for (final char in replacementText.split('')) {
+      if (_maskFilter!.values.any((regex) => regex.hasMatch(char))) {
+        validChars.add(char);
+      }
     }
-    _resultTextArray.set(replacementText);
+
+    // Truncate valid characters to mask length
+    if (validChars.length > _maskLength) {
+      validChars.removeRange(_maskLength, validChars.length);
+    }
+
+    _resultTextArray.set(validChars.join());
   }
 
   /// Builds the masked text based on the current mask and input.
   void _buildMaskedText() {
-    _resultTextMasked = '';
+    final $mask = _mask;
+    if ($mask == null || $mask.isEmpty) return;
+
+    final buffer = StringBuffer();
     var textIndex = 0;
     var maskIndex = 0;
 
-    while (maskIndex < _mask!.length) {
-      final maskChar = _mask![maskIndex];
+    // Add all leading unfiltered characters from the mask
+    while (maskIndex < $mask.length && !_maskChars.contains($mask[maskIndex])) {
+      buffer.write($mask[maskIndex]);
+      maskIndex++;
+    }
+
+    while (maskIndex < $mask.length) {
+      final maskChar = $mask[maskIndex];
       final isMaskChar = _maskChars.contains(maskChar);
 
       if (isMaskChar) {
         if (textIndex < _resultTextArray.length) {
           final textChar = _resultTextArray[textIndex];
           if (_maskFilter![maskChar]!.hasMatch(textChar)) {
-            _resultTextMasked += textChar;
+            buffer.write(textChar);
             textIndex++;
           } else {
-            // Remove invalid character.
-            // Удаляем недопустимый символ.
-            _resultTextArray.removeAt(textIndex);
+            // Skip invalid character
+            textIndex++;
+            maskIndex--; // Stay on the same mask character
           }
         } else {
           break;
         }
       } else {
-        _resultTextMasked += maskChar;
+        if (_type == CountryInputCompletionType.eager) {
+          // In eager mode, add unfiltered character immediately
+          buffer.write(maskChar);
+        } else {
+          // In lazy mode, add unfiltered character
+          // only after inputting next filtered character
+          if (textIndex > 0) buffer.write(maskChar);
+        }
       }
       maskIndex++;
     }
+
+    _resultTextMasked = buffer.toString();
   }
 
   /// Calculates the cursor position after formatting.
@@ -213,12 +234,17 @@ class CountryInputFormatter implements TextInputFormatter {
 
   /// Calculates the length of the mask.
   void _calcMaskLength() {
-    _maskLength = 0;
-    for (var i = 0; i < _mask!.length; i++) {
-      if (_maskChars.contains(_mask![i])) {
-        _maskLength++;
-      }
-    }
+    // Escape each mask character for RegExp to handle special characters
+    final escapedMaskChars = _maskChars.map(RegExp.escape).join();
+
+    // Create a RegExp pattern that matches any of the mask characters
+    final regExp = RegExp('[$escapedMaskChars]');
+
+    // Find all matches in the mask
+    final matches = regExp.allMatches(_mask!);
+
+    // Set _maskLength to the number of mask characters found
+    _maskLength = matches.length;
   }
 
   /// Updates the mask filter and mask characters.
@@ -228,6 +254,7 @@ class CountryInputFormatter implements TextInputFormatter {
   }
 }
 
+/// Text matcher.
 class _TextMatcher {
   final List<String> _symbols = <String>[];
 
