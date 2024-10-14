@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
-import 'package:flutter_simple_country_picker/src/constant/typedef.dart';
 
 /// Default height for [CountryPhoneInput].
 const double _kDefaultCountyInputHeight = 56;
