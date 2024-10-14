@@ -6,22 +6,22 @@ import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart
 import 'package:l/l.dart';
 
 /// {@template county_phone_input_preview}
-/// CountyPhoneInputExperimentalPreview widget.
+/// CountryPhoneInputExperimentalPreview widget.
 /// {@endtemplate}
-class CountyPhoneInputExperimentalPreview extends StatefulWidget {
+class CountryPhoneInputExperimentalPreview extends StatefulWidget {
   /// {@macro county_phone_input_preview}
-  const CountyPhoneInputExperimentalPreview({
+  const CountryPhoneInputExperimentalPreview({
     super.key, // ignore: unused_element
   });
 
   @override
-  State<CountyPhoneInputExperimentalPreview> createState() =>
-      _CountyPhoneInputExperimentalPreviewState();
+  State<CountryPhoneInputExperimentalPreview> createState() =>
+      _CountryPhoneInputExperimentalPreviewState();
 }
 
-/// State for widget CountyPhoneInputExperimentalPreview.
-class _CountyPhoneInputExperimentalPreviewState
-    extends State<CountyPhoneInputExperimentalPreview> {
+/// State for widget CountryPhoneInputExperimentalPreview.
+class _CountryPhoneInputExperimentalPreviewState
+    extends State<CountryPhoneInputExperimentalPreview> {
   final TextEditingController _controller = TextEditingController();
 
   String _country = '🇷🇺 Россия';

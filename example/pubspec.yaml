@@ -16,12 +16,16 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
+
   # Utilyties
+  collection: any
   async: any
   meta: any
   l: ^4.0.2
 
+  # Ui & Widgets
   cupertino_icons: ^1.0.8
+  pull_down_button: ^0.10.2
 
   flutter_simple_country_picker:
     path: ../
