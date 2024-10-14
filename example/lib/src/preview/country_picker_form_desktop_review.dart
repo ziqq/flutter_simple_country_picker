@@ -91,36 +91,51 @@ class _CountryPickerForm$DesktopPreviewState
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: kDefaultPadding * 2),
-          CupertinoFormSection.insetGrouped(
-            children: [
-              CountryPickerDesktop(
-                countryCode: countryCode,
-                countryFlag: countryFlag,
-                onSelect: onSelect,
-                selected: selected,
+          ClipRRect(
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            child: CupertinoListSection.insetGrouped(
+              margin: EdgeInsets.zero,
+              additionalDividerMargin: kDefaultPadding,
+              backgroundColor: CupertinoDynamicColor.resolve(
+                CupertinoColors.secondarySystemBackground,
+                context,
               ),
-              child(
-                prefix: Text(
-                  '+$countryCode',
-                  style: textTheme.bodyLarge?.copyWith(height: 1),
+              decoration: BoxDecoration(
+                color: CupertinoDynamicColor.resolve(
+                  CupertinoColors.secondarySystemBackground,
+                  context,
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: CupertinoTextField(
-                        controller: controller,
-                        placeholder: 'Phone number',
-                        padding: EdgeInsets.zero,
-                        keyboardType: TextInputType.phone,
-                        decoration: const BoxDecoration(
-                          color: Colors.transparent,
+              ),
+              children: [
+                CountryPickerDesktop(
+                  countryCode: countryCode,
+                  countryFlag: countryFlag,
+                  onSelect: onSelect,
+                  selected: selected,
+                ),
+                child(
+                  prefix: Text(
+                    '+$countryCode',
+                    style: textTheme.bodyLarge?.copyWith(height: 1),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: CupertinoTextField(
+                          controller: controller,
+                          placeholder: 'Phone number',
+                          padding: EdgeInsets.zero,
+                          keyboardType: TextInputType.phone,
+                          decoration: const BoxDecoration(
+                            color: Colors.transparent,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           )
         ],
       ),
@@ -203,98 +218,126 @@ class CountryPickerDesktop extends StatefulWidget {
 
 /// State for widget [CountryPickerDesktop].
 class _CountryPickerDesktopState extends State<CountryPickerDesktop> {
+  @override
+  Widget build(BuildContext context) {
+    Widget scope({
+      required Widget Function(
+        BuildContext context,
+        CountriesState state,
+      ) builder,
+    }) =>
+        CountriesScope(
+          child: Builder(
+            builder: (context) => ValueListenableBuilder(
+              valueListenable: CountriesScope.of(context),
+              builder: (context, state, _) {
+                if (state.isLoading || state.countries.isEmpty) {
+                  return const Center(
+                    child: SizedBox(
+                      height: 44,
+                      child: CircularProgressIndicator.adaptive(),
+                    ),
+                  );
+                }
+                return builder(context, state);
+              },
+            ),
+          ),
+        );
+
+    // final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final localizations = CountriesLocalization.of(context);
+    return scope(
+      builder: (context, state) => ValueListenableBuilder(
+        valueListenable: widget.selected ?? ValueNotifier(null),
+        builder: (context, selected, _) {
+          final $selected = selected ??
+              state.countries.firstWhereOrNull((e) =>
+                  e.name ==
+                  localizations.getCountryNameByCode(e.countryCode)) ??
+              state.countries[0];
+
+          return PullDownButton(
+            menuOffset: kDefaultPadding,
+            itemBuilder: (_) => _itemBuilder(state.countries, $selected),
+            buttonBuilder: (_, showMenu) => _buttonBuilder(
+              context,
+              showMenu,
+              $selected,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   List<PullDownMenuItem> _itemBuilder(
     List<Country> countries, [
     Country? selected,
   ]) {
     final localization = CountriesLocalization.of(context);
+    final itemTheme = PullDownMenuItemTheme(
+      textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 14),
+    );
     return countries.map((e) {
       final title = localization
           .getCountryNameByCode(e.countryCode)
           ?.replaceAll(CountriesLocalization.countryNameRegExp, ' ');
-      return PullDownMenuItem.selectable(
-        title: title ?? e.name,
-        selected: selected == e,
+      return PullDownMenuItem(
+        itemTheme: itemTheme,
+        // selected: selected == e,
+        title: '${e.flagEmoji} $title +${e.phoneCode}',
         onTap: () => widget.onSelect?.call(e),
       );
     }).toList(growable: false);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final localizations = CountriesLocalization.of(context);
-    // final pickerTheme = CountryPickerTheme.resolve(context);
-    // final isRtl = Directionality.of(context) == TextDirection.rtl;
+  Widget _buttonBuilder(
+    BuildContext context,
+    Future<void> Function() showMenu,
+    Country $selected,
+  ) {
     final textStyle = Theme.of(context).textTheme.bodyLarge;
-    return CountriesScope(
-      child: Builder(
-        builder: (context) => ValueListenableBuilder(
-          valueListenable: CountriesScope.of(context),
-          builder: (context, state, _) {
-            if (state.isLoading || state.countries.isEmpty) {
-              return const Center(
-                child: CircularProgressIndicator.adaptive(),
-              );
-            }
-            return ValueListenableBuilder(
-              valueListenable: widget.selected ?? ValueNotifier(null),
-              builder: (context, selected, _) {
-                final $selected = selected ??
-                    state.countries.firstWhereOrNull((e) =>
-                        e.name ==
-                        localizations.getCountryNameByCode(e.countryCode)) ??
-                    state.countries[0];
-
-                return PullDownButton(
-                  buttonAnchor: PullDownMenuAnchor.end,
-                  itemBuilder: (_) => _itemBuilder(state.countries, $selected),
-                  buttonBuilder: (_, showMenu) => GestureDetector(
-                    onTap: showMenu,
-                    child: CupertinoFormRow(
-                      prefix: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          $selected.flagEmoji,
-                          style: textStyle?.copyWith(height: 1.6),
-                        ),
-                      ),
-                      padding: const EdgeInsets.only(
-                        left: kDefaultPadding,
-                        right: kDefaultPadding / 1.5,
-                      ),
-                      child: SizedBox(
-                        height: _kDefaultCountyInputHeight,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 5),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  $selected.name,
-                                  style: textStyle?.copyWith(height: 1),
-                                ),
-                              ),
-                              Icon(
-                                CupertinoIcons.chevron_right,
-                                size: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.fontSize,
-                                color: CupertinoDynamicColor.resolve(
-                                  CupertinoColors.inactiveGray,
-                                  context,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+    return GestureDetector(
+      onTap: showMenu,
+      child: ColoredBox(
+        color: Colors.transparent,
+        child: CupertinoFormRow(
+          prefix: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              $selected.flagEmoji,
+              style: textStyle?.copyWith(height: 1.6),
+            ),
+          ),
+          padding: const EdgeInsets.only(
+            left: kDefaultPadding,
+            right: kDefaultPadding / 1.5,
+          ),
+          child: SizedBox(
+            height: _kDefaultCountyInputHeight,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 5),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      $selected.name,
+                      style: textStyle?.copyWith(height: 1),
                     ),
                   ),
-                );
-              },
-            );
-          },
+                  Icon(
+                    CupertinoIcons.chevron_right,
+                    size: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                    color: CupertinoDynamicColor.resolve(
+                      CupertinoColors.inactiveGray,
+                      context,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

@@ -1,11 +1,13 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'package:example/src/common/constant/constants.dart';
 import 'package:example/src/common/router/example_navigator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 
 /// App light theme.
 final ThemeData _themeLight = ThemeData.light().copyWith(
@@ -67,6 +69,7 @@ class _AppState extends State<App> {
   final Key _builderKey = GlobalKey();
 
   /// Supported locales
+  // ignore: unused_field
   final List<Locale> _supportedLocales = <Locale>[
     const Locale('en'),
     const Locale('ar'),
@@ -120,7 +123,7 @@ class _AppState extends State<App> {
             theme: _themeLight,
             darkTheme: _themeDark,
             locale: locale,
-            supportedLocales: _supportedLocales,
+            supportedLocales: CountriesLocalization.supportedLocales,
             localizationsDelegates: const [
               GlobalCupertinoLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
@@ -177,7 +180,38 @@ class AppLocaleSwitcherButton extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => SizedBox(
+        width: 40,
+        height: 28,
+        child: PullDownButton(
+          menuOffset: kDefaultPadding,
+          buttonBuilder: _buttonBuilder,
+          itemBuilder: (_) => _itemBuilder(context),
+        ),
+      );
+
+  List<PullDownMenuItem> _itemBuilder(BuildContext context) {
+    final itemTheme = PullDownMenuItemTheme(
+      textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 14),
+    );
+    final locale = App.of(context)?.locale;
+    return CountriesLocalization.supportedLocales
+        .map((e) => PullDownMenuItem.selectable(
+              selected: locale?.value == e,
+              title: e.languageCode,
+              itemTheme: itemTheme,
+              onTap: () {
+                HapticFeedback.heavyImpact();
+                locale?.value = e;
+              },
+            ))
+        .toList(growable: false);
+  }
+
+  Widget _buttonBuilder(
+    BuildContext context,
+    Future<void> Function() showMenu,
+  ) {
     final locale = Localizations.localeOf(context);
     return SizedBox(
       width: 40,
@@ -189,6 +223,10 @@ class AppLocaleSwitcherButton extends StatelessWidget {
         ),
         minSize: 0,
         padding: EdgeInsets.zero,
+        onPressed: () {
+          HapticFeedback.heavyImpact();
+          showMenu.call();
+        },
         child: Text(
           locale.languageCode.toUpperCase(),
           style: Theme.of(context)
@@ -196,11 +234,6 @@ class AppLocaleSwitcherButton extends StatelessWidget {
               .bodyMedium
               ?.copyWith(fontWeight: FontWeight.w600),
         ),
-        // ignore: unnecessary_lambdas
-        onPressed: () {
-          HapticFeedback.heavyImpact();
-          // App.of(context)?.locale.value = _decodeBrightness(brightness);
-        },
       ),
     );
   }
