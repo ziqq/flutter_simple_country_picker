@@ -420,14 +420,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.5"
-  platform_info:
-    dependency: "direct main"
-    description:
-      name: platform_info
-      sha256: "99274ab08fb3b88527b51c998d34a10c46582242c34a869bbfaac84a891ae216"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.0.0"
   pool:
     dependency: transitive
     description:
