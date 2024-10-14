@@ -95,7 +95,7 @@ class _CountryPickerForm$DesktopPreviewState
             borderRadius: const BorderRadius.all(Radius.circular(10)),
             child: CupertinoListSection.insetGrouped(
               margin: EdgeInsets.zero,
-              additionalDividerMargin: kDefaultPadding,
+              additionalDividerMargin: 0,
               backgroundColor: CupertinoDynamicColor.resolve(
                 CupertinoColors.secondarySystemBackground,
                 context,
@@ -118,20 +118,15 @@ class _CountryPickerForm$DesktopPreviewState
                     '+$countryCode',
                     style: textTheme.bodyLarge?.copyWith(height: 1),
                   ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: CupertinoTextField(
-                          controller: controller,
-                          placeholder: 'Phone number',
-                          padding: EdgeInsets.zero,
-                          keyboardType: TextInputType.phone,
-                          decoration: const BoxDecoration(
-                            color: Colors.transparent,
-                          ),
-                        ),
-                      ),
-                    ],
+                  child: CupertinoTextField(
+                    controller: controller,
+                    placeholder: mask,
+                    padding: EdgeInsets.zero,
+                    keyboardType: TextInputType.phone,
+                    style: textTheme.bodyLarge,
+                    decoration: const BoxDecoration(
+                      color: Colors.transparent,
+                    ),
                   ),
                 ),
               ],
@@ -218,59 +213,6 @@ class CountryPickerDesktop extends StatefulWidget {
 
 /// State for widget [CountryPickerDesktop].
 class _CountryPickerDesktopState extends State<CountryPickerDesktop> {
-  @override
-  Widget build(BuildContext context) {
-    Widget scope({
-      required Widget Function(
-        BuildContext context,
-        CountriesState state,
-      ) builder,
-    }) =>
-        CountriesScope(
-          child: Builder(
-            builder: (context) => ValueListenableBuilder(
-              valueListenable: CountriesScope.of(context),
-              builder: (context, state, _) {
-                if (state.isLoading || state.countries.isEmpty) {
-                  return const Center(
-                    child: SizedBox(
-                      height: 44,
-                      child: CircularProgressIndicator.adaptive(),
-                    ),
-                  );
-                }
-                return builder(context, state);
-              },
-            ),
-          ),
-        );
-
-    // final isRtl = Directionality.of(context) == TextDirection.rtl;
-    final localizations = CountriesLocalization.of(context);
-    return scope(
-      builder: (context, state) => ValueListenableBuilder(
-        valueListenable: widget.selected ?? ValueNotifier(null),
-        builder: (context, selected, _) {
-          final $selected = selected ??
-              state.countries.firstWhereOrNull((e) =>
-                  e.name ==
-                  localizations.getCountryNameByCode(e.countryCode)) ??
-              state.countries[0];
-
-          return PullDownButton(
-            menuOffset: kDefaultPadding,
-            itemBuilder: (_) => _itemBuilder(state.countries, $selected),
-            buttonBuilder: (_, showMenu) => _buttonBuilder(
-              context,
-              showMenu,
-              $selected,
-            ),
-          );
-        },
-      ),
-    );
-  }
-
   List<PullDownMenuItem> _itemBuilder(
     List<Country> countries, [
     Country? selected,
@@ -339,6 +281,60 @@ class _CountryPickerDesktopState extends State<CountryPickerDesktop> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final localizations = CountriesLocalization.of(context);
+
+    Widget scope({
+      required Widget Function(
+        BuildContext context,
+        CountriesState state,
+      ) builder,
+    }) =>
+        CountriesScope(
+          child: Builder(
+            builder: (context) => ValueListenableBuilder(
+              valueListenable: CountriesScope.of(context),
+              builder: (context, state, _) {
+                if (state.isLoading || state.countries.isEmpty) {
+                  return const Center(
+                    child: SizedBox(
+                      height: 44,
+                      child: CircularProgressIndicator.adaptive(),
+                    ),
+                  );
+                }
+                return builder(context, state);
+              },
+            ),
+          ),
+        );
+
+    return scope(
+      builder: (context, state) => ValueListenableBuilder(
+        valueListenable: widget.selected ?? ValueNotifier(null),
+        builder: (context, selected, _) {
+          final $selected = selected ??
+              state.countries.firstWhereOrNull((e) =>
+                  e.name ==
+                  localizations.getCountryNameByCode(e.countryCode)) ??
+              state.countries[0];
+
+          return PullDownButton(
+            menuOffset: kDefaultPadding,
+            itemBuilder: (_) => _itemBuilder(state.countries, $selected),
+            buttonBuilder: (_, showMenu) => _buttonBuilder(
+              context,
+              showMenu,
+              $selected,
+            ),
+          );
+        },
       ),
     );
   }

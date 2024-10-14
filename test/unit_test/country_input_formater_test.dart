@@ -1,9 +1,9 @@
 import 'package:flutter_simple_country_picker/src/util/country_input_formater.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-void main() => group('CountryInputFormatter -', () {
+void main() => group('CountryInputFormater -', () {
       test('initializes with default values', () {
-        final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
+        final formatter = CountryInputFormater(mask: '+# (###) ###-##-##');
         expect(formatter.getMask(), '+# (###) ###-##-##');
         expect(formatter.getMaskedText(), '+');
         expect(formatter.getUnmaskedText(), '');
@@ -11,7 +11,7 @@ void main() => group('CountryInputFormatter -', () {
       });
 
       test('truncates input longer than mask', () {
-        final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
+        final formatter = CountryInputFormater(mask: '+# (###) ###-##-##');
         final result = formatter.formatEditUpdate(
           TextEditingValue.empty,
           const TextEditingValue(text: '123456789012345'),
@@ -23,7 +23,7 @@ void main() => group('CountryInputFormatter -', () {
       });
 
       test('formats input correctly with adjusted mask', () {
-        final formatter = CountryInputFormatter(mask: '+# (###) ###-####');
+        final formatter = CountryInputFormater(mask: '+# (###) ###-####');
         final result = formatter.formatEditUpdate(
           TextEditingValue.empty,
           const TextEditingValue(text: '01234567890'),
@@ -36,7 +36,7 @@ void main() => group('CountryInputFormatter -', () {
       });
 
       test('handles incomplete input', () {
-        final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
+        final formatter = CountryInputFormater(mask: '+# (###) ###-##-##');
 
         final result = formatter.formatEditUpdate(
           TextEditingValue.empty,
@@ -50,7 +50,7 @@ void main() => group('CountryInputFormatter -', () {
       });
 
       test('respects the filter for non-digit characters', () {
-        final formatter = CountryInputFormatter(
+        final formatter = CountryInputFormater(
           mask: 'AA-###',
           filter: {'A': RegExp('[A-Za-z]'), '#': RegExp(r'\d')},
         );
@@ -67,7 +67,7 @@ void main() => group('CountryInputFormatter -', () {
       });
 
       test('removes invalid characters', () {
-        final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
+        final formatter = CountryInputFormater(mask: '+# (###) ###-##-##');
 
         final result = formatter.formatEditUpdate(
           TextEditingValue.empty,
@@ -79,7 +79,7 @@ void main() => group('CountryInputFormatter -', () {
       });
 
       test('handles eager completion type', () {
-        final formatter = CountryInputFormatter.eager(
+        final formatter = CountryInputFormater.eager(
           mask: '#/#/#',
           filter: {'#': RegExp(r'\d')},
         );
@@ -105,18 +105,18 @@ void main() => group('CountryInputFormatter -', () {
 
       test('throws error when mask is null or empty', () {
         expect(
-          () => CountryInputFormatter(mask: ''),
+          () => CountryInputFormater(mask: ''),
           throwsA(isA<ArgumentError>()),
         );
 
         expect(
-          CountryInputFormatter.new,
+          CountryInputFormater.new,
           throwsA(isA<ArgumentError>()),
         );
       });
 
       test('updates mask and re-formats text', () {
-        final formatter = CountryInputFormatter(
+        final formatter = CountryInputFormater(
           mask: '+# (###) ###-##-##',
         )..formatEditUpdate(
             TextEditingValue.empty,
@@ -131,7 +131,7 @@ void main() => group('CountryInputFormatter -', () {
       });
 
       test('clear method resets formatter', () {
-        final formatter = CountryInputFormatter(
+        final formatter = CountryInputFormater(
           mask: '+# (###) ###-##-##',
         )..formatEditUpdate(
             TextEditingValue.empty,
@@ -148,7 +148,7 @@ void main() => group('CountryInputFormatter -', () {
 
       group('type -', () {
         test('should return <CountryInputCompletionType> as lazy', () {
-          final formatter = CountryInputFormatter(
+          final formatter = CountryInputFormater(
             mask: '+# (###) ###-##-##',
           )..formatEditUpdate(
               TextEditingValue.empty,
@@ -163,7 +163,7 @@ void main() => group('CountryInputFormatter -', () {
           expect(formatter.getUnmaskedText(), '');
         });
         test('should return <CountryInputCompletionType> as eager', () {
-          final formatter = CountryInputFormatter.eager(
+          final formatter = CountryInputFormater.eager(
             mask: '+# (###) ###-##-##',
           )..formatEditUpdate(
               TextEditingValue.empty,

@@ -24,10 +24,10 @@ enum CountryInputCompletionType {
 /// are auto-completed
 /// immediately after the previous filtered character is input.
 /// Example: with mask "#/#", input "1", then "2" results in "1/", then "1/2".
-class CountryInputFormatter implements TextInputFormatter {
-  /// Creates a [CountryInputFormatter]
+class CountryInputFormater implements TextInputFormatter {
+  /// Creates a [CountryInputFormater]
   /// with the given [mask], [filter],and [initialText].
-  CountryInputFormatter({
+  CountryInputFormater({
     String? mask,
     Map<String, RegExp>? filter,
     String? initialText,
@@ -47,8 +47,8 @@ class CountryInputFormatter implements TextInputFormatter {
     );
   }
 
-  /// Creates an eager [CountryInputFormatter].
-  CountryInputFormatter.eager({
+  /// Creates an eager [CountryInputFormater].
+  CountryInputFormater.eager({
     String? mask,
     Map<String, RegExp>? filter,
     String? initialText,
@@ -124,14 +124,14 @@ class CountryInputFormatter implements TextInputFormatter {
   }
 
   /// Applies the mask to the given text.
-  String maskText(String text) => CountryInputFormatter(
+  String maskText(String text) => CountryInputFormater(
         mask: _mask,
         filter: _maskFilter,
         initialText: text,
       ).getMaskedText();
 
   /// Removes the mask from the given text.
-  String unmaskText(String text) => CountryInputFormatter(
+  String unmaskText(String text) => CountryInputFormater(
         mask: _mask,
         filter: _maskFilter,
         initialText: text,
