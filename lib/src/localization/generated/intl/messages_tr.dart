@@ -26,6 +26,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "language": MessageLookupByLibrary.simpleMessage("Türkçe"),
         "languageCode": MessageLookupByLibrary.simpleMessage("tr"),
         "localeCode": MessageLookupByLibrary.simpleMessage("tr_TR"),
+        "phonePlaceholder":
+            MessageLookupByLibrary.simpleMessage("Telefon numarası"),
         "search": MessageLookupByLibrary.simpleMessage("Arama")
       };
 }

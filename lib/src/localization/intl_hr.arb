@@ -16,5 +16,6 @@
     "description": "Language"
   },
   "search": "Pretraga",
-  "cancel": "Otkazati"
+  "cancel": "Otkazati",
+  "phonePlaceholder": "Broj telefona"
 }

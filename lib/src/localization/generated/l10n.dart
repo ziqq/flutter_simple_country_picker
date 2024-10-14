@@ -100,6 +100,16 @@ class GeneratedLocalization {
       args: [],
     );
   }
+
+  /// `Номер телефона`
+  String get phonePlaceholder {
+    return Intl.message(
+      'Номер телефона',
+      name: 'phonePlaceholder',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate

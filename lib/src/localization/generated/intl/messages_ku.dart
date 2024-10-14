@@ -26,6 +26,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "language": MessageLookupByLibrary.simpleMessage("Kurdî"),
         "languageCode": MessageLookupByLibrary.simpleMessage("ku"),
         "localeCode": MessageLookupByLibrary.simpleMessage("ku_TR"),
+        "phonePlaceholder":
+            MessageLookupByLibrary.simpleMessage("Hejmara telefonê"),
         "search": MessageLookupByLibrary.simpleMessage("Lêgerîn")
       };
 }

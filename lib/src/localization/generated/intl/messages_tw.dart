@@ -26,6 +26,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "language": MessageLookupByLibrary.simpleMessage("繁體中文"),
         "languageCode": MessageLookupByLibrary.simpleMessage("tw"),
         "localeCode": MessageLookupByLibrary.simpleMessage("zh_TW"),
+        "phonePlaceholder": MessageLookupByLibrary.simpleMessage("電話號碼"),
         "search": MessageLookupByLibrary.simpleMessage("搜尋")
       };
 }

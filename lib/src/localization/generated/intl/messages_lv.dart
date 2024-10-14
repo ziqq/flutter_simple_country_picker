@@ -26,6 +26,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "language": MessageLookupByLibrary.simpleMessage("Latviešu"),
         "languageCode": MessageLookupByLibrary.simpleMessage("lv"),
         "localeCode": MessageLookupByLibrary.simpleMessage("lv_LV"),
+        "phonePlaceholder":
+            MessageLookupByLibrary.simpleMessage("Telefona numurs"),
         "search": MessageLookupByLibrary.simpleMessage("Meklēšana")
       };
 }

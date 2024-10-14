@@ -16,5 +16,6 @@
     "description": "Language"
   },
   "search": "Поиск",
-  "cancel": "Отмена"
+  "cancel": "Отмена",
+  "phonePlaceholder": "Номер телефона"
 }

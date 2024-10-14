@@ -26,6 +26,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "language": MessageLookupByLibrary.simpleMessage("Українська"),
         "languageCode": MessageLookupByLibrary.simpleMessage("uk"),
         "localeCode": MessageLookupByLibrary.simpleMessage("uk_UA"),
+        "phonePlaceholder":
+            MessageLookupByLibrary.simpleMessage("Номер телефону"),
         "search": MessageLookupByLibrary.simpleMessage("Пошук")
       };
 }

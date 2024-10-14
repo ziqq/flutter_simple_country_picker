@@ -26,6 +26,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "language": MessageLookupByLibrary.simpleMessage("Nederlands"),
         "languageCode": MessageLookupByLibrary.simpleMessage("nl"),
         "localeCode": MessageLookupByLibrary.simpleMessage("nl_NL"),
+        "phonePlaceholder":
+            MessageLookupByLibrary.simpleMessage("Telefoonnummer"),
         "search": MessageLookupByLibrary.simpleMessage("Zoeken")
       };
 }

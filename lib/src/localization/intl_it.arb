@@ -16,5 +16,6 @@
     "description": "Language"
   },
   "search": "Cerca",
-  "cancel": "Annulla"
+  "cancel": "Annulla",
+  "phonePlaceholder": "Numero di telefono"
 }

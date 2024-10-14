@@ -10,9 +10,7 @@ const double _kDefaultCountyInputHeight = 56;
 class CountryPhoneInput extends StatelessWidget {
   /// {@macro county_input}
   const CountryPhoneInput({
-    required this.countryCode,
-    this.countryFlag,
-    this.placeholder = 'Phone number',
+    this.placeholder,
     this.onDone,
     this.onSelect,
     this.selected,
@@ -28,23 +26,17 @@ class CountryPhoneInput extends StatelessWidget {
     super.key,
   });
 
-  /// Current country code.
-  final String countryCode;
+  /// {@macro select_country_callback}
+  final SelectCountryCallback? onSelect;
 
-  /// Current country flag as emoji.
-  final String? countryFlag;
+  /// {@macro select_country_notifier}
+  final SelectedCountry? selected;
 
   /// Placeholder text.
   final String? placeholder;
 
   /// Called when the country was selected.
   final VoidCallback? onDone;
-
-  /// {@macro select_country_callback}
-  final SelectCountryCallback? onSelect;
-
-  /// {@macro select_country_notifier}
-  final SelectedCountry? selected;
 
   /// List of country codes to exclude.
   final List<String>? exclude;
@@ -76,6 +68,7 @@ class CountryPhoneInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pickerTheme = CountryPickerTheme.resolve(context);
+    final localization = CountriesLocalization.of(context);
     final textStyle =
         pickerTheme.textStyle ?? Theme.of(context).textTheme.bodyLarge;
     final painter = _CountryPhoneInput$BackgroundPainter(
@@ -111,14 +104,18 @@ class CountryPhoneInput extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: pickerTheme.padding),
                 child: Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (countryFlag != null && countryFlag!.isNotEmpty) ...[
-                        Text('$countryFlag', style: textStyle),
+                  child: ValueListenableBuilder(
+                    valueListenable: selected ?? ValueNotifier<Country?>(null),
+                    builder: (context, selected, _) => Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (selected?.flagEmoji != null &&
+                            selected!.flagEmoji.isNotEmpty) ...[
+                          Text(selected.flagEmoji, style: textStyle),
+                        ],
+                        Text('+${selected?.countryCode}', style: textStyle),
                       ],
-                      Text('+$countryCode', style: textStyle),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -134,7 +131,7 @@ class CountryPhoneInput extends StatelessWidget {
               child: Center(
                 child: TextFormField(
                   decoration: InputDecoration(
-                    hintText: placeholder,
+                    hintText: placeholder ?? localization.phonePlaceholder,
                     hintStyle: textStyle,
                     contentPadding: EdgeInsets.only(
                       right: pickerTheme.padding,

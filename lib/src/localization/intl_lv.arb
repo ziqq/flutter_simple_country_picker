@@ -16,5 +16,6 @@
     "description": "Language"
   },
   "search": "Meklēšana",
-  "cancel": "Atcelt"
+  "cancel": "Atcelt",
+  "phonePlaceholder": "Telefona numurs"
 }

@@ -62,15 +62,10 @@ class _MobileState extends State<_Mobile> with CountryPickerPreviewStateMixin {
             const SizedBox(height: kDefaultPadding * 2),
 
             // --- Country phone input --- //
-            ValueListenableBuilder(
-              valueListenable: selected,
-              builder: (context, selectedCountry, _) => CountryPhoneInput(
-                countryCode: selectedCountry.countryCode,
-                countryFlag: selectedCountry.flagEmoji,
-                filter: kFilteredCountries,
-                onSelect: onSelect,
-                selected: selected,
-              ),
+            CountryPhoneInput(
+              filter: kFilteredCountries,
+              onSelect: onSelect,
+              selected: selected,
             ),
             const SizedBox(height: kDefaultPadding),
 

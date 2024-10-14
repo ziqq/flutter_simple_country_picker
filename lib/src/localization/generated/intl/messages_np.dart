@@ -26,6 +26,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "language": MessageLookupByLibrary.simpleMessage("नेपाली"),
         "languageCode": MessageLookupByLibrary.simpleMessage("np"),
         "localeCode": MessageLookupByLibrary.simpleMessage("np_NP"),
+        "phonePlaceholder": MessageLookupByLibrary.simpleMessage("फोन नम्बर"),
         "search": MessageLookupByLibrary.simpleMessage("खोजी")
       };
 }

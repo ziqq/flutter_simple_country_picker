@@ -16,5 +16,6 @@
     "description": "Language"
   },
   "search": "Otsing",
-  "cancel": "Tühista"
+  "cancel": "Tühista",
+  "phonePlaceholder": "Telefoninumber"
 }

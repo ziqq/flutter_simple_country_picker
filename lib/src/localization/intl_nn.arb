@@ -16,5 +16,6 @@
     "description": "Language"
   },
   "search": "Søk",
-  "cancel": "Avbryt"
+  "cancel": "Avbryt",
+  "phonePlaceholder": "Telefonnummer"
 }
