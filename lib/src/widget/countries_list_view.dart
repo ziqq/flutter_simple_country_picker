@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/controller/countries_controller.dart';
 import 'package:flutter_simple_country_picker/src/controller/countries_provider.dart';
-import 'package:flutter_simple_country_picker/src/controller/countries_state.dart';
 import 'package:flutter_simple_country_picker/src/util/countries_util.dart';
 import 'package:flutter_simple_country_picker/src/widget/status_bar_gesture_detector.dart';
 
@@ -165,6 +164,10 @@ class _CountriesListViewState extends State<CountriesListView> {
                       autofocus: widget.useAutofocus,
                       controller: _controller.search,
                       onSuffixTap: _controller.search?.clear,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge
+                          ?.copyWith(height: 1.2),
                       suffixInsets: EdgeInsetsDirectional.only(
                         end: pickerTheme.indent / 2,
                       ),
