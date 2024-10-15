@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 
@@ -7,16 +8,15 @@ const double _kDefaultCountyInputHeight = 56;
 /// {@template county_input}
 /// CountryInput widget.
 /// {@endtemplate}
-class CountryPhoneInput extends StatelessWidget {
+class CountryPhoneInput extends StatefulWidget {
   /// {@macro county_input}
   const CountryPhoneInput({
-    this.placeholder,
-    this.onDone,
-    this.onSelect,
-    this.selected,
+    this.initialCountry,
+    this.controller,
     this.exclude,
     this.favorite,
     this.filter,
+    this.placeholder,
     this.isScrollControlled = false,
     this.showPhoneCode = false,
     this.showWorldWide = false,
@@ -26,17 +26,11 @@ class CountryPhoneInput extends StatelessWidget {
     super.key,
   });
 
-  /// {@macro select_country_callback}
-  final SelectCountryCallback? onSelect;
+  /// The initial country.
+  final Country? initialCountry;
 
-  /// {@macro select_country_notifier}
-  final SelectedCountry? selected;
-
-  /// Placeholder text.
-  final String? placeholder;
-
-  /// Called when the country was selected.
-  final VoidCallback? onDone;
+  /// Called whne the phone number is changed.
+  final ValueNotifier<String>? controller;
 
   /// List of country codes to exclude.
   final List<String>? exclude;
@@ -46,6 +40,9 @@ class CountryPhoneInput extends StatelessWidget {
 
   /// List of filtered country codes.
   final List<String>? filter;
+
+  /// Placeholder text.
+  final String? placeholder;
 
   /// Controls the scrolling behavior of the modal window.
   final bool isScrollControlled;
@@ -66,6 +63,110 @@ class CountryPhoneInput extends StatelessWidget {
   final bool useHaptickFeedback;
 
   @override
+  State<CountryPhoneInput> createState() => _CountryPhoneInputState();
+}
+
+/// State for widget [CountryPhoneInput].
+class _CountryPhoneInputState extends State<CountryPhoneInput> {
+  static final Country _defaultCountry = Country.mock();
+  late final TextEditingController _controller;
+  late final CountryInputFormater _formater;
+  late ValueNotifier<Country?> _selected;
+
+  @override
+  void initState() {
+    super.initState();
+    final initialCountry = widget.initialCountry ?? _defaultCountry;
+
+    _controller = TextEditingController();
+    _controller.addListener(_onPhoneChanged);
+
+    _formater = CountryInputFormater(
+      mask: initialCountry.mask,
+      initialText: widget.controller?.value,
+      filter: {'0': RegExp('[0-9]')},
+    );
+
+    _selected = ValueNotifier<Country?>(initialCountry);
+    _selected.addListener(_onSelectedChanged);
+
+    // If the controller has an initial value
+    if (widget.controller?.value != null) {
+      final oldValue = _controller.value;
+      var text = widget.controller?.value ?? '';
+
+      // Check if the phone code is not removed from the text
+      if (_selected.value?.phoneCode != null && text.startsWith('+')) {
+        text = text.replaceFirst('+${_selected.value!.phoneCode} ', '');
+      }
+
+      _controller.text = _formater.maskText(text);
+
+      // Apply formatting to the new value
+      _formater.formatEditUpdate(oldValue, _controller.value);
+
+      // Update the cursor position
+      _controller.selection = TextSelection.collapsed(
+        offset: _controller.text.length,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller
+      ..removeListener(_onPhoneChanged)
+      ..dispose();
+    _selected
+      ..removeListener(_onSelectedChanged)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _onSelectedChanged() {
+    if (!mounted) return;
+
+    // Check if the mask is present
+    final mask = _selected.value?.mask;
+    if (mask == null || mask.isEmpty) return;
+
+    // Update the formatter mask
+    _formater.updateMask(mask: mask);
+
+    // Format the current text in the controller after changing the mask
+    final oldValue = _controller.value;
+    _controller.text = _formater.maskText(_controller.text);
+    _formater.formatEditUpdate(oldValue, _controller.value);
+  }
+
+  void _onPhoneChanged() {
+    if (!mounted) return;
+    final phone = '+${_selected.value?.phoneCode} ${_controller.text}';
+    widget.controller?.value = phone;
+  }
+
+  void _onSelect(Country country) {
+    if (!mounted) return;
+    if (country == _selected.value) return;
+    if (country.mask == null || country.mask!.isEmpty) {
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+        SnackBar(
+          backgroundColor: CupertinoDynamicColor.resolve(
+            CupertinoColors.systemRed,
+            context,
+          ),
+          content: const Text(
+              'Phone mask is not defined. Please add issue from github.'),
+        ),
+      );
+      return;
+    }
+    _controller.clear();
+    _formater.clear();
+    _selected.value = country;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final pickerTheme = CountryPickerTheme.resolve(context);
     final localization = CountriesLocalization.of(context);
@@ -84,18 +185,18 @@ class CountryPhoneInput extends StatelessWidget {
         GestureDetector(
           onTap: () => showCountryPicker(
             context: context,
-            exclude: exclude,
-            favorite: favorite,
-            filter: filter,
-            isScrollControlled: isScrollControlled,
-            showSearch: showSearch,
-            showPhoneCode: showPhoneCode,
-            showWorldWide: showWorldWide,
-            useAutofocus: useAutofocus,
-            useHaptickFeedback: useHaptickFeedback,
-            selected: selected,
-            onSelect: onSelect,
-            onDone: onDone,
+            exclude: widget.exclude,
+            favorite: widget.favorite,
+            filter: widget.filter,
+            isScrollControlled: widget.isScrollControlled,
+            showSearch: widget.showSearch,
+            showPhoneCode: widget.showPhoneCode,
+            showWorldWide: widget.showWorldWide,
+            useAutofocus: widget.useAutofocus,
+            useHaptickFeedback: widget.useHaptickFeedback,
+            selected: _selected,
+            onSelect: _onSelect,
+            // onDone: widget.onDone,
           ),
           child: CustomPaint(
             painter: painter,
@@ -105,7 +206,7 @@ class CountryPhoneInput extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: pickerTheme.padding),
                 child: Center(
                   child: ValueListenableBuilder(
-                    valueListenable: selected ?? ValueNotifier<Country?>(null),
+                    valueListenable: _selected,
                     builder: (context, selected, _) => Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -113,7 +214,7 @@ class CountryPhoneInput extends StatelessWidget {
                             selected!.flagEmoji.isNotEmpty) ...[
                           Text(selected.flagEmoji, style: textStyle),
                         ],
-                        Text('+${selected?.countryCode}', style: textStyle),
+                        Text('+${selected?.phoneCode}', style: textStyle),
                       ],
                     ),
                   ),
@@ -129,20 +230,27 @@ class CountryPhoneInput extends StatelessWidget {
             child: CustomPaint(
               painter: painter,
               child: Center(
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    hintText: placeholder ?? localization.phonePlaceholder,
-                    hintStyle: textStyle,
-                    contentPadding: EdgeInsets.only(
-                      right: pickerTheme.padding,
-                      left: pickerTheme.padding,
+                child: ValueListenableBuilder(
+                  valueListenable: _selected,
+                  builder: (context, selected, _) => TextFormField(
+                    controller: _controller,
+                    inputFormatters: [_formater],
+                    decoration: InputDecoration(
+                      hintText: widget.placeholder ??
+                          selected?.mask ??
+                          localization.phonePlaceholder,
+                      hintStyle: textStyle,
+                      contentPadding: EdgeInsets.only(
+                        right: pickerTheme.padding,
+                        left: pickerTheme.padding,
+                      ),
+                      border: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      focusedErrorBorder: InputBorder.none,
                     ),
-                    border: InputBorder.none,
-                    errorBorder: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    disabledBorder: InputBorder.none,
-                    focusedErrorBorder: InputBorder.none,
                   ),
                 ),
               ),

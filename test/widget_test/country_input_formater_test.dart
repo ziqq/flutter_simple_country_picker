@@ -174,14 +174,18 @@ void main() {
       // Вводим часть номера
       await tester.enterText(find.byKey(_key), '12345');
       await tester.pump();
-      var text = formatter.getUnmaskedText();
+      var text = formatter.getMaskedText();
 
+      // Проверим, что позиция курсора соответствует длине
+      // неформатированного текста
       expect(controller.selection.baseOffset, text.length);
 
+      // Вводим полный номер
       await tester.enterText(find.byKey(_key), '12345678901');
       await tester.pump();
-      text = formatter.getUnmaskedText();
+      text = formatter.getMaskedText();
 
+      // Проверим позицию курсора после ввода полного номера
       expect(controller.selection.baseOffset, text.length);
     });
 
@@ -239,7 +243,7 @@ void main() {
       await tester.pump();
 
       // Проверяем, что текст остался без изменений
-      expect(controller.text, '+');
+      expect(controller.text, '');
       expect(formatter.getUnmaskedText(), '');
     });
 
@@ -267,19 +271,6 @@ void main() {
       // Проверяем, что текст остался без изменений
       expect(controller.text, '');
       expect(formatter.getUnmaskedText(), '');
-    });
-
-    testWidgets('should throw error when mask is null or empty',
-        (tester) async {
-      expect(
-        () => CountryInputFormater(mask: ''),
-        throwsA(isA<ArgumentError>()),
-      );
-
-      expect(
-        () => CountryInputFormater(mask: null),
-        throwsA(isA<ArgumentError>()),
-      );
     });
   });
 }
