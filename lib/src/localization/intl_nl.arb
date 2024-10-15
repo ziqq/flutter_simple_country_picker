@@ -16,5 +16,6 @@
     "description": "Language"
   },
   "search": "Zoeken",
-  "cancel": "Annuleren"
+  "cancel": "Annuleren",
+  "phonePlaceholder": "Telefoonnummer"
 }

@@ -16,5 +16,6 @@
     "description": "Language"
   },
   "search": "搜尋",
-  "cancel": "取消"
+  "cancel": "取消",
+  "phonePlaceholder": "電話號碼"
 }

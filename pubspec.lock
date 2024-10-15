@@ -356,14 +356,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.1.2-main.4"
-  mask_text_input_formatter:
-    dependency: "direct main"
-    description:
-      name: mask_text_input_formatter
-      sha256: "978c58ec721c25621ceb468e633f4eef64b64d45424ac4540e0565d4f7c800cd"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.9.0"
   matcher:
     dependency: transitive
     description:
@@ -428,14 +420,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.5"
-  platform_info:
-    dependency: "direct main"
-    description:
-      name: platform_info
-      sha256: "99274ab08fb3b88527b51c998d34a10c46582242c34a869bbfaac84a891ae216"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.0.0"
   pool:
     dependency: transitive
     description:

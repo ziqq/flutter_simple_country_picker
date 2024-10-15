@@ -6,7 +6,7 @@ import 'package:example/src/common/util/app_zone.dart';
 import 'package:example/src/common/util/error_util.dart';
 import 'package:example/src/common/widget/app.dart' deferred as app;
 import 'package:example/src/common/widget/app_error.dart' deferred as app_error;
-import 'package:example/src/preview/county_picker_preview.dart';
+import 'package:example/src/preview/country_picker_preview.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

@@ -26,6 +26,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "language": MessageLookupByLibrary.simpleMessage("Eesti"),
         "languageCode": MessageLookupByLibrary.simpleMessage("et"),
         "localeCode": MessageLookupByLibrary.simpleMessage("et_EE"),
+        "phonePlaceholder":
+            MessageLookupByLibrary.simpleMessage("Telefoninumber"),
         "search": MessageLookupByLibrary.simpleMessage("Otsing")
       };
 }

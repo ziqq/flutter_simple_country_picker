@@ -16,5 +16,6 @@
     "description": "Language"
   },
   "search": "بحث",
-  "cancel": "إلغاء"
+  "cancel": "إلغاء",
+  "phonePlaceholder": "رقم الهاتف"
 }

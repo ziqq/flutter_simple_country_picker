@@ -1,21 +1,28 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
-import 'package:meta/meta.dart';
 
 /// {@template countries_state}
 /// Countries state.
 /// {@endtemplate}
 @immutable
-@internal
 abstract base class CountriesState {
   /// {@macro countries_state}
   CountriesState._(this.countries);
 
+  /// Create a [CountriesState] in loading state.
+  ///
+  /// {@macro countries_state}
   factory CountriesState.loading(List<Country> countries) =
       CountriesState$Loading;
 
+  /// Create a [CountriesState] in idle state.
+  ///
+  /// {@macro countries_state}
   factory CountriesState.idle(List<Country> countries) = CountriesState$Idle;
 
+  /// Create a [CountriesState] in error state.
+  ///
+  /// {@macro countries_state}
   factory CountriesState.error(List<Country> countries) = CountriesState$Error;
 
   /// Type of state

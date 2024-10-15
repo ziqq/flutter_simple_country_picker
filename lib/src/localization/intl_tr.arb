@@ -16,5 +16,6 @@
     "description": "Language"
   },
   "search": "Arama",
-  "cancel": "İptal"
+  "cancel": "İptal",
+  "phonePlaceholder": "Telefon numarası"
 }

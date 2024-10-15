@@ -26,6 +26,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "language": MessageLookupByLibrary.simpleMessage("Norsk Nynorsk"),
         "languageCode": MessageLookupByLibrary.simpleMessage("nn"),
         "localeCode": MessageLookupByLibrary.simpleMessage("nn_NO"),
+        "phonePlaceholder":
+            MessageLookupByLibrary.simpleMessage("Telefonnummer"),
         "search": MessageLookupByLibrary.simpleMessage("Søk")
       };
 }

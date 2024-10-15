@@ -26,6 +26,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "language": MessageLookupByLibrary.simpleMessage("Hrvatski"),
         "languageCode": MessageLookupByLibrary.simpleMessage("hr"),
         "localeCode": MessageLookupByLibrary.simpleMessage("hr_HR"),
+        "phonePlaceholder":
+            MessageLookupByLibrary.simpleMessage("Broj telefona"),
         "search": MessageLookupByLibrary.simpleMessage("Pretraga")
       };
 }

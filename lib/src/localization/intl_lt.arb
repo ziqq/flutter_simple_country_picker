@@ -16,5 +16,6 @@
     "description": "Language"
   },
   "search": "Paieška",
-  "cancel": "Atšaukti"
+  "cancel": "Atšaukti",
+  "phonePlaceholder": "Telefono numeris"
 }

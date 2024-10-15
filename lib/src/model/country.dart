@@ -2,8 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:flutter_simple_country_picker/src/constant/country_code/country_codes.dart';
 import 'package:flutter_simple_country_picker/src/controller/countries_parser.dart';
-import 'package:flutter_simple_country_picker/src/util/util.dart';
+import 'package:flutter_simple_country_picker/src/util/countries_util.dart';
 import 'package:meta/meta.dart';
 
 /// {@template country}
@@ -40,6 +41,9 @@ class Country {
     this.fullExampleWithPlusSign,
     this.mask,
   });
+
+  /// Create a mock countries.
+  factory Country.mock() => Country.fromJson(countries[0]);
 
   /// Create a country from a JSON object
   Country.fromJson(Map<String, Object?> json)
@@ -231,5 +235,5 @@ class Country {
   ///```dart
   /// Text(country.flagEmoji)
   /// ```
-  String get flagEmoji => Util.countryCodeToEmoji(countryCode);
+  String get flagEmoji => CountriesUtil.countryCodeToEmoji(countryCode);
 }

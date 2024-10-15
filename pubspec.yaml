@@ -3,7 +3,7 @@ name: flutter_simple_country_picker
 description: >
   The Flutter package that provides an easy-to-use country selection widget. It allows users to select a country from a comprehensive list of countries, making it simple to integrate country picking functionality into your Flutter applications. The package supports Android, iOS, and web platforms, and offers customization options for fonts and styles. Made with ❤️ by ziqq.
 
-version: 0.0.1-pre.3
+version: 0.0.1-pre.4
 
 homepage: https://github.com/ziqq
 
@@ -46,8 +46,12 @@ dependencies:
 
   # Utilities
   collection: ^1.18.0
-  platform_info: ^5.0.0
-  mask_text_input_formatter: ^2.9.0
+  # platform_info: ^5.0.0
+  # mask_text_input_formatter: ^2.9.0
+
+  # Ui & Widgets
+  # cupertino_icons: ^1.0.8
+  # pull_down_button: ^0.10.2
 
   # Web
   # web: ^1.0.0

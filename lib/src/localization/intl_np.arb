@@ -16,5 +16,6 @@
     "description": "Language"
   },
   "search": "खोजी",
-  "cancel": "रद्द गर्नुहोस्"
+  "cancel": "रद्द गर्नुहोस्",
+  "phonePlaceholder": "फोन नम्बर"
 }

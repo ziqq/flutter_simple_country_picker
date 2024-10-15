@@ -16,5 +16,6 @@
     "description": "Language"
   },
   "search": "Пошук",
-  "cancel": "Скасувати"
+  "cancel": "Скасувати",
+  "phonePlaceholder": "Номер телефону"
 }

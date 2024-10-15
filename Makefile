@@ -85,10 +85,6 @@ publish: ## Publish package
 coverage: ## Runs get coverage
 				@lcov --summary coverage/lcov.info
 
-.PHONY: run-genhtml
-run-genhtml: ## Runs generage coverage html
-				@genhtml coverage/lcov.info -o coverage/html
-
 .PHONY: test-unit
 test-unit: ## Runs unit tests
 				@echo "╠ RUNNING UNIT TESTS..."
