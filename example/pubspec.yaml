@@ -13,9 +13,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  # Localization
   flutter_localizations:
     sdk: flutter
-
+  intl: ^0.19.0
 
   # Utilyties
   collection: any
@@ -73,3 +75,11 @@ flutter_gen:
   output: lib/src/common/constant/
   exclude: test
   line_length: 120
+
+flutter_intl:
+  enabled: true
+  class_name: GeneratedLocalization
+  main_locale: ru
+  arb_dir: lib/src/localization
+  output_dir: lib/src/localization/generated
+  use_deferred_loading: false

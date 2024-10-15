@@ -36,6 +36,9 @@ class _Mobile extends StatefulWidget {
 
 /// State for widget [_Mobile].
 class _MobileState extends State<_Mobile> with CountryPickerPreviewStateMixin {
+  final ValueNotifier<String> _controller =
+      ValueNotifier<String>('+7 927 107 1139');
+
   @override
   Widget build(BuildContext context) => Padding(
         padding: CommonPadding.of(context),
@@ -64,8 +67,7 @@ class _MobileState extends State<_Mobile> with CountryPickerPreviewStateMixin {
             // --- Country phone input --- //
             CountryPhoneInput(
               filter: kFilteredCountries,
-              onSelect: onSelect,
-              selected: selected,
+              controller: _controller,
             ),
             const SizedBox(height: kDefaultPadding),
 
@@ -103,7 +105,7 @@ class _MobileState extends State<_Mobile> with CountryPickerPreviewStateMixin {
                 padding: const EdgeInsets.symmetric(
                   horizontal: kDefaultPadding,
                 ),
-                onPressed: onSubmit,
+                onPressed: () => onSubmit(phone: _controller.value),
                 child: const Text('Submit'),
               ),
             ),

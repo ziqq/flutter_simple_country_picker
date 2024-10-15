@@ -69,7 +69,7 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
   }
 
   /// Submit the form.
-  void onSubmit() {
+  void onSubmit({String? phone}) {
     HapticFeedback.heavyImpact().ignore();
     ScaffoldMessenger.maybeOf(context)?.showSnackBar(
       SnackBar(
@@ -78,7 +78,7 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
           context,
         ),
         content: Text(
-          'PHONE: $completedPhoneNumber',
+          'PHONE: ${phone ?? completedPhoneNumber}',
           style: Theme.of(context)
               .textTheme
               .bodyMedium
