@@ -1,6 +1,5 @@
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_code/country_codes.dart';
-import 'package:flutter_simple_country_picker/src/controller/countries_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
