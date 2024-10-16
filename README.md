@@ -342,12 +342,6 @@ Refer to the [Changelog](https://github.com/ziqq/flutter_simple_country_picker/b
 
 
 
-## License
-
-[MIT](https://github.com/ziqq/flutter_in_store_app_version_checker/blob/main/LICENSE)
-
-
-
 ## Funding
 
 If you want to support the development of our library, there are several ways you can do it:
@@ -358,9 +352,9 @@ If you want to support the development of our library, there are several ways yo
 
 
 
-## Contributions
+## License
 
-Contributions of any kind are more than welcome! Feel free to fork and improve country_code_picker in any way you want, make a pull request, or open an issue.
+[MIT](https://github.com/ziqq/flutter_in_store_app_version_checker/blob/main/LICENSE)
 
 
 
