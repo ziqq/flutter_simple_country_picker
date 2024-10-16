@@ -10,6 +10,10 @@
 
 
 
+<img src=".docs/images/full_example_light.png" width="375px"> <img src=".docs/images/full_example_dark.png"  width="375px"> <img src=".docs/images/filtered_example_light.png" width="375px">  <img src=".docs/images/filtered_example_dark.png" width="375px">
+
+
+
 ##  Description
 
 The Flutter package that provides an easy-to-use country selection widget. It allows users to select a country from a comprehensive list of countries, making it simple to integrate country picking functionality into your Flutter applications. The package supports Android, iOS, and web platforms, and offers customization options for fonts and styles.
