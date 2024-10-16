@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:example/src/common/constant/constants.dart';
+import 'package:example/src/common/util/app_zone.dart';
 import 'package:example/src/common/widget/app.dart';
 import 'package:example/src/common/widget/common_header.dart';
 import 'package:example/src/common/widget/common_padding.dart';
@@ -10,7 +11,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:l/l.dart';
 
-void main() => runApp(const App(home: CountryPickerPreview()));
+void main() =>
+    appZone(() async => runApp(const App(home: CountryPickerPreview())));
 
 /// {@template county_picker_preview}
 /// CountryPickerPreview widget.

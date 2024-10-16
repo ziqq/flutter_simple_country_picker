@@ -1,9 +1,11 @@
+## 0.1.0
+- **UPDATED**: `example's`
+
 ## 0.0.2
 - **FIXED**: Refactoring
 
 ## 0.0.1
 - **UPDATED**: `localizations`
-- **UPDATED**: `example's`
 
 ## 0.0.1-pre.4
 - **ADDED**: `CountryInputFormatter`
