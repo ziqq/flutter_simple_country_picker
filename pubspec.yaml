@@ -28,6 +28,9 @@ platforms:
 #  - description: 'Example of using the library.'
 #    path: example.png
 
+# Specify the example file path
+example: example/lib/src/preview/country_picker_preview.dart
+
 environment:
   sdk: '>=3.0.0 <4.0.0'
   flutter: ">=3.0.0"
