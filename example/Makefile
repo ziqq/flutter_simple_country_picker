@@ -40,6 +40,12 @@ get: ## Get dependencies
 				@fvm flutter pub get || (echo "▓▓ Get dependencies error ▓▓"; exit 1)
 				@echo "╠ DEPENDENCIES GETED SUCCESSFULLY"
 
+.PHONY: l10n
+l10n: ## Generate localization
+				@fvm dart pub global activate intl_utils
+				@fvm dart pub global run intl_utils:generate
+				@fvm flutter gen-l10n --arb-dir lib/src/common/localization/translations --output-dir lib/src/common/localization/generated --template-arb-file intl_ru.arb
+
 .PHONY: generate
 generate: get ## Generate the code
 	@fvm dart pub global activate protoc_plugin
