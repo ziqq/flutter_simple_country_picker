@@ -70,7 +70,7 @@ class CountryPhoneInput extends StatefulWidget {
 class _CountryPhoneInputState extends State<CountryPhoneInput> {
   static final Country _defaultCountry = Country.mock();
   late final TextEditingController _controller;
-  late final CountryInputFormater _formater;
+  late final CountryInputFormatter _formater;
   late ValueNotifier<Country?> _selected;
 
   @override
@@ -81,7 +81,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
     _controller = TextEditingController();
     _controller.addListener(_onPhoneChanged);
 
-    _formater = CountryInputFormater(
+    _formater = CountryInputFormatter(
       mask: initialCountry.mask,
       initialText: widget.controller?.value,
       filter: {'0': RegExp('[0-9]')},

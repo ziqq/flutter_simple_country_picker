@@ -3,7 +3,7 @@
 
 
 ## 0.0.1-pre.4
-- **ADDED**: `CountryInputFormater`
+- **ADDED**: `CountryInputFormatter`
 - **UPDATED**: `CountriesUtil`
 
 ## 0.0.1-pre.3

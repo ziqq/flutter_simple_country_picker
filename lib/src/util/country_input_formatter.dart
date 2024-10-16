@@ -31,13 +31,13 @@ enum CountryInputCompletionType {
 /// is input.
 ///
 /// Example: with mask "#/#", input "1", then "2" results in "1/", then "1/2".
-class CountryInputFormater implements TextInputFormatter {
+class CountryInputFormatter implements TextInputFormatter {
   /// Constructor to initialize the formatter with [mask], [filter],
   /// and optional [initialText].
   /// You can choose between [CountryInputCompletionType.lazy] or
   /// [CountryInputCompletionType.eager] to control the behavior of
   /// character completion.
-  CountryInputFormater({
+  CountryInputFormatter({
     String? mask,
     Map<String, RegExp>? filter,
     String? initialText,
@@ -63,7 +63,7 @@ class CountryInputFormater implements TextInputFormatter {
   }
 
   /// Constructor for eager [mask] formatter.
-  CountryInputFormater.eager({
+  CountryInputFormatter.eager({
     String? mask,
     Map<String, RegExp>? filter,
     String? initialText,
@@ -137,14 +137,14 @@ class CountryInputFormater implements TextInputFormatter {
   }
 
   /// Mask the provided [text] with the current mask.
-  String maskText(String text) => CountryInputFormater(
+  String maskText(String text) => CountryInputFormatter(
         mask: _mask,
         filter: _maskFilter,
         initialText: text,
       ).getMaskedText();
 
   /// Unmask the provided [text].
-  String unmaskText(String text) => CountryInputFormater(
+  String unmaskText(String text) => CountryInputFormatter(
         mask: _mask,
         filter: _maskFilter,
         initialText: text,

@@ -29,7 +29,7 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
   late final ValueNotifier<Country> selected;
 
   /// Country input formater
-  late final CountryInputFormater formater;
+  late final CountryInputFormatter formater;
 
   ScaffoldMessengerState? _messenger;
 
@@ -51,7 +51,7 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
     selected = ValueNotifier(initialCountry);
     selected.addListener(_onSelectedChanged);
 
-    formater = CountryInputFormater(mask: initialCountry.mask);
+    formater = CountryInputFormatter(mask: initialCountry.mask);
   }
 
   @override
