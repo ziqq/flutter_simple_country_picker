@@ -1,6 +1,6 @@
-## 0.0.1-pre.4
+## 0.0.1
 - **UPDATED**: `localizations`
-
+- **UPDATED**: `example's`
 
 ## 0.0.1-pre.4
 - **ADDED**: `CountryInputFormatter`

@@ -67,6 +67,12 @@ get: ## Get dependencies
 				@fvm flutter pub get || (echo "▓▓ Get dependencies error ▓▓"; exit 1)
 				@echo "╠ DEPENDENCIES GETED SUCCESSFULLY"
 
+.PHONY: update
+update: get build-runner ## Update dependencies and codegen
+				@echo "╠ RUN GET DEPENDENCIES IN EXAMPLE..."
+				@cd example fvm flutter pub get || (echo "▓▓ Get dependencies error ▓▓"; exit 1)
+				@echo "╠ DEPENDENCIES IN EXAMPLE GETED SUCCESSFULLY"
+
 .PHONY: analyze
 analyze: get ## Analyze code
 				@echo "╠ RUN ANALYZE THE CODE..."
