@@ -164,10 +164,10 @@ class _CountriesListViewState extends State<CountriesListView> {
                       autofocus: widget.useAutofocus,
                       controller: _controller.search,
                       onSuffixTap: _controller.search?.clear,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge
-                          ?.copyWith(height: 1.2),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
+                      ),
                       suffixInsets: EdgeInsetsDirectional.only(
                         end: pickerTheme.indent / 2,
                       ),
@@ -484,24 +484,42 @@ class _CountryListItem extends StatelessWidget {
           onSelect?.call(country.copyWith(nameLocalized: nameLocalized));
           Navigator.of(context).maybePop();
         },
-        child: ListTile(
-          dense: true,
-          minLeadingWidth: 0,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: pickerTheme.padding,
-          ),
-          shape: useBorder && !simple
-              ? Border(
-                  bottom: BorderSide(
-                    color: pickerTheme.dividerColor!,
-                    width: 0.5,
-                  ),
-                )
-              : null,
-          leading: _Flag(country: country),
-          title: effectiveTitle,
-          trailing: effectiveTrailing,
-          subtitle: simple ? null : Text(country.name),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              dense: true,
+              minLeadingWidth: 0,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: pickerTheme.padding,
+              ),
+              // shape: useBorder && !simple
+              //     ? Border(
+              //         bottom: BorderSide(
+              //           color: pickerTheme.dividerColor ??
+              //               CupertinoDynamicColor.resolve(
+              //                 CupertinoColors.opaqueSeparator,
+              //                 context,
+              //               ),
+              //           width: 1,
+              //         ),
+              //       )
+              //     : null,
+              leading: _Flag(country: country),
+              title: effectiveTitle,
+              trailing: effectiveTrailing,
+              subtitle: simple ? null : Text(country.name),
+            ),
+            if (useBorder && !simple) ...[
+              Divider(
+                height: 1,
+                thickness: 1,
+                indent: pickerTheme.padding,
+                endIndent: pickerTheme.padding,
+                color: pickerTheme.dividerColor,
+              ),
+            ],
+          ],
         ),
       ),
     );
