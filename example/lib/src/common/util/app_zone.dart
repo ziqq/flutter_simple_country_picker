@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:l/l.dart';
+import 'package:platform_info/platform_info.dart';
 
 /// Catch all application errors and logs.
 void appZone(
@@ -12,11 +13,11 @@ void appZone(
         () => fn(),
         (err, st) => onError?.call(err, st) ?? l.e(err, st),
       ),
-      const LogOptions(
+      LogOptions(
         handlePrint: true,
         messageFormatting: _messageFormatting,
         outputInRelease: false,
-        printColors: true,
+        printColors: !platform.iOS,
       ),
     );
 

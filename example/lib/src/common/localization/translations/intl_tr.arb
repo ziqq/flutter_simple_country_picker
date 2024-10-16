@@ -1,0 +1,21 @@
+{
+  "@@locale": "tr",
+  "localeCode": "tr_TR",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "tr",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "Türkçe",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "title": "Tetradka",
+  "description": "Ülke kodunu kontrol edin ve telefon numaranızı girin.",
+  "nextLable": "İleri"
+}

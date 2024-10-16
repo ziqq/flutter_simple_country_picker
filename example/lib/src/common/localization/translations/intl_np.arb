@@ -1,0 +1,21 @@
+{
+  "@@locale": "ne",
+  "localeCode": "ne_NE",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "ne",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "नेपाली",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "title": "टेट्राडका",
+  "description": "देशको कोड जाँच गर्नुहोस् र तपाईंको फोन नम्बर प्रविष्ट गर्नुहोस्।",
+  "nextLable": "अर्को"
+}

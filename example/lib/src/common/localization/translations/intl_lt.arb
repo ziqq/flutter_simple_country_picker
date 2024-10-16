@@ -1,0 +1,21 @@
+{
+  "@@locale": "lt",
+  "localeCode": "lt_LT",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "lt",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "Lietuvių",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "title": "Tetradka",
+  "description": "Patikrinkite šalies kodą ir įveskite savo telefono numerį.",
+  "nextLable": "Kitas"
+}

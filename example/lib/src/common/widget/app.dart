@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:example/src/common/constant/constants.dart';
+import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/router/example_navigator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -123,13 +124,18 @@ class _AppState extends State<App> {
             theme: _themeLight,
             darkTheme: _themeDark,
             locale: locale,
-            supportedLocales: CountriesLocalization.supportedLocales,
+            supportedLocales: ExampleLocalization.supportedLocales,
             localizationsDelegates: const [
               GlobalCupertinoLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
 
+              ExampleLocalization.delegate,
+
               /// Add [CountriesLocalization] in app [localizationsDelegates]
+              /// to support country names in different languages.
+              ///
+              /// Must be last in the list.
               CountriesLocalization.delegate,
             ],
             builder: (context, _) => MediaQuery(

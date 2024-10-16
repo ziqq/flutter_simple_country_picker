@@ -1,0 +1,21 @@
+{
+  "@@locale": "de",
+  "localeCode": "de_DE",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "de",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "Deutsch",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "title": "Tetradka",
+  "description": "Überprüfen Sie den Ländercode und geben Sie Ihre Telefonnummer ein.",
+  "nextLable": "Weiter"
+}

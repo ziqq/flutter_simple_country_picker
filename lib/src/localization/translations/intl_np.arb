@@ -1,0 +1,21 @@
+{
+  "@@locale": "ne",
+  "localeCode": "ne_NE",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "ne",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "नेपाली",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "search": "खोजी",
+  "cancel": "रद्द गर्नुहोस्",
+  "phonePlaceholder": "फोन नम्बर"
+}

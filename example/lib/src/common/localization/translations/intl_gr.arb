@@ -1,0 +1,21 @@
+{
+  "@@locale": "el",
+  "localeCode": "el-GR",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "el",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "Ελληνικά",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "title": "Τετράδιο",
+  "description": "Ελέγξτε τον κωδικό χώρας και εισάγετε τον αριθμό τηλεφώνου σας.",
+  "nextLable": "Επόμενο"
+}

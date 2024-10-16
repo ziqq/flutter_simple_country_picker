@@ -1,0 +1,21 @@
+{
+  "@@locale": "ku",
+  "localeCode": "ku_TR",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "ku",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "Kurdî",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "title": "Tetradka",
+  "description": "Kodê welatê kontrol bike û telefonê xwe binivîse.",
+  "nextLable": "Pêş"
+}

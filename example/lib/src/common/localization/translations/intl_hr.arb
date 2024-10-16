@@ -1,0 +1,21 @@
+{
+  "@@locale": "hr",
+  "localeCode": "hr_HR",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "hr",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "Hrvatski",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "title": "Tetradka",
+  "description": "Provjerite kôd zemlje i unesite svoj broj telefona.",
+  "nextLable": "Dalje"
+}

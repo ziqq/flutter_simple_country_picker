@@ -7,14 +7,14 @@ import '../util/widget_test_helper.dart';
 const ValueKey<String> _key = ValueKey<String>('country_input_text_field');
 
 void main() {
-  group('CountryInputFormater -', () {
+  group('CountryInputFormatter -', () {
     late TextEditingController controller;
-    late CountryInputFormater formatter;
+    late CountryInputFormatter formatter;
     late Widget testWidget;
 
     setUp(() {
       controller = TextEditingController();
-      formatter = CountryInputFormater(
+      formatter = CountryInputFormatter(
         mask: '+# (###) ###-##-##',
       );
       testWidget = TextField(
@@ -48,7 +48,7 @@ void main() {
 
     testWidgets('should correctly report isFill property', (tester) async {
       final controller = TextEditingController();
-      final formatter = CountryInputFormater(mask: '+# (###) ###-##-##');
+      final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
 
       await tester.pumpWidget(
         WidgetTestHelper.createWidgetUnderTest(
@@ -83,7 +83,7 @@ void main() {
 
     testWidgets('should format initial text correctly', (tester) async {
       final controller = TextEditingController();
-      final formatter = CountryInputFormater(
+      final formatter = CountryInputFormatter(
         mask: '+# (###) ###-##-##',
         initialText: '1234567890',
       );
@@ -108,7 +108,7 @@ void main() {
 
     testWidgets('should update filter and reformat text', (tester) async {
       final filter = {'A': RegExp('[A-Za-z]'), '#': RegExp(r'\d')};
-      final formatter = CountryInputFormater(mask: 'AA-###', filter: filter);
+      final formatter = CountryInputFormatter(mask: 'AA-###', filter: filter);
       final controller = TextEditingController();
 
       await tester.pumpWidget(
@@ -157,7 +157,7 @@ void main() {
     testWidgets('should maintain correct cursor position after formatting',
         (tester) async {
       final controller = TextEditingController();
-      final formatter = CountryInputFormater(mask: '+# (###) ###-##-##');
+      final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
 
       await tester.pumpWidget(
         MaterialApp(
@@ -192,7 +192,7 @@ void main() {
     testWidgets('should handle deletion of characters correctly',
         (tester) async {
       final controller = TextEditingController();
-      final formatter = CountryInputFormater(mask: '+# (###) ###-##-##');
+      final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
 
       await tester.pumpWidget(
         MaterialApp(
@@ -224,7 +224,7 @@ void main() {
     testWidgets('should ignore input with only invalid characters',
         (tester) async {
       final controller = TextEditingController();
-      final formatter = CountryInputFormater(mask: '+# (###) ###-##-##');
+      final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
 
       await tester.pumpWidget(
         MaterialApp(
@@ -248,7 +248,7 @@ void main() {
     });
 
     testWidgets('should handle empty input correctly', (tester) async {
-      final formatter = CountryInputFormater(mask: '+# (###) ###-##-##');
+      final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
       final controller = TextEditingController();
 
       await tester.pumpWidget(

@@ -1,0 +1,21 @@
+{
+  "@@locale": "ar",
+  "localeCode": "ar_SA",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "ar",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "العربية",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "title": "تترادكا",
+  "description": "تحقق من رمز البلد وأدخل رقم هاتفك.",
+  "nextLable": "التالي"
+}

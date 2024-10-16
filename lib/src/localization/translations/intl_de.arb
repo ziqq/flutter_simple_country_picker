@@ -1,0 +1,21 @@
+{
+  "@@locale": "de",
+  "localeCode": "de_DE",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "de",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "Deutsch",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "search": "Suche",
+  "cancel": "Abbrechen",
+  "phonePlaceholder": "Telefonnummer"
+}

@@ -1,0 +1,4 @@
+ignore:
+  - "example/lib/src/common/localization/generated"
+  - "lib/src/localization/generated"
+  - "messages_.*.dart"

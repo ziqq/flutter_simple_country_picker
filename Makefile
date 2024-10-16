@@ -39,6 +39,12 @@ format: ## Format code
 				@fvm dart format --fix -l 80 . || (echo "👀 Format code error 👀"; exit 1)
 				@echo "╠ CODE FORMATED SUCCESSFULLY"
 
+.PHONY: l10n
+l10n: ## Generate localization
+				@fvm dart pub global activate intl_utils
+				@fvm dart pub global run intl_utils:generate
+				@fvm flutter gen-l10n --arb-dir lib/src/localization/translations --output-dir lib/src/localization/generated --template-arb-file intl_ru.arb
+
 .PHONY: fix
 fix: format ## Fix code
 				@fvm dart fix --apply lib
@@ -60,6 +66,12 @@ get: ## Get dependencies
 				@echo "╠ RUN GET DEPENDENCIES..."
 				@fvm flutter pub get || (echo "▓▓ Get dependencies error ▓▓"; exit 1)
 				@echo "╠ DEPENDENCIES GETED SUCCESSFULLY"
+
+.PHONY: update
+update: get build-runner ## Update dependencies and codegen
+				@echo "╠ RUN GET DEPENDENCIES IN EXAMPLE..."
+				@cd example fvm flutter pub get || (echo "▓▓ Get dependencies error ▓▓"; exit 1)
+				@echo "╠ DEPENDENCIES IN EXAMPLE GETED SUCCESSFULLY"
 
 .PHONY: analyze
 analyze: get ## Analyze code

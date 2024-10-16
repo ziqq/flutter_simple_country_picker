@@ -141,6 +141,7 @@ class AppLocalizationDelegate
       Locale.fromSubtags(languageCode: 'tr'),
       Locale.fromSubtags(languageCode: 'tw'),
       Locale.fromSubtags(languageCode: 'uk'),
+      Locale.fromSubtags(languageCode: 'zh'),
     ];
   }
 

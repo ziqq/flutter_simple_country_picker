@@ -1,0 +1,21 @@
+{
+"@@locale": "fr",
+"localeCode": "fr_FR",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "fr",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "Français",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "title": "Tetradka",
+  "description": "Vérifiez le code pays et saisissez votre numéro de téléphone.",
+  "nextLable": "Suivant"
+}

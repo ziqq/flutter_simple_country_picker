@@ -82,6 +82,8 @@ final class CountriesLocalization extends generated.GeneratedLocalization {
           default:
             return cn[code];
         }
+      case 'tw':
+        return tw[code];
       case 'el':
         return gr[code];
       case 'es':

@@ -1,6 +1,6 @@
 import 'package:example/src/common/util/screen_unit.dart';
 import 'package:example/src/common/widget/common_header.dart';
-import 'package:example/src/preview/country_picker_form_desktop_review.dart';
+import 'package:example/src/preview/country_picker_form_desktop_preview.dart';
 import 'package:example/src/preview/country_picker_form_mobile_preview.dart';
 import 'package:flutter/material.dart';
 

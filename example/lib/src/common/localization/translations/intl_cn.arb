@@ -1,0 +1,21 @@
+{
+  "@@locale": "zh_CN",
+  "localeCode": "zh_CN",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "zh",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "简体中文",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "title": "Tetradka",
+  "description": "检查国家代码并输入您的电话号码。",
+  "nextLable": "下一步"
+}

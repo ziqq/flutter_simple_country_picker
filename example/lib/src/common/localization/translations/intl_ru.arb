@@ -1,0 +1,21 @@
+{
+  "@@locale": "ru",
+  "localeCode": "ru_RU",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "ru",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "Русский",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "title": "Tetradka",
+  "description": "Проверьте код страны и введите свой номер телефона.",
+  "nextLable": "Далее"
+}

@@ -1,0 +1,21 @@
+{
+  "@@locale": "uk",
+  "localeCode": "uk_UA",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "uk",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "Українська",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "title": "Тетрадка",
+  "description": "Перевірте код країни та введіть свій номер телефону.",
+  "nextLable": "Далі"
+}

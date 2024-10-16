@@ -24,7 +24,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "cancel": MessageLookupByLibrary.simpleMessage("取消"),
         "language": MessageLookupByLibrary.simpleMessage("繁體中文"),
-        "languageCode": MessageLookupByLibrary.simpleMessage("tw"),
+        "languageCode": MessageLookupByLibrary.simpleMessage("zh-Hant"),
         "localeCode": MessageLookupByLibrary.simpleMessage("zh_TW"),
         "phonePlaceholder": MessageLookupByLibrary.simpleMessage("電話號碼"),
         "search": MessageLookupByLibrary.simpleMessage("搜尋")

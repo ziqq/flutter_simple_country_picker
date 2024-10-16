@@ -93,13 +93,13 @@ sealed class Pubspec {
   static const PubspecVersion version = (
     /// Non-canonical string representation of the version as provided
     /// in the pubspec.yaml file.
-    representation: r'0.0.1-pre.4',
+    representation: r'0.0.1',
 
     /// Returns a 'canonicalized' representation
     /// of the application version.
     /// This represents the version string in accordance with
     /// Semantic Versioning (SemVer) standards.
-    canonical: r'0.0.1-pre.4',
+    canonical: r'0.0.1',
 
     /// MAJOR version when you make incompatible API changes.
     /// The major version number: 1 in "1.2.3".
@@ -115,7 +115,7 @@ sealed class Pubspec {
     patch: 1,
 
     /// The pre-release identifier: "foo" in "1.2.3-foo".
-    preRelease: <String>[r'pre', r'4'],
+    preRelease: <String>[],
 
     /// The build identifier: "foo" in "1.2.3+foo".
     build: <String>[],
@@ -125,12 +125,12 @@ sealed class Pubspec {
   static final DateTime timestamp = DateTime.utc(
     2024,
     10,
-    14,
-    10,
-    39,
-    44,
-    482,
-    119,
+    16,
+    11,
+    55,
+    18,
+    908,
+    84,
   );
 
   /// Name
@@ -491,11 +491,14 @@ sealed class Pubspec {
     'dependencies': dependencies,
     'dev_dependencies': devDependencies,
     'dependency_overrides': dependencyOverrides,
+    'flutter': <String, Object>{
+      'generate': true,
+    },
     'flutter_intl': <String, Object>{
       'enabled': true,
       'class_name': r'GeneratedLocalization',
       'main_locale': r'ru',
-      'arb_dir': r'lib/src/localization',
+      'arb_dir': r'lib/src/localization/translations',
       'output_dir': r'lib/src/localization/generated',
       'use_deferred_loading': false,
     },

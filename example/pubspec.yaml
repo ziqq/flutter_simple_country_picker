@@ -24,6 +24,7 @@ dependencies:
   async: any
   meta: any
   l: ^4.0.2
+  platform_info: ^5.0.0
 
   # Ui & Widgets
   cupertino_icons: ^1.0.8
@@ -53,7 +54,15 @@ flutter:
   generate: true
   uses-material-design: true
 
+  assets:
+    - assets/
+    - assets/icons/
+
+
   fonts:
+    - family: NotoColorEmoji
+      fonts:
+        - asset: assets/fonts/Noto-Color-Emoji-Regular.ttf
     - family: SF-Pro-Rounded
       fonts:
         - asset: assets/fonts/SF-Pro/SF-Pro-Rounded-Black.otf
@@ -80,6 +89,6 @@ flutter_intl:
   enabled: true
   class_name: GeneratedLocalization
   main_locale: ru
-  arb_dir: lib/src/localization
-  output_dir: lib/src/localization/generated
+  arb_dir: lib/src/common/localization/translations
+  output_dir: lib/src/common/localization/generated
   use_deferred_loading: false

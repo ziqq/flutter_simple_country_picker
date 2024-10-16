@@ -1,0 +1,21 @@
+{
+  "@@locale": "nn",
+  "localeCode": "nn_NO",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "nn",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "Norsk Nynorsk",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "title": "Tetradka",
+  "description": "Sjekk landskoden og skriv inn telefonnummeret ditt.",
+  "nextLable": "Neste"
+}

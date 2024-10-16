@@ -1,4 +1,7 @@
+// Anton Ustinoff <a.a.ustinoff@gmail.com>, 14 October 2024
+
 import 'package:example/src/common/constant/constants.dart';
+import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/util/country_picker_state_mixin.dart';
 import 'package:example/src/common/widget/common_padding.dart';
 import 'package:flutter/cupertino.dart';
@@ -37,7 +40,7 @@ class _Mobile extends StatefulWidget {
 /// State for widget [_Mobile].
 class _MobileState extends State<_Mobile> with CountryPickerPreviewStateMixin {
   final ValueNotifier<String> _controller =
-      ValueNotifier<String>('+7 927 107 1139');
+      ValueNotifier<String>('+7 888 123 4567');
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -47,13 +50,13 @@ class _MobileState extends State<_Mobile> with CountryPickerPreviewStateMixin {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Mobile',
+              ExampleLocalization.of(context).title,
               style: Theme.of(context).textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: kDefaultPadding),
             Text(
-              'Проверьте код страны и введите свой номер телефона.',
+              ExampleLocalization.of(context).description,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: CupertinoDynamicColor.resolve(
                       CupertinoColors.secondaryLabel,
