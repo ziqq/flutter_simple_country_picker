@@ -1,0 +1,21 @@
+{
+  "@@locale": "pt",
+  "localeCode": "pt_PT",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "pt",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "Português",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "search": "Buscar",
+  "cancel": "Cancelar",
+  "phonePlaceholder": "Número de telefone"
+}

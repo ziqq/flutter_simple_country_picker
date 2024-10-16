@@ -1,0 +1,21 @@
+{
+  "@@locale": "es",
+  "localeCode": "es_ES",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "es",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "Español",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "search": "Buscar",
+  "cancel": "Cancelar",
+  "phonePlaceholder": "Número de teléfono"
+}

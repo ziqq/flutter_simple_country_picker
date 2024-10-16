@@ -1,21 +1,21 @@
 {
-  "@@locale": "gr",
-  "localeCode": "gr_GR",
+  "@@locale": "nn",
+  "localeCode": "nn_NO",
   "@localeCode": {
     "type": "text",
     "description": "Locale code"
   },
-  "languageCode": "gr",
+  "languageCode": "nn",
   "@languageCode": {
     "type": "text",
     "description": "Language code"
   },
-  "language": "Ελληνικά",
+  "language": "Norsk Nynorsk",
   "@language": {
     "type": "text",
     "description": "Language"
   },
-  "search": "Αναζήτηση",
-  "cancel": "Ακύρωση",
-  "phonePlaceholder": "Αριθμός τηλεφώνου"
+  "search": "Søk",
+  "cancel": "Avbryt",
+  "phonePlaceholder": "Telefonnummer"
 }

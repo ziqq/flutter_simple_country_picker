@@ -1,35 +1,12 @@
 import 'dart:developer';
 
+import 'package:example/src/common/localization/generated/l10n.dart'
+    as generated show ExampleLocalization, AppLocalizationDelegate;
 import 'package:flutter/widgets.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/ar.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/cn.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/de.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/en.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/es.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/et.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/fr.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/gr.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/hr.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/it.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/ku.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/lt.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/lv.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/nb.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/nl.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/nn.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/np.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/pl.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/pt.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/ru.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/tr.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/tw.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/strings/uk.dart';
-import 'package:flutter_simple_country_picker/src/localization/generated/l10n.dart'
-    as generated show GeneratedLocalization, AppLocalizationDelegate;
 import 'package:meta/meta.dart';
 
 /// CountriesLocalization.
-final class CountriesLocalization extends generated.GeneratedLocalization {
+final class CountriesLocalization extends generated.ExampleLocalization {
   CountriesLocalization._(this.locale);
 
   ///
@@ -42,9 +19,6 @@ final class CountriesLocalization extends generated.GeneratedLocalization {
   /// Current localization instance.
   static CountriesLocalization get current => _current;
   static late CountriesLocalization _current;
-
-  /// Regular expression for localyzed country name.
-  static RegExp countryNameRegExp = RegExp(r'\s+');
 
   /// Get localization instance for the widget structure.
   static CountriesLocalization of(BuildContext context) =>
@@ -60,7 +34,7 @@ final class CountriesLocalization extends generated.GeneratedLocalization {
 
   /// Get language by code.
   static ({String name, String nativeName})? getLanguageByCode(String code) {
-    log('code: $code');
+    log('code: $code', name: 'example_localization');
     return switch (_isoLangs[code.toLowerCase()]) {
       (String, String) lang => (name: lang.$1, nativeName: lang.$2),
       _ => null,
@@ -70,66 +44,6 @@ final class CountriesLocalization extends generated.GeneratedLocalization {
   /// Get supported locales.
   static List<Locale> get supportedLocales =>
       const generated.AppLocalizationDelegate().supportedLocales;
-
-  /// The localized country name for the given country code.
-  String? getCountryNameByCode(String code) {
-    switch (locale.languageCode) {
-      case 'zh':
-        switch (locale.scriptCode) {
-          case 'Hant':
-            return tw[code];
-          case 'Hans':
-          default:
-            return cn[code];
-        }
-      case 'tw':
-        return tw[code];
-      case 'el':
-        return gr[code];
-      case 'es':
-        return es[code];
-      case 'et':
-        return et[code];
-      case 'pt':
-        return pt[code];
-      case 'nb':
-        return nb[code];
-      case 'nn':
-        return nn[code];
-      case 'uk':
-        return uk[code];
-      case 'pl':
-        return pl[code];
-      case 'tr':
-        return tr[code];
-      case 'ru':
-        return ru[code];
-      case 'hi':
-      case 'ne':
-        return np[code];
-      case 'ar':
-        return ar[code];
-      case 'ku':
-        return ku[code];
-      case 'hr':
-        return hr[code];
-      case 'fr':
-        return fr[code];
-      case 'de':
-        return de[code];
-      case 'lv':
-        return lv[code];
-      case 'lt':
-        return lt[code];
-      case 'nl':
-        return nl[code];
-      case 'it':
-        return it[code];
-      case 'en':
-      default:
-        return en[code];
-    }
-  }
 }
 
 @immutable
@@ -137,17 +51,17 @@ final class _LocalizationView
     extends LocalizationsDelegate<CountriesLocalization> {
   @literal
   const _LocalizationView(
-    LocalizationsDelegate<generated.GeneratedLocalization> delegate,
+    LocalizationsDelegate<generated.ExampleLocalization> delegate,
   ) : _delegate = delegate;
 
-  final LocalizationsDelegate<generated.GeneratedLocalization> _delegate;
+  final LocalizationsDelegate<generated.ExampleLocalization> _delegate;
 
   @override
   bool isSupported(Locale locale) => _delegate.isSupported(locale);
 
   @override
   Future<CountriesLocalization> load(Locale locale) =>
-      generated.GeneratedLocalization.load(locale).then<CountriesLocalization>(
+      generated.ExampleLocalization.load(locale).then<CountriesLocalization>(
           (localization) =>
               CountriesLocalization._current = CountriesLocalization._(locale));
 

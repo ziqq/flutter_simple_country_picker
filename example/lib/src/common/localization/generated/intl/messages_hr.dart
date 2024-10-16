@@ -1,5 +1,5 @@
 // DO NOT EDIT. This is code generated via package:intl/generate_localized.dart
-// This is a library that provides messages for a tw locale. All the
+// This is a library that provides messages for a hr locale. All the
 // messages from the main program should be duplicated here with the same
 // function name.
 
@@ -18,15 +18,16 @@ final messages = new MessageLookup();
 typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 
 class MessageLookup extends MessageLookupByLibrary {
-  String get localeName => 'tw';
+  String get localeName => 'hr';
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "cancel": MessageLookupByLibrary.simpleMessage("取消"),
-        "language": MessageLookupByLibrary.simpleMessage("繁體中文"),
-        "languageCode": MessageLookupByLibrary.simpleMessage("zh-Hant"),
-        "localeCode": MessageLookupByLibrary.simpleMessage("zh_TW"),
-        "phonePlaceholder": MessageLookupByLibrary.simpleMessage("電話號碼"),
-        "search": MessageLookupByLibrary.simpleMessage("搜尋")
+        "cancel": MessageLookupByLibrary.simpleMessage("Otkazati"),
+        "language": MessageLookupByLibrary.simpleMessage("Hrvatski"),
+        "languageCode": MessageLookupByLibrary.simpleMessage("hr"),
+        "localeCode": MessageLookupByLibrary.simpleMessage("hr_HR"),
+        "phonePlaceholder":
+            MessageLookupByLibrary.simpleMessage("Broj telefona"),
+        "search": MessageLookupByLibrary.simpleMessage("Pretraga")
       };
 }

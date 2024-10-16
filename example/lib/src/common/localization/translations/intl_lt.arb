@@ -1,0 +1,21 @@
+{
+  "@@locale": "lt",
+  "localeCode": "lt_LT",
+  "@localeCode": {
+    "type": "text",
+    "description": "Locale code"
+  },
+  "languageCode": "lt",
+  "@languageCode": {
+    "type": "text",
+    "description": "Language code"
+  },
+  "language": "Lietuvių",
+  "@language": {
+    "type": "text",
+    "description": "Language"
+  },
+  "search": "Paieška",
+  "cancel": "Atšaukti",
+  "phonePlaceholder": "Telefono numeris"
+}

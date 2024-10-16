@@ -1,11 +1,11 @@
 {
-  "@@locale": "np",
-  "localeCode": "np_NP",
+  "@@locale": "ne",
+  "localeCode": "ne_NE",
   "@localeCode": {
     "type": "text",
     "description": "Locale code"
   },
-  "languageCode": "np",
+  "languageCode": "ne",
   "@languageCode": {
     "type": "text",
     "description": "Language code"

@@ -1,4 +1,8 @@
 ## 0.0.1-pre.4
+- **UPDATED**: `localizations`
+
+
+## 0.0.1-pre.4
 - **ADDED**: `CountryInputFormater`
 - **UPDATED**: `CountriesUtil`
 
@@ -8,7 +12,7 @@
 - **FIXED**: `ios`
 
 ## 0.0.1-pre.2
-- **ADDED**:  localizations
+- **ADDED**:  `localizations`
 
 ## 0.0.1-pre.1
 - Refactoring

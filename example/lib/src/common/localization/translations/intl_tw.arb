@@ -5,7 +5,7 @@
     "type": "text",
     "description": "Locale code"
   },
-  "languageCode": "tw",
+  "languageCode": "zh-Hant",
   "@languageCode": {
     "type": "text",
     "description": "Language code"
