@@ -152,7 +152,9 @@ class CountryInputFormatter implements TextInputFormatter {
 
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     final mask = _mask;
 
     if (mask == null || mask.isEmpty == true) {
@@ -357,7 +359,9 @@ class CountryInputFormatter implements TextInputFormatter {
 
     if (nonMaskedCount > 0) {
       _resultTextMasked = _resultTextMasked.substring(
-          0, _resultTextMasked.length - nonMaskedCount);
+        0,
+        _resultTextMasked.length - nonMaskedCount,
+      );
       cursorPos -= nonMaskedCount;
     }
 
@@ -369,12 +373,14 @@ class CountryInputFormatter implements TextInputFormatter {
         cursorPos < 0 ? _resultTextMasked.length : cursorPos;
 
     return TextEditingValue(
-        text: _resultTextMasked,
-        selection: TextSelection(
-            baseOffset: finalCursorPosition,
-            extentOffset: finalCursorPosition,
-            affinity: newValue.selection.affinity,
-            isDirectional: newValue.selection.isDirectional));
+      text: _resultTextMasked,
+      selection: TextSelection(
+        baseOffset: finalCursorPosition,
+        extentOffset: finalCursorPosition,
+        affinity: newValue.selection.affinity,
+        isDirectional: newValue.selection.isDirectional,
+      ),
+    );
   }
 
   void _calcMaskLength() {
