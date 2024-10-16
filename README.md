@@ -10,7 +10,7 @@
 
 
 
-<img src=".docs/images/full_example_light.png" width="405px"> <img src=".docs/images/full_example_dark.png"  width="405px"> <img src=".docs/images/filtered_example_light.png" width="405px">  <img src=".docs/images/filtered_example_dark.png" width="405px">
+<img src=".docs/images/full_example_light.png" width="408px"> <img src=".docs/images/full_example_dark.png"  width="408px"> <img src=".docs/images/filtered_example_light.png" width="408px">  <img src=".docs/images/filtered_example_dark.png" width="408px">
 
 
 
