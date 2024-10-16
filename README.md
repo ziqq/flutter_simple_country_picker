@@ -10,7 +10,7 @@
 
 
 
-<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/master/.docs/images/full_example_light.png" width="412.5px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/master/.docs/images/full_example_dark.png"  width="412.5px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/master/.docs/images/filtered_example_light.png" width="412.5px">  <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/master/.docs/images/filtered_example_dark.png" width="412.5px">
+<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/master/.docs/images/full_example_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/master/.docs/images/full_example_dark.png"  width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/master/.docs/images/filtered_example_light.png" width="385px">  <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/master/.docs/images/filtered_example_dark.png" width="385px">
 
 
 
