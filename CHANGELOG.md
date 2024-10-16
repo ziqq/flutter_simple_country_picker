@@ -1,3 +1,6 @@
+## 0.0.2
+- **FIXED**: Refactoring
+
 ## 0.0.1
 - **UPDATED**: `localizations`
 - **UPDATED**: `example's`

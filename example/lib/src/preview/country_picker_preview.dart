@@ -1,12 +1,7 @@
 import 'dart:async';
 
 import 'package:example/src/common/constant/constants.dart';
-import 'package:example/src/common/initialization/initialization.dart'
-    deferred as initialization;
-import 'package:example/src/common/util/app_zone.dart';
-import 'package:example/src/common/util/error_util.dart';
-import 'package:example/src/common/widget/app.dart' deferred as app;
-import 'package:example/src/common/widget/app_error.dart' deferred as app_error;
+import 'package:example/src/common/widget/app.dart';
 import 'package:example/src/common/widget/common_header.dart';
 import 'package:example/src/common/widget/common_padding.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,22 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:l/l.dart';
 
-void main() => appZone(
-      () async {
-        await initialization.loadLibrary();
-        initialization.$initializeApp(
-          onSuccess: (_) async {
-            await app.loadLibrary();
-            runApp(app.App(home: const CountryPickerPreview()));
-          },
-          onError: (error, stackTrace) async {
-            await app_error.loadLibrary();
-            runApp(app_error.AppError(error: error));
-            ErrorUtil.logError(error, stackTrace).ignore();
-          },
-        ).ignore();
-      },
-    );
+void main() => runApp(const App(home: CountryPickerPreview()));
 
 /// {@template county_picker_preview}
 /// CountryPickerPreview widget.

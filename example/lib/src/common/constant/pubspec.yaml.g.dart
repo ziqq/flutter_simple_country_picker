@@ -93,13 +93,13 @@ sealed class Pubspec {
   static const PubspecVersion version = (
     /// Non-canonical string representation of the version as provided
     /// in the pubspec.yaml file.
-    representation: r'0.0.1',
+    representation: r'0.0.2',
 
     /// Returns a 'canonicalized' representation
     /// of the application version.
     /// This represents the version string in accordance with
     /// Semantic Versioning (SemVer) standards.
-    canonical: r'0.0.1',
+    canonical: r'0.0.2',
 
     /// MAJOR version when you make incompatible API changes.
     /// The major version number: 1 in "1.2.3".
@@ -112,7 +112,7 @@ sealed class Pubspec {
 
     /// PATCH version when you make backward compatible bug fixes.
     /// The patch version number: 3 in "1.2.3".
-    patch: 1,
+    patch: 2,
 
     /// The pre-release identifier: "foo" in "1.2.3-foo".
     preRelease: <String>[],
@@ -126,11 +126,11 @@ sealed class Pubspec {
     2024,
     10,
     16,
-    12,
-    33,
-    38,
-    813,
-    235,
+    13,
+    44,
+    14,
+    70,
+    85,
   );
 
   /// Name
@@ -491,7 +491,6 @@ sealed class Pubspec {
     'dependencies': dependencies,
     'dev_dependencies': devDependencies,
     'dependency_overrides': dependencyOverrides,
-    'example': r'example/lib/src/preview/country_picker_preview.dart',
     'flutter': <String, Object>{
       'generate': true,
     },
