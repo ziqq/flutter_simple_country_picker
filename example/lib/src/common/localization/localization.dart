@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:example/src/common/localization/generated/l10n.dart'
     as generated show GeneratedLocalization, AppLocalizationDelegate;
 import 'package:flutter/widgets.dart';
@@ -21,8 +19,11 @@ final class ExampleLocalization extends generated.GeneratedLocalization {
   static late ExampleLocalization _current;
 
   /// Get localization instance for the widget structure.
-  static ExampleLocalization of(BuildContext context) => switch (
-          Localizations.of<ExampleLocalization>(context, ExampleLocalization)) {
+  static ExampleLocalization of(BuildContext context) =>
+      switch (Localizations.of<ExampleLocalization>(
+        context,
+        ExampleLocalization,
+      )) {
         ExampleLocalization localization => localization,
         _ => throw ArgumentError(
             'Out of scope, not found inherited widget '
@@ -32,13 +33,11 @@ final class ExampleLocalization extends generated.GeneratedLocalization {
       };
 
   /// Get language by code.
-  static ({String name, String nativeName})? getLanguageByCode(String code) {
-    log('code: $code', name: 'example_localization');
-    return switch (_isoLangs[code.toLowerCase()]) {
-      (String, String) lang => (name: lang.$1, nativeName: lang.$2),
-      _ => null,
-    };
-  }
+  static ({String name, String nativeName})? getLanguageByCode(String code) =>
+      switch (_isoLangs[code.toLowerCase()]) {
+        (String, String) lang => (name: lang.$1, nativeName: lang.$2),
+        _ => null,
+      };
 
   /// Get supported locales.
   static List<Locale> get supportedLocales =>

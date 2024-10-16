@@ -130,14 +130,23 @@ class _AppState extends State<App> {
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
 
-              ExampleLocalization.delegate,
-
               /// Add [CountriesLocalization] in app [localizationsDelegates]
-              /// to support country names in different languages.
-              ///
-              /// Must be last in the list.
               CountriesLocalization.delegate,
+
+              /// Example localization
+              ExampleLocalization.delegate,
             ],
+            localeResolutionCallback: (locale, supportedLocales) {
+              if (locale == null) {
+                return supportedLocales.first;
+              }
+              for (final supportedLocale in supportedLocales) {
+                if (supportedLocale.languageCode == locale.languageCode) {
+                  return supportedLocale;
+                }
+              }
+              return supportedLocales.first;
+            },
             builder: (context, _) => MediaQuery(
               key: _builderKey,
               data: MediaQuery.of(context).copyWith(

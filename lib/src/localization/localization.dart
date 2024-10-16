@@ -49,7 +49,9 @@ final class CountriesLocalization extends generated.GeneratedLocalization {
   /// Get localization instance for the widget structure.
   static CountriesLocalization of(BuildContext context) =>
       switch (Localizations.of<CountriesLocalization>(
-          context, CountriesLocalization)) {
+        context,
+        CountriesLocalization,
+      )) {
         CountriesLocalization localization => localization,
         _ => throw ArgumentError(
             'Out of scope, not found inherited widget '

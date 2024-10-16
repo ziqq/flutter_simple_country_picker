@@ -81,7 +81,7 @@ flutter:
 flutter_intl:
   enabled: true
   class_name: GeneratedLocalization
-  main_locale: ru
+  main_locale: en
   arb_dir: lib/src/localization/translations
   output_dir: lib/src/localization/generated
   use_deferred_loading: false

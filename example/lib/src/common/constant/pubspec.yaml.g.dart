@@ -126,11 +126,11 @@ sealed class Pubspec {
     2024,
     10,
     16,
-    11,
-    55,
-    18,
-    908,
-    84,
+    12,
+    33,
+    38,
+    813,
+    235,
   );
 
   /// Name
@@ -491,13 +491,14 @@ sealed class Pubspec {
     'dependencies': dependencies,
     'dev_dependencies': devDependencies,
     'dependency_overrides': dependencyOverrides,
+    'example': r'example/lib/src/preview/country_picker_preview.dart',
     'flutter': <String, Object>{
       'generate': true,
     },
     'flutter_intl': <String, Object>{
       'enabled': true,
       'class_name': r'GeneratedLocalization',
-      'main_locale': r'ru',
+      'main_locale': r'en',
       'arb_dir': r'lib/src/localization/translations',
       'output_dir': r'lib/src/localization/generated',
       'use_deferred_loading': false,

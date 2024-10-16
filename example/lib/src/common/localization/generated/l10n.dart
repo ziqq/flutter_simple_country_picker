@@ -51,30 +51,30 @@ class GeneratedLocalization {
         context, GeneratedLocalization);
   }
 
-  /// `ru_RU`
+  /// `en_US`
   String get localeCode {
     return Intl.message(
-      'ru_RU',
+      'en_US',
       name: 'localeCode',
       desc: 'Locale code',
       args: [],
     );
   }
 
-  /// `ru`
+  /// `en`
   String get languageCode {
     return Intl.message(
-      'ru',
+      'en',
       name: 'languageCode',
       desc: 'Language code',
       args: [],
     );
   }
 
-  /// `Русский`
+  /// `English`
   String get language {
     return Intl.message(
-      'Русский',
+      'English',
       name: 'language',
       desc: 'Language',
       args: [],
@@ -91,20 +91,20 @@ class GeneratedLocalization {
     );
   }
 
-  /// `Проверьте код страны и введите свой номер телефона.`
+  /// `Check the country code and enter your phone number.`
   String get description {
     return Intl.message(
-      'Проверьте код страны и введите свой номер телефона.',
+      'Check the country code and enter your phone number.',
       name: 'description',
       desc: '',
       args: [],
     );
   }
 
-  /// `Далее`
+  /// `Next`
   String get nextLable {
     return Intl.message(
-      'Далее',
+      'Next',
       name: 'nextLable',
       desc: '',
       args: [],
@@ -118,11 +118,10 @@ class AppLocalizationDelegate
 
   List<Locale> get supportedLocales {
     return const <Locale>[
-      Locale.fromSubtags(languageCode: 'ru'),
+      Locale.fromSubtags(languageCode: 'en'),
       Locale.fromSubtags(languageCode: 'ar'),
       Locale.fromSubtags(languageCode: 'cn'),
       Locale.fromSubtags(languageCode: 'de'),
-      Locale.fromSubtags(languageCode: 'en'),
       Locale.fromSubtags(languageCode: 'es'),
       Locale.fromSubtags(languageCode: 'et'),
       Locale.fromSubtags(languageCode: 'fr'),
@@ -138,6 +137,7 @@ class AppLocalizationDelegate
       Locale.fromSubtags(languageCode: 'np'),
       Locale.fromSubtags(languageCode: 'pl'),
       Locale.fromSubtags(languageCode: 'pt'),
+      Locale.fromSubtags(languageCode: 'ru'),
       Locale.fromSubtags(languageCode: 'tr'),
       Locale.fromSubtags(languageCode: 'tw'),
       Locale.fromSubtags(languageCode: 'uk'),
