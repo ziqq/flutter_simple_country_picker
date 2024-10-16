@@ -25,7 +25,7 @@ The Flutter package that provides an easy-to-use country selection widget. It al
  Add the package to your pubspec.yaml:
 
  ```yaml
- flutter_simple_country_picker: ^0.0.1
+ flutter_simple_country_picker: <version>
  ```
 
 
