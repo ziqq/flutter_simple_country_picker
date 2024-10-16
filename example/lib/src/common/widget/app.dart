@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:example/src/common/constant/constants.dart';
+import 'package:example/src/common/localization/generated/l10n.dart';
 import 'package:example/src/common/router/example_navigator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -131,6 +132,8 @@ class _AppState extends State<App> {
 
               /// Add [CountriesLocalization] in app [localizationsDelegates]
               CountriesLocalization.delegate,
+
+              ExampleLocalization.delegate,
             ],
             builder: (context, _) => MediaQuery(
               key: _builderKey,

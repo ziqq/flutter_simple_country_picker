@@ -15,7 +15,7 @@
     "type": "text",
     "description": "Language"
   },
-  "search": "Szukaj",
-  "cancel": "Anuluj",
-  "phonePlaceholder": "Numer telefonu"
+  "title": "Notatnik",
+  "description": "Sprawdź kod kraju i wprowadź swój numer telefonu.",
+  "nextLable": "Dalej"
 }

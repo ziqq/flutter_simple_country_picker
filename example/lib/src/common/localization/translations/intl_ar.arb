@@ -15,7 +15,7 @@
     "type": "text",
     "description": "Language"
   },
-  "search": "بحث",
-  "cancel": "إلغاء",
-  "phonePlaceholder": "رقم الهاتف"
+  "title": "تترادكا",
+  "description": "تحقق من رمز البلد وأدخل رقم هاتفك.",
+  "nextLable": "التالي"
 }

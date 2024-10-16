@@ -15,7 +15,7 @@
     "type": "text",
     "description": "Language"
   },
-  "search": "Buscar",
-  "cancel": "Cancelar",
-  "phonePlaceholder": "Número de telefone"
+  "title": "Caderno",
+  "description": "Verifique o código do país e insira seu número de telefone.",
+  "nextLable": "Próximo"
 }

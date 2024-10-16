@@ -15,7 +15,7 @@
     "type": "text",
     "description": "Language"
   },
-  "search": "Meklēšana",
-  "cancel": "Atcelt",
-  "phonePlaceholder": "Telefona numurs"
+  "title": "Tetradka",
+  "description": "Pārbaudiet valsts kodu un ievadiet savu tālruņa numuru.",
+  "nextLable": "Nākamais"
 }

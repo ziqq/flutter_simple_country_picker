@@ -80,31 +80,31 @@ class ExampleLocalization {
     );
   }
 
-  /// `Поиск`
-  String get search {
+  /// `Tetradka`
+  String get title {
     return Intl.message(
-      'Поиск',
-      name: 'search',
+      'Tetradka',
+      name: 'title',
       desc: '',
       args: [],
     );
   }
 
-  /// `Отмена`
-  String get cancel {
+  /// `Проверьте код страны и введите свой номер телефона.`
+  String get description {
     return Intl.message(
-      'Отмена',
-      name: 'cancel',
+      'Проверьте код страны и введите свой номер телефона.',
+      name: 'description',
       desc: '',
       args: [],
     );
   }
 
-  /// `Номер телефона`
-  String get phonePlaceholder {
+  /// `Далее`
+  String get nextLable {
     return Intl.message(
-      'Номер телефона',
-      name: 'phonePlaceholder',
+      'Далее',
+      name: 'nextLable',
       desc: '',
       args: [],
     );

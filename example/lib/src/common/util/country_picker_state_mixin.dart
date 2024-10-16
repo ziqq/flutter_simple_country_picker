@@ -23,16 +23,18 @@ import 'package:l/l.dart';
 /// {@macro county_picker_form_preview}
 mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
   /// Phone controller
-  final TextEditingController controller = TextEditingController();
+  late final TextEditingController controller;
 
   /// Selected country
-  final ValueNotifier<Country> selected = ValueNotifier(Country.mock());
-
-  /// Selected country
-  Country get _selectedCountry => selected.value;
+  late final ValueNotifier<Country> selected;
 
   /// Country input formater
   late final CountryInputFormater formater;
+
+  ScaffoldMessengerState? _messenger;
+
+  /// Selected country
+  Country get _selectedCountry => selected.value;
 
   /// Completed phone number
   String? get completedPhoneNumber =>
@@ -41,50 +43,83 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
   @override
   void initState() {
     super.initState();
-    formater = CountryInputFormater(
-      mask: _selectedCountry.mask,
-      filter: {'0': RegExp('[0-9]')},
-    );
+    final initialCountry = Country.mock();
+
+    controller = TextEditingController();
+    controller.addListener(_onPhoneChanged);
+
+    selected = ValueNotifier(initialCountry);
+    selected.addListener(_onSelectedChanged);
+
+    formater = CountryInputFormater(mask: initialCountry.mask);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _messenger = ScaffoldMessenger.maybeOf(context);
   }
 
   @override
   void dispose() {
-    controller.dispose();
-    selected.dispose();
+    controller
+      ..removeListener(_onPhoneChanged)
+      ..dispose();
+    selected
+      ..removeListener(_onSelectedChanged)
+      ..dispose();
     super.dispose();
+  }
+
+  void _onPhoneChanged() {
+    if (!mounted) return;
+    final phone = '+${selected.value.phoneCode} ${controller.text}';
+    l.d('phone: $phone');
+    // widget.controller?.value = phone;
+  }
+
+  void _onSelectedChanged() {
+    if (!mounted) return;
+
+    // Check if the mask is present
+    final mask = selected.value.mask;
+    if (mask == null || mask.isEmpty) return;
+
+    // Update the formatter mask
+    formater.updateMask(mask: mask);
+
+    // Format the current text in the controller after changing the mask
+    final oldValue = controller.value;
+    controller.text = formater.maskText(controller.text);
+    formater.formatEditUpdate(oldValue, controller.value);
   }
 
   /// Select the country.
   void onSelect(Country newCountry) {
-    l.i('Selected country $newCountry');
+    l.d('Selected country $newCountry');
     controller.clear();
     selected.value = newCountry;
-    formater.updateMask(mask: newCountry.mask);
-    setState(() {
-      // country = '${newCountry.flagEmoji} ${newCountry.nameLocalized}';
-      // countryCode = newCountry.phoneCode;
-      // countryFlag = newCountry.flagEmoji;
-      // mask = newCountry.mask;
-    });
   }
 
   /// Submit the form.
   void onSubmit({String? phone}) {
     HapticFeedback.heavyImpact().ignore();
-    ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-      SnackBar(
-        backgroundColor: CupertinoDynamicColor.resolve(
-          CupertinoColors.systemGreen,
-          context,
+    _messenger
+      ?..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          backgroundColor: CupertinoDynamicColor.resolve(
+            CupertinoColors.systemGreen,
+            context,
+          ),
+          content: Text(
+            'PHONE: ${phone ?? completedPhoneNumber}',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: CupertinoColors.white),
+          ),
         ),
-        content: Text(
-          'PHONE: ${phone ?? completedPhoneNumber}',
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(color: CupertinoColors.white),
-        ),
-      ),
-    );
+      );
   }
 }

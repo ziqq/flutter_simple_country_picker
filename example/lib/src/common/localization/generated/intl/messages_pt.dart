@@ -22,12 +22,12 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "cancel": MessageLookupByLibrary.simpleMessage("Cancelar"),
+        "description": MessageLookupByLibrary.simpleMessage(
+            "Verifique o código do país e insira seu número de telefone."),
         "language": MessageLookupByLibrary.simpleMessage("Português"),
         "languageCode": MessageLookupByLibrary.simpleMessage("pt"),
         "localeCode": MessageLookupByLibrary.simpleMessage("pt_PT"),
-        "phonePlaceholder":
-            MessageLookupByLibrary.simpleMessage("Número de telefone"),
-        "search": MessageLookupByLibrary.simpleMessage("Buscar")
+        "nextLable": MessageLookupByLibrary.simpleMessage("Próximo"),
+        "title": MessageLookupByLibrary.simpleMessage("Caderno")
       };
 }

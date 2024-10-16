@@ -15,7 +15,7 @@
     "type": "text",
     "description": "Language"
   },
-  "search": "搜索",
-  "cancel": "取消",
-  "phonePlaceholder": "电话号码"
+  "title": "Tetradka",
+  "description": "检查国家代码并输入您的电话号码。",
+  "nextLable": "下一步"
 }

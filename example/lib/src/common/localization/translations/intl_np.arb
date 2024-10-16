@@ -15,7 +15,7 @@
     "type": "text",
     "description": "Language"
   },
-  "search": "खोजी",
-  "cancel": "रद्द गर्नुहोस्",
-  "phonePlaceholder": "फोन नम्बर"
+  "title": "टेट्राडका",
+  "description": "देशको कोड जाँच गर्नुहोस् र तपाईंको फोन नम्बर प्रविष्ट गर्नुहोस्।",
+  "nextLable": "अर्को"
 }

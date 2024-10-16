@@ -53,7 +53,15 @@ flutter:
   generate: true
   uses-material-design: true
 
+  assets:
+    - assets/
+    - assets/icons/
+
+
   fonts:
+    - family: NotoColorEmoji
+      fonts:
+        - asset: assets/fonts/Noto-Color-Emoji-Regular.ttf
     - family: SF-Pro-Rounded
       fonts:
         - asset: assets/fonts/SF-Pro/SF-Pro-Rounded-Black.otf

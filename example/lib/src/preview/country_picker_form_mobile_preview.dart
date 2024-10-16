@@ -1,4 +1,5 @@
 import 'package:example/src/common/constant/constants.dart';
+import 'package:example/src/common/localization/generated/l10n.dart';
 import 'package:example/src/common/util/country_picker_state_mixin.dart';
 import 'package:example/src/common/widget/common_padding.dart';
 import 'package:flutter/cupertino.dart';
@@ -47,13 +48,13 @@ class _MobileState extends State<_Mobile> with CountryPickerPreviewStateMixin {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Mobile',
+              ExampleLocalization.of(context).title,
               style: Theme.of(context).textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: kDefaultPadding),
             Text(
-              'Проверьте код страны и введите свой номер телефона.',
+              ExampleLocalization.of(context).description,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: CupertinoDynamicColor.resolve(
                       CupertinoColors.secondaryLabel,

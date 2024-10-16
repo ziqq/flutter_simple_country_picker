@@ -15,7 +15,7 @@
     "type": "text",
     "description": "Language"
   },
-  "search": "Поиск",
-  "cancel": "Отмена",
-  "phonePlaceholder": "Номер телефона"
+  "title": "Tetradka",
+  "description": "Проверьте код страны и введите свой номер телефона.",
+  "nextLable": "Далее"
 }

@@ -15,7 +15,7 @@
     "type": "text",
     "description": "Language"
   },
-  "search": "Pretraga",
-  "cancel": "Otkazati",
-  "phonePlaceholder": "Broj telefona"
+  "title": "Tetradka",
+  "description": "Provjerite kôd zemlje i unesite svoj broj telefona.",
+  "nextLable": "Dalje"
 }

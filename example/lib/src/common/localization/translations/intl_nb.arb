@@ -15,7 +15,7 @@
     "type": "text",
     "description": "Language"
   },
-  "search": "Søk",
-  "cancel": "Avbryt",
-  "phonePlaceholder": "Telefonnummer"
+  "title": "Tetradka",
+  "description": "Sjekk landskoden og skriv inn telefonnummeret ditt.",
+  "nextLable": "Neste"
 }

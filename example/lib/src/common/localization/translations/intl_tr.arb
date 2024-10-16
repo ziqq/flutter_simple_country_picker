@@ -15,7 +15,7 @@
     "type": "text",
     "description": "Language"
   },
-  "search": "Arama",
-  "cancel": "İptal",
-  "phonePlaceholder": "Telefon numarası"
+  "title": "Tetradka",
+  "description": "Ülke kodunu kontrol edin ve telefon numaranızı girin.",
+  "nextLable": "İleri"
 }

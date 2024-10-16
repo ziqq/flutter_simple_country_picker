@@ -15,7 +15,7 @@
     "type": "text",
     "description": "Language"
   },
-  "search": "Recherche",
-  "cancel": "Annuler",
-  "phonePlaceholder": "Numéro de téléphone"
+  "title": "Tetradka",
+  "description": "Vérifiez le code pays et saisissez votre numéro de téléphone.",
+  "nextLable": "Suivant"
 }
