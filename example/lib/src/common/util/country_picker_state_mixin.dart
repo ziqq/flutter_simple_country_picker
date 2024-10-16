@@ -22,15 +22,18 @@ import 'package:l/l.dart';
 ///
 /// {@macro county_picker_form_preview}
 mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
+  String? _phone = '+7 888 123 4567'; // ignore: prefer_final_fields
+
   /// Phone controller
   late final TextEditingController controller;
-
-  /// Selected country
-  late final ValueNotifier<Country> selected;
 
   /// Country input formater
   late final CountryInputFormatter formater;
 
+  /// Selected country
+  late ValueNotifier<Country> selected;
+
+  /// Snackbar manager
   ScaffoldMessengerState? _messenger;
 
   /// Selected country
@@ -38,7 +41,7 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
 
   /// Completed phone number
   String? get completedPhoneNumber =>
-      '+${_selectedCountry.countryCode}${controller.text.replaceAll(" ", "")}';
+      '+${_selectedCountry.phoneCode}${controller.text.replaceAll(" ", "")}';
 
   @override
   void initState() {
@@ -48,10 +51,34 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
     controller = TextEditingController();
     controller.addListener(_onPhoneChanged);
 
+    formater = CountryInputFormatter(
+      mask: initialCountry.mask,
+      filter: {'0': RegExp('[0-9]')},
+    );
+
     selected = ValueNotifier(initialCountry);
     selected.addListener(_onSelectedChanged);
 
-    formater = CountryInputFormatter(mask: initialCountry.mask);
+    // If the controller has an initial value
+    if (_phone != null && _phone!.isNotEmpty) {
+      final oldValue = controller.value;
+      var text = _phone ?? '';
+
+      // Check if the phone code is not removed from the text
+      if (text.startsWith('+')) {
+        text = text.replaceFirst('+${selected.value.phoneCode} ', '');
+      }
+
+      controller.text = formater.maskText(text);
+
+      // Apply formatting to the new value
+      formater.formatEditUpdate(oldValue, controller.value);
+
+      // Update the cursor position
+      controller.selection = TextSelection.collapsed(
+        offset: controller.text.length,
+      );
+    }
   }
 
   @override
@@ -73,8 +100,10 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
 
   void _onPhoneChanged() {
     if (!mounted) return;
+    if (controller.text == formater.getMaskedText()) return;
     final phone = '+${selected.value.phoneCode} ${controller.text}';
     l.d('phone: $phone');
+    // Update the external controller if it is present
     // widget.controller?.value = phone;
   }
 

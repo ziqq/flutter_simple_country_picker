@@ -1,33 +1,32 @@
 import 'dart:developer';
 
 import 'package:example/src/common/localization/generated/l10n.dart'
-    as generated show ExampleLocalization, AppLocalizationDelegate;
+    as generated show GeneratedLocalization, AppLocalizationDelegate;
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
-/// CountriesLocalization.
-final class CountriesLocalization extends generated.ExampleLocalization {
-  CountriesLocalization._(this.locale);
+/// ExampleLocalization.
+final class ExampleLocalization extends generated.GeneratedLocalization {
+  ExampleLocalization._(this.locale);
 
   ///
   final Locale locale;
 
-  /// CountriesLocalization delegate.
-  static const LocalizationsDelegate<CountriesLocalization> delegate =
+  /// ExampleLocalization delegate.
+  static const LocalizationsDelegate<ExampleLocalization> delegate =
       _LocalizationView(generated.AppLocalizationDelegate());
 
   /// Current localization instance.
-  static CountriesLocalization get current => _current;
-  static late CountriesLocalization _current;
+  static ExampleLocalization get current => _current;
+  static late ExampleLocalization _current;
 
   /// Get localization instance for the widget structure.
-  static CountriesLocalization of(BuildContext context) =>
-      switch (Localizations.of<CountriesLocalization>(
-          context, CountriesLocalization)) {
-        CountriesLocalization localization => localization,
+  static ExampleLocalization of(BuildContext context) => switch (
+          Localizations.of<ExampleLocalization>(context, ExampleLocalization)) {
+        ExampleLocalization localization => localization,
         _ => throw ArgumentError(
             'Out of scope, not found inherited widget '
-                'a CountriesLocalization of the exact type',
+                'a ExampleLocalization of the exact type',
             'out_of_scope',
           ),
       };
@@ -48,22 +47,22 @@ final class CountriesLocalization extends generated.ExampleLocalization {
 
 @immutable
 final class _LocalizationView
-    extends LocalizationsDelegate<CountriesLocalization> {
+    extends LocalizationsDelegate<ExampleLocalization> {
   @literal
   const _LocalizationView(
-    LocalizationsDelegate<generated.ExampleLocalization> delegate,
+    LocalizationsDelegate<generated.GeneratedLocalization> delegate,
   ) : _delegate = delegate;
 
-  final LocalizationsDelegate<generated.ExampleLocalization> _delegate;
+  final LocalizationsDelegate<generated.GeneratedLocalization> _delegate;
 
   @override
   bool isSupported(Locale locale) => _delegate.isSupported(locale);
 
   @override
-  Future<CountriesLocalization> load(Locale locale) =>
-      generated.ExampleLocalization.load(locale).then<CountriesLocalization>(
+  Future<ExampleLocalization> load(Locale locale) =>
+      generated.GeneratedLocalization.load(locale).then<ExampleLocalization>(
           (localization) =>
-              CountriesLocalization._current = CountriesLocalization._(locale));
+              ExampleLocalization._current = ExampleLocalization._(locale));
 
   @override
   bool shouldReload(covariant _LocalizationView old) =>

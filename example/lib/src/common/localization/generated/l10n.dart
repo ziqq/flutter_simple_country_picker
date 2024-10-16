@@ -12,42 +12,43 @@ import 'intl/messages_all.dart';
 // ignore_for_file: join_return_with_assignment, prefer_final_in_for_each
 // ignore_for_file: avoid_redundant_argument_values, avoid_escaping_inner_quotes
 
-class ExampleLocalization {
-  ExampleLocalization();
+class GeneratedLocalization {
+  GeneratedLocalization();
 
-  static ExampleLocalization? _current;
+  static GeneratedLocalization? _current;
 
-  static ExampleLocalization get current {
+  static GeneratedLocalization get current {
     assert(_current != null,
-        'No instance of ExampleLocalization was loaded. Try to initialize the ExampleLocalization delegate before accessing ExampleLocalization.current.');
+        'No instance of GeneratedLocalization was loaded. Try to initialize the GeneratedLocalization delegate before accessing GeneratedLocalization.current.');
     return _current!;
   }
 
   static const AppLocalizationDelegate delegate = AppLocalizationDelegate();
 
-  static Future<ExampleLocalization> load(Locale locale) {
+  static Future<GeneratedLocalization> load(Locale locale) {
     final name = (locale.countryCode?.isEmpty ?? false)
         ? locale.languageCode
         : locale.toString();
     final localeName = Intl.canonicalizedLocale(name);
     return initializeMessages(localeName).then((_) {
       Intl.defaultLocale = localeName;
-      final instance = ExampleLocalization();
-      ExampleLocalization._current = instance;
+      final instance = GeneratedLocalization();
+      GeneratedLocalization._current = instance;
 
       return instance;
     });
   }
 
-  static ExampleLocalization of(BuildContext context) {
-    final instance = ExampleLocalization.maybeOf(context);
+  static GeneratedLocalization of(BuildContext context) {
+    final instance = GeneratedLocalization.maybeOf(context);
     assert(instance != null,
-        'No instance of ExampleLocalization present in the widget tree. Did you add ExampleLocalization.delegate in localizationsDelegates?');
+        'No instance of GeneratedLocalization present in the widget tree. Did you add GeneratedLocalization.delegate in localizationsDelegates?');
     return instance!;
   }
 
-  static ExampleLocalization? maybeOf(BuildContext context) {
-    return Localizations.of<ExampleLocalization>(context, ExampleLocalization);
+  static GeneratedLocalization? maybeOf(BuildContext context) {
+    return Localizations.of<GeneratedLocalization>(
+        context, GeneratedLocalization);
   }
 
   /// `ru_RU`
@@ -112,7 +113,7 @@ class ExampleLocalization {
 }
 
 class AppLocalizationDelegate
-    extends LocalizationsDelegate<ExampleLocalization> {
+    extends LocalizationsDelegate<GeneratedLocalization> {
   const AppLocalizationDelegate();
 
   List<Locale> get supportedLocales {
@@ -147,8 +148,8 @@ class AppLocalizationDelegate
   @override
   bool isSupported(Locale locale) => _isSupported(locale);
   @override
-  Future<ExampleLocalization> load(Locale locale) =>
-      ExampleLocalization.load(locale);
+  Future<GeneratedLocalization> load(Locale locale) =>
+      GeneratedLocalization.load(locale);
   @override
   bool shouldReload(AppLocalizationDelegate old) => false;
 

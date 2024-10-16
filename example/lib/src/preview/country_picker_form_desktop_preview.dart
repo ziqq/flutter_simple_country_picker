@@ -3,7 +3,7 @@
 import 'package:collection/collection.dart';
 import 'package:example/src/common/constant/constants.dart';
 import 'package:example/src/common/constant/fonts.gen.dart';
-import 'package:example/src/common/localization/generated/l10n.dart';
+import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/util/country_picker_state_mixin.dart';
 import 'package:example/src/common/widget/common_padding.dart';
 import 'package:flutter/cupertino.dart';
@@ -184,7 +184,6 @@ class CountryInputDesktop extends StatelessWidget {
                 placeholder: selectedCountry.mask,
                 style: textTheme.bodyLarge,
                 padding: EdgeInsets.zero,
-                keyboardType: TextInputType.phone,
                 decoration: const BoxDecoration(
                   color: Colors.transparent,
                 ),

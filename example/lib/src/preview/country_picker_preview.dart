@@ -3,6 +3,7 @@ import 'package:example/src/common/widget/common_header.dart';
 import 'package:example/src/common/widget/common_padding.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:l/l.dart';
 
@@ -19,21 +20,28 @@ class CountryPickerPreview extends StatefulWidget {
 
 /// State for [CountryPickerPreview].
 class _CountryPickerPreviewState extends State<CountryPickerPreview> {
-  String _country = '🇷🇺 Россия';
-  String _countryCode = '7';
-  String? _mask = '000 000 0000';
+  final ValueNotifier<Country> _selected = ValueNotifier(Country.mock());
 
   void _onSelect(Country country) {
+    HapticFeedback.heavyImpact().ignore();
     l.i('New country $country');
-    setState(() {
-      _country = '${country.flagEmoji} ${country.nameLocalized}';
-      _countryCode = country.phoneCode;
-      _mask = country.mask;
-    });
-    l
-      ..i('Country: $_country')
-      ..i('Country code: $_countryCode')
-      ..i('Country mask: $_mask');
+    _selected.value = country;
+    _showSnackBar();
+  }
+
+  void _showSnackBar() {
+    HapticFeedback.heavyImpact().ignore();
+    ScaffoldMessenger.maybeOf(context)
+      ?..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          backgroundColor: CupertinoDynamicColor.resolve(
+            CupertinoColors.secondarySystemBackground,
+            context,
+          ),
+          content: Text('Selected country: ${_selected.value.name}'),
+        ),
+      );
   }
 
   @override
