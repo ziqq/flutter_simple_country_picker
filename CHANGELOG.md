@@ -1,3 +1,6 @@
+## 0.1.1
+- **UPDATED**: [README](https://github.com/ziqq/flutter_simple_country_picker/blob/master/README.md)
+
 ## 0.1.0
 - **UPDATED**: `example's`
 
