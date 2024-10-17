@@ -99,7 +99,10 @@ Optional argumets of the `showCountryPicker` function:
 | `onDone`            | Callback when the CountryPicker is dismissed, whether a country is selected or not. |
 
 
-## [All countries list](https://github.com/ziqq/flutter_simple_country_picker/wiki/All-Countries-list)
+
+## All countries list
+
+To view a complete list of countries, please refer to the [All countries list](https://github.com/ziqq/flutter_simple_country_picker/wiki/All-Countries-list).
 
 
 
