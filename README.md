@@ -1,6 +1,7 @@
-[![Pub Version](https://img.shields.io/pub/v/flutter_simple_country_picker?color=blueviolet)](https://pub.dev/packages/flutter_simple_country_picker)
-[![popularity](https://img.shields.io/pub/popularity/flutter_simple_country_picker?logo=dart)](https://pub.dev/packages/flutter_simple_country_picker/score)
-[![likes](https://img.shields.io/pub/likes/flutter_simple_country_picker?logo=dart)](https://pub.dev/packages/flutter_simple_country_picker/score)
+[![Dart SDK Version](https://badgen.net/pub/sdk-version/pull_down_button)](https://pub.dev/packages/flutter_simple_country_picker)
+[![Pub Version](https://img.shields.io/pub/v/pull_down_button)](https://pub.dev/packages/flutter_simple_country_picker)
+[![Pub Likes](https://img.shields.io/pub/likes/pull_down_button)](https://pub.dev/packages/flutter_simple_country_picker)
+<!-- [![popularity](https://img.shields.io/pub/popularity/flutter_simple_country_picker?logo=dart)](https://pub.dev/packages/flutter_simple_country_picker/score) -->
 [![codecov](https://codecov.io/gh/ziqq/flutter_simple_country_picker/graph/badge.svg?token=fpn56ea0L8)](https://codecov.io/gh/ziqq/flutter_simple_country_picker)
 [![style: flutter lints](https://img.shields.io/badge/style-flutter__lints-blue)](https://pub.dev/packages/flutter_lints)
 
