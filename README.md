@@ -92,7 +92,7 @@ Optional argumets of the `showCountryPicker` function:
 | `isScrollControlled`| Controls the scrolling behavior of the modal window.                                |
 | `useHaptickFeedback`| Enables haptic feedback.                                                            |
 | `useSafeArea`       | Enables the safe area for the modal window.                                         |
-| `onSelect`          | Callback when the select a country. |
+| `onSelect`          | Callback when the select a country.                                                 |
 | `onDone`            | Callback when the CountryPicker is dismissed, whether a country is selected or not. |
 
 
@@ -358,7 +358,7 @@ If you want to support the development of our library, there are several ways yo
 
 ## License
 
-[MIT](https://github.com/ziqq/flutter_in_store_app_version_checker/blob/main/LICENSE)
+[MIT](https://github.com/ziqq/flutter_simple_country_picker/blob/master/LICENSE)
 
 
 
