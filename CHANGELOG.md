@@ -1,3 +1,6 @@
+## 0.1.2
+- **UPDATED**: Bump `flutter_lints`
+
 ## 0.1.1
 - **UPDATED**: [README](https://github.com/ziqq/flutter_simple_country_picker/blob/master/README.md)
 

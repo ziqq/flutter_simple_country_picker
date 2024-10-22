@@ -1,4 +1,4 @@
-library flutter_simple_country_picker;
+library;
 
 export 'src/constant/typedef.dart';
 export 'src/controller/countries_state.dart';
