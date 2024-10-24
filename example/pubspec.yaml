@@ -23,7 +23,6 @@ dependencies:
   collection: any
   async: any
   meta: any
-  l: ^4.0.2
   platform_info: ^5.0.0
 
   # Ui & Widgets

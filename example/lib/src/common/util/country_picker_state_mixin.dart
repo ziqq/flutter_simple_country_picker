@@ -1,10 +1,11 @@
 // Anton Ustinoff <a.a.ustinoff@gmail.com>, 14 October 2024
 
+import 'dart:developer' as dev;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
-import 'package:l/l.dart';
 
 /// CountryPickerPreviewStateMixin.
 ///
@@ -102,7 +103,7 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
     if (!mounted) return;
     if (controller.text == formater.getMaskedText()) return;
     final phone = '+${selected.value.phoneCode} ${controller.text}';
-    l.d('phone: $phone');
+    dev.log('phone: $phone');
     // Update the external controller if it is present
     // widget.controller?.value = phone;
   }
@@ -125,7 +126,7 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
 
   /// Select the country.
   void onSelect(Country newCountry) {
-    l.d('Selected country $newCountry');
+    dev.log('Selected country $newCountry');
     controller.clear();
     selected.value = newCountry;
   }

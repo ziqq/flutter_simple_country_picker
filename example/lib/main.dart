@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:example/src/common/constant/constants.dart';
 import 'package:example/src/common/util/app_zone.dart';
 import 'package:example/src/common/widget/app.dart';
@@ -7,7 +9,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
-import 'package:l/l.dart';
 
 void main() =>
     appZone(() async => runApp(const App(home: CountryPickerPreview())));
@@ -29,7 +30,7 @@ class _CountryPickerPreviewState extends State<CountryPickerPreview> {
 
   void _onSelect(Country country) {
     HapticFeedback.heavyImpact().ignore();
-    l.i('New country $country');
+    log('New country $country');
     _selected.value = country;
     _showSnackBar();
   }
