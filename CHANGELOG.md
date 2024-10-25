@@ -1,3 +1,6 @@
+## 0.2.1
+- Refactoring
+
 ## 0.2.0
 - **ADDED**: Tests
 
