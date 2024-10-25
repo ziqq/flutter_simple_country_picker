@@ -6,6 +6,7 @@ import 'unit_test/countries_parser_test.dart' as unit_countries_parser_test;
 import 'unit_test/countries_provider_test.dart' as unit_country_provider_test;
 import 'unit_test/countries_state_test.dart' as unit_countries_state_test;
 import 'unit_test/countries_util_test.dart' as unit_countries_util_test;
+import 'unit_test/country_codes_test.dart' as unit_country_codes_test;
 import 'unit_test/country_input_formater_test.dart'
     as unit_country_input_formater_test;
 import 'unit_test/country_picker_theme_test.dart'
@@ -34,6 +35,7 @@ void main() {
       unit_country_provider_test.main();
       unit_countries_state_test.main();
       unit_countries_util_test.main();
+      unit_country_codes_test.main();
       unit_country_test.main();
       unit_country_picker_theme_test.main();
     });
