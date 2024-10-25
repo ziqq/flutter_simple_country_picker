@@ -1,4 +1,4 @@
-name: Checkout
+name: "Checkout"
 
 
 on:
@@ -41,9 +41,128 @@ on:
 
 jobs:
   checkout:
-    uses: ziqq/flutter_ci_workflows/.github/workflows/checkout.yml@main
-  testing:
-    needs: [checkout]
-    uses: ziqq/flutter_ci_workflows/.github/workflows/testing_with_codecov_report.yml@main
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    name: Checkout
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./
+    env:
+      pub-cache-name: pub
+      threshold: 50
+    timeout-minutes: 15
+    steps:
+      - name: 🚂 Get latest code
+        id: checkout
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github
+            pubspec.yaml
+            lib
+            test
+            analysis_options.yaml
+            CHANGELOG.md
+
+      - name: 🔎 Check content
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "README.md, CHANGELOG.md, CONTRIBUTING.md, LICENSE, example"
+
+      - name: ❔ File exists
+        if: steps.check_files.outputs.files_exists == 'true'
+        run: echo Content is ok!
+
+      - name: 🔎 Check description
+        run: echo | grep -q Description README.md ; echo $?
+
+      - name: 🔎 Check example
+        run: echo | grep -q Example README.md ; echo $?
+
+      - name: 🔎 Check installation
+        run: echo | grep -q Installation README.md ; echo $?
+
+      - name: 👷 Install flutter
+        uses: subosito/flutter-action@v2
+        id: install-flutter
+        with:
+          channel: 'stable'
+
+      - name: 🔎 Check flutter version
+        id: check-flutter-version
+        run: flutter --version
+
+      - name: 📤 Restore Pub modules
+        id: cache-pub-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: /home/runner/.pub-cache
+          key: ${{ runner.os }}-pub-${{ env.pub-cache-name }}-${{ hashFiles('**/pubspec.yaml') }}
+
+      - name: 🗄️ Export Pub cache directory
+        id: export-pub-cache
+        timeout-minutes: 1
+        run: |
+          export PUB_CACHE=/home/runner/.pub-cache
+          export PATH="$PATH":"$HOME/.pub-cache/bin"
+          echo "${HOME}/.pub-cache/bin" >> $GITHUB_PATH
+
+      # - name: 👷 Install dependencies
+      #   run: flutter pub get
+
+      # - name: 👷 Install Dependencies
+      #   id: install-dependencies
+      #   timeout-minutes: 2
+      #   run: |
+      #     apt-get update && apt-get install -y lcov
+      #     flutter pub get --no-example
+
+      - name: 👷 Install Dependencies
+        id: install-dependencies
+        shell: bash
+        run: |
+          apt-get update && apt-get install -y lcov
+          echo /home/runner/.pub-cache/bin >> $GITHUB_PATH
+          flutter config --no-cli-animations --no-analytics
+          flutter pub get
+
+      - name: 📥 Save Pub modules
+        id: cache-pub-save
+        if: steps.cache-pub-restore.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.pub-cache
+          key: ${{ runner.os }}-pub-${{ env.pub-cache-name }}-${{ hashFiles('**/pubspec.yaml') }}
+
+      - name: 🧪 Run dependency validator
+        run: |
+          dart pub global activate dependency_validator
+          dart pub global run dependency_validator:dependency_validator
+
+      - name: 🔎 Check format
+        id: check_format
+        run: |
+          find lib test -name "*.dart" -print0 | xargs -0 dart format --set-exit-if-changed --line-length 80
+
+      - name: 🔎 Check for Warnings
+        id: check-analyzer
+        run: |
+          flutter analyze --fatal-infos --fatal-warnings lib/ test/
+
+      - name: 🧪 Unit & Widget tests
+        run: |
+          flutter test --coverage --concurrency=40 test/flutter_simple_country_picker_test.dart
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+
+      - name: Upload test report
+        uses: dorny/test-reporter@v1
+        with:
+          name: "Test report"
+          path: "reports/tests.json"
+          reporter: flutter-json
+          fail-on-error: "false"
