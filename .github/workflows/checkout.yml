@@ -49,6 +49,11 @@ jobs:
     env:
       pub-cache-name: pub
       threshold: 50
+    permissions:
+      actions: read
+      id-token: write
+      contents: read
+      checks: write
     timeout-minutes: 15
     steps:
       - name: 🚂 Get latest code
@@ -64,14 +69,14 @@ jobs:
             CHANGELOG.md
 
       - name: 🔎 Check content
-        id: check_files
+        id: check-files
         uses: andstor/file-existence-action@v1
         with:
           files: "README.md, CHANGELOG.md, CONTRIBUTING.md, LICENSE, example"
 
       - name: ❔ File exists
-        if: steps.check_files.outputs.files_exists == 'true'
-        run: echo Content is ok!
+        if: steps.check-files.outputs.files_exists == 'true'
+        run: echo Content is OK!
 
       - name: 🔎 Check description
         run: echo | grep -q Description README.md ; echo $?
