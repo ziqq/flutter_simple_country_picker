@@ -1,3 +1,6 @@
+## 0.2.0
+- **ADDED**: Tests
+
 ## 0.1.3
 - **UPDATED**: `SafeArea` from `CountriesList`
 
