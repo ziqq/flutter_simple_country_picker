@@ -8,18 +8,6 @@ import 'package:flutter_simple_country_picker/src/util/countries_util.dart';
 import 'package:meta/meta.dart';
 
 /// {@template country}
-/// CountryHelper class
-/// {@endtemplate}
-/// Country Singleton class
-class CountryHelper {
-  static final CountryHelper _internalSingleton = CountryHelper._internal();
-
-  /// {@macro country}
-  factory CountryHelper() => _internalSingleton;
-  CountryHelper._internal();
-}
-
-/// {@template country}
 /// The country Model that has all the country
 /// information needed from the [flutter_simple_country_picker]
 /// {@endtemplate}
