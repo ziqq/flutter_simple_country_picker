@@ -90,7 +90,7 @@ coverage: ## Runs get coverage
 				@lcov --summary coverage/lcov.info
 
 .PHONY: test
-test: ## Runs tests
+test: ## Runs unit and widget tests
 				@fvm flutter test --coverage test/flutter_simple_country_picker_test.dart
 				@lcov --remove coverage/lcov.info 'lib/src/localization/*' -o coverage/lcov.info
 				@genhtml coverage/lcov.info --output=coverage -o coverage/html || (echo "Error while running genhtml with coverage"; exit 2)
