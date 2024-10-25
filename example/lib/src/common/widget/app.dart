@@ -3,36 +3,13 @@
 import 'package:example/src/common/constant/constants.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/router/example_navigator.dart';
+import 'package:example/src/common/theme/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:pull_down_button/pull_down_button.dart';
-
-/// App light theme.
-final ThemeData _themeLight = ThemeData.light().copyWith(
-  cupertinoOverrideTheme: const CupertinoThemeData(
-    primaryColor: CupertinoColors.black,
-    primaryContrastingColor: CupertinoColors.white,
-  ),
-  scaffoldBackgroundColor: CupertinoColors.systemBackground,
-  appBarTheme: const AppBarTheme(
-    backgroundColor: CupertinoColors.systemBackground,
-  ),
-);
-
-/// App dark theme.
-final ThemeData _themeDark = ThemeData.dark().copyWith(
-  cupertinoOverrideTheme: const CupertinoThemeData(
-    primaryColor: CupertinoColors.white,
-    primaryContrastingColor: CupertinoColors.black,
-  ),
-  scaffoldBackgroundColor: CupertinoColors.systemBackground.darkColor,
-  appBarTheme: AppBarTheme(
-    backgroundColor: CupertinoColors.systemBackground.darkColor,
-  ),
-);
 
 /// {@template app}
 /// App widget.
@@ -120,9 +97,9 @@ class _AppState extends State<App> {
           builder: (context, locale, _) => MaterialApp(
             title: 'Country picker example',
             debugShowCheckedModeBanner: false,
+            darkTheme: AppThemeData.dark(),
+            theme: AppThemeData.light(),
             themeMode: themeMode,
-            theme: _themeLight,
-            darkTheme: _themeDark,
             locale: locale,
             supportedLocales: ExampleLocalization.supportedLocales,
             localizationsDelegates: const [

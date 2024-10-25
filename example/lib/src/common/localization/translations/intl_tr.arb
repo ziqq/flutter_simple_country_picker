@@ -17,5 +17,6 @@
   },
   "title": "Tetradka",
   "description": "Ülke kodunu kontrol edin ve telefon numaranızı girin.",
-  "nextLable": "İleri"
+  "nextLable": "İleri",
+  "passwordLable": "Şifre"
 }

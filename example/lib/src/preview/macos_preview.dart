@@ -4,7 +4,10 @@ import 'package:collection/collection.dart';
 import 'package:example/src/common/constant/constants.dart';
 import 'package:example/src/common/constant/fonts.gen.dart';
 import 'package:example/src/common/localization/localization.dart';
+import 'package:example/src/common/util/app_zone.dart';
 import 'package:example/src/common/util/country_picker_state_mixin.dart';
+import 'package:example/src/common/widget/app.dart';
+import 'package:example/src/common/widget/common_logo.dart';
 import 'package:example/src/common/widget/common_padding.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -13,13 +16,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
-/// Default height for [CountryPickerDesktop].
+/// Default height for [CountryPicker] for macOS.
 const double _kDefaultCountyInputHeight = 44;
 
-/// {@template county_picker_desktop_preview}
-/// CountryPickerForm$DesktopPreview widget.
+void main() => appZone(() async => runApp(const App(home: MacOSPreview())));
+
+/// {@template county_picker_macos_preview}
+/// MacOSPreview widget.
 ///
-/// This widget is showed another way how to use [CountryPicker].
+/// This widget is showed another way how to use [CountryPicker] in macOS.
 ///
 /// You can use [CountryPickerScope] widget to give a list of countries
 /// and use countries list how you want.
@@ -27,119 +32,93 @@ const double _kDefaultCountyInputHeight = 44;
 /// And more you can use search controller from [CountryPickerScope]
 /// to find a country by name or code.
 /// {@endtemplate}
-class CountryPickerForm$DesktopPreview extends StatefulWidget {
-  /// {@macro county_picker_desktop_preview}
-  const CountryPickerForm$DesktopPreview({
+class MacOSPreview extends StatefulWidget {
+  /// {@macro county_picker_macos_preview}
+  const MacOSPreview({
     super.key, // ignore: unused_element
   });
 
   /// Title of the widget.
-  static const String title = 'Destop';
+  static const String title = 'macOS';
 
   @override
-  State<CountryPickerForm$DesktopPreview> createState() =>
-      _CountryPickerForm$DesktopPreviewState();
+  State<MacOSPreview> createState() => _DesktopPreviewState();
 }
 
-/// State for widget [CountryPickerForm$DesktopPreview].
-class _CountryPickerForm$DesktopPreviewState
-    extends State<CountryPickerForm$DesktopPreview>
+/// State for widget [MacOSPreview].
+class _DesktopPreviewState extends State<MacOSPreview>
     with CountryPickerPreviewStateMixin {
   @override
   Widget build(BuildContext context) {
     final localization = ExampleLocalization.of(context);
-    final theme = Theme.of(context);
-    return Padding(
-      padding: CommonPadding.of(context),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 38,
-            child: ClipOval(
-              child: Image.asset(
-                'assets/icons/icon-1024x1024.jpg',
-                width: 100,
-                height: 100,
-              ),
-            ),
-          ),
-          const SizedBox(height: kDefaultPadding),
-          Text(
-            localization.title,
-            style: theme.textTheme.headlineSmall,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: kDefaultPadding),
-          Text(
-            localization.description,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: CupertinoDynamicColor.resolve(
-                CupertinoColors.secondaryLabel,
-                context,
-              ),
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: kDefaultPadding * 2),
-          ClipRRect(
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-            child: CupertinoListSection.insetGrouped(
-              margin: EdgeInsets.zero,
-              additionalDividerMargin: 0,
-              backgroundColor: CupertinoDynamicColor.resolve(
-                CupertinoColors.secondarySystemBackground,
-                context,
-              ),
-              decoration: BoxDecoration(
-                color: CupertinoDynamicColor.resolve(
+    return Scaffold(
+      body: Padding(
+        padding: CommonPadding.of(context),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // --- Logo --- //
+            const CommonLogo.text(),
+            const SizedBox(height: kDefaultPadding * 2),
+            ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              child: CupertinoListSection.insetGrouped(
+                margin: EdgeInsets.zero,
+                additionalDividerMargin: 0,
+                backgroundColor: CupertinoDynamicColor.resolve(
                   CupertinoColors.secondarySystemBackground,
                   context,
                 ),
-              ),
-              children: [
-                CountryPickerDesktop(
-                  onSelect: onSelect,
-                  selected: selected,
+                decoration: BoxDecoration(
+                  color: CupertinoDynamicColor.resolve(
+                    CupertinoColors.secondarySystemBackground,
+                    context,
+                  ),
                 ),
-                CountryInputDesktop(
-                  controller: controller,
-                  inputFormatters: [formater],
-                  selected: selected,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: kDefaultPadding),
-          SizedBox(
-            height: 32,
-            width: 100,
-            child: CupertinoButton(
-              padding: EdgeInsets.zero,
-              color: CupertinoDynamicColor.resolve(
-                CupertinoColors.systemBlue,
-                context,
-              ),
-              onPressed: onSubmit,
-              child: Text(
-                localization.nextLable,
-                style: Theme.of(context).textTheme.bodyMedium,
+                children: [
+                  CountryPicker$MacOS(
+                    onSelect: onSelect,
+                    selected: selected,
+                  ),
+                  CountryInput$MacOS(
+                    controller: controller,
+                    inputFormatters: [formater],
+                    selected: selected,
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: kDefaultPadding),
+            SizedBox(
+              height: 32,
+              width: 100,
+              child: CupertinoButton(
+                padding: EdgeInsets.zero,
+                color: CupertinoDynamicColor.resolve(
+                  CupertinoColors.systemBlue,
+                  context,
+                ),
+                onPressed: onSubmit,
+                child: Text(
+                  localization.nextLable,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-/// {@template country_input_desktop}
-/// CountryInputDesktop widget.
+/// {@template country_input_macos}
+/// CountryInput$MacOS widget.
 /// {@endtemplate}
-class CountryInputDesktop extends StatelessWidget {
-  /// {@macro country_input_desktop}
-  const CountryInputDesktop({
+class CountryInput$MacOS extends StatelessWidget {
+  /// {@macro country_input_macos}
+  const CountryInput$MacOS({
     required this.selected,
     this.controller,
     this.inputFormatters,
@@ -196,26 +175,26 @@ class CountryInputDesktop extends StatelessWidget {
   }
 }
 
-/// {@template county_input}
-/// CountryInput widget.
+/// {@template county_picker_macos}
+/// CountryPicker$MacOS widget.
 /// {@endtemplate}
-class CountryPickerDesktop extends StatefulWidget {
-  /// {@macro county_input}
-  const CountryPickerDesktop({
-    this.placeholder = 'Phone number',
-    this.onDone,
+class CountryPicker$MacOS extends StatefulWidget {
+  /// {@macro county_picker_macos}
+  const CountryPicker$MacOS({
+    this.placeholder = 'Phone number', // ignore: unused_element
+    this.onDone, // ignore: unused_element
     this.onSelect,
     this.selected,
-    this.exclude,
-    this.favorite,
-    this.filter,
-    this.isScrollControlled = false,
-    this.showPhoneCode = false,
-    this.showWorldWide = false,
-    this.useAutofocus = false,
-    this.useHaptickFeedback = true,
-    this.showSearch,
-    super.key,
+    this.exclude, // ignore: unused_element
+    this.favorite, // ignore: unused_element
+    this.filter, // ignore: unused_element
+    this.isScrollControlled = false, // ignore: unused_element
+    this.showPhoneCode = false, // ignore: unused_element
+    this.showWorldWide = false, // ignore: unused_element
+    this.useAutofocus = false, // ignore: unused_element
+    this.useHaptickFeedback = true, // ignore: unused_element
+    this.showSearch, // ignore: unused_element
+    super.key, // ignore: unused_element
   });
 
   /// Placeholder text.
@@ -258,11 +237,11 @@ class CountryPickerDesktop extends StatefulWidget {
   final bool useHaptickFeedback;
 
   @override
-  State<CountryPickerDesktop> createState() => _CountryPickerDesktopState();
+  State<CountryPicker$MacOS> createState() => _CountryPicker$MacOSState();
 }
 
-/// State for widget [CountryPickerDesktop].
-class _CountryPickerDesktopState extends State<CountryPickerDesktop> {
+/// State for widget [CountryPicker$MacOS].
+class _CountryPicker$MacOSState extends State<CountryPicker$MacOS> {
   // Fix corrent emoji flag for web.
   final String? _effectiveFontFamily =
       kIsWeb ? FontFamily.notoColorEmoji : null;

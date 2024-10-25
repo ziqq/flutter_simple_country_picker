@@ -39,6 +39,7 @@ log.pana.json
 coverage/
 /test/**/*.json
 /test/.test_coverage.dart
+reports/
 
 # Temp
 /tmp

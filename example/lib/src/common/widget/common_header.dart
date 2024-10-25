@@ -8,10 +8,10 @@ import 'package:flutter/material.dart';
 /// {@endtemplate}
 class CommonHeader extends StatelessWidget implements PreferredSizeWidget {
   /// {@macro common_header}
-  const CommonHeader(this.title, {this.backgroundColor, super.key});
+  const CommonHeader({this.title, this.backgroundColor, super.key});
 
   /// Title of the header.
-  final String title;
+  final String? title;
 
   /// Background color of the header.
   final Color? backgroundColor;
@@ -30,8 +30,8 @@ class CommonHeader extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) => AppBar(
         centerTitle: true,
-        title: _Header(title),
         backgroundColor: backgroundColor,
+        title: title != null && title!.isNotEmpty ? _Header(title!) : null,
         leading: const Row(
           children: [
             SizedBox(width: kDefaultPadding),

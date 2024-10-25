@@ -28,6 +28,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "languageCode": MessageLookupByLibrary.simpleMessage("hr"),
         "localeCode": MessageLookupByLibrary.simpleMessage("hr_HR"),
         "nextLable": MessageLookupByLibrary.simpleMessage("Dalje"),
+        "passwordLable": MessageLookupByLibrary.simpleMessage("Lozinka"),
         "title": MessageLookupByLibrary.simpleMessage("Tetradka")
       };
 }

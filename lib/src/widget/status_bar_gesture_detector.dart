@@ -75,7 +75,7 @@ class _StatusBarGestureDetectorState extends State<StatusBarGestureDetector> {
           width: double.infinity,
           child: GestureDetector(
             // iOS accessibility automatically
-            // adds scroll-to-top to the clock in the status bar
+            // adds scroll-to-top to the click in the status bar
             excludeFromSemantics: true,
             behavior: HitTestBehavior.opaque,
             onTap: () => widget.onTap(context),

@@ -28,6 +28,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "languageCode": MessageLookupByLibrary.simpleMessage("ar"),
         "localeCode": MessageLookupByLibrary.simpleMessage("ar_SA"),
         "nextLable": MessageLookupByLibrary.simpleMessage("التالي"),
+        "passwordLable": MessageLookupByLibrary.simpleMessage("كلمة المرور"),
         "title": MessageLookupByLibrary.simpleMessage("تترادكا")
       };
 }

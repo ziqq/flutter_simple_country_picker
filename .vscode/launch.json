@@ -7,25 +7,39 @@
       "request": "launch",
       "flutterMode": "debug",
       "cwd": "${workspaceFolder}/example",
+      "args": [],
+      "env": {}
+    },
+    {
+      "name": "Run Web preview (Debug)",
+      "type": "dart",
+      "request": "launch",
+      "flutterMode": "debug",
+      "program": "${workspaceFolder}/example/lib/src/preview/web_preview.dart",
       "args": [
-        // "--dart-define-from-file=config/development.json",
-        // "--dart-define=octopus.measure=false"
-        // "--dart-define=octopus.logs=true",
+        "--device-id=chrome",
       ],
       "env": {}
     },
     {
-      "name": "Web chrome (Debug)",
+      "name": "Run macOS preview (Debug)",
       "type": "dart",
       "request": "launch",
       "flutterMode": "debug",
-      "cwd": "${workspaceFolder}/example",
+      "program": "${workspaceFolder}/example/lib/src/preview/macos_preview.dart",
       "args": [
-        // "--dart-define-from-file=config/development.json",
-        // "--dart-define=octopus.measure=false"
-        // "--dart-define=octopus.logs=true",
-        // "--device-id=web-server",
-        "--device-id=chrome",
+        "--device-id=macOS",
+      ],
+      "env": {}
+    },
+    {
+      "name": "Run Linux preview (Debug)",
+      "type": "dart",
+      "request": "launch",
+      "flutterMode": "debug",
+      "program": "${workspaceFolder}/example/lib/src/preview/linux_preview.dart",
+      "args": [
+        "--device-id=macOS",
       ],
       "env": {}
     },
@@ -35,9 +49,7 @@
       "program": "${workspaceFolder}/example/integration_test/app_test.dart",
       "request": "launch",
       "cwd": "${workspaceFolder}/example",
-      "args": [
-        // "--dart-define-from-file=config/development.json",
-      ],
+      "args": [],
       "env": {}
     }
   ]

@@ -1,0 +1,23 @@
+timeout: 1x
+
+platforms:
+  - vm
+
+file_reporters:
+  json: reports/tests.json
+
+tags:
+  constant:
+    timeout: 1x
+  controller:
+    timeout: 1x
+  localization:
+    timeout: 1x
+  model:
+    timeout: 1x
+  theme:
+    timeout: 1x
+  util:
+    timeout: 1x
+  widget:
+    timeout: 1x

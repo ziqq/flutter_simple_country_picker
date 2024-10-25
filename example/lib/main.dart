@@ -1,63 +1,104 @@
 import 'package:example/src/common/constant/constants.dart';
+import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/util/app_zone.dart';
+import 'package:example/src/common/util/country_picker_state_mixin.dart';
 import 'package:example/src/common/widget/app.dart';
 import 'package:example/src/common/widget/common_header.dart';
 import 'package:example/src/common/widget/common_padding.dart';
+import 'package:example/src/common/widget/common_space_box.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
-import 'package:l/l.dart';
 
-void main() =>
-    appZone(() async => runApp(const App(home: CountryPickerPreview())));
+/// This file includes basic example for [CountryPhoneInput]
+/// that uses of [CountryPicker].
+///
+/// For more platform examples (android, ios, macOS, web, windows) check on
+/// [GitHub](https://github.com/ziqq/flutter_simple_country_picker/tree/master/example/lib/src/preview)
+void main() => appZone(() async => runApp(const App(home: Preview())));
 
 /// {@template county_picker_preview}
-/// CountryPickerPreview widget.
+/// Preview widget.
 /// {@endtemplate}
-class CountryPickerPreview extends StatefulWidget {
+class Preview extends StatefulWidget {
   /// {@macro county_picker_preview}
-  const CountryPickerPreview({super.key});
+  const Preview({super.key});
+
+  /// Title of the widget.
+  static const String title = 'Preview';
 
   @override
-  State<CountryPickerPreview> createState() => _CountryPickerPreviewState();
+  State<Preview> createState() => _MobilePreviewState();
 }
 
-/// State for [CountryPickerPreview].
-class _CountryPickerPreviewState extends State<CountryPickerPreview> {
-  final ValueNotifier<Country> _selected = ValueNotifier(Country.mock());
+/// State for [Preview].
+class _MobilePreviewState extends State<Preview>
+    with CountryPickerPreviewStateMixin {
+  final ValueNotifier<String> _countryPhoneController = ValueNotifier('');
 
-  void _onSelect(Country country) {
-    HapticFeedback.heavyImpact().ignore();
-    l.i('New country $country');
-    _selected.value = country;
-    _showSnackBar();
-  }
-
-  void _showSnackBar() {
-    HapticFeedback.heavyImpact().ignore();
-    ScaffoldMessenger.maybeOf(context)
-      ?..clearSnackBars()
-      ..showSnackBar(
-        SnackBar(
-          backgroundColor: CupertinoDynamicColor.resolve(
-            CupertinoColors.secondarySystemBackground,
-            context,
-          ),
-          content: Text('Selected country: ${_selected.value.name}'),
-        ),
-      );
+  @override
+  void dispose() {
+    _countryPhoneController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: const CommonHeader('Country Picker Preview'),
+        appBar: const CommonHeader(title: Preview.title),
         body: SafeArea(
           child: Padding(
             padding: CommonPadding.of(context),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                CountryPhoneInput(
+                  key: const ValueKey<String>('country_phone_input'),
+                  filter: kFilteredCountries,
+                  controller: _countryPhoneController,
+                ),
+                const SizedBox(height: kDefaultPadding),
+
+                // --- Password input --- //
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: CupertinoDynamicColor.resolve(
+                      CupertinoColors.secondarySystemBackground,
+                      context,
+                    ),
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  ),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 56),
+                    child: Center(
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          hintStyle: Theme.of(context).textTheme.bodyLarge,
+                          hintText:
+                              ExampleLocalization.of(context).passwordLable,
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: kDefaultPadding,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: kDefaultPadding * 2),
+
+                // --- Submit button --- //
+                SizedBox(
+                  width: double.infinity,
+                  child: CupertinoButton.filled(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: kDefaultPadding,
+                    ),
+                    onPressed: onSubmit,
+                    child: const Text('Submit'),
+                  ),
+                ),
+                const SizedBox(height: kDefaultPadding * 2),
+
                 SizedBox(
                   width: double.infinity,
                   child: CupertinoButton.filled(
@@ -73,7 +114,7 @@ class _CountryPickerPreviewState extends State<CountryPickerPreview> {
                       favorite: ['RU'],
                       // Shows phone code before the country name. Optional.
                       showPhoneCode: true,
-                      onSelect: _onSelect,
+                      onSelect: onSelect,
                     ),
                     child: const Text('Show full picker'),
                   ),
@@ -94,18 +135,14 @@ class _CountryPickerPreviewState extends State<CountryPickerPreview> {
                       filter: kFilteredCountries,
                       // Shows phone code before the country name. Optional.
                       showPhoneCode: true,
-                      onSelect: _onSelect,
+                      onSelect: onSelect,
                     ),
                     child: const Text('Show filtered picker'),
                   ),
                 ),
 
                 // --- Withe space --- //
-                if (MediaQuery.of(context).viewPadding.bottom == 0) ...[
-                  const SizedBox(height: kToolbarHeight),
-                ] else ...[
-                  const SizedBox(height: kDefaultPadding),
-                ],
+                const CommonSpaceBox(),
               ],
             ),
           ),

@@ -17,5 +17,6 @@
   },
   "title": "Tetradka",
   "description": "Provjerite kôd zemlje i unesite svoj broj telefona.",
-  "nextLable": "Dalje"
+  "nextLable": "Dalje",
+  "passwordLable": "Lozinka"
 }

@@ -1,27 +1,26 @@
+import 'dart:developer';
+
 import 'package:example/src/common/constant/constants.dart';
 import 'package:example/src/common/widget/common_header.dart';
 import 'package:example/src/common/widget/common_padding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
-import 'package:l/l.dart';
 
 /// {@template county_phone_input_preview}
-/// CountryPhoneInputExperimentalPreview widget.
+/// ExperimentalPreview widget.
 /// {@endtemplate}
-class CountryPhoneInputExperimentalPreview extends StatefulWidget {
+class ExperimentalPreview extends StatefulWidget {
   /// {@macro county_phone_input_preview}
-  const CountryPhoneInputExperimentalPreview({
+  const ExperimentalPreview({
     super.key, // ignore: unused_element
   });
 
   @override
-  State<CountryPhoneInputExperimentalPreview> createState() =>
-      _CountryPhoneInputExperimentalPreviewState();
+  State<ExperimentalPreview> createState() => _ExperimentalPreviewState();
 }
 
-/// State for widget CountryPhoneInputExperimentalPreview.
-class _CountryPhoneInputExperimentalPreviewState
-    extends State<CountryPhoneInputExperimentalPreview> {
+/// State for widget ExperimentalPreview.
+class _ExperimentalPreviewState extends State<ExperimentalPreview> {
   final TextEditingController _controller = TextEditingController();
 
   String _country = '🇷🇺 Россия';
@@ -29,7 +28,7 @@ class _CountryPhoneInputExperimentalPreviewState
   String? _mask = '000 000 0000';
 
   void _onSelect(Country country) {
-    l.i('Selected country $country');
+    log('Selected country $country');
     setState(() {
       _country = '${country.flagEmoji} ${country.nameLocalized}';
       _countryCode = country.phoneCode;
@@ -61,7 +60,7 @@ class _CountryPhoneInputExperimentalPreviewState
                           exclude: ['KN', 'MF'],
                           showPhoneCode: true,
                           onSelect: _onSelect,
-                          onDone: () => l.i('onDone callded...'),
+                          onDone: () => log('onDone callded...'),
                         );
                       },
                     ),

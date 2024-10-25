@@ -1,11 +1,11 @@
 // ignore_for_file: avoid_classes_with_only_static_members
 
 import 'dart:async';
+import 'dart:developer' as dev;
 
 import 'package:example/src/common/util/platform/error_util_vm.dart'
     // ignore: uri_does_not_exist
     if (dart.library.html) 'platform/error_util_js.dart';
-import 'package:l/l.dart';
 
 /// Error util.
 abstract final class ErrorUtil {
@@ -26,11 +26,11 @@ abstract final class ErrorUtil {
         );
       }
       $captureException(exception, stackTrace, hint, fatal).ignore();
-      l.e(exception, stackTrace);
+      dev.log(exception.toString(), stackTrace: stackTrace);
     } on Object catch (error, stackTrace) {
-      l.e(
+      dev.log(
         'Error while logging error "$error" inside ErrorUtil.logError',
-        stackTrace,
+        stackTrace: stackTrace,
       );
     }
   }
@@ -43,12 +43,12 @@ abstract final class ErrorUtil {
     bool warning = false,
   }) async {
     try {
-      l.e(message, stackTrace ?? StackTrace.current);
+      dev.log(message, stackTrace: stackTrace ?? StackTrace.current);
       $captureMessage(message, stackTrace, hint, warning).ignore();
     } on Object catch (error, stackTrace) {
-      l.e(
+      dev.log(
         'Error while logging error "$error" inside ErrorUtil.logMessage',
-        stackTrace,
+        stackTrace: stackTrace,
       );
     }
   }

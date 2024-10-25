@@ -17,5 +17,6 @@
   },
   "title": "Tetradka",
   "description": "Überprüfen Sie den Ländercode und geben Sie Ihre Telefonnummer ein.",
-  "nextLable": "Weiter"
+  "nextLable": "Weiter",
+  "passwordLable": "Passwort"
 }

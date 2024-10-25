@@ -36,6 +36,11 @@ import 'package:flutter_simple_country_picker/src/widget/countries_list_view.dar
 /// The `context` argument is used to look up the [Scaffold] for the bottom
 /// sheet. It is only used when the method is called. Its corresponding widget
 /// can be safely removed from the tree before the bottom sheet is closed.
+///
+/// The `useRootNavigator` parameter ensures that the root navigator is used to
+/// display the [BottomSheet] when set to `true`. This is useful in the case
+/// that a modal [BottomSheet] needs to be displayed above all other content
+/// but the caller is inside another [Navigator].
 /// {@endtemplate}
 void showCountryPicker({
   required BuildContext context,
@@ -55,6 +60,7 @@ void showCountryPicker({
   bool showWorldWide = false,
   bool useAutofocus = false,
   bool useHaptickFeedback = true,
+  bool useRootNavigator = false,
   bool useSafeArea = true,
   bool? showSearch,
 }) {
@@ -65,6 +71,7 @@ void showCountryPicker({
   showModalBottomSheet<void>(
     context: context,
     useSafeArea: useSafeArea,
+    useRootNavigator: useRootNavigator,
     isDismissible: isDismissible,
     isScrollControlled: isScrollControlled,
     barrierColor: pickerTheme?.barrierColor,

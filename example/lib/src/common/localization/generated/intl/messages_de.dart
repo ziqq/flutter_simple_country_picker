@@ -28,6 +28,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "languageCode": MessageLookupByLibrary.simpleMessage("de"),
         "localeCode": MessageLookupByLibrary.simpleMessage("de_DE"),
         "nextLable": MessageLookupByLibrary.simpleMessage("Weiter"),
+        "passwordLable": MessageLookupByLibrary.simpleMessage("Passwort"),
         "title": MessageLookupByLibrary.simpleMessage("Tetradka")
       };
 }
