@@ -344,6 +344,7 @@ class _CountriesListState extends State<_CountriesList> {
                 (context, index) {
                   final country = countries[index];
                   return _CountryListItem(
+                    key: ValueKey<String>(country.phoneCode),
                     country: country,
                     onSelect: widget.onSelect,
                     useBorder: index < countries.length - 1,

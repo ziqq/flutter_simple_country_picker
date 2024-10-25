@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// {@template common_styles}
+/// {@template styles}
 /// Common styles of the application.
 /// {@endtemplate}
 class AppStyles {
-  /// {@macro common_styles}
+  /// {@macro styles}
   const AppStyles(this.context);
 
-  /// {@macro common_styles}
+  /// {@macro styles}
   factory AppStyles.of(BuildContext context) => AppStyles(context);
 
   /// The [BuildContext] of the application.

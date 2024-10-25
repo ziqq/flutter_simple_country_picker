@@ -278,21 +278,6 @@ class _CountryPhoneInput$BackgroundPainter extends CustomPainter {
   /// The radius of the rounded corners of the rectangle.
   final double? radius;
 
-  /// The radii of the rounded corners of the rectangle.
-  // final BorderRadius borderRadius;
-
-  /// The border to draw around the rounded rectangle.
-  // final Border border;
-
-  /// The size of the gap in the border where the label is.
-  // final double gapExtent;
-
-  /// The fraction of the border along the gap that should be painted.
-  // final double gapPercentage;
-
-  /// The text direction to use for painting the border.
-  // final TextDirection? textDirection;
-
   @override
   void paint(Canvas canvas, Size size) {
     final effectiveRadius = Radius.circular(radius ?? 10);
