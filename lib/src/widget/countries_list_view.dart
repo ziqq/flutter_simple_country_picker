@@ -209,21 +209,19 @@ class _CountriesListViewState extends State<CountriesListView> {
   @override
   Widget build(BuildContext context) {
     final pickerTheme = CountryPickerTheme.resolve(context);
-    final child = SafeArea(
-      child: GestureDetector(
-        onTap: _unfocus,
-        child: StatusBarGestureDetector(
-          onTap: (_) => StatusBarGestureDetector.scrollToTop(_scrollController),
-          child: CustomScrollView(
-            controller: _scrollController,
-            slivers: <Widget>[
-              _CountriesList(
-                controller: _controller,
-                selected: widget.selected,
-                onSelect: widget.onSelect,
-              ),
-            ],
-          ),
+    final child = GestureDetector(
+      onTap: _unfocus,
+      child: StatusBarGestureDetector(
+        onTap: (_) => StatusBarGestureDetector.scrollToTop(_scrollController),
+        child: CustomScrollView(
+          controller: _scrollController,
+          slivers: <Widget>[
+            _CountriesList(
+              controller: _controller,
+              selected: widget.selected,
+              onSelect: widget.onSelect,
+            ),
+          ],
         ),
       ),
     );

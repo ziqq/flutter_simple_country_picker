@@ -1,3 +1,6 @@
+## 0.1.3
+- **UPDATED**: `SafeArea` from `CountriesList`
+
 ## 0.1.2
 - **UPDATED**: Bump `flutter_lints`
 
