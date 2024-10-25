@@ -110,6 +110,16 @@ class GeneratedLocalization {
       args: [],
     );
   }
+
+  /// `Password`
+  String get passwordLable {
+    return Intl.message(
+      'Password',
+      name: 'passwordLable',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate

@@ -93,13 +93,13 @@ sealed class Pubspec {
   static const PubspecVersion version = (
     /// Non-canonical string representation of the version as provided
     /// in the pubspec.yaml file.
-    representation: r'0.1.1',
+    representation: r'0.1.3',
 
     /// Returns a 'canonicalized' representation
     /// of the application version.
     /// This represents the version string in accordance with
     /// Semantic Versioning (SemVer) standards.
-    canonical: r'0.1.1',
+    canonical: r'0.1.3',
 
     /// MAJOR version when you make incompatible API changes.
     /// The major version number: 1 in "1.2.3".
@@ -112,7 +112,7 @@ sealed class Pubspec {
 
     /// PATCH version when you make backward compatible bug fixes.
     /// The patch version number: 3 in "1.2.3".
-    patch: 1,
+    patch: 3,
 
     /// The pre-release identifier: "foo" in "1.2.3-foo".
     preRelease: <String>[],
@@ -125,12 +125,12 @@ sealed class Pubspec {
   static final DateTime timestamp = DateTime.utc(
     2024,
     10,
-    17,
+    25,
     6,
-    42,
-    40,
-    522,
-    850,
+    50,
+    27,
+    691,
+    616,
   );
 
   /// Name
@@ -177,7 +177,7 @@ sealed class Pubspec {
   /// While providing a homepage is optional,
   /// please provide it or repository (or both).
   /// It helps users understand where your package is coming from.
-  static const String homepage = r'https://github.com/ziqq';
+  static const String homepage = r'https://github.com/ziqq/flutter_simple_country_picker';
 
   /// Repository
   ///
@@ -389,6 +389,8 @@ sealed class Pubspec {
   static const Map<String, Object> platforms = <String, Object>{
     'android': r'',
     'ios': r'',
+    'macos': r'',
+    'web': r'',
   };
 
   /// Dependencies
@@ -433,7 +435,7 @@ sealed class Pubspec {
     'flutter_test': <String, Object>{
       'sdk': r'flutter',
     },
-    'flutter_lints': r'^4.0.0',
+    'flutter_lints': r'^5.0.0',
     'build_runner': r'^2.4.13',
     'pubspec_generator': r'^4.0.0',
     'mockito': r'^5.4.4',

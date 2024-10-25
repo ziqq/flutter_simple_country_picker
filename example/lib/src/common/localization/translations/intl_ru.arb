@@ -17,5 +17,6 @@
   },
   "title": "Tetradka",
   "description": "Проверьте код страны и введите свой номер телефона.",
-  "nextLable": "Далее"
+  "nextLable": "Далее",
+  "passwordLable": "Пароль"
 }

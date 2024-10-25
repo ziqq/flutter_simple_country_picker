@@ -17,5 +17,6 @@
   },
   "title": "Tetradka",
   "description": "Controleer de landcode en voer uw telefoonnummer in.",
-  "nextLable": "Volgende"
+  "nextLable": "Volgende",
+  "passwordLable": "Wachtwoord"
 }

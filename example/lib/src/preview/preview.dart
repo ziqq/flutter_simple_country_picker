@@ -28,7 +28,6 @@ class Preview extends StatefulWidget {
 /// State for [Preview].
 class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
   final ValueNotifier<Country> _selected = ValueNotifier(Country.mock());
-
   final ValueNotifier<String> _controller = ValueNotifier('');
 
   @override
@@ -62,7 +61,7 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: const CommonHeader(title: 'Country Picker Preview'),
+        appBar: const CommonHeader(title: 'Preview'),
         body: SafeArea(
           child: Padding(
             padding: CommonPadding.of(context),
@@ -75,6 +74,34 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
                   controller: _controller,
                 ),
                 const SizedBox(height: kDefaultPadding),
+
+                // --- Password input --- //
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: CupertinoDynamicColor.resolve(
+                      CupertinoColors.secondarySystemBackground,
+                      context,
+                    ),
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  ),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 56),
+                    child: Center(
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          hintStyle: Theme.of(context).textTheme.bodyLarge,
+                          hintText: 'Password',
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: kDefaultPadding,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: kDefaultPadding * 2),
+
                 // --- Submit button --- //
                 SizedBox(
                   width: double.infinity,

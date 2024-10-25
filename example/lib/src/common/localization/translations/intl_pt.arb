@@ -17,5 +17,6 @@
   },
   "title": "Caderno",
   "description": "Verifique o código do país e insira seu número de telefone.",
-  "nextLable": "Próximo"
+  "nextLable": "Próximo",
+  "passwordLable": "Senha"
 }

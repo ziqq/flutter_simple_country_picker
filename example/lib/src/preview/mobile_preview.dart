@@ -3,137 +3,142 @@
 import 'package:example/src/common/constant/constants.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/util/country_picker_state_mixin.dart';
+import 'package:example/src/common/widget/common_header.dart';
 import 'package:example/src/common/widget/common_padding.dart';
+import 'package:example/src/common/widget/common_space_box.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 
-/// {@template country_picker_mobile_preview}
+/// {@template county_picker_mobile_preview}
 /// MobilePreview widget.
 /// {@endtemplate}
-class MobilePreview extends StatelessWidget {
-  /// {@macro country_picker_mobile_preview}
-  const MobilePreview({
-    super.key, // ignore: unused_element
-  });
+class MobilePreview extends StatefulWidget {
+  /// {@macro county_picker_mobile_preview}
+  const MobilePreview({super.key});
 
   /// Title of the widget.
-  static const String title = 'Mobile';
+  static const String title = 'Preview Mobile';
 
   @override
-  Widget build(BuildContext context) => const _Mobile();
+  State<MobilePreview> createState() => _MobilePreviewState();
 }
 
-/// {@template county_picker_form_preview}
-/// _Mobile widget.
-/// {@endtemplate}
-class _Mobile extends StatefulWidget {
-  /// {@macro county_picker_form_preview}
-  const _Mobile({
-    super.key, // ignore: unused_element
-  });
+/// State for [MobilePreview].
+class _MobilePreviewState extends State<MobilePreview>
+    with CountryPickerPreviewStateMixin {
+  final ValueNotifier<String> _countryPhoneController = ValueNotifier('');
 
   @override
-  State<_Mobile> createState() => _MobileState();
-}
-
-/// State for widget [_Mobile].
-class _MobileState extends State<_Mobile> with CountryPickerPreviewStateMixin {
-  final ValueNotifier<String> _controller =
-      ValueNotifier<String>('+7 888 123 4567');
+  void dispose() {
+    _countryPhoneController.dispose();
+    super.dispose();
+  }
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: CommonPadding.of(context),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              ExampleLocalization.of(context).title,
-              style: Theme.of(context).textTheme.headlineSmall,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: kDefaultPadding),
-            Text(
-              ExampleLocalization.of(context).description,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+  Widget build(BuildContext context) => Scaffold(
+        appBar: const CommonHeader(title: MobilePreview.title),
+        body: SafeArea(
+          child: Padding(
+            padding: CommonPadding.of(context),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CountryPhoneInput(
+                  key: const ValueKey<String>('country_phone_input'),
+                  filter: kFilteredCountries,
+                  controller: _countryPhoneController,
+                ),
+                const SizedBox(height: kDefaultPadding),
+
+                // --- Password input --- //
+                DecoratedBox(
+                  decoration: BoxDecoration(
                     color: CupertinoDynamicColor.resolve(
-                      CupertinoColors.secondaryLabel,
+                      CupertinoColors.secondarySystemBackground,
                       context,
                     ),
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
                   ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: kDefaultPadding * 2),
-
-            // --- Country phone input --- //
-            CountryPhoneInput(
-              filter: kFilteredCountries,
-              controller: _controller,
-            ),
-            const SizedBox(height: kDefaultPadding),
-
-            // --- Password input --- //
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: CupertinoDynamicColor.resolve(
-                  CupertinoColors.secondarySystemBackground,
-                  context,
-                ),
-                borderRadius: const BorderRadius.all(Radius.circular(10)),
-              ),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 56),
-                child: Center(
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      hintStyle: Theme.of(context).textTheme.bodyLarge,
-                      hintText: 'Password',
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: kDefaultPadding,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 56),
+                    child: Center(
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          hintStyle: Theme.of(context).textTheme.bodyLarge,
+                          hintText:
+                              ExampleLocalization.of(context).passwordLable,
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: kDefaultPadding,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: kDefaultPadding * 2),
+                const SizedBox(height: kDefaultPadding * 2),
 
-            // --- Submit button --- //
-            SizedBox(
-              width: double.infinity,
-              child: CupertinoButton.filled(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: kDefaultPadding,
+                // --- Submit button --- //
+                SizedBox(
+                  width: double.infinity,
+                  child: CupertinoButton.filled(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: kDefaultPadding,
+                    ),
+                    onPressed: onSubmit,
+                    child: const Text('Submit'),
+                  ),
                 ),
-                onPressed: () => onSubmit(phone: _controller.value),
-                child: const Text('Submit'),
-              ),
-            ),
+                const SizedBox(height: kDefaultPadding * 2),
 
-            // --- Withe space --- //
-            const _WhiteSpaceBox(),
-          ],
+                SizedBox(
+                  width: double.infinity,
+                  child: CupertinoButton.filled(
+                    key: const ValueKey<String>('full_picker_button'),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: kDefaultPadding,
+                    ),
+                    onPressed: () => showCountryPicker(
+                      context: context,
+                      // Can be used to exclude one ore more country
+                      // from the countries list. Optional.
+                      exclude: ['KN', 'MF'],
+                      favorite: ['RU'],
+                      // Shows phone code before the country name. Optional.
+                      showPhoneCode: true,
+                      onSelect: onSelect,
+                    ),
+                    child: const Text('Show full picker'),
+                  ),
+                ),
+                const SizedBox(height: kDefaultPadding),
+                SizedBox(
+                  width: double.infinity,
+                  child: CupertinoButton.filled(
+                    key: const ValueKey<String>('filtered_picker_button'),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: kDefaultPadding,
+                    ),
+                    onPressed: () => showCountryPicker(
+                      context: context,
+                      isScrollControlled: false,
+                      // Can be used to exclude one ore more country
+                      // from the countries list. Optional.
+                      filter: kFilteredCountries,
+                      // Shows phone code before the country name. Optional.
+                      showPhoneCode: true,
+                      onSelect: onSelect,
+                    ),
+                    child: const Text('Show filtered picker'),
+                  ),
+                ),
+
+                // --- Withe space --- //
+                const CommonSpaceBox(),
+              ],
+            ),
+          ),
         ),
       );
-}
-
-/// {@template county_picker_form_preview}
-/// _WhiteSpaceBox widget.
-/// {@endtemplate}
-class _WhiteSpaceBox extends StatelessWidget {
-  /// {@macro county_picker_form_preview}
-  const _WhiteSpaceBox({
-    super.key, // ignore: unused_element
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (MediaQuery.of(context).viewPadding.bottom == 0)
-      return const SizedBox(height: kToolbarHeight);
-    else
-      return const SizedBox(height: kDefaultPadding);
-  }
 }

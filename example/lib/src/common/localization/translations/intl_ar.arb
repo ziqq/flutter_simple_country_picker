@@ -17,5 +17,6 @@
   },
   "title": "تترادكا",
   "description": "تحقق من رمز البلد وأدخل رقم هاتفك.",
-  "nextLable": "التالي"
+  "nextLable": "التالي",
+  "passwordLable": "كلمة المرور"
 }

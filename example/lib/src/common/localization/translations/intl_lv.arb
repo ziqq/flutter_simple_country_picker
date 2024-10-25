@@ -17,5 +17,6 @@
   },
   "title": "Tetradka",
   "description": "Pārbaudiet valsts kodu un ievadiet savu tālruņa numuru.",
-  "nextLable": "Nākamais"
+  "nextLable": "Nākamais",
+  "passwordLable": "Parole"
 }
