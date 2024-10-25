@@ -2,7 +2,7 @@
 [![Pub Version](https://img.shields.io/pub/v/flutter_simple_country_picker)](https://pub.dev/packages/flutter_simple_country_picker)
 [![Actions Status](https://github.com/ziqq/flutter_simple_country_picker/actions/workflows/checkout.yml/badge.svg?branch=master)](https://github.com/ziqq/flutter_simple_country_picker/actions/workflows/checkout.yml)
 [![Tests Passed](https://camo.githubusercontent.com/acf27a132bef86c9cd722078b5c6cd66762ec77873aec8323703da46b55431ce/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f74657374732d3130372532307061737365642d73756363657373)](https://camo.githubusercontent.com/acf27a132bef86c9cd722078b5c6cd66762ec77873aec8323703da46b55431ce/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f74657374732d3130372532307061737365642d73756363657373)
-[![Codecov](https://codecov.io/gh/ziqq/flutter_simple_country_picker/graph/badge.svg?token=fpn56ea0L8)](https://codecov.io/gh/ziqq/flutter_simple_country_picker)
+[![codecov](https://codecov.io/gh/ziqq/flutter_simple_country_picker/graph/badge.svg?token=fpn56ea0L8)](https://codecov.io/gh/ziqq/flutter_simple_country_picker)
 [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 [![Style: flutter lints](https://img.shields.io/badge/style-flutter__lints-blue)](https://pub.dev/packages/flutter_lints)
 <!-- [![Pub Likes](https://img.shields.io/pub/likes/flutter_simple_country_picker)](https://pub.dev/packages/flutter_simple_country_picker) -->
