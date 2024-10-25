@@ -7,6 +7,7 @@ import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/util/app_zone.dart';
 import 'package:example/src/common/util/country_picker_state_mixin.dart';
 import 'package:example/src/common/widget/app.dart';
+import 'package:example/src/common/widget/common_logo.dart';
 import 'package:example/src/common/widget/common_padding.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -15,14 +16,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
-/// Default height for [CountryPicker] in macOS.
+/// Default height for [CountryPicker] for Linux.
 const double _kDefaultCountyInputHeight = 44;
 
-void main() => appZone(
-    () async => runApp(const App(home: CountryPickerForm$MacOSPreview())));
+void main() => appZone(() async => runApp(const App(home: LinuxPreview())));
 
-/// {@template county_picker_macos_preview}
-/// CountryPickerForm$MacOSPreview widget.
+/// {@template county_picker_linux_preview}
+/// LinuxPreview widget.
 ///
 /// This widget is showed another way how to use [CountryPicker] in macOS.
 ///
@@ -32,28 +32,25 @@ void main() => appZone(
 /// And more you can use search controller from [CountryPickerScope]
 /// to find a country by name or code.
 /// {@endtemplate}
-class CountryPickerForm$MacOSPreview extends StatefulWidget {
-  /// {@macro county_picker_macos_preview}
-  const CountryPickerForm$MacOSPreview({
+class LinuxPreview extends StatefulWidget {
+  /// {@macro county_picker_linux_preview}
+  const LinuxPreview({
     super.key, // ignore: unused_element
   });
 
   /// Title of the widget.
-  static const String title = 'macOS';
+  static const String title = 'Linux';
 
   @override
-  State<CountryPickerForm$MacOSPreview> createState() =>
-      _CountryPickerForm$DesktopPreviewState();
+  State<LinuxPreview> createState() => _LinuxPreviewState();
 }
 
-/// State for widget [CountryPickerForm$MacOSPreview].
-class _CountryPickerForm$DesktopPreviewState
-    extends State<CountryPickerForm$MacOSPreview>
+/// State for widget [LinuxPreview].
+class _LinuxPreviewState extends State<LinuxPreview>
     with CountryPickerPreviewStateMixin {
   @override
   Widget build(BuildContext context) {
     final localization = ExampleLocalization.of(context);
-    final theme = Theme.of(context);
     return Scaffold(
       body: Padding(
         padding: CommonPadding.of(context),
@@ -61,33 +58,8 @@ class _CountryPickerForm$DesktopPreviewState
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircleAvatar(
-              radius: 38,
-              child: ClipOval(
-                child: Image.asset(
-                  'assets/icons/icon-1024x1024.jpg',
-                  width: 100,
-                  height: 100,
-                ),
-              ),
-            ),
-            const SizedBox(height: kDefaultPadding),
-            Text(
-              localization.title,
-              style: theme.textTheme.headlineSmall,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: kDefaultPadding),
-            Text(
-              localization.description,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: CupertinoDynamicColor.resolve(
-                  CupertinoColors.secondaryLabel,
-                  context,
-                ),
-              ),
-              textAlign: TextAlign.center,
-            ),
+            // --- Logo --- //
+            const CommonLogo.text(),
             const SizedBox(height: kDefaultPadding * 2),
             ClipRRect(
               borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -105,11 +77,11 @@ class _CountryPickerForm$DesktopPreviewState
                   ),
                 ),
                 children: [
-                  CountryPicker$MacOS(
+                  CountryPicker$Linux(
                     onSelect: onSelect,
                     selected: selected,
                   ),
-                  CountryInput$MacOS(
+                  CountryInput$Linux(
                     controller: controller,
                     inputFormatters: [formater],
                     selected: selected,
@@ -141,12 +113,12 @@ class _CountryPickerForm$DesktopPreviewState
   }
 }
 
-/// {@template country_input_macos}
-/// CountryInput$MacOS widget.
+/// {@template country_input_linux}
+/// CountryInput$Linux widget.
 /// {@endtemplate}
-class CountryInput$MacOS extends StatelessWidget {
-  /// {@macro country_input_macos}
-  const CountryInput$MacOS({
+class CountryInput$Linux extends StatelessWidget {
+  /// {@macro country_input_linux}
+  const CountryInput$Linux({
     required this.selected,
     this.controller,
     this.inputFormatters,
@@ -204,11 +176,11 @@ class CountryInput$MacOS extends StatelessWidget {
 }
 
 /// {@template county_picker_macos}
-/// CountryPicker$MacOS widget.
+/// CountryPicker$Linux widget.
 /// {@endtemplate}
-class CountryPicker$MacOS extends StatefulWidget {
+class CountryPicker$Linux extends StatefulWidget {
   /// {@macro county_picker_macos}
-  const CountryPicker$MacOS({
+  const CountryPicker$Linux({
     this.placeholder = 'Phone number', // ignore: unused_element
     this.onDone, // ignore: unused_element
     this.onSelect,
@@ -265,11 +237,11 @@ class CountryPicker$MacOS extends StatefulWidget {
   final bool useHaptickFeedback;
 
   @override
-  State<CountryPicker$MacOS> createState() => _CountryPickerState();
+  State<CountryPicker$Linux> createState() => _CountryPicker$LinuxState();
 }
 
-/// State for widget [CountryPicker$MacOS].
-class _CountryPickerState extends State<CountryPicker$MacOS> {
+/// State for widget [CountryPicker$Linux].
+class _CountryPicker$LinuxState extends State<CountryPicker$Linux> {
   // Fix corrent emoji flag for web.
   final String? _effectiveFontFamily =
       kIsWeb ? FontFamily.notoColorEmoji : null;

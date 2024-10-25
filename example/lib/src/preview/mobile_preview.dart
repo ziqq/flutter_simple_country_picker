@@ -9,11 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 
 /// {@template country_picker_mobile_preview}
-/// CountryPickerForm$MobilePreview widget.
+/// MobilePreview widget.
 /// {@endtemplate}
-class CountryPickerForm$MobilePreview extends StatelessWidget {
+class MobilePreview extends StatelessWidget {
   /// {@macro country_picker_mobile_preview}
-  const CountryPickerForm$MobilePreview({
+  const MobilePreview({
     super.key, // ignore: unused_element
   });
 

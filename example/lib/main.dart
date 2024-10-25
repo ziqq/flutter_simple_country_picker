@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:example/src/common/constant/constants.dart';
 import 'package:example/src/common/util/app_zone.dart';
+import 'package:example/src/common/util/country_picker_state_mixin.dart';
 import 'package:example/src/common/widget/app.dart';
 import 'package:example/src/common/widget/common_header.dart';
 import 'package:example/src/common/widget/common_padding.dart';
@@ -10,23 +11,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 
-void main() =>
-    appZone(() async => runApp(const App(home: CountryPickerPreview())));
+void main() => appZone(() async => runApp(const App(home: Preview())));
 
 /// {@template county_picker_preview}
-/// CountryPickerPreview widget.
+/// Preview widget.
 /// {@endtemplate}
-class CountryPickerPreview extends StatefulWidget {
+class Preview extends StatefulWidget {
   /// {@macro county_picker_preview}
-  const CountryPickerPreview({super.key});
+  const Preview({super.key});
 
   @override
-  State<CountryPickerPreview> createState() => _CountryPickerPreviewState();
+  State<Preview> createState() => _PreviewState();
 }
 
-/// State for [CountryPickerPreview].
-class _CountryPickerPreviewState extends State<CountryPickerPreview> {
+/// State for [Preview].
+class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
   final ValueNotifier<Country> _selected = ValueNotifier(Country.mock());
+
+  final ValueNotifier<String> _controller = ValueNotifier('');
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _selected.dispose();
+    super.dispose();
+  }
 
   void _onSelect(Country country) {
     HapticFeedback.heavyImpact().ignore();
@@ -52,13 +61,32 @@ class _CountryPickerPreviewState extends State<CountryPickerPreview> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: const CommonHeader('Country Picker Preview'),
+        appBar: const CommonHeader(title: 'Country Picker Preview'),
         body: SafeArea(
           child: Padding(
             padding: CommonPadding.of(context),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                CountryPhoneInput(
+                  key: const ValueKey<String>('country_phone_input'),
+                  filter: kFilteredCountries,
+                  controller: _controller,
+                ),
+                const SizedBox(height: kDefaultPadding),
+                // --- Submit button --- //
+                SizedBox(
+                  width: double.infinity,
+                  child: CupertinoButton.filled(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: kDefaultPadding,
+                    ),
+                    onPressed: () => onSubmit(phone: _controller.value),
+                    child: const Text('Submit'),
+                  ),
+                ),
+                const SizedBox(height: kDefaultPadding * 2),
+
                 SizedBox(
                   width: double.infinity,
                   child: CupertinoButton.filled(
