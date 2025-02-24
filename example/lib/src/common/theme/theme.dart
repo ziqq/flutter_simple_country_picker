@@ -13,9 +13,9 @@ extension type AppThemeData._(ThemeData data) implements ThemeData {
 }
 
 MaterialColor _$getMaterialColor(Color color) {
-  final red = color.red;
-  final green = color.green;
-  final blue = color.blue;
+  final red = color.r.toInt();
+  final green = color.g.toInt();
+  final blue = color.b.toInt();
 
   final shades = <int, Color>{
     50: Color.fromRGBO(red, green, blue, .1),
@@ -30,7 +30,7 @@ MaterialColor _$getMaterialColor(Color color) {
     900: Color.fromRGBO(red, green, blue, 1),
   };
 
-  return MaterialColor(color.value, shades);
+  return MaterialColor(color.toARGB32(), shades);
 }
 
 /// App accent color.

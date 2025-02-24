@@ -49,7 +49,7 @@ class _Header extends StatelessWidget {
   /// {@macro common_header}
   const _Header(
     this.title, {
-    super.key, // ignore: unused_element
+    super.key, // ignore: unused_element_parameter
   });
 
   /// Title of the header.

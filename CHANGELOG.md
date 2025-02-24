@@ -1,5 +1,8 @@
+## 0.2.3
+- **CHANGED**: Bump dependencies
+
 ## 0.2.1
-- Refactoring
+- **CHANGED**: Refactoring
 
 ## 0.2.0
 - **ADDED**: Tests

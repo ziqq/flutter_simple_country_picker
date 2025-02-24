@@ -88,7 +88,7 @@ final class CountriesController extends ValueNotifier<CountriesState> {
           _original = List.unmodifiable(countries);
 
           // Get favorite countries
-          if (_favorite != null && _favorite!.isNotEmpty) {
+          if (_favorite != null && _favorite.isNotEmpty) {
             // final favorites = _provider.findCountriesByCode(_favorite!);
           }
 
@@ -107,7 +107,7 @@ final class CountriesController extends ValueNotifier<CountriesState> {
             // coverage:ignore-end
 
             // Remove excluded countries
-            if (_exclude != null && _exclude!.contains(country.countryCode)) {
+            if (_exclude != null && _exclude.contains(country.countryCode)) {
               continue;
             }
 
@@ -117,7 +117,7 @@ final class CountriesController extends ValueNotifier<CountriesState> {
             }
 
             // Filter countries
-            if (_filter != null && !_filter!.contains(country.countryCode)) {
+            if (_filter != null && !_filter.contains(country.countryCode)) {
               continue;
             }
 

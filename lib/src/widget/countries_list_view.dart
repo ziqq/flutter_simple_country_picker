@@ -250,7 +250,7 @@ class _CountriesList extends StatefulWidget {
     required this.controller,
     this.selected,
     this.onSelect,
-    super.key, // ignore: unused_element
+    super.key, // ignore: unused_element_parameter
   });
 
   /// Countries controller.
@@ -542,7 +542,7 @@ class _Flag extends StatelessWidget {
   /// {@macro countries_list_view}
   const _Flag({
     required this.country,
-    super.key, // ignore: unused_element
+    super.key, // ignore: unused_element_parameter
   });
 
   /// Current country.
