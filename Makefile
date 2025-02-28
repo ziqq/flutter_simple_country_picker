@@ -1,14 +1,18 @@
-# feq ($(OS),Windows_NT)
-# 	SHELL = cmd
-#     RM = del /Q
-#     MKDIR = mkdir
-#     PWD = $(shell $(PWD))
-# else
-# 	SHELL = /bin/bash -e -o pipefail
-#     RM = rm -f
-#     MKDIR = mkdir -p
-#     PWD = pwd
-# endif
+SHELL :=/bin/bash -e -o pipefail
+PWD   :=$(shell pwd)
+
+.DEFAULT_GOAL := all
+.PHONY: all
+all: ## build pipeline
+all: build-runner format check test-unit
+
+.PHONY: ci
+ci: ## CI build pipeline
+ci: all
+
+.PHONY: precommit
+precommit: ## validate the branch before commit
+precommit: all
 
 .PHONY: help
 help: ## Help dialog
@@ -94,6 +98,10 @@ test: ## Runs unit and widget tests
 				@fvm flutter test --coverage test/flutter_simple_country_picker_test.dart
 				@lcov --remove coverage/lcov.info 'lib/src/localization/*' -o coverage/lcov.info
 				@genhtml coverage/lcov.info --output=coverage -o coverage/html || (echo "Error while running genhtml with coverage"; exit 2)
+
+.PHONY: tag
+tag: ## Add a tag to the current commit
+	@dart run tool/tag.dart
 
 .PHONY: tag-add
 tag-add: ## Make command to add TAG. E.g: make tag-add TAG=v1.0.0
