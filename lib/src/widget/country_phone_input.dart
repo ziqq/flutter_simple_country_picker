@@ -122,6 +122,56 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
   }
 
   @override
+  void didUpdateWidget(covariant CountryPhoneInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Check if the initial country has changed
+    if (widget.initialCountry != oldWidget.initialCountry &&
+        widget.initialCountry != null) {
+      _selected.value = widget.initialCountry;
+      _formater.updateMask(mask: widget.initialCountry!.mask);
+    }
+
+    // Check if the controller has changed
+    if (widget.controller != oldWidget.controller &&
+        widget.controller != null) {
+      final oldValue = _controller.value;
+      var text = widget.controller!.value;
+
+      final phoneCode = _selected.value?.phoneCode;
+      if (phoneCode != null) {
+        text = text.replaceFirst(RegExp(r'^\+?' + phoneCode + r'\s?'), '');
+      }
+
+      if (widget.shouldReplace8 && text.startsWith('8')) {
+        text = text.substring(1);
+      }
+
+      _controller.text = _formater.maskText(text);
+      _formater.formatEditUpdate(oldValue, _controller.value);
+      _controller.selection = TextSelection.collapsed(
+        offset: _controller.text.length,
+      );
+    }
+
+    // Check if the shouldReplace8 has changed
+    if (widget.shouldReplace8 != oldWidget.shouldReplace8) {
+      final oldValue = _controller.value;
+      var text = _controller.text;
+
+      if (widget.shouldReplace8 && text.startsWith('8')) {
+        text = text.substring(1);
+      }
+
+      _controller.text = _formater.maskText(text);
+      _formater.formatEditUpdate(oldValue, _controller.value);
+      _controller.selection = TextSelection.collapsed(
+        offset: _controller.text.length,
+      );
+    }
+  }
+
+  @override
   void dispose() {
     _controller
       ..removeListener(_onPhoneChanged)
