@@ -297,7 +297,12 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
                       hintText: widget.placeholder ??
                           selected?.mask ??
                           localization.phonePlaceholder,
-                      hintStyle: textStyle,
+                      hintStyle: textStyle?.copyWith(
+                        color: CupertinoDynamicColor.resolve(
+                          CupertinoColors.placeholderText,
+                          context,
+                        ),
+                      ),
                       contentPadding: EdgeInsets.only(
                         right: pickerTheme.padding,
                         left: pickerTheme.padding,

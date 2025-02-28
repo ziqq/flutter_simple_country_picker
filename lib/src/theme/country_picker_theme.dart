@@ -160,8 +160,6 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   final Color? secondaryBackgroundColor;
 
   /// The style to use for country name text.
-  ///
-  /// If null, the style will be set to [TextStyle(fontSize: 16)]
   final TextStyle? textStyle;
 
   /// The style to use for search box text.

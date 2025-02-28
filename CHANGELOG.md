@@ -1,3 +1,6 @@
+## 0.2.5
+- **UPDATED**: CountryPickerInput placeholer text style
+
 ## 0.2.4
 - **FIXED**: CountryPhoneInput formater
 - **UPDATED**: CountryPickerTheme
