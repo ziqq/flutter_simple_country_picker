@@ -45,6 +45,5 @@ reports/
 /tmp
 /temp
 
-# FVM
-.fvm/flutter_sdk
-.fvm/versions/
+# FVM Version Cache
+.fvm/
