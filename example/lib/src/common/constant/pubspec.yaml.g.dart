@@ -14,7 +14,7 @@ library pubspec;
 
   MIT License
 
-  Copyright (c) 2024 Plague Fox
+  Copyright (c) 2025 Plague Fox
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -93,13 +93,13 @@ sealed class Pubspec {
   static const PubspecVersion version = (
     /// Non-canonical string representation of the version as provided
     /// in the pubspec.yaml file.
-    representation: r'0.2.1',
+    representation: r'0.2.4',
 
     /// Returns a 'canonicalized' representation
     /// of the application version.
     /// This represents the version string in accordance with
     /// Semantic Versioning (SemVer) standards.
-    canonical: r'0.2.1',
+    canonical: r'0.2.4',
 
     /// MAJOR version when you make incompatible API changes.
     /// The major version number: 1 in "1.2.3".
@@ -112,7 +112,7 @@ sealed class Pubspec {
 
     /// PATCH version when you make backward compatible bug fixes.
     /// The patch version number: 3 in "1.2.3".
-    patch: 1,
+    patch: 4,
 
     /// The pre-release identifier: "foo" in "1.2.3-foo".
     preRelease: <String>[],
@@ -123,14 +123,14 @@ sealed class Pubspec {
 
   /// Build date and time (UTC)
   static final DateTime timestamp = DateTime.utc(
-    2024,
-    10,
+    2025,
+    2,
+    28,
+    6,
     25,
-    11,
-    25,
-    57,
-    344,
-    684,
+    56,
+    533,
+    229,
   );
 
   /// Name
@@ -350,8 +350,8 @@ sealed class Pubspec {
 
   /// Environment
   static const Map<String, String> environment = <String, String>{
-    'sdk': '>=3.0.0 <4.0.0',
-    'flutter': '>=3.0.0 <4.0.0',
+    'sdk': '>=3.6.0 <4.0.0',
+    'flutter': '>=3.6.0 <4.0.0',
   };
 
   /// Platforms
@@ -422,9 +422,9 @@ sealed class Pubspec {
     'flutter_localizations': <String, Object>{
       'sdk': r'flutter',
     },
-    'intl': r'^0.19.0',
-    'meta': r'^1.9.1',
-    'collection': r'^1.18.0',
+    'intl': r'>=0.19.0',
+    'meta': r'>=1.9.1',
+    'collection': r'>=1.19.0',
   };
 
   /// Developer dependencies
@@ -436,9 +436,9 @@ sealed class Pubspec {
       'sdk': r'flutter',
     },
     'flutter_lints': r'^5.0.0',
-    'build_runner': r'^2.4.13',
+    'build_runner': r'^2.4.15',
     'pubspec_generator': r'^4.0.0',
-    'mockito': r'^5.4.4',
+    'mockito': r'^5.4.5',
   };
 
   /// Dependency overrides

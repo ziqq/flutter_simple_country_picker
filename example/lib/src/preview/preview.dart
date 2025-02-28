@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:example/src/common/constant/constants.dart';
 import 'package:example/src/common/util/app_zone.dart';
-import 'package:example/src/common/util/country_picker_state_mixin.dart';
 import 'package:example/src/common/widget/app.dart';
 import 'package:example/src/common/widget/common_header.dart';
 import 'package:example/src/common/widget/common_padding.dart';
@@ -26,15 +25,24 @@ class Preview extends StatefulWidget {
 }
 
 /// State for [Preview].
-class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
-  final ValueNotifier<Country> _selected = ValueNotifier(Country.mock());
-  final ValueNotifier<String> _controller = ValueNotifier('');
+class _PreviewState extends State<Preview> {
+  final ValueNotifier<String> _controller = ValueNotifier('+7 888 765 4321');
+  final ValueNotifier<Country> _selected = ValueNotifier(Country.ru());
+
+  /// Snackbar manager
+  ScaffoldMessengerState? _messenger;
 
   @override
   void dispose() {
     _controller.dispose();
     _selected.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _messenger = ScaffoldMessenger.maybeOf(context);
   }
 
   void _onSelect(Country country) {
@@ -55,6 +63,28 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
             context,
           ),
           content: Text('Selected country: ${_selected.value.name}'),
+        ),
+      );
+  }
+
+  /// Submit the form.
+  void _onSubmit({String? phone}) {
+    HapticFeedback.heavyImpact().ignore();
+    _messenger
+      ?..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          backgroundColor: CupertinoDynamicColor.resolve(
+            CupertinoColors.systemGreen,
+            context,
+          ),
+          content: Text(
+            'PHONE: ${phone ?? _controller.value}',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: CupertinoColors.white),
+          ),
         ),
       );
   }
@@ -109,7 +139,7 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
                     padding: const EdgeInsets.symmetric(
                       horizontal: kDefaultPadding,
                     ),
-                    onPressed: () => onSubmit(phone: _controller.value),
+                    onPressed: () => _onSubmit(phone: _controller.value),
                     child: const Text('Submit'),
                   ),
                 ),

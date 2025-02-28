@@ -31,12 +31,12 @@ void main() => group('Country -', () {
       });
 
       test('should return flag emoji for country', () {
-        final country = Country.mock();
+        final country = Country.ru();
         expect(country.flagEmoji, isNotNull);
       });
 
       test('should copy with same values', () {
-        final country = Country.mock();
+        final country = Country.ru();
         final copiedCountry = country.copyWith();
 
         expect(copiedCountry.name, copiedCountry.name);

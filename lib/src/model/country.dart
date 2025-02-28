@@ -30,8 +30,13 @@ class Country {
     this.mask,
   });
 
-  /// Create a mock countries.
-  factory Country.mock() => Country.fromJson(countries[0]);
+  /// Create a RU countrie.
+  factory Country.ru() =>
+      Country.fromJson(countries.firstWhere((c) => c['e164_key'] == '7-RU-0'));
+
+  /// Create a United States countrie.
+  factory Country.us() =>
+      Country.fromJson(countries.firstWhere((c) => c['e164_key'] == '1-US-0'));
 
   /// Create a country from a JSON object
   Country.fromJson(Map<String, Object?> json)

@@ -23,7 +23,7 @@ void main() => group('CountryPhoneInput -', () {
 
           expect(find.byKey(_key), findsOneWidget);
 
-          final defaultCountry = Country.mock();
+          final defaultCountry = Country.ru();
           expect(find.textContaining('+${defaultCountry.phoneCode}'),
               findsOneWidget);
         });

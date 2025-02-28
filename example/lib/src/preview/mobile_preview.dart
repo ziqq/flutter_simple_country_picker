@@ -2,13 +2,17 @@
 
 import 'package:example/src/common/constant/constants.dart';
 import 'package:example/src/common/localization/localization.dart';
+import 'package:example/src/common/util/app_zone.dart';
 import 'package:example/src/common/util/country_picker_state_mixin.dart';
+import 'package:example/src/common/widget/app.dart';
 import 'package:example/src/common/widget/common_header.dart';
 import 'package:example/src/common/widget/common_padding.dart';
 import 'package:example/src/common/widget/common_space_box.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+
+void main() => appZone(() async => runApp(const App(home: MobilePreview())));
 
 /// {@template county_picker_mobile_preview}
 /// MobilePreview widget.
@@ -27,7 +31,8 @@ class MobilePreview extends StatefulWidget {
 /// State for [MobilePreview].
 class _MobilePreviewState extends State<MobilePreview>
     with CountryPickerPreviewStateMixin {
-  final ValueNotifier<String> _countryPhoneController = ValueNotifier('');
+  final ValueNotifier<String> _countryPhoneController =
+      ValueNotifier('88881234567') /* 78881234567 */ /* +78881234567 */;
 
   @override
   void dispose() {

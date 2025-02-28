@@ -63,7 +63,7 @@ void main() => group('showCountryPicker -', () {
         // Симулируем выбор страны
         final listView =
             tester.widget<CountriesListView>(find.byType(CountriesListView));
-        listView.onSelect!(Country.mock());
+        listView.onSelect!(Country.ru());
 
         await tester.pumpAndSettle();
         expect(selectedCountry, isNotNull);

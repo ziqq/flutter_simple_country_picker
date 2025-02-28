@@ -11,6 +11,15 @@
       "env": {}
     },
     {
+      "name": "Run Mobile preview (Debug)",
+      "type": "dart",
+      "request": "launch",
+      "flutterMode": "debug",
+      "program": "${workspaceFolder}/example/lib/src/preview/mobile_preview.dart",
+      "args": [],
+      "env": {}
+    },
+    {
       "name": "Run Web preview (Debug)",
       "type": "dart",
       "request": "launch",

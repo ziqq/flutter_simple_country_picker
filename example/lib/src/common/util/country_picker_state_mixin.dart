@@ -23,6 +23,7 @@ import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart
 ///
 /// {@macro county_picker_form_preview}
 mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
+  // TODO(ziqq): Fix 78881234567 format
   String? _phone = '+7 888 123 4567'; // ignore: prefer_final_fields
 
   /// Phone controller
@@ -47,7 +48,7 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
   @override
   void initState() {
     super.initState();
-    final initialCountry = Country.mock();
+    final initialCountry = Country.ru();
 
     controller = TextEditingController();
     controller.addListener(_onPhoneChanged);

@@ -1,3 +1,6 @@
+## 0.2.4
+- **FIXED**: CountryPhoneInput formater
+
 ## 0.2.3
 - **CHANGED**: Bump dependencies
 

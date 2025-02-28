@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/widgets.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_code/strings/ar.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_code/strings/cn.dart';
@@ -61,13 +59,11 @@ final class CountriesLocalization extends generated.GeneratedLocalization {
       };
 
   /// Get language by code.
-  static ({String name, String nativeName})? getLanguageByCode(String code) {
-    log('code: $code');
-    return switch (_isoLangs[code.toLowerCase()]) {
-      (String, String) lang => (name: lang.$1, nativeName: lang.$2),
-      _ => null,
-    };
-  }
+  static ({String name, String nativeName})? getLanguageByCode(String code) =>
+      switch (_isoLangs[code.toLowerCase()]) {
+        (String, String) lang => (name: lang.$1, nativeName: lang.$2),
+        _ => null,
+      };
 
   /// Get supported locales.
   static List<Locale> get supportedLocales =>

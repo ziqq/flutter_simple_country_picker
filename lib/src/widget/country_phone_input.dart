@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
@@ -21,6 +23,7 @@ class CountryPhoneInput extends StatefulWidget {
     this.showPhoneCode = false,
     this.showWorldWide = false,
     this.useAutofocus = false,
+    this.shouldReplace8 = true,
     this.useHaptickFeedback = true,
     this.showSearch,
     super.key,
@@ -56,6 +59,9 @@ class CountryPhoneInput extends StatefulWidget {
   /// Show countryies search bar?
   final bool? showSearch;
 
+  /// Replace 8 with +7 in the phone number.
+  final bool shouldReplace8;
+
   /// Use autofocus for the search countryies input field.
   final bool useAutofocus;
 
@@ -68,7 +74,7 @@ class CountryPhoneInput extends StatefulWidget {
 
 /// State for widget [CountryPhoneInput].
 class _CountryPhoneInputState extends State<CountryPhoneInput> {
-  static final Country _defaultCountry = Country.mock();
+  static final Country _defaultCountry = Country.ru();
   late final TextEditingController _controller;
   late final CountryInputFormatter _formater;
   late ValueNotifier<Country?> _selected;
@@ -96,8 +102,14 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
 
       // Check if the phone code is not removed from the text
       final phoneCode = _selected.value?.phoneCode;
-      if (phoneCode != null && text.startsWith('+')) {
-        text = text.replaceFirst('+$phoneCode ', '');
+      log('phoneCode: $phoneCode');
+      if (phoneCode != null) {
+        text = text.replaceFirst(RegExp(r'^\+?' + phoneCode + r'\s?'), '');
+      }
+
+      // Check if the phone number starts with 8
+      if (widget.shouldReplace8 && text.startsWith('8')) {
+        text = text.substring(1);
       }
 
       _controller.text = _formater.maskText(text);
@@ -180,34 +192,36 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
       minHeight: _kDefaultCountyInputHeight,
       minWidth: _kDefaultCountyInputHeight,
     );
-    return Row(
-      children: [
-        GestureDetector(
-          onTap: () => showCountryPicker(
-            context: context,
-            exclude: widget.exclude,
-            favorite: widget.favorite,
-            filter: widget.filter,
-            isScrollControlled: widget.isScrollControlled,
-            showSearch: widget.showSearch,
-            showPhoneCode: widget.showPhoneCode,
-            showWorldWide: widget.showWorldWide,
-            useAutofocus: widget.useAutofocus,
-            useHaptickFeedback: widget.useHaptickFeedback,
-            selected: _selected,
-            onSelect: _onSelect,
-            // onDone: widget.onDone,
-          ),
-          child: CustomPaint(
-            painter: painter,
-            child: ConstrainedBox(
-              constraints: constraints,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: pickerTheme.padding),
-                child: Center(
-                  child: ValueListenableBuilder(
-                    valueListenable: _selected,
-                    builder: (context, selected, _) => Row(
+    return ValueListenableBuilder(
+      valueListenable: _selected,
+      builder: (context, selected, _) => Row(
+        children: [
+          GestureDetector(
+            onTap: () => showCountryPicker(
+              context: context,
+              exclude: widget.exclude,
+              favorite: widget.favorite,
+              filter: widget.filter,
+              isScrollControlled: widget.isScrollControlled,
+              showSearch: widget.showSearch,
+              showPhoneCode: widget.showPhoneCode,
+              showWorldWide: widget.showWorldWide,
+              useAutofocus: widget.useAutofocus,
+              useHaptickFeedback: widget.useHaptickFeedback,
+              selected: _selected,
+              onSelect: _onSelect,
+              // onDone: widget.onDone,
+            ),
+            child: CustomPaint(
+              painter: painter,
+              child: ConstrainedBox(
+                constraints: constraints,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: pickerTheme.padding,
+                  ),
+                  child: Center(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (selected?.flagEmoji != null &&
@@ -222,17 +236,14 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
               ),
             ),
           ),
-        ),
-        SizedBox(width: pickerTheme.indent),
-        Flexible(
-          child: ConstrainedBox(
-            constraints: constraints,
-            child: CustomPaint(
-              painter: painter,
-              child: Center(
-                child: ValueListenableBuilder(
-                  valueListenable: _selected,
-                  builder: (context, selected, _) => TextFormField(
+          SizedBox(width: pickerTheme.indent),
+          Flexible(
+            child: ConstrainedBox(
+              constraints: constraints,
+              child: CustomPaint(
+                painter: painter,
+                child: Center(
+                  child: TextFormField(
                     controller: _controller,
                     inputFormatters: [_formater],
                     decoration: InputDecoration(
@@ -256,8 +267,8 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
