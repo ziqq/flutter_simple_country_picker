@@ -1,4 +1,5 @@
 ignore:
+  - l
   - build_runner
   - cupertino_icons
   - integration_test
