@@ -1,7 +1,8 @@
 ignore:
+  - build_runner
   - cupertino_icons
-  - flutter_localizations
   - integration_test
+  - flutter_localizations
 
 exclude:
   - "example/**"
