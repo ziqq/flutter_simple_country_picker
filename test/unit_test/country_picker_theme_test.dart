@@ -54,7 +54,7 @@ void main() => group('CountryPickerTheme -', () {
         );
 
         final updatedTheme = theme.copyWith(
-          accentColor: CupertinoColors.systemRed,
+          accentColor: CupertinoColors.systemYellow,
           backgroundColor: CupertinoColors.systemYellow,
           flagSize: 30,
         );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:flutter_simple_country_picker/src/constant/country_code/country_codes.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../util/widget_test_helper.dart';
@@ -183,6 +184,146 @@ void main() => group('CountryPhoneInput -', () {
 
           expect(find.text('12 34 56 78'),
               findsOneWidget); // Formatted according to the country mask
+        });
+      });
+
+      group('didUpdateWidget -', () {
+        testWidgets('should update phone code when initialCountry changes',
+            (tester) async {
+          // 1. Pump widget with initialCountry = RU (for example)
+          final initialCountry = Country.fromJson(
+              countries.firstWhere((c) => c['e164_key'] == '7-RU-0'));
+
+          final updatedCountry = Country.fromJson(
+              countries.firstWhere((c) => c['e164_key'] == '1-US-0'));
+
+          await tester.pumpWidget(
+            WidgetTestHelper.createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (context) => Scaffold(
+                body: CountryPhoneInput(
+                  key: _key,
+                  initialCountry: initialCountry,
+                ),
+              ),
+            ),
+          );
+
+          // 2. Verify phone code is "+7"
+          expect(find.byKey(_key), findsOneWidget);
+          expect(find.textContaining('+7'), findsOneWidget);
+
+          // 3. Rebuild widget with updatedCountry
+          await tester.pumpWidget(
+            WidgetTestHelper.createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (context) => Scaffold(
+                body: CountryPhoneInput(
+                  key: _key,
+                  initialCountry: updatedCountry,
+                ),
+              ),
+            ),
+          );
+
+          // 4. Pump and verify phone code is now "44"
+          await tester.pump();
+          expect(find.textContaining('+1'), findsOneWidget);
+        });
+
+        testWidgets('should update phone text when controller changes',
+            (tester) async {
+          // 1. Create initial controller with some phone
+          final oldController = ValueNotifier<String>('+71234567890');
+          final newController = ValueNotifier<String>('+11234567890');
+
+          final initialCountry = Country.fromJson(
+              countries.firstWhere((c) => c['e164_key'] == '7-RU-0'));
+
+          final newInitialCountry = Country.fromJson(
+              countries.firstWhere((c) => c['e164_key'] == '1-US-0'));
+
+          // 2. Pump widget with oldController
+          await tester.pumpWidget(
+            WidgetTestHelper.createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (context) => Scaffold(
+                body: CountryPhoneInput(
+                  key: _key,
+                  controller: oldController,
+                  initialCountry: initialCountry,
+                ),
+              ),
+            ),
+          );
+
+          // 3. Check text contains oldController value
+          await tester.pump();
+          expect(find.byKey(_key), findsOneWidget);
+          expect(find.textContaining('+7'), findsOneWidget);
+          expect(find.textContaining('123 456 7890'), findsOneWidget);
+
+          // 4. Rebuild with newController
+          await tester.pumpWidget(
+            WidgetTestHelper.createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (context) => Scaffold(
+                body: CountryPhoneInput(
+                  key: _key,
+                  initialCountry: newInitialCountry,
+                  controller: newController,
+                ),
+              ),
+            ),
+          );
+
+          // 5. Pump and verify text changed
+          await tester.pump();
+          expect(find.byKey(_key), findsOneWidget);
+          expect(find.textContaining('+7'), findsNothing);
+          expect(find.textContaining('+1'), findsOneWidget);
+          expect(find.textContaining('123 456 7890'), findsOneWidget);
+        });
+
+        testWidgets('should remove leading 8 if shouldReplace8 changes',
+            (tester) async {
+          // 1. Pump with shouldReplace8=false, and see no leading removal
+          final controller = ValueNotifier<String>('+7 8 1234567');
+
+          await tester.pumpWidget(
+            WidgetTestHelper.createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (context) => Scaffold(
+                key: _key,
+                body: CountryPhoneInput(
+                  controller: controller,
+                  shouldReplace8: false,
+                ),
+              ),
+            ),
+          );
+
+          await tester.pump();
+          // Expect the leading "8" to remain since shouldReplace8=false
+          expect(find.textContaining('8'), findsWidgets);
+
+          // 2. Rebuild with shouldReplace8=true
+          await tester.pumpWidget(
+            WidgetTestHelper.createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (context) => Scaffold(
+                key: _key,
+                body: CountryPhoneInput(
+                  controller: controller,
+                  shouldReplace8: true,
+                ),
+              ),
+            ),
+          );
+
+          // 3. Pump and verify leading 8 is removed
+          await tester.pump();
+          expect(find.textContaining('8'), findsNothing);
         });
       });
     });
