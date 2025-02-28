@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
@@ -102,7 +100,6 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
 
       // Check if the phone code is not removed from the text
       final phoneCode = _selected.value?.phoneCode;
-      log('phoneCode: $phoneCode');
       if (phoneCode != null) {
         text = text.replaceFirst(RegExp(r'^\+?' + phoneCode + r'\s?'), '');
       }

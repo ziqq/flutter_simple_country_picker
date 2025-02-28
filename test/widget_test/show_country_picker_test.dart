@@ -71,6 +71,7 @@ void main() => group('showCountryPicker -', () {
 
       testWidgets('applies theme correctly', (tester) async {
         final themeData = CountryPickerTheme(
+          accentColor: CupertinoColors.systemBlue,
           backgroundColor: Colors.white,
           barrierColor: Colors.black54,
           dividerColor: Colors.grey,

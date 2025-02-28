@@ -1,5 +1,6 @@
 ## 0.2.4
 - **FIXED**: CountryPhoneInput formater
+- **UPDATED**: CountryPickerTheme
 
 ## 0.2.3
 - **CHANGED**: Bump dependencies

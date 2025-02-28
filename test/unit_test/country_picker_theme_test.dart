@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() => group('CountryPickerTheme -', () {
       test('constructs with default values', () {
         final theme = CountryPickerTheme(
+          accentColor: CupertinoColors.systemRed,
           backgroundColor: CupertinoColors.systemGrey,
           barrierColor: CupertinoColors.systemBlue,
           dividerColor: CupertinoColors.opaqueSeparator,
@@ -21,6 +22,7 @@ void main() => group('CountryPickerTheme -', () {
           inputDecoration: const InputDecoration(),
         );
 
+        expect(theme.accentColor, CupertinoColors.systemRed);
         expect(theme.backgroundColor, CupertinoColors.systemGrey);
         expect(theme.barrierColor, CupertinoColors.systemBlue);
         expect(theme.dividerColor, CupertinoColors.opaqueSeparator);
@@ -37,6 +39,7 @@ void main() => group('CountryPickerTheme -', () {
 
       test('copyWith updates properties', () {
         final theme = CountryPickerTheme(
+          accentColor: CupertinoColors.systemRed,
           backgroundColor: CupertinoColors.systemGrey,
           barrierColor: CupertinoColors.systemBlue,
           dividerColor: CupertinoColors.opaqueSeparator,
@@ -51,10 +54,12 @@ void main() => group('CountryPickerTheme -', () {
         );
 
         final updatedTheme = theme.copyWith(
+          accentColor: CupertinoColors.systemRed,
           backgroundColor: CupertinoColors.systemYellow,
           flagSize: 30,
         );
 
+        expect(updatedTheme.accentColor, CupertinoColors.systemYellow);
         expect(updatedTheme.backgroundColor, CupertinoColors.systemYellow);
         expect(updatedTheme.flagSize, 30.0);
         expect(updatedTheme.barrierColor, theme.barrierColor);
@@ -62,6 +67,7 @@ void main() => group('CountryPickerTheme -', () {
 
       test('lerp interpolates properties', () {
         final theme1 = CountryPickerTheme(
+          accentColor: CupertinoColors.systemRed,
           backgroundColor: Colors.red,
           barrierColor: Colors.blue,
           dividerColor: Colors.green,
@@ -76,6 +82,7 @@ void main() => group('CountryPickerTheme -', () {
         );
 
         final theme2 = CountryPickerTheme(
+          accentColor: CupertinoColors.systemBlue,
           backgroundColor: Colors.blue,
           barrierColor: Colors.red,
           dividerColor: Colors.purple,
@@ -91,10 +98,19 @@ void main() => group('CountryPickerTheme -', () {
 
         final lerpedTheme = theme1.lerp(theme2, 0.5) as CountryPickerTheme;
 
-        expect(lerpedTheme.backgroundColor,
-            Color.lerp(Colors.red, Colors.blue, 0.5));
         expect(
-            lerpedTheme.barrierColor, Color.lerp(Colors.blue, Colors.red, 0.5));
+          lerpedTheme.accentColor,
+          Color.lerp(
+              CupertinoColors.systemRed, CupertinoColors.systemBlue, 0.5),
+        );
+        expect(
+          lerpedTheme.backgroundColor,
+          Color.lerp(Colors.red, Colors.blue, 0.5),
+        );
+        expect(
+          lerpedTheme.barrierColor,
+          Color.lerp(Colors.blue, Colors.red, 0.5),
+        );
         expect(lerpedTheme.flagSize, ui.lerpDouble(25.0, 35.0, 0.5));
         expect(lerpedTheme.padding, ui.lerpDouble(10.0, 20.0, 0.5));
         expect(lerpedTheme.radius, ui.lerpDouble(10.0, 20.0, 0.5));
@@ -103,6 +119,7 @@ void main() => group('CountryPickerTheme -', () {
 
       test('equality and hashCode', () {
         final theme1 = CountryPickerTheme(
+          accentColor: CupertinoColors.systemRed,
           backgroundColor: Colors.red,
           barrierColor: Colors.blue,
           dividerColor: Colors.green,
@@ -117,6 +134,7 @@ void main() => group('CountryPickerTheme -', () {
         );
 
         final theme2 = CountryPickerTheme(
+          accentColor: CupertinoColors.systemRed,
           backgroundColor: Colors.red,
           barrierColor: Colors.blue,
           dividerColor: Colors.green,

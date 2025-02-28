@@ -14,6 +14,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     with Diagnosticable {
   /// {@macro country_picker_theme}
   factory CountryPickerTheme({
+    required Color? accentColor,
     required Color? backgroundColor,
     required Color? barrierColor,
     required Color? dividerColor,
@@ -31,6 +32,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     indent ??= kDefaultIndent;
     radius ??= kDefaultRadius;
     return CountryPickerTheme.raw(
+      accentColor: accentColor ?? CupertinoColors.systemBlue,
       backgroundColor: backgroundColor ?? CupertinoColors.systemBackground,
       barrierColor: barrierColor ?? kCupertinoModalBarrierColor,
       dividerColor: dividerColor,
@@ -47,6 +49,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
 
   /// Create a [CountryPickerTheme] given a set of exact values.
   const CountryPickerTheme.raw({
+    required this.accentColor,
     required this.backgroundColor,
     required this.barrierColor,
     required this.dividerColor,
@@ -83,6 +86,8 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     final defaults = CountryPickerTheme.defaults(context);
     final theme = CountryPickerTheme.maybeOf(context);
     return CountryPickerTheme(
+      accentColor:
+          other?.accentColor ?? theme?.accentColor ?? defaults.accentColor,
       backgroundColor: other?.backgroundColor ??
           theme?.backgroundColor ??
           defaults.backgroundColor,
@@ -127,6 +132,9 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   //           'a CountryPickerTheme of the exact type',
   //       'out_of_scope or out_of_extensions',
   //     );
+
+  /// The accent color.
+  final Color accentColor;
 
   /// The country bottom sheet's background color.
   ///
@@ -190,6 +198,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
 
   @override
   CountryPickerTheme copyWith({
+    Color? accentColor,
     Color? backgroundColor,
     Color? barrierColor,
     Color? dividerColor,
@@ -203,6 +212,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     double? radius,
   }) =>
       CountryPickerTheme(
+        accentColor: accentColor ?? this.accentColor,
         backgroundColor: backgroundColor ?? this.backgroundColor,
         barrierColor: barrierColor ?? this.barrierColor,
         dividerColor: dividerColor ?? this.dividerColor,
@@ -225,6 +235,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   ) {
     if (other is! CountryPickerTheme || identical(this, other)) return this;
     return CountryPickerTheme(
+      accentColor: Color.lerp(accentColor, other.accentColor, t),
       backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t),
       barrierColor: Color.lerp(barrierColor, other.barrierColor, t),
       dividerColor: Color.lerp(dividerColor, other.dividerColor, t),
@@ -258,6 +269,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
 
   @override
   int get hashCode => Object.hashAll([
+        accentColor,
         backgroundColor,
         barrierColor,
         dividerColor,
@@ -276,6 +288,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
     return other is CountryPickerTheme &&
+        other.accentColor == accentColor &&
         other.backgroundColor == backgroundColor &&
         other.dividerColor == dividerColor &&
         other.secondaryBackgroundColor == secondaryBackgroundColor &&
@@ -292,6 +305,13 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties
+      ..add(
+        ColorProperty(
+          'accentColor',
+          accentColor,
+          defaultValue: CupertinoColors.systemBlue,
+        ),
+      )
       ..add(
         ColorProperty(
           'backgroundColor',
@@ -331,14 +351,14 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         DiagnosticsProperty<TextStyle?>(
           'textStyle',
           textStyle,
-          defaultValue: kDefaultTextStyle,
+          defaultValue: null,
         ),
       )
       ..add(
         DiagnosticsProperty<TextStyle?>(
           'searchTextStyle',
           searchTextStyle,
-          defaultValue: kDefaultTextStyle,
+          defaultValue: null,
         ),
       )
       ..add(
@@ -429,24 +449,29 @@ class _CountryPickerTheme$Default extends CountryPickerTheme {
   /// Creates [_CountryPickerTheme$Default].
   _CountryPickerTheme$Default(
     this.context, {
+    Color? accentColor,
     Color? backgroundColor,
     Color? barrierColor,
     Color? dividerColor,
     Color? secondaryBackgroundColor,
-    TextStyle? textStyle,
-    TextStyle? searchTextStyle,
     InputDecoration? inputDecoration,
     double? radius,
     double? padding,
     double? indent,
     double? flagSize,
+    super.textStyle,
+    super.searchTextStyle,
   }) : super.raw(
+          accentColor: accentColor ??
+              CupertinoDynamicColor.resolve(
+                CupertinoColors.systemBlue,
+                context,
+              ),
           secondaryBackgroundColor: secondaryBackgroundColor ??
               CupertinoDynamicColor.resolve(
                 CupertinoColors.secondarySystemBackground,
                 context,
               ),
-          searchTextStyle: searchTextStyle ?? kDefaultTextStyle,
           backgroundColor: backgroundColor ??
               CupertinoDynamicColor.resolve(
                 CupertinoColors.systemBackground,
@@ -463,7 +488,6 @@ class _CountryPickerTheme$Default extends CountryPickerTheme {
           indent: indent ?? kDefaultIndent,
           padding: padding ?? kDefaultPadding,
           flagSize: flagSize ?? kDefaultFlagSize,
-          textStyle: textStyle ?? kDefaultTextStyle,
         );
 
   /// A build context used to resolve [CupertinoDynamicColor]s defined in this

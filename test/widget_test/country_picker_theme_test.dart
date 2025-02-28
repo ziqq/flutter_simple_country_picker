@@ -10,6 +10,7 @@ const _key = Key('country_picker_theme');
 void main() => group('CountryPickerTheme -', () {
       testWidgets('provides theme data to children widgets', (tester) async {
         final themeData = CountryPickerTheme(
+          accentColor: CupertinoColors.systemBlue,
           backgroundColor: Colors.white,
           barrierColor: Colors.black,
           dividerColor: Colors.grey,
@@ -66,6 +67,7 @@ void main() => group('CountryPickerTheme -', () {
       testWidgets('provides inherited properties to widget tree',
           (tester) async {
         final themeData = CountryPickerTheme(
+          accentColor: CupertinoColors.systemRed,
           backgroundColor: Colors.red,
           barrierColor: Colors.yellow,
           dividerColor: Colors.green,
@@ -98,7 +100,8 @@ void main() => group('CountryPickerTheme -', () {
         final inheritedTheme = CountryPickerInheritedTheme.maybeOf(context);
 
         expect(inheritedTheme, isNotNull);
-        expect(inheritedTheme!.backgroundColor, Colors.red);
+        expect(inheritedTheme!.accentColor, CupertinoColors.systemRed);
+        expect(inheritedTheme.backgroundColor, Colors.red);
         expect(inheritedTheme.barrierColor, Colors.yellow);
         expect(inheritedTheme.dividerColor, Colors.green);
         expect(inheritedTheme.secondaryBackgroundColor, Colors.orange);
@@ -125,6 +128,7 @@ void main() => group('CountryPickerTheme -', () {
         final context = tester.firstElement(find.byKey(_key));
         final defaultTheme = CountryPickerTheme.defaults(context);
 
+        expect(defaultTheme.accentColor, CupertinoColors.systemBlue);
         expect(defaultTheme.backgroundColor, CupertinoColors.systemBackground);
         expect(defaultTheme.barrierColor, kCupertinoModalBarrierColor);
         expect(defaultTheme.textStyle?.fontSize, 16);

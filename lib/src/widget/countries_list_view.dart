@@ -460,7 +460,7 @@ class _CountryListItem extends StatelessWidget {
     final Widget? effectiveTrailing = switch ((simple, selected)) {
       (true, true) => Icon(
           CupertinoIcons.checkmark_circle_fill,
-          color: Theme.of(context).colorScheme.primary,
+          color: pickerTheme.accentColor,
         ),
       (true, false) => null,
       (false, _) => Text(
