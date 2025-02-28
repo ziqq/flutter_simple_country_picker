@@ -126,11 +126,11 @@ sealed class Pubspec {
     2025,
     2,
     28,
-    6,
-    25,
-    56,
-    533,
-    229,
+    7,
+    37,
+    55,
+    758,
+    597,
   );
 
   /// Name
@@ -422,9 +422,9 @@ sealed class Pubspec {
     'flutter_localizations': <String, Object>{
       'sdk': r'flutter',
     },
-    'intl': r'>=0.19.0',
-    'meta': r'>=1.9.1',
-    'collection': r'>=1.19.0',
+    'intl': r'^0.19.0',
+    'meta': r'^1.9.0',
+    'collection': r'^1.19.0',
   };
 
   /// Developer dependencies
@@ -439,6 +439,7 @@ sealed class Pubspec {
     'build_runner': r'^2.4.15',
     'pubspec_generator': r'^4.0.0',
     'mockito': r'^5.4.5',
+    'l': r'^5.0.0',
   };
 
   /// Dependency overrides
