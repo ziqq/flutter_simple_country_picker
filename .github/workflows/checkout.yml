@@ -70,6 +70,7 @@ jobs:
 
       - name: 🔎 Check content
         id: check-files
+        timeout-minutes: 1
         uses: andstor/file-existence-action@v1
         with:
           files: "README.md, CHANGELOG.md, CONTRIBUTING.md, LICENSE, example"
@@ -79,12 +80,15 @@ jobs:
         run: echo Content is OK!
 
       - name: 🔎 Check description
+        timeout-minutes: 1
         run: echo | grep -q Description README.md ; echo $?
 
       - name: 🔎 Check example
+        timeout-minutes: 1
         run: echo | grep -q Example README.md ; echo $?
 
       - name: 🔎 Check installation
+        timeout-minutes: 1
         run: echo | grep -q Installation README.md ; echo $?
 
       - name: 👷 Install flutter
@@ -96,6 +100,7 @@ jobs:
       - name: 🔎 Check flutter version
         id: check-flutter-version
         run: flutter --version
+        timeout-minutes: 1
 
       - name: 📤 Restore Pub modules
         id: cache-pub-restore
@@ -140,17 +145,20 @@ jobs:
           key: ${{ runner.os }}-pub-${{ env.pub-cache-name }}-${{ hashFiles('**/pubspec.yaml') }}
 
       - name: 🧪 Run dependency validator
+        timeout-minutes: 1
         run: |
           dart pub global activate dependency_validator
           dart pub global run dependency_validator:dependency_validator
 
       - name: 🔎 Check format
-        id: check_format
+        id: check-format
+        timeout-minutes: 1
         run: |
-          find lib test -name "*.dart" -print0 | xargs -0 dart format --set-exit-if-changed --line-length 80
+          find lib test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 dart format --set-exit-if-changed --line-length 80 -o none
 
       - name: 🔎 Check for Warnings
         id: check-analyzer
+        timeout-minutes: 1
         run: |
           flutter analyze --fatal-infos --fatal-warnings lib/ test/
 
