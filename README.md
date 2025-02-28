@@ -49,7 +49,7 @@ Add the `CountriesLocalization.delegate` in the list of your app delegates. Set 
 
 ```Dart
 MaterialApp(
-  locale: const Locale('ru'), // Locale('en'),
+  locale: const Locale('ru'),
   supportedLocales: const <Locale>[
     Locale('ru'),
     Locale('en'),
