@@ -39,20 +39,13 @@ dependencies:
   # Localization
   flutter_localizations:
     sdk: flutter
-  intl: '>=0.19.0'
+  intl: '^0.19.0'
 
   # Annotations
-  meta: '>=1.9.1'
+  meta: '^1.9.0'
 
   # Utilities
-  collection: '>=1.19.0'
-
-  # Ui & Widgets
-  # cupertino_icons: ^1.0.8
-  # pull_down_button: ^0.10.2
-
-  # Web
-  # web: ^1.0.0
+  collection: '^1.19.0'
 
 dev_dependencies:
   # Integration tests for Flutter
@@ -71,6 +64,9 @@ dev_dependencies:
 
   # Test utilities
   mockito: ^5.4.5
+
+  # Logging
+  l: ^5.0.0
 
 flutter:
   generate: true

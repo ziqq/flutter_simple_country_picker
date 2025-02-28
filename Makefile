@@ -4,7 +4,7 @@ PWD   :=$(shell pwd)
 .DEFAULT_GOAL := all
 .PHONY: all
 all: ## build pipeline
-all: build-runner format check test-unit
+all: get build-runner format check test-unit
 
 .PHONY: ci
 ci: ## CI build pipeline
@@ -53,7 +53,7 @@ l10n: ## Generate localization
 
 .PHONY: format
 format: ## Format code
-				@fvm dart format --fix -l 80 . || (echo "👀 Format code error 👀"; exit 1)
+				@find lib test -type f -name "*.dart" ! -name "*.*.dart" ! -name "*.*.*.dart" -print0 | xargs -0 fvm dart format -l 80 -o none || (echo "¯\_(ツ)_/¯ Format code error"; exit 1)
 
 .PHONY: fix
 fix: format ## Fix code
@@ -69,11 +69,11 @@ clean: ## Clean flutter
 
 .PHONY: get
 get: ## Get dependencies
-				@fvm flutter pub get || (echo "▓▓ Get dependencies error ▓▓"; exit 1)
+				@fvm flutter pub get || (echo "¯\_(ツ)_/¯Get dependencies error"; exit 1)
 
 .PHONY: update
 update: get build-runner ## Update dependencies and codegen
-				@cd example fvm flutter pub get || (echo "▓▓ Get dependencies error ▓▓"; exit 1)
+				@cd example fvm flutter pub get || (echo "¯\_(ツ)_/¯Get dependencies error"; exit 1)
 
 .PHONY: analyze
 analyze: get ## Analyze code
@@ -87,17 +87,17 @@ check: analyze test-unit ## Check code
 
 .PHONY: publish
 publish: ## Publish package
-				@fvm dart pub publish --server=https://pub.dartlang.org || (echo "▓▓ Publish error ▓▓"; exit 1)
+				@fvm dart pub publish --server=https://pub.dartlang.org || (echo "¯\_(ツ)_/¯Publish error"; exit 1)
 
 .PHONY: coverage
 coverage: ## Runs get coverage
 				@lcov --summary coverage/lcov.info
 
-.PHONY: test
-test: ## Runs unit and widget tests
+.PHONY: test-unit
+test-unit: ## Runs unit and widget tests
 				@fvm flutter test --coverage test/flutter_simple_country_picker_test.dart
 				@lcov --remove coverage/lcov.info 'lib/src/localization/*' -o coverage/lcov.info
-				@genhtml coverage/lcov.info --output=coverage -o coverage/html || (echo "Error while running genhtml with coverage"; exit 2)
+				@genhtml coverage/lcov.info --output=coverage -o coverage/html || (echo "¯\_(ツ)_/¯ Error while running genhtml with coverage"; exit 2)
 
 .PHONY: tag
 tag: ## Add a tag to the current commit
