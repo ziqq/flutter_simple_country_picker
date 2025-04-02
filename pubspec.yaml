@@ -16,6 +16,12 @@ funding:
   - https://www.patreon.com/ziqq
   - https://boosty.to/ziqq
 
+topics:
+  - country
+  - picker
+  - phone
+  - input
+
 platforms:
   android:
   ios:
@@ -30,7 +36,7 @@ platforms:
 
 environment:
   sdk: '>=3.6.0 <4.0.0'
-  flutter: ">=3.27.0"
+  flutter: ">=3.29.2"
 
 dependencies:
   flutter:
