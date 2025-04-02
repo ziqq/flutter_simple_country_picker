@@ -141,9 +141,9 @@ final class CountriesController extends ValueNotifier<CountriesState> {
 
   /// Search countries
   void _onSearch([CountriesLocalization? localization]) => _handle(() async {
+        final searchText = search?.text ?? '';
         var newCountries = <Country>[];
 
-        final searchText = search?.text ?? '';
         if (searchText.isEmpty) {
           newCountries.addAll(_original);
         } else {
@@ -155,11 +155,6 @@ final class CountriesController extends ValueNotifier<CountriesState> {
         _setState(CountriesState.idle(newCountries.toList(growable: false)));
       });
 
-  void _setState(CountriesState state) {
-    value = state;
-    notifyListeners();
-  }
-
   Future<void> _handle(Future<void> Function() fn) async {
     _setState(CountriesState.loading(value.countries));
     try {
@@ -167,6 +162,11 @@ final class CountriesController extends ValueNotifier<CountriesState> {
     } on Object catch (e, __) {
       _setState(CountriesState.error(value.countries));
     }
+  }
+
+  void _setState(CountriesState state) {
+    value = state;
+    notifyListeners();
   }
 
   @override

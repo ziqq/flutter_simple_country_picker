@@ -28,14 +28,14 @@ abstract base class CountriesState {
   /// Type of state
   abstract final String type;
 
-  /// Check if is Idle.
-  bool get isIdle => this is CountriesState$Idle;
-
   /// Check if is Processing.
   bool get isLoading => this is CountriesState$Loading;
 
   /// Check if is Failed.
   bool get isError => this is CountriesState$Error;
+
+  /// Check if is Idle.
+  bool get isIdle => this is CountriesState$Idle;
 
   /// List of countries.
   final List<Country> countries;
@@ -58,7 +58,7 @@ abstract base class CountriesState {
           listEquals(countries, other.countries));
 
   @override
-  String toString() => 'CountriesState{type: $type}';
+  String toString() => 'CountriesState.$type{countries: $countries}';
 }
 
 /// {@macro countries_state}

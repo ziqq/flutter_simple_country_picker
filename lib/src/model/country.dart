@@ -1,5 +1,3 @@
-// ignore_for_file: sort_constructors_first
-
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_code/country_codes.dart';
@@ -30,11 +28,11 @@ class Country {
     this.mask,
   });
 
-  /// Create a RU countrie.
+  /// Create a `RU` country.
   factory Country.ru() =>
       Country.fromJson(countries.firstWhere((c) => c['e164_key'] == '7-RU-0'));
 
-  /// Create a United States countrie.
+  /// Create a `United States` country.
   factory Country.us() =>
       Country.fromJson(countries.firstWhere((c) => c['e164_key'] == '1-US-0'));
 
@@ -202,14 +200,17 @@ class Country {
   bool get iswWorldWide => countryCode == Country.worldWide.countryCode;
 
   @override
-  String toString() => 'Country('
-      'countryCode: $countryCode, '
-      'phoneCode: $phoneCode, '
-      'name: $name, '
-      'nameLocalized: $nameLocalized, '
-      'mask: $mask, '
-      'fullExampleWithPlusSign: $fullExampleWithPlusSign'
-      ')';
+  String toString() {
+    final buffer = StringBuffer('Country{')
+      ..write('countryCode: $countryCode, ')
+      ..write('phoneCode: $phoneCode, ')
+      ..write('name: $name, ')
+      ..write('nameLocalized: $nameLocalized, ')
+      ..write('mask: $mask, ')
+      ..write('fullExampleWithPlusSign: $fullExampleWithPlusSign')
+      ..write('}');
+    return buffer.toString();
+  }
 
   @override
   bool operator ==(Object other) {
