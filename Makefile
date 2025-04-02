@@ -53,14 +53,7 @@ l10n: ## Generate localization
 
 .PHONY: format
 format: ## Format code
-				@find lib test \
-				-path '*/generated/*' -prune -o \
-				-type f -name '*.dart' \
-				! -name '*.*.dart' \
-				! -name 'messages_.*.dart' \
-				! -name 'l10n.dart' \
-				-print0 |
-				xargs -0 dart format --set-exit-if-changed --line-length 80 -o none || (echo "¯\_(ツ)_/¯ Format code error"; exit 1)
+				@find lib test -path '*/generated/*' -prune -o -type f -name '*.dart' ! -name '*.*.dart' ! -name 'messages_.*.dart' ! -name 'l10n.dart' -print0 | xargs -0 dart format --set-exit-if-changed --line-length 80 -o none || (echo "¯\_(ツ)_/¯ Format code error"; exit 1)
 
 .PHONY: fix
 fix: format ## Fix code
