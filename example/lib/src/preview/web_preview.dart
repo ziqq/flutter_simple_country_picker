@@ -51,6 +51,7 @@ class _WebPreviewState extends State<WebPreview>
     return Scaffold(
       backgroundColor: AppStyles.of(context).backgroundColor,
       appBar: CommonHeader(
+        title: WebPreview.title,
         backgroundColor: AppStyles.of(context).backgroundColor,
       ),
       body: Padding(
@@ -58,7 +59,7 @@ class _WebPreviewState extends State<WebPreview>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: mediaQuery.size.height * 0.1),
+            const Spacer(),
 
             // --- Logo --- //
             const CommonLogo.text(),
@@ -84,6 +85,8 @@ class _WebPreviewState extends State<WebPreview>
                 child: Text(localization.nextLable),
               ),
             ),
+
+            const Spacer(),
           ],
         ),
       ),

@@ -22,13 +22,14 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "description": MessageLookupByLibrary.simpleMessage(
-            "Controleer de landcode en voer uw telefoonnummer in."),
-        "language": MessageLookupByLibrary.simpleMessage("Nederlands"),
-        "languageCode": MessageLookupByLibrary.simpleMessage("nl"),
-        "localeCode": MessageLookupByLibrary.simpleMessage("nl_NL"),
-        "nextLable": MessageLookupByLibrary.simpleMessage("Volgende"),
-        "passwordLable": MessageLookupByLibrary.simpleMessage("Wachtwoord"),
-        "title": MessageLookupByLibrary.simpleMessage("Tetradka")
-      };
+    "description": MessageLookupByLibrary.simpleMessage(
+      "Controleer de landcode en voer uw telefoonnummer in.",
+    ),
+    "language": MessageLookupByLibrary.simpleMessage("Nederlands"),
+    "languageCode": MessageLookupByLibrary.simpleMessage("nl"),
+    "localeCode": MessageLookupByLibrary.simpleMessage("nl_NL"),
+    "nextLable": MessageLookupByLibrary.simpleMessage("Volgende"),
+    "passwordLable": MessageLookupByLibrary.simpleMessage("Wachtwoord"),
+    "title": MessageLookupByLibrary.simpleMessage("Preview"),
+  };
 }

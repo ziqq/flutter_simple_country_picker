@@ -15,7 +15,7 @@
     "type": "text",
     "description": "Language"
   },
-  "title": "Tetradka",
+  "title": "Preview",
   "description": "Patikrinkite šalies kodą ir įveskite savo telefono numerį.",
   "nextLable": "Kitas",
   "passwordLable": "Slaptažodis"

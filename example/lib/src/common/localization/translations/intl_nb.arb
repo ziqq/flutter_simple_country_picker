@@ -15,7 +15,7 @@
     "type": "text",
     "description": "Language"
   },
-  "title": "Tetradka",
+  "title": "Preview",
   "description": "Sjekk landskoden og skriv inn telefonnummeret ditt.",
   "nextLable": "Neste",
   "passwordLable": "Passord"

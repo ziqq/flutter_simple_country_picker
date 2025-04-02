@@ -22,13 +22,14 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "description": MessageLookupByLibrary.simpleMessage(
-            "Перевірте код країни та введіть свій номер телефону."),
-        "language": MessageLookupByLibrary.simpleMessage("Українська"),
-        "languageCode": MessageLookupByLibrary.simpleMessage("uk"),
-        "localeCode": MessageLookupByLibrary.simpleMessage("uk_UA"),
-        "nextLable": MessageLookupByLibrary.simpleMessage("Далі"),
-        "passwordLable": MessageLookupByLibrary.simpleMessage("Пароль"),
-        "title": MessageLookupByLibrary.simpleMessage("Тетрадка")
-      };
+    "description": MessageLookupByLibrary.simpleMessage(
+      "Перевірте код країни та введіть свій номер телефону.",
+    ),
+    "language": MessageLookupByLibrary.simpleMessage("Українська"),
+    "languageCode": MessageLookupByLibrary.simpleMessage("uk"),
+    "localeCode": MessageLookupByLibrary.simpleMessage("uk_UA"),
+    "nextLable": MessageLookupByLibrary.simpleMessage("Далі"),
+    "passwordLable": MessageLookupByLibrary.simpleMessage("Пароль"),
+    "title": MessageLookupByLibrary.simpleMessage("Preview"),
+  };
 }

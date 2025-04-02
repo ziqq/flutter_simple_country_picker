@@ -1,4 +1,4 @@
-// Anton Ustinoff <a.a.ustinoff@gmail.com>, 14 October 2024
+// Anton Ustinoff <a.a.ustinoff@gmail.com>, 02 April 2025
 
 import 'package:collection/collection.dart';
 import 'package:example/src/common/constant/constants.dart';
@@ -17,15 +17,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
-/// Default height for [CountryPicker] for Linux.
+/// Default height for [CountryPicker] for Windwos.
 const double _kDefaultCountyInputHeight = 44;
 
-void main() => appZone(() async => runApp(const App(home: LinuxPreview())));
+void main() => appZone(() async => runApp(const App(home: WindowsPreview())));
 
-/// {@template county_picker_linux_preview}
-/// LinuxPreview widget.
+/// {@template county_picker_windows_preview}
+/// WindowsPreview widget.
 ///
-/// This widget is showed another way how to use [CountryPicker] in Linux.
+/// This widget is showed another way how to use [CountryPicker] in Windwos.
 ///
 /// You can use [CountryPickerScope] widget to give a list of countries
 /// and use countries list how you want.
@@ -33,27 +33,27 @@ void main() => appZone(() async => runApp(const App(home: LinuxPreview())));
 /// And more you can use search controller from [CountryPickerScope]
 /// to find a country by name or code.
 /// {@endtemplate}
-class LinuxPreview extends StatefulWidget {
-  /// {@macro county_picker_linux_preview}
-  const LinuxPreview({
+class WindowsPreview extends StatefulWidget {
+  /// {@macro county_picker_windows_preview}
+  const WindowsPreview({
     super.key, // ignore: unused_element
   });
 
   /// Title of the widget.
-  static const String title = 'Linux';
+  static const String title = 'Windwos';
 
   @override
-  State<LinuxPreview> createState() => _LinuxPreviewState();
+  State<WindowsPreview> createState() => _WindowsPreviewState();
 }
 
-/// State for widget [LinuxPreview].
-class _LinuxPreviewState extends State<LinuxPreview>
+/// State for widget [WindowsPreview].
+class _WindowsPreviewState extends State<WindowsPreview>
     with CountryPickerPreviewStateMixin {
   @override
   Widget build(BuildContext context) {
     final localization = ExampleLocalization.of(context);
     return Scaffold(
-      appBar: const CommonHeader(title: LinuxPreview.title),
+      appBar: const CommonHeader(title: WindowsPreview.title),
       body: Padding(
         padding: CommonPadding.of(context),
         child: Column(
@@ -79,11 +79,11 @@ class _LinuxPreviewState extends State<LinuxPreview>
                   ),
                 ),
                 children: [
-                  CountryPicker$Linux(
+                  CountryPicker$Windwos(
                     onSelect: onSelect,
                     selected: selected,
                   ),
-                  CountryInput$Linux(
+                  CountryInput$Windwos(
                     controller: controller,
                     inputFormatters: [formater],
                     selected: selected,
@@ -104,7 +104,10 @@ class _LinuxPreviewState extends State<LinuxPreview>
                 onPressed: onSubmit,
                 child: Text(
                   localization.nextLable,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: CupertinoColors.white),
                 ),
               ),
             ),
@@ -115,12 +118,12 @@ class _LinuxPreviewState extends State<LinuxPreview>
   }
 }
 
-/// {@template country_input_linux}
-/// CountryInput$Linux widget.
+/// {@template country_input_windows}
+/// CountryInput$Windwos widget.
 /// {@endtemplate}
-class CountryInput$Linux extends StatelessWidget {
-  /// {@macro country_input_linux}
-  const CountryInput$Linux({
+class CountryInput$Windwos extends StatelessWidget {
+  /// {@macro country_input_windows}
+  const CountryInput$Windwos({
     required this.selected,
     this.controller,
     this.inputFormatters,
@@ -177,12 +180,12 @@ class CountryInput$Linux extends StatelessWidget {
   }
 }
 
-/// {@template county_picker_macos}
-/// CountryPicker$Linux widget.
+/// {@template county_picker_windwos}
+/// CountryPicker$Windwos widget.
 /// {@endtemplate}
-class CountryPicker$Linux extends StatefulWidget {
+class CountryPicker$Windwos extends StatefulWidget {
   /// {@macro county_picker_macos}
-  const CountryPicker$Linux({
+  const CountryPicker$Windwos({
     this.placeholder = 'Phone number', // ignore: unused_element
     this.onDone, // ignore: unused_element
     this.onSelect,
@@ -239,11 +242,11 @@ class CountryPicker$Linux extends StatefulWidget {
   final bool useHaptickFeedback;
 
   @override
-  State<CountryPicker$Linux> createState() => _CountryPicker$LinuxState();
+  State<CountryPicker$Windwos> createState() => _CountryPicker$WindowsState();
 }
 
-/// State for widget [CountryPicker$Linux].
-class _CountryPicker$LinuxState extends State<CountryPicker$Linux> {
+/// State for widget [CountryPicker$Windwos].
+class _CountryPicker$WindowsState extends State<CountryPicker$Windwos> {
   // Fix corrent emoji flag for web.
   final String? _effectiveFontFamily =
       kIsWeb ? FontFamily.notoColorEmoji : null;

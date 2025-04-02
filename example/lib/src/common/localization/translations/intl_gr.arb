@@ -15,7 +15,7 @@
     "type": "text",
     "description": "Language"
   },
-  "title": "Τετράδιο",
+  "title": "Προεπισκόπηση",
   "description": "Ελέγξτε τον κωδικό χώρας και εισάγετε τον αριθμό τηλεφώνου σας.",
   "nextLable": "Επόμενο",
   "passwordLable": "Κωδικός"

@@ -15,7 +15,7 @@
     "type": "text",
     "description": "Language"
   },
-  "title": "Tetradka",
+  "title": "Preview",
   "description": "Kontrollige riigikoodi ja sisestage oma telefoninumber.",
   "nextLable": "Järgmine",
   "passwordLable": "Parool"

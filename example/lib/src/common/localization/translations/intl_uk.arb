@@ -15,7 +15,7 @@
     "type": "text",
     "description": "Language"
   },
-  "title": "Тетрадка",
+  "title": "Preview",
   "description": "Перевірте код країни та введіть свій номер телефону.",
   "nextLable": "Далі",
   "passwordLable": "Пароль"

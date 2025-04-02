@@ -7,6 +7,7 @@ import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/util/app_zone.dart';
 import 'package:example/src/common/util/country_picker_state_mixin.dart';
 import 'package:example/src/common/widget/app.dart';
+import 'package:example/src/common/widget/common_header.dart';
 import 'package:example/src/common/widget/common_logo.dart';
 import 'package:example/src/common/widget/common_padding.dart';
 import 'package:flutter/cupertino.dart';
@@ -42,16 +43,17 @@ class MacOSPreview extends StatefulWidget {
   static const String title = 'macOS';
 
   @override
-  State<MacOSPreview> createState() => _DesktopPreviewState();
+  State<MacOSPreview> createState() => _MacOSPreviewState();
 }
 
 /// State for widget [MacOSPreview].
-class _DesktopPreviewState extends State<MacOSPreview>
+class _MacOSPreviewState extends State<MacOSPreview>
     with CountryPickerPreviewStateMixin {
   @override
   Widget build(BuildContext context) {
     final localization = ExampleLocalization.of(context);
     return Scaffold(
+      appBar: const CommonHeader(title: MacOSPreview.title),
       body: Padding(
         padding: CommonPadding.of(context),
         child: Column(
@@ -102,7 +104,10 @@ class _DesktopPreviewState extends State<MacOSPreview>
                 onPressed: onSubmit,
                 child: Text(
                   localization.nextLable,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: CupertinoColors.white),
                 ),
               ),
             ),

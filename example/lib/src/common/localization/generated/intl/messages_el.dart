@@ -22,13 +22,14 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "description": MessageLookupByLibrary.simpleMessage(
-            "Ελέγξτε τον κωδικό χώρας και εισάγετε τον αριθμό τηλεφώνου σας."),
-        "language": MessageLookupByLibrary.simpleMessage("Ελληνικά"),
-        "languageCode": MessageLookupByLibrary.simpleMessage("el"),
-        "localeCode": MessageLookupByLibrary.simpleMessage("el-GR"),
-        "nextLable": MessageLookupByLibrary.simpleMessage("Επόμενο"),
-        "passwordLable": MessageLookupByLibrary.simpleMessage("Κωδικός"),
-        "title": MessageLookupByLibrary.simpleMessage("Τετράδιο")
-      };
+    "description": MessageLookupByLibrary.simpleMessage(
+      "Ελέγξτε τον κωδικό χώρας και εισάγετε τον αριθμό τηλεφώνου σας.",
+    ),
+    "language": MessageLookupByLibrary.simpleMessage("Ελληνικά"),
+    "languageCode": MessageLookupByLibrary.simpleMessage("el"),
+    "localeCode": MessageLookupByLibrary.simpleMessage("el-GR"),
+    "nextLable": MessageLookupByLibrary.simpleMessage("Επόμενο"),
+    "passwordLable": MessageLookupByLibrary.simpleMessage("Κωδικός"),
+    "title": MessageLookupByLibrary.simpleMessage("Προεπισκόπηση"),
+  };
 }

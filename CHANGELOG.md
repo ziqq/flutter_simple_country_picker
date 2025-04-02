@@ -1,4 +1,7 @@
 ## 0.2.5
+- **ADDED**: Windows preview
+
+## 0.2.5
 - **UPDATED**: CountryPickerInput placeholer text style
 
 ## 0.2.4
@@ -27,10 +30,10 @@
 - **UPDATED**: `example's`
 
 ## 0.0.2
-- **FIXED**: Refactoring
+- **CHANGED**: Refactoring
 
 ## 0.0.1
-- **UPDATED**: `localizations`
+- **UPDATED**: Localizations
 
 ## 0.0.1-pre.4
 - **ADDED**: `CountryInputFormatter`
@@ -39,13 +42,13 @@
 ## 0.0.1-pre.3
 - **ADDED**: Selected country to show mark intro list of countries
 - **FIXED**: `Android`
-- **FIXED**: `ios`
+- **FIXED**: `iOS`
 
 ## 0.0.1-pre.2
 - **ADDED**:  `localizations`
 
 ## 0.0.1-pre.1
-- Refactoring
+- **CHANGED**: Refactoring
 
 ## 0.0.1-pre.0
-- Initial publication
+- **ADDED**: Initial publication

@@ -15,7 +15,7 @@
     "type": "text",
     "description": "Language"
   },
-  "title": "Tetradka",
+  "title": "Preview",
   "description": "Проверьте код страны и введите свой номер телефона.",
   "nextLable": "Далее",
   "passwordLable": "Пароль"

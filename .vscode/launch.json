@@ -42,6 +42,17 @@
       "env": {}
     },
     {
+      "name": "Run Windows preview (Debug)",
+      "type": "dart",
+      "request": "launch",
+      "flutterMode": "debug",
+      "program": "${workspaceFolder}/example/lib/src/preview/windows_preview.dart",
+      "args": [
+        "--device-id=windows",
+      ],
+      "env": {}
+    },
+    {
       "name": "Run Linux preview (Debug)",
       "type": "dart",
       "request": "launch",

@@ -16,6 +16,10 @@
 
 <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/master/.docs/images/full_example_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/master/.docs/images/full_example_dark.png"  width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/master/.docs/images/filtered_example_light.png" width="385px">  <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/master/.docs/images/filtered_example_dark.png" width="385px">
 
+<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/feat/windows-preview/.docs/images/macos_preview_light.png" width="770px">
+<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/feat/windows-preview/.docs/images/macos_preview_dark.png" width="770px">
+<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/feat/windows-preview/.docs/images/web_preview_light.png" width="770px">
+<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/feat/windows-preview/.docs/images/web_preview_dark.png" width="770px">
 
 
 ##  Description
