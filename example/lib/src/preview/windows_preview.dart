@@ -1,9 +1,10 @@
-// Anton Ustinoff <a.a.ustinoff@gmail.com>, 02 April 2025
+// Anton Ustinoff <a.a.ustinoff@gmail.com>, 14 October 2024
 
 import 'package:collection/collection.dart';
 import 'package:example/src/common/constant/constants.dart';
 import 'package:example/src/common/constant/fonts.gen.dart';
 import 'package:example/src/common/localization/localization.dart';
+import 'package:example/src/common/theme/styles.dart';
 import 'package:example/src/common/util/app_zone.dart';
 import 'package:example/src/common/util/country_picker_state_mixin.dart';
 import 'package:example/src/common/widget/app.dart';
@@ -15,17 +16,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
-import 'package:pull_down_button/pull_down_button.dart';
-
-/// Default height for [CountryPicker] for Windwos.
-const double _kDefaultCountyInputHeight = 44;
 
 void main() => appZone(() async => runApp(const App(home: WindowsPreview())));
 
-/// {@template county_picker_windows_preview}
+/// {@template county_picker_web_preview}
 /// WindowsPreview widget.
 ///
-/// This widget is showed another way how to use [CountryPicker] in Windwos.
+/// This widget is showed another way how to use [CountryPicker].
 ///
 /// You can use [CountryPickerScope] widget to give a list of countries
 /// and use countries list how you want.
@@ -34,13 +31,11 @@ void main() => appZone(() async => runApp(const App(home: WindowsPreview())));
 /// to find a country by name or code.
 /// {@endtemplate}
 class WindowsPreview extends StatefulWidget {
-  /// {@macro county_picker_windows_preview}
-  const WindowsPreview({
-    super.key, // ignore: unused_element
-  });
+  /// {@macro county_picker_web_preview}
+  const WindowsPreview({super.key});
 
   /// Title of the widget.
-  static const String title = 'Windwos';
+  static const String title = 'Web';
 
   @override
   State<WindowsPreview> createState() => _WindowsPreviewState();
@@ -52,65 +47,46 @@ class _WindowsPreviewState extends State<WindowsPreview>
   @override
   Widget build(BuildContext context) {
     final localization = ExampleLocalization.of(context);
+    final mediaQuery = MediaQuery.of(context);
     return Scaffold(
-      appBar: const CommonHeader(title: WindowsPreview.title),
+      backgroundColor: AppStyles.of(context).backgroundColor,
+      appBar: CommonHeader(
+        title: WindowsPreview.title,
+        backgroundColor: AppStyles.of(context).backgroundColor,
+      ),
       body: Padding(
         padding: CommonPadding.of(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Spacer(),
+
             // --- Logo --- //
             const CommonLogo.text(),
             const SizedBox(height: kDefaultPadding * 2),
-            ClipRRect(
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-              child: CupertinoListSection.insetGrouped(
-                margin: EdgeInsets.zero,
-                additionalDividerMargin: 0,
-                backgroundColor: CupertinoDynamicColor.resolve(
-                  CupertinoColors.secondarySystemBackground,
-                  context,
-                ),
-                decoration: BoxDecoration(
-                  color: CupertinoDynamicColor.resolve(
-                    CupertinoColors.secondarySystemBackground,
-                    context,
-                  ),
-                ),
-                children: [
-                  CountryPicker$Windwos(
-                    onSelect: onSelect,
-                    selected: selected,
-                  ),
-                  CountryInput$Windwos(
-                    controller: controller,
-                    inputFormatters: [formater],
-                    selected: selected,
-                  ),
-                ],
-              ),
+
+            // --- Country picker --- //
+            CountryPicker$Web(onSelect: onSelect, selected: selected),
+            const SizedBox(height: kDefaultPadding),
+
+            // --- Country phone number input --- //
+            CountryInput$Web(
+              inputFormatters: [formater],
+              controller: controller,
+              selected: selected,
             ),
             const SizedBox(height: kDefaultPadding),
+
             SizedBox(
-              height: 32,
-              width: 100,
-              child: CupertinoButton(
-                padding: EdgeInsets.zero,
-                color: CupertinoDynamicColor.resolve(
-                  CupertinoColors.systemBlue,
-                  context,
-                ),
+              height: 56,
+              width: double.infinity,
+              child: ElevatedButton(
                 onPressed: onSubmit,
-                child: Text(
-                  localization.nextLable,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: CupertinoColors.white),
-                ),
+                child: Text(localization.nextLable),
               ),
             ),
+
+            const Spacer(),
           ],
         ),
       ),
@@ -118,12 +94,12 @@ class _WindowsPreviewState extends State<WindowsPreview>
   }
 }
 
-/// {@template country_input_windows}
-/// CountryInput$Windwos widget.
+/// {@template country_input_desktop}
+/// CountryInput$Web widget.
 /// {@endtemplate}
-class CountryInput$Windwos extends StatelessWidget {
-  /// {@macro country_input_windows}
-  const CountryInput$Windwos({
+class CountryInput$Web extends StatelessWidget {
+  /// {@macro country_input_desktop}
+  const CountryInput$Web({
     required this.selected,
     this.controller,
     this.inputFormatters,
@@ -141,38 +117,59 @@ class CountryInput$Windwos extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return ClipRRect(
-      borderRadius: const BorderRadius.all(Radius.circular(10)),
-      child: ValueListenableBuilder(
-        valueListenable: selected,
-        builder: (context, selectedCountry, _) => CupertinoFormRow(
-          prefix: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              '+${selectedCountry.phoneCode}',
-              style: textTheme.bodyLarge?.copyWith(height: 1),
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final textStyle = textTheme.bodyLarge;
+    final secodaryTextStyle = textStyle?.copyWith(
+      fontSize: 14,
+      color: CupertinoDynamicColor.resolve(
+        CupertinoColors.secondaryLabel,
+        context,
+      ),
+    );
+    final defaultBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(
+        width: 1,
+        color: CupertinoDynamicColor.resolve(
+          CupertinoColors.separator,
+          context,
+        ),
+      ),
+    );
+    return ValueListenableBuilder(
+      valueListenable: selected,
+      builder: (context, selectedCountry, _) => TextFormField(
+        inputFormatters: inputFormatters,
+        decoration: InputDecoration(
+          labelStyle: secodaryTextStyle?.copyWith(
+            fontSize: 16,
+            fontWeight: FontWeight.normal,
+          ),
+          border: defaultBorder,
+          enabledBorder: defaultBorder,
+          focusedBorder: defaultBorder.copyWith(
+            borderSide: defaultBorder.borderSide.copyWith(
+              color: theme.colorScheme.primary,
             ),
           ),
-          padding: const EdgeInsets.only(
-            left: kDefaultPadding,
-            right: kDefaultPadding / 1.5,
+          label: Text(
+            CountriesLocalization.of(context).phonePlaceholder,
+            style: secodaryTextStyle?.copyWith(fontSize: 16),
           ),
-          child: SizedBox(
-            height: 44,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 5),
-              child: CupertinoTextField(
-                controller: controller,
-                inputFormatters: inputFormatters,
-                placeholder: selectedCountry.mask,
-                style: textTheme.bodyLarge,
-                padding: EdgeInsets.zero,
-                decoration: const BoxDecoration(
-                  color: Colors.transparent,
-                ),
-              ),
+          prefix: Text(
+            '+${selectedCountry.phoneCode} ',
+            style: textStyle,
+          ),
+          hintText: selectedCountry.mask,
+          hintStyle: textStyle?.copyWith(
+            color: CupertinoDynamicColor.resolve(
+              CupertinoColors.secondaryLabel,
+              context,
             ),
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: kDefaultPadding,
           ),
         ),
       ),
@@ -180,26 +177,26 @@ class CountryInput$Windwos extends StatelessWidget {
   }
 }
 
-/// {@template county_picker_windwos}
-/// CountryPicker$Windwos widget.
+/// {@template county_input}
+/// CountryPicker$Web widget.
 /// {@endtemplate}
-class CountryPicker$Windwos extends StatefulWidget {
-  /// {@macro county_picker_macos}
-  const CountryPicker$Windwos({
-    this.placeholder = 'Phone number', // ignore: unused_element
-    this.onDone, // ignore: unused_element
+class CountryPicker$Web extends StatefulWidget {
+  /// {@macro county_input}
+  const CountryPicker$Web({
+    this.placeholder = 'Phone number',
+    this.onDone,
     this.onSelect,
     this.selected,
-    this.exclude, // ignore: unused_element
-    this.favorite, // ignore: unused_element
-    this.filter, // ignore: unused_element
-    this.isScrollControlled = false, // ignore: unused_element
-    this.showPhoneCode = false, // ignore: unused_element
-    this.showWorldWide = false, // ignore: unused_element
-    this.useAutofocus = false, // ignore: unused_element
-    this.useHaptickFeedback = true, // ignore: unused_element
-    this.showSearch, // ignore: unused_element
-    super.key, // ignore: unused_element
+    this.exclude,
+    this.favorite,
+    this.filter,
+    this.isScrollControlled = false,
+    this.showPhoneCode = false,
+    this.showWorldWide = false,
+    this.useAutofocus = false,
+    this.useHaptickFeedback = true,
+    this.showSearch,
+    super.key,
   });
 
   /// Placeholder text.
@@ -242,101 +239,36 @@ class CountryPicker$Windwos extends StatefulWidget {
   final bool useHaptickFeedback;
 
   @override
-  State<CountryPicker$Windwos> createState() => _CountryPicker$WindowsState();
+  State<CountryPicker$Web> createState() => _CountryPicker$DesktopState();
 }
 
-/// State for widget [CountryPicker$Windwos].
-class _CountryPicker$WindowsState extends State<CountryPicker$Windwos> {
-  // Fix corrent emoji flag for web.
-  final String? _effectiveFontFamily =
-      kIsWeb ? FontFamily.notoColorEmoji : null;
-
-  List<PullDownMenuItem> _itemBuilder(
-    List<Country> countries, [
-    Country? selected,
-  ]) {
-    final localization = CountriesLocalization.of(context);
-    final itemTheme = PullDownMenuItemTheme(
-      textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 14),
-    );
-    return countries.map((e) {
-      final title = localization
-          .getCountryNameByCode(e.countryCode)
-          ?.replaceAll(CountriesLocalization.countryNameRegExp, ' ');
-      return PullDownMenuItem(
-        itemTheme: itemTheme,
-        iconWidget: Text(
-          e.flagEmoji,
-          style: itemTheme.textStyle?.copyWith(
-            fontSize: 14,
-            fontFamily: _effectiveFontFamily,
-          ),
-        ),
-        title: '$title +${e.phoneCode}',
-        onTap: () => widget.onSelect?.call(e),
-      );
-    }).toList(growable: false);
-  }
-
-  Widget _buttonBuilder(
-    BuildContext context,
-    Future<void> Function() showMenu,
-    Country selected,
-  ) {
-    final textStyle = Theme.of(context).textTheme.bodyLarge;
-    return GestureDetector(
-      onTap: showMenu,
-      child: ColoredBox(
-        color: Colors.transparent,
-        child: CupertinoFormRow(
-          prefix: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              selected.flagEmoji,
-              style: textStyle?.copyWith(
-                height: 1.6,
-                fontSize: 14,
-                fontFamily: _effectiveFontFamily,
-              ),
-            ),
-          ),
-          padding: const EdgeInsets.only(
-            left: kDefaultPadding,
-            right: kDefaultPadding / 1.5,
-          ),
-          child: SizedBox(
-            height: _kDefaultCountyInputHeight,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 5),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      selected.name,
-                      style: textStyle?.copyWith(height: 1),
-                    ),
-                  ),
-                  Icon(
-                    CupertinoIcons.chevron_right,
-                    size: Theme.of(context).textTheme.bodyMedium?.fontSize,
-                    color: CupertinoDynamicColor.resolve(
-                      CupertinoColors.inactiveGray,
-                      context,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+/// State for widget [CountryPicker$Web].
+class _CountryPicker$DesktopState extends State<CountryPicker$Web> {
+  // Fix displaing emoji flag for web.
+  final String? _fontFamily = kIsWeb ? FontFamily.notoColorEmoji : null;
 
   @override
   Widget build(BuildContext context) {
     // final isRtl = Directionality.of(context) == TextDirection.rtl;
     final localizations = CountriesLocalization.of(context);
+    final theme = Theme.of(context);
+    final textStyle = theme.textTheme.bodyLarge?.copyWith(fontSize: 14);
+    final secodaryTextStyle = textStyle?.copyWith(
+      color: CupertinoDynamicColor.resolve(
+        CupertinoColors.secondaryLabel,
+        context,
+      ),
+    );
+    final defaultBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(
+        width: 1,
+        color: CupertinoDynamicColor.resolve(
+          CupertinoColors.separator,
+          context,
+        ),
+      ),
+    );
 
     Widget scope({
       required Widget Function(
@@ -367,20 +299,75 @@ class _CountryPicker$WindowsState extends State<CountryPicker$Windwos> {
       builder: (context, state) => ValueListenableBuilder(
         valueListenable: widget.selected ?? ValueNotifier(null),
         builder: (context, selected, _) {
+          final localization = CountriesLocalization.of(context);
           final $selected = selected ??
               state.countries.firstWhereOrNull((e) =>
                   e.name ==
                   localizations.getCountryNameByCode(e.countryCode)) ??
               state.countries[0];
 
-          return PullDownButton(
-            menuOffset: kDefaultPadding,
-            itemBuilder: (_) => _itemBuilder(state.countries, $selected),
-            buttonBuilder: (_, showMenu) => _buttonBuilder(
-              context,
-              showMenu,
-              $selected,
+          return DropdownMenu(
+            inputDecorationTheme: InputDecorationTheme(
+              labelStyle: secodaryTextStyle?.copyWith(
+                fontSize: 16,
+                fontWeight: FontWeight.normal,
+              ),
+              border: defaultBorder,
+              enabledBorder: defaultBorder,
+              focusedBorder: defaultBorder.copyWith(
+                borderSide: defaultBorder.borderSide.copyWith(
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: kDefaultPadding,
+              ),
             ),
+            menuHeight: MediaQuery.of(context).size.height * 0.4,
+            menuStyle: MenuStyle(
+              backgroundColor: WidgetStateProperty.resolveWith<Color?>(
+                (_) => Theme.of(context).brightness == Brightness.dark
+                    ? const Color(0xFF212121)
+                    : null,
+              ),
+              elevation: WidgetStateProperty.resolveWith<double?>((_) => 6),
+              shape: WidgetStateProperty.resolveWith<OutlinedBorder?>(
+                (_) => const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(
+                    bottom: Radius.circular(10),
+                  ),
+                ),
+              ),
+            ),
+            trailingIcon: Icon(
+              CupertinoIcons.chevron_down,
+              size: 16,
+              color: CupertinoDynamicColor.resolve(
+                CupertinoColors.placeholderText,
+                context,
+              ),
+            ),
+            label: const Text('Country'),
+            initialSelection: $selected,
+            dropdownMenuEntries: state.countries.map((e) {
+              final label = localization
+                  .getCountryNameByCode(e.countryCode)
+                  ?.replaceAll(CountriesLocalization.countryNameRegExp, ' ');
+              return DropdownMenuEntry(
+                value: e,
+                label: label.toString(),
+                trailingIcon: Text('+${e.phoneCode}', style: secodaryTextStyle),
+                leadingIcon: Text(
+                  e.flagEmoji,
+                  style: textStyle?.copyWith(fontFamily: _fontFamily),
+                ),
+                // onTap: () => widget.onSelect?.call(e),
+              );
+            }).toList(growable: false),
+            onSelected: (country) {
+              if (country == null) return;
+              widget.onSelect?.call(country);
+            },
           );
         },
       ),
