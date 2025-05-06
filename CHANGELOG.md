@@ -1,7 +1,5 @@
-## 0.2.7
-- **ADDED**: Default `keyboardType` to `CountryPhoneInput`
-
 ## 0.2.6
+- **ADDED**: Default `keyboardType` to `CountryPhoneInput`
 - **ADDED**: Windows preview
 
 ## 0.2.5
