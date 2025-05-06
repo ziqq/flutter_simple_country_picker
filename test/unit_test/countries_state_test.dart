@@ -61,7 +61,10 @@ void main() {
 
     test('toString', () {
       final state1 = CountriesState.idle([country1, country2]);
-      expect(state1.toString(), 'CountriesState{type: idle}');
+      expect(
+        state1.toString(),
+        'CountriesState.idle{countries: ${[country1, country2]}}',
+      );
     });
   });
 }

@@ -47,13 +47,13 @@ void main() => group('Country -', () {
         final country = Country.fromJson(countryJson);
         expect(
           country.toString(),
-          'Country('
+          'Country{'
           'countryCode: US, '
           'phoneCode: 1, '
           'name: United States, '
           'nameLocalized: , '
           'mask: null, '
-          'fullExampleWithPlusSign: null)',
+          'fullExampleWithPlusSign: null}',
         );
       });
 
