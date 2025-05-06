@@ -47,7 +47,7 @@ class _WindowsPreviewState extends State<WindowsPreview>
   @override
   Widget build(BuildContext context) {
     final localization = ExampleLocalization.of(context);
-    final mediaQuery = MediaQuery.of(context);
+    // final mediaQuery = MediaQuery.of(context);
     return Scaffold(
       backgroundColor: AppStyles.of(context).backgroundColor,
       appBar: CommonHeader(
