@@ -3,3 +3,4 @@ reports/
 coverage/
 build/
 example/
+.fvm/
