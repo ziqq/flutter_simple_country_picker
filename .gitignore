@@ -46,4 +46,4 @@ reports/
 /temp
 
 # FVM Version Cache
-.fvm/
+.fvm/**
