@@ -242,6 +242,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
     return ValueListenableBuilder(
       valueListenable: _selected,
       builder: (context, selected, _) => Row(
+        spacing: pickerTheme.indent,
         children: [
           GestureDetector(
             onTap: () => showCountryPicker(
@@ -283,7 +284,6 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
               ),
             ),
           ),
-          SizedBox(width: pickerTheme.indent),
           Flexible(
             child: ConstrainedBox(
               constraints: constraints,
@@ -293,6 +293,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
                   child: TextFormField(
                     controller: _controller,
                     inputFormatters: [_formater],
+                    keyboardType: TextInputType.phone,
                     decoration: InputDecoration(
                       hintText: widget.placeholder ??
                           selected?.mask ??
