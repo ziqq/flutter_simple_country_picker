@@ -2,85 +2,227 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Dependencies",
+      "label": "flutter:pub:get",
+      "detail": "Get dependencies for the project",
+      "icon": {
+        "color": "terminal.ansiGreen",
+        "id": "cloud-download"
+      },
+      "dependsOn": [],
       "type": "shell",
       "command": [
-        "(flutter pub get)",
-        "&& (flutter pub get --directory=example)"
+        "fvm flutter pub get"
       ],
+      "args": [],
       "group": {
         "kind": "none",
         "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "Format",
-      "type": "shell",
-      "command": [
-        "dart format --fix -l 80"
-      ],
-      "group": {
-        "kind": "none",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "Codegeneration",
-      "type": "shell",
-      "dependsOn": [
-        "Dependencies"
-      ],
-      "command": [
-        "(cd example && dart run build_runner build --delete-conflicting-outputs)"
-      ],
-      "group": {
-        "kind": "none",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "Clear example build",
-      "type": "shell",
-      "command": "make clear-client",
-      "windows": {
-        "command": "powershell.exe",
-        "args": [
-          "-NoProfile",
-          "-ExecutionPolicy",
-          "Bypass",
-          "-Command",
-          "Remove-Item -Path '${workspaceFolder}\\example\\build' -Recurse -Force -ErrorAction Ignore"
-        ]
-        /* "options": {
-          "shell": {
-            "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
-          }
-        } */
-      },
-      "linux": {
-        "command": "rm -rf",
-        "args": [
-          "${workspaceFolder}/example/build"
-        ]
-      },
-      "osx": {
-        "command": "rm -rf",
-        "args": [
-          "${workspaceFolder}/example/build"
-        ]
       },
       "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": false,
+      "presentation": {
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false,
+        "group": "dart"
+      },
+    },
+    {
+      "label": "dart:build_runner:all",
+      "detail": "Generate code for the project",
+      "icon": {
+        "color": "terminal.ansiGreen",
+        "id": "code"
+      },
+      "type": "shell",
+      "command": [
+        "fvm dart --disable-analytics && fvm dart run build_runner build --delete-conflicting-outputs --release",
+      ],
+      "dependsOn": [
+        "flutter:pub:get"
+      ],
+      "args": [],
+      "group": {
+        "kind": "none",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": false,
+      "presentation": {
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false,
+        "group": "dart"
+      }
+    },
+    {
+      "label": "dart:build_runner:dir",
+      "detail": "Generate code for the directory",
+      "type": "shell",
+      "icon": {
+        "color": "terminal.ansiGreen",
+        "id": "code"
+      },
+      "command": [
+        "fvm dart run build_runner build --build-filter '${fileDirname}/*.dart'",
+        "&& fvm dart format --fix -l 120 '${fileDirname}'"
+      ],
+      "group": {
+        "kind": "none",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "dependsOn": [
+        "flutter:pub:get"
+      ],
+      "isBackground": false,
+      "presentation": {
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false,
+        "group": "dart"
+      }
+    },
+    {
+      "label": "dart:build_runner:watch",
+      "detail": "Watch for changes in the project",
+      "type": "shell",
+      "icon": {
+        "color": "terminal.ansiGreen",
+        "id": "code"
+      },
+      "command": [
+        "fvm dart run build_runner watch --build-filter \"${input:directory}/**/*.dart\""
+      ],
+      "group": {
+        "kind": "none",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "dependsOn": [
+        "flutter:pub:get"
+      ],
+      "isBackground": false,
+      "presentation": {
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false,
+        "group": "dart"
+      }
+    },
+    {
+      "label": "dart:pubspec_generator:generate",
+      "detail": "Generate pubspec file",
+      "icon": {
+        "color": "terminal.ansiGreen",
+        "id": "file-text"
+      },
+      "type": "shell",
+      "command": [
+        "fvm dart pub global activate pubspec_generator",
+        "&& fvm dart pub global run pubspec_generator:generate -o lib/src/common/constant/generated/pubspec.yaml.g.dart",
+      ],
+      "dependsOn": [
+        "flutter:pub:get"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/example"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "dart:format",
+      "detail": "Format all files in the project",
+      "icon": {
+        "color": "terminal.ansiGreen",
+        "id": "lightbulb-autofix"
+      },
+      "type": "shell",
+      "command": [
+        "find lib test ",
+        "-path '*/generated/*' -prune -o ",
+        "-type f -name '*.dart' ",
+        "! -name '*.*.dart' ",
+        "! -name 'messages_.*.dart' ",
+        "! -name 'l10n.dart' ",
+        "-print0 | xargs -0 fvm dart format --set-exit-if-changed --line-length 120"
+      ],
+      "dependsOn": [],
+      "args": [],
+      "group": {
+        "kind": "none",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": false,
+      "presentation": {
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false,
+        "group": "dart"
+      }
+    },
+    {
+      "label": "flutter:test:app",
+      "detail": "Run app tests",
+      "icon": {
+        "color": "terminal.ansiGreen",
+        "id": "bug",
+      },
+      "dependsOn": [
+        "flutter:pub:get"
+      ],
+      "type": "shell",
+      "command": [
+        "fvm flutter test --color --coverage --concurrency=50 --platform=tester --reporter=expanded --timeout=30s test/unit_test.dart test/widget_test.dart",
+        "&& lcov --remove coverage/lcov.info 'packages/*' '**/generated/*' '*.g.dart' -o 'coverage/lcov.cleaned.info'",
+        "&& genhtml coverage/lcov.cleaned.info --output=coverage -o coverage/html",
+      ],
+      "args": [],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": false,
       "presentation": {
         "reveal": "always",
-        "panel": "shared"
-      },
-      "group": {
-        "kind": "build",
-        "isDefault": true
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false,
+        "group": "dart"
       }
+    },
+  ],
+  "inputs": [
+    {
+      "id": "featureName",
+      "type": "promptString",
+      "description": "Enter the feature name (e.g., 'example'):",
+      "default": "audo_course"
     }
   ]
 }

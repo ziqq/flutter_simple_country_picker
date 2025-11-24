@@ -4,10 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/src/constant/constant.dart';
-import 'package:meta/meta.dart';
 
 /// {@template country_picker_theme}
-/// Custom theme for the CountryPicker
+/// Custom theme for the [CountryPicker] widget.
 /// {@endtemplate}
 @immutable
 class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
@@ -76,8 +75,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       _CountryPickerTheme$Default;
 
   /// The helper method to quickly resolve [PullDownMenuItemTheme] from
-  /// [PullDownButtonTheme.itemTheme] or [PullDownMenuItemTheme.defaults]
-  /// as well as from theme data from [PullDownMenuItem].
+  /// various sources.
   @internal
   factory CountryPickerTheme.resolve(
     BuildContext context, [
@@ -119,79 +117,62 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   /// A default dark theme.
   // factory CountryPickerTheme.dark() => CountryPickerTheme();
 
-  /// Get [CountryPickerTheme] from [CountryPickerInheritedTheme].
+  /// Get [CountryPickerTheme] from [InheritedCountryPickerTheme].
   ///
   /// If that's null get [CountryPickerTheme] from [ThemeData.extensions]
   /// property of the ambient [Theme].
   static CountryPickerTheme? maybeOf(BuildContext context) =>
-      CountryPickerInheritedTheme.maybeOf(context) ??
+      InheritedCountryPickerTheme.maybeOf(context) ??
       Theme.of(context).extensions[CountryPickerTheme] as CountryPickerTheme?;
 
   // static Never _notFoundInheritedWidgetOfExactType() => throw ArgumentError(
-  //       'Out of scope or out of extensions, not found inherited widget '
-  //           'a CountryPickerTheme of the exact type',
-  //       'out_of_scope or out_of_extensions',
-  //     );
+  //   'Out of scope or out of extensions, not found inherited widget '
+  //       'a CountryPickerTheme of the exact type',
+  //   'out_of_scope or out_of_extensions',
+  // );
 
   /// The accent color.
   final Color accentColor;
 
-  /// The country bottom sheet's background color.
-  ///
-  /// If null [backgroundColor]
-  /// defaults to [BottomSheetThemeData.backgroundColor].
+  /// The background color.
   final Color? backgroundColor;
 
-  /// The country bottom sheet's barrierColor color.
-  ///
-  /// If null [barrierColor]
-  /// defaults to [kCupertinoModalBarrierColor].
+  /// The barrierColor color.
   final Color? barrierColor;
 
   /// The divider color.
-  ///
-  /// If null, [dividerColor] defaults to [CupertinoColors.opaqueSeparator].
   final Color? dividerColor;
 
-  /// The country bottom sheet's sticky header background color.
-  ///
-  /// If null, [secondaryBackgroundColor]
-  /// defaults to [CupertinoColors.secondarySystemBackground].
+  /// The secondary background color.
   final Color? secondaryBackgroundColor;
 
   /// The style to use for country name text.
   final TextStyle? textStyle;
 
-  /// The style to use for search box text.
-  ///
-  /// If null, the style will be set to [TextStyle(fontSize: 16)]
+  /// The style to use for search field text.
   final TextStyle? searchTextStyle;
 
-  /// The decoration used for the inputs
+  /// The decoration used for the inputs.
   final InputDecoration? inputDecoration;
 
   /// The flag size.
   ///
-  /// If null, set to 25
+  /// If null, set to `25`
   final double? flagSize;
 
-  /// Country list modal height
+  /// The padding around elements.
   ///
-  /// By default it's fullscreen the padding of the bottom sheet
-  ///
-  /// If null, set to 16
+  /// If null, set to `16.0`
   final double padding;
 
-  /// The base indent.
+  /// The indent of the divider.
   ///
-  /// If null, set to 10
+  /// If null, set to `10.0`
   final double indent;
 
-  /// The border radius of the bottom sheet
+  /// The border radius of elements.
   ///
-  /// It defaults to 40 for the top-left and top-right values.
-  ///
-  /// If null, set to 10
+  /// If null, set to `10.0`
   final double radius;
 
   @override
@@ -254,16 +235,6 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       radius: ui.lerpDouble(radius, other.radius, t),
     );
   }
-
-  /// Controls how it displays when the instance
-  /// is being passed to the `print()` method.
-  // @override
-  // String toString() => 'CupertinoFormSectionTheme('
-  //     'indent: $indent'
-  //     'padding: $padding'
-  //     'accentColor: $accentColor'
-  //     'backgroundColor: $backgroundColor'
-  //     ')';
 
   @override
   int get hashCode => Object.hashAll([
@@ -396,18 +367,18 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
 ///
 /// ```dart
 /// CupertinoApp(
-///    builder: (context, child) => CountryPickerInheritedTheme(
-///      data: const UiTheme(
+///    builder: (context, child) => InheritedCountryPickerTheme(
+///      data: const InheritedCountryPickerTheme(
 ///        ...
 ///      ),
-///      child: child!,
+///      child: child ?? const SizedBox.shrink(),
 ///  ),
 /// home: ...,
 /// ```
 @immutable
-class CountryPickerInheritedTheme extends InheritedTheme {
-  /// Creates a [CountryPickerInheritedTheme].
-  const CountryPickerInheritedTheme({
+class InheritedCountryPickerTheme extends InheritedTheme {
+  /// Creates a [InheritedCountryPickerTheme].
+  const InheritedCountryPickerTheme({
     required this.data,
     required super.child,
     super.key,
@@ -416,16 +387,16 @@ class CountryPickerInheritedTheme extends InheritedTheme {
   /// The configuration of this theme.
   final CountryPickerTheme data;
 
-  /// Returns the current [UiTheme] from the closest
-  /// [CountryPickerInheritedTheme] ancestor.
+  /// Returns the current [CountryPickerTheme] from the closest
+  /// [InheritedCountryPickerTheme] ancestor.
   ///
   /// If there is no ancestor, it returns `null`.
   static CountryPickerTheme? maybeOf(BuildContext context) => context
-      .dependOnInheritedWidgetOfExactType<CountryPickerInheritedTheme>()
+      .dependOnInheritedWidgetOfExactType<InheritedCountryPickerTheme>()
       ?.data;
 
   @override
-  bool updateShouldNotify(covariant CountryPickerInheritedTheme oldWidget) =>
+  bool updateShouldNotify(covariant InheritedCountryPickerTheme oldWidget) =>
       data != oldWidget.data;
 
   @override
@@ -433,18 +404,18 @@ class CountryPickerInheritedTheme extends InheritedTheme {
     BuildContext context,
     Widget child,
   ) =>
-      CountryPickerInheritedTheme(
+      InheritedCountryPickerTheme(
         data: data,
         child: child,
       );
 }
 
-/// {@template country_picker_theme}
 /// Default [CountryPickerTheme]
-/// {@endtemplate}
+/// {@macro country_picker_theme}
 @immutable
 class _CountryPickerTheme$Default extends CountryPickerTheme {
   /// Creates [_CountryPickerTheme$Default].
+  /// {@macro country_picker_theme}
   _CountryPickerTheme$Default(
     this.context, {
     Color? accentColor,

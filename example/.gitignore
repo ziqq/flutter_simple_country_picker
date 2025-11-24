@@ -5,10 +5,12 @@
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
 .svn/
-.fvm/
+.swiftpm/
+migrate_working_dir/
 
 # IntelliJ related
 *.iml
@@ -22,55 +24,59 @@
 #.vscode/
 
 # Flutter/Dart/Pub related
+# Libraries should not include pubspec.lock, per https://dart.dev/guides/libraries/private-files#pubspeclock.
+**/build
 **/doc/api/
+**/Flutter/ephemeral/
+**/ios/Flutter/.last_build_id
+**/Pods/
 .dart_tool/
-.flutter-plugins
 .flutter-plugins-dependencies
-.packages
+.flutter-plugins
 .pub-cache/
 .pub/
-build/
+.fvm/
 
-# Android related
+# Platform-specific generated files
+**/android/**/GeneratedPluginRegistrant.*
+**/android/**/local.properties
+**/android/**/.cxx/
+**/android/.kotlin
+# Remember to never publicly share your keystore.
+# See https://flutter.dev/docs/deployment/android#reference-the-keystore-from-the-app
+**/android/**/key.properties
+**/*.keystore
+**/*.jks
+**/android/**/captures/
+**/android/**/.gradle
+**/android/**/gradlew
 **/android/**/gradle-wrapper.jar
-**/android/.gradle
-**/android/captures/
-**/android/gradlew
-**/android/gradlew.bat
-**/android/local.properties
-**/android/**/GeneratedPluginRegistrant.java
-
-# iOS/XCode related
-**/ios/**/*.mode1v3
-**/ios/**/*.mode2v3
-**/ios/**/*.moved-aside
-**/ios/**/*.pbxuser
-**/ios/**/*.perspectivev3
-**/ios/**/*sync/
-**/ios/**/.sconsign.dblite
-**/ios/**/.tags*
-**/ios/**/.vagrant/
-**/ios/**/DerivedData/
-**/ios/**/Icon?
-**/ios/**/Pods/
-**/ios/**/.symlinks/
-**/ios/**/profile
-**/ios/**/xcuserdata
-**/ios/.generated/
-**/ios/Flutter/App.framework
-**/ios/Flutter/Flutter.framework
-**/ios/Flutter/Flutter.podspec
+**/android/**/gradlew.bat
 **/ios/Flutter/Generated.xcconfig
-**/ios/Flutter/app.flx
-**/ios/Flutter/app.zip
-**/ios/Flutter/flutter_assets/
 **/ios/Flutter/flutter_export_environment.sh
-**/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
+**/macos/Flutter/GeneratedPluginRegistrant.*
+**/windows/flutter/generated_*
+**/linux/flutter/generated_*
 
-# Exceptions to above rules.
-!**/ios/**/default.mode1v3
-!**/ios/**/default.mode2v3
-!**/ios/**/default.pbxuser
-!**/ios/**/default.perspectivev3
-!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+# Xcode-related
+**/dgph
+**/xcuserdata/
+
+# Pana
+log.pana.json
+
+# Test
+.coverage/
+coverage/
+reports/
+/test/**/*.json
+/test/.test_coverage.dart
+!/test/**/fixtures/*.json
+integration_test/screenshots
+
+# Temp
+.temp/
+temp/
+.tmp/
+tmp/

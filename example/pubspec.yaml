@@ -7,8 +7,8 @@ version: 1.0.0
 publish_to: 'none'
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
-  flutter: '>=3.24.0'
+  sdk: '>=3.10.0 <4.0.0'
+  flutter: ">=3.38.3"
 
 dependencies:
   flutter:
@@ -17,7 +17,7 @@ dependencies:
   # Localization
   flutter_localizations:
     sdk: flutter
-  intl: ^0.19.0
+  intl: any
 
   # Utilyties
   collection: any
@@ -41,13 +41,13 @@ dev_dependencies:
     sdk: flutter
 
   # Linting
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
   # Code generation
   build_runner: ^2.4.15
   flutter_gen_runner: ^5.10.0
-  flutter_launcher_icons: ^0.14.3
-  flutter_native_splash: ^2.4.5
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.7
 
 flutter:
   generate: true

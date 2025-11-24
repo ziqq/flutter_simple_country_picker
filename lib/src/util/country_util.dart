@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 
-/// {@template countries_util}
-/// CountriesUtil class.
+/// {@template country_util}
+/// CountryUtil class.
 ///
 /// A utility class that provides helper methods for countries.
 ///
@@ -9,9 +9,9 @@ import 'package:meta/meta.dart';
 /// [countryCodeToEmoji] - Convert country code to emoji flag.
 /// {@endtemplate}
 @internal
-abstract final class CountriesUtil {
-  /// {@macro countries_util}
-  const CountriesUtil._();
+abstract final class CountryUtil {
+  /// {@macro country_util}
+  const CountryUtil._();
 
   static final _codeRegExp = RegExp(r'^[A-Za-z]{2}$');
 

@@ -88,7 +88,7 @@ void main() => group('showCountryPicker -', () {
         await tester.pumpWidget(
           WidgetTestHelper.createWidgetUnderTest(
             builder: (context) => Scaffold(
-              body: CountryPickerInheritedTheme(
+              body: InheritedCountryPickerTheme(
                 data: themeData,
                 child: Builder(
                   builder: (context) => ElevatedButton(

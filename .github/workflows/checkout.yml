@@ -26,6 +26,7 @@ on:
       - "master"
       - "dev"
       - "develop"
+      - "development"
       - "feature/**"
       - "bugfix/**"
       - "hotfix/**"
@@ -56,7 +57,7 @@ jobs:
       checks: write
     timeout-minutes: 15
     steps:
-      - name: 🚂 Get latest code
+      - name: Get latest code
         id: checkout
         uses: actions/checkout@v4
         with:
@@ -68,48 +69,48 @@ jobs:
             analysis_options.yaml
             CHANGELOG.md
 
-      - name: 🔎 Check content
+      - name: Check content
         id: check-files
         timeout-minutes: 1
         uses: andstor/file-existence-action@v1
         with:
           files: "README.md, CHANGELOG.md, CONTRIBUTING.md, LICENSE, example"
 
-      - name: ❔ File exists
+      - name: File exists
         if: steps.check-files.outputs.files_exists == 'true'
         run: echo Content is OK!
 
-      - name: 🔎 Check description
+      - name: Check description
         timeout-minutes: 1
         run: echo | grep -q Description README.md ; echo $?
 
-      - name: 🔎 Check example
+      - name: Check example
         timeout-minutes: 1
         run: echo | grep -q Example README.md ; echo $?
 
-      - name: 🔎 Check installation
+      - name: Check installation
         timeout-minutes: 1
         run: echo | grep -q Installation README.md ; echo $?
 
-      - name: 👷 Install flutter
+      - name: Install flutter
         uses: subosito/flutter-action@v2
         id: install-flutter
         with:
           channel: 'stable'
 
-      - name: 🔎 Check flutter version
+      - name: Check flutter version
         id: check-flutter-version
         run: flutter --version
         timeout-minutes: 1
 
-      - name: 📤 Restore Pub modules
+      - name: Restore Pub modules
         id: cache-pub-restore
         uses: actions/cache/restore@v4
         with:
           path: /home/runner/.pub-cache
           key: ${{ runner.os }}-pub-${{ env.pub-cache-name }}-${{ hashFiles('**/pubspec.yaml') }}
 
-      - name: 🗄️ Export Pub cache directory
+      - name: Export Pub cache directory
         id: export-pub-cache
         timeout-minutes: 1
         run: |
@@ -117,17 +118,17 @@ jobs:
           export PATH="$PATH":"$HOME/.pub-cache/bin"
           echo "${HOME}/.pub-cache/bin" >> $GITHUB_PATH
 
-      # - name: 👷 Install dependencies
+      # - name: Install dependencies
       #   run: flutter pub get
 
-      # - name: 👷 Install Dependencies
+      # - name: Install Dependencies
       #   id: install-dependencies
       #   timeout-minutes: 2
       #   run: |
       #     apt-get update && apt-get install -y lcov
       #     flutter pub get --no-example
 
-      - name: 👷 Install Dependencies
+      - name: Install Dependencies
         id: install-dependencies
         shell: bash
         run: |
@@ -136,7 +137,7 @@ jobs:
           flutter config --no-cli-animations --no-analytics
           flutter pub get
 
-      - name: 📥 Save Pub modules
+      - name: Save Pub modules
         id: cache-pub-save
         if: steps.cache-pub-restore.outputs.cache-hit != 'true'
         uses: actions/cache@v4
@@ -144,13 +145,13 @@ jobs:
           path: /home/runner/.pub-cache
           key: ${{ runner.os }}-pub-${{ env.pub-cache-name }}-${{ hashFiles('**/pubspec.yaml') }}
 
-      - name: 🧪 Run dependency validator
+      - name: Run dependency validator
         timeout-minutes: 1
         run: |
           dart pub global activate dependency_validator
           dart pub global run dependency_validator:dependency_validator
 
-      - name: 🔎 Check format
+      - name: Check format
         id: check-format
         timeout-minutes: 1
         run: |
@@ -163,13 +164,13 @@ jobs:
           -print0 |
           xargs -0 dart format --set-exit-if-changed --line-length 80 -o none
 
-      - name: 🔎 Check for Warnings
+      - name: Check for Warnings
         id: check-analyzer
         timeout-minutes: 1
         run: |
           flutter analyze --fatal-infos --fatal-warnings lib/ test/
 
-      - name: 🧪 Unit & Widget tests
+      - name: Unit & Widget tests
         run: |
           flutter test --coverage --concurrency=40 test/flutter_simple_country_picker_test.dart
 

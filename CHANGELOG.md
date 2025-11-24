@@ -1,3 +1,7 @@
+## 0.2.7
+- **CHANGED**: Refactoring `CountryPickerTheme`, `CountryUtil`
+- **CHANGED**: Bump dependencies
+
 ## 0.2.6
 - **ADDED**: Default `keyboardType` to `CountryPhoneInput`
 - **ADDED**: Windows preview
@@ -38,7 +42,7 @@
 
 ## 0.0.1-pre.4
 - **ADDED**: `CountryInputFormatter`
-- **UPDATED**: `CountriesUtil`
+- **UPDATED**: `CountryUtil`
 
 ## 0.0.1-pre.3
 - **ADDED**: Selected country to show mark intro list of countries

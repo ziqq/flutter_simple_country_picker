@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_code/country_codes.dart';
 import 'package:flutter_simple_country_picker/src/controller/countries_parser.dart';
-import 'package:flutter_simple_country_picker/src/util/countries_util.dart';
+import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 import 'package:meta/meta.dart';
 
 /// {@template country}
-/// The country Model that has all the country
+/// The country entity that has all the country
 /// information needed from the [flutter_simple_country_picker]
 /// {@endtemplate}
 @immutable
@@ -38,20 +38,20 @@ class Country {
 
   /// Create a country from a JSON object
   Country.fromJson(Map<String, Object?> json)
-      : phoneCode = json['e164_cc'] as String,
-        countryCode = json['iso2_cc'] as String,
+      : phoneCode = json['e164_cc'].toString(),
+        countryCode = json['iso2_cc'].toString(),
         e164Sc = json['e164_sc'] as int,
-        geographic = json['geographic'] as bool,
+        geographic = json['geographic'] as bool? ?? false,
         level = json['level'] as int,
-        name = json['name'] as String,
+        name = json['name'].toString(),
         nameLocalized = '',
-        example = json['example'] as String,
-        displayName = json['display_name'] as String,
+        example = json['example'].toString(),
+        displayName = json['display_name'].toString(),
         fullExampleWithPlusSign =
-            json['full_example_with_plus_sign'] as String?,
-        mask = json['mask'] as String?,
-        displayNameNoCountryCode = json['display_name_no_e164_cc'] as String,
-        e164Key = json['e164_key'] as String;
+            json['full_example_with_plus_sign']?.toString(),
+        mask = json['mask']?.toString(),
+        displayNameNoCountryCode = json['display_name_no_e164_cc'].toString(),
+        e164Key = json['e164_key'].toString();
 
   /// The world wide country
   static const Country worldWide = Country(
@@ -229,5 +229,5 @@ class Country {
   ///```dart
   /// Text(country.flagEmoji)
   /// ```
-  String get flagEmoji => CountriesUtil.countryCodeToEmoji(countryCode);
+  String get flagEmoji => CountryUtil.countryCodeToEmoji(countryCode);
 }

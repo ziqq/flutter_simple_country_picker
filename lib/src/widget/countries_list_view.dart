@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/controller/countries_controller.dart';
 import 'package:flutter_simple_country_picker/src/controller/countries_provider.dart';
-import 'package:flutter_simple_country_picker/src/util/countries_util.dart';
+import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 import 'package:flutter_simple_country_picker/src/widget/status_bar_gesture_detector.dart';
 
 /// {@template country_list_view}
@@ -559,7 +559,7 @@ class _Flag extends StatelessWidget {
       child: Text(
         country.iswWorldWide
             ? '\uD83C\uDF0D'
-            : CountriesUtil.countryCodeToEmoji(country.countryCode),
+            : CountryUtil.countryCodeToEmoji(country.countryCode),
         style: TextStyle(fontSize: pickerTheme.flagSize ?? 25),
       ),
     );

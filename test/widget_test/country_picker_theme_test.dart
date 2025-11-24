@@ -28,7 +28,7 @@ void main() => group('CountryPickerTheme -', () {
           WidgetTestHelper.createWidgetUnderTest(
             locale: const Locale('en'),
             builder: (context) => Scaffold(
-              body: CountryPickerInheritedTheme(
+              body: InheritedCountryPickerTheme(
                 data: themeData,
                 child: const SizedBox.shrink(key: _key),
               ),
@@ -39,7 +39,7 @@ void main() => group('CountryPickerTheme -', () {
         expect(find.byKey(_key), findsOneWidget);
 
         final context = tester.firstElement(find.byKey(_key));
-        final providedTheme = CountryPickerInheritedTheme.maybeOf(context);
+        final providedTheme = InheritedCountryPickerTheme.maybeOf(context);
         expect(providedTheme, equals(themeData));
       });
 
@@ -47,7 +47,7 @@ void main() => group('CountryPickerTheme -', () {
         await tester.pumpWidget(
           WidgetTestHelper.createWidgetUnderTest(
             builder: (context) => Scaffold(
-              body: CountryPickerInheritedTheme(
+              body: InheritedCountryPickerTheme(
                 data: CountryPickerTheme.resolve(context),
                 child: const SizedBox.shrink(key: _key),
               ),
@@ -59,7 +59,7 @@ void main() => group('CountryPickerTheme -', () {
 
         final context = tester.firstElement(find.byKey(_key));
         final defaultTheme = CountryPickerTheme.defaults(context);
-        final resolvedTheme = CountryPickerInheritedTheme.maybeOf(context);
+        final resolvedTheme = InheritedCountryPickerTheme.maybeOf(context);
         expect(resolvedTheme, isNotNull);
         expect(resolvedTheme!.backgroundColor, defaultTheme.backgroundColor);
       });
@@ -85,7 +85,7 @@ void main() => group('CountryPickerTheme -', () {
 
         await tester.pumpWidget(
           WidgetTestHelper.createWidgetUnderTest(
-            builder: (context) => CountryPickerInheritedTheme(
+            builder: (context) => InheritedCountryPickerTheme(
               data: themeData,
               child: const Scaffold(
                 body: SizedBox.shrink(key: _key),
@@ -97,7 +97,7 @@ void main() => group('CountryPickerTheme -', () {
         expect(find.byKey(_key), findsOneWidget);
 
         final context = tester.firstElement(find.byKey(_key));
-        final inheritedTheme = CountryPickerInheritedTheme.maybeOf(context);
+        final inheritedTheme = InheritedCountryPickerTheme.maybeOf(context);
 
         expect(inheritedTheme, isNotNull);
         expect(inheritedTheme!.accentColor, CupertinoColors.systemRed);
