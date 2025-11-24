@@ -6,7 +6,6 @@ import 'package:flutter_simple_country_picker/src/controller/countries_provider.
 import 'package:flutter_simple_country_picker/src/controller/countries_state.dart';
 import 'package:flutter_simple_country_picker/src/localization/localization.dart';
 import 'package:flutter_simple_country_picker/src/model/country.dart';
-import 'package:meta/meta.dart';
 
 /// {@template countries_controller}
 /// Countries controller.

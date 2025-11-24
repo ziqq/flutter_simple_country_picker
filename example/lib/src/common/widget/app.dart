@@ -31,9 +31,9 @@ class App extends StatefulWidget {
       context.findAncestorStateOfType<_AppState>();
 
   static Never _notFoundStateOfType() => throw ArgumentError(
-        'Out of scope, not found state of type _AppState',
-        'out_of_scope',
-      );
+    'Out of scope, not found state of type _AppState',
+    'out_of_scope',
+  );
 
   /// The state from the closest instance of this class
   /// that encloses the given context.
@@ -91,52 +91,52 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) => ValueListenableBuilder(
-        valueListenable: themeMode,
-        builder: (context, themeMode, _) => ValueListenableBuilder(
-          valueListenable: locale,
-          builder: (context, locale, _) => MaterialApp(
-            title: 'Country picker example',
-            debugShowCheckedModeBanner: false,
-            darkTheme: AppThemeData.dark(),
-            theme: AppThemeData.light(),
-            themeMode: themeMode,
-            locale: locale,
-            supportedLocales: ExampleLocalization.supportedLocales,
-            localizationsDelegates: const [
-              GlobalCupertinoLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
+    valueListenable: themeMode,
+    builder: (context, themeMode, _) => ValueListenableBuilder(
+      valueListenable: locale,
+      builder: (context, locale, _) => MaterialApp(
+        title: 'Country picker example',
+        debugShowCheckedModeBanner: false,
+        darkTheme: AppThemeData.dark(),
+        theme: AppThemeData.light(),
+        themeMode: themeMode,
+        locale: locale,
+        supportedLocales: ExampleLocalization.supportedLocales,
+        localizationsDelegates: const [
+          GlobalCupertinoLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
 
-              /// Add [CountriesLocalization] in app [localizationsDelegates]
-              CountriesLocalization.delegate,
+          /// Add [CountriesLocalization] in app [localizationsDelegates]
+          CountriesLocalization.delegate,
 
-              /// Example localization
-              ExampleLocalization.delegate,
-            ],
-            localeResolutionCallback: (locale, supportedLocales) {
-              if (locale == null) {
-                return supportedLocales.first;
-              }
-              for (final supportedLocale in supportedLocales) {
-                if (supportedLocale.languageCode == locale.languageCode) {
-                  return supportedLocale;
-                }
-              }
-              return supportedLocales.first;
-            },
-            builder: (context, _) => MediaQuery(
-              key: _builderKey,
-              data: MediaQuery.of(context).copyWith(
-                textScaler: TextScaler.noScaling,
-              ),
-              child: ExampleNavigator(
-                key: const ValueKey<String>('home'),
-                home: MaterialPage(child: widget.home),
-              ),
-            ),
+          /// Example localization
+          ExampleLocalization.delegate,
+        ],
+        localeResolutionCallback: (locale, supportedLocales) {
+          if (locale == null) {
+            return supportedLocales.first;
+          }
+          for (final supportedLocale in supportedLocales) {
+            if (supportedLocale.languageCode == locale.languageCode) {
+              return supportedLocale;
+            }
+          }
+          return supportedLocales.first;
+        },
+        builder: (context, _) => MediaQuery(
+          key: _builderKey,
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.noScaling),
+          child: ExampleNavigator(
+            key: const ValueKey<String>('home'),
+            home: MaterialPage(child: widget.home),
           ),
         ),
-      );
+      ),
+    ),
+  );
 }
 
 /// AppThemeModeSwitcherButton widget.
@@ -173,14 +173,14 @@ class AppLocaleSwitcherButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        width: 40,
-        height: 28,
-        child: PullDownButton(
-          menuOffset: kDefaultPadding,
-          buttonBuilder: _buttonBuilder,
-          itemBuilder: (_) => _itemBuilder(context),
-        ),
-      );
+    width: 40,
+    height: 28,
+    child: PullDownButton(
+      menuOffset: kDefaultPadding,
+      buttonBuilder: _buttonBuilder,
+      itemBuilder: (_) => _itemBuilder(context),
+    ),
+  );
 
   List<PullDownMenuItem> _itemBuilder(BuildContext context) {
     final itemTheme = PullDownMenuItemTheme(
@@ -188,15 +188,17 @@ class AppLocaleSwitcherButton extends StatelessWidget {
     );
     final locale = App.of(context)?.locale;
     return CountriesLocalization.supportedLocales
-        .map((e) => PullDownMenuItem.selectable(
-              selected: locale?.value == e,
-              title: e.languageCode,
-              itemTheme: itemTheme,
-              onTap: () {
-                HapticFeedback.heavyImpact();
-                locale?.value = e;
-              },
-            ))
+        .map(
+          (e) => PullDownMenuItem.selectable(
+            selected: locale?.value == e,
+            title: e.languageCode,
+            itemTheme: itemTheme,
+            onTap: () {
+              HapticFeedback.heavyImpact();
+              locale?.value = e;
+            },
+          ),
+        )
         .toList(growable: false);
   }
 
@@ -213,7 +215,7 @@ class AppLocaleSwitcherButton extends StatelessWidget {
           CupertinoColors.secondarySystemFill,
           context,
         ),
-        minSize: 0,
+        minimumSize: Size.zero,
         padding: EdgeInsets.zero,
         onPressed: () {
           HapticFeedback.heavyImpact();
@@ -221,10 +223,9 @@ class AppLocaleSwitcherButton extends StatelessWidget {
         },
         child: Text(
           locale.languageCode.toUpperCase(),
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(fontWeight: FontWeight.w600),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
       ),
     );

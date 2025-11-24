@@ -66,7 +66,7 @@ class _StatusBarGestureDetectorState extends State<StatusBarGestureDetector> {
   @override
   Widget build(BuildContext context) {
     final view = View.of(context);
-    return OverlayPortal.targetsRootOverlay(
+    return OverlayPortal(
       controller: _controller,
       overlayChildBuilder: (context) => Align(
         alignment: Alignment.topCenter,
