@@ -2,19 +2,18 @@
 // ignore_for_file: use_raw_strings, avoid_classes_with_only_static_members
 // ignore_for_file: avoid_escaping_inner_quotes, prefer_single_quotes
 
-/// GENERATED CODE - DO NOT MODIFY BY HAND
-
-library pubspec;
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format width=80
+// dart format off
+// coverage:ignore-file
 
 // *****************************************************************************
-// *                             pubspec_generator                             *
+// *                https://pub.dev/packages/pubspec_generator                 *
 // *****************************************************************************
 
 /*
 
   MIT License
-
-  Copyright (c) 2025 Plague Fox
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -93,13 +92,13 @@ sealed class Pubspec {
   static const PubspecVersion version = (
     /// Non-canonical string representation of the version as provided
     /// in the pubspec.yaml file.
-    representation: r'0.2.6',
+    representation: r'0.2.7',
 
     /// Returns a 'canonicalized' representation
     /// of the application version.
     /// This represents the version string in accordance with
     /// Semantic Versioning (SemVer) standards.
-    canonical: r'0.2.6',
+    canonical: r'0.2.7',
 
     /// MAJOR version when you make incompatible API changes.
     /// The major version number: 1 in "1.2.3".
@@ -112,7 +111,7 @@ sealed class Pubspec {
 
     /// PATCH version when you make backward compatible bug fixes.
     /// The patch version number: 3 in "1.2.3".
-    patch: 6,
+    patch: 7,
 
     /// The pre-release identifier: "foo" in "1.2.3-foo".
     preRelease: <String>[],
@@ -124,13 +123,13 @@ sealed class Pubspec {
   /// Build date and time (UTC)
   static final DateTime timestamp = DateTime.utc(
     2025,
-    5,
-    6,
-    12,
-    54,
-    10,
-    499,
-    986,
+    11,
+    24,
+    8,
+    42,
+    53,
+    631,
+    236,
   );
 
   /// Name
@@ -186,7 +185,7 @@ sealed class Pubspec {
   /// Repository
   /// The optional repository field should contain the URL for your package’s
   /// source code repository—for example,
-  /// https://github.com/<user>/<repository>.
+  /// https://github.com/user/repository
   /// If you publish your package to the pub.dev site,
   /// then your package’s page displays the repository URL.
   /// While providing a repository is optional,
@@ -204,7 +203,7 @@ sealed class Pubspec {
   /// to each package’s issue tracker, using the value of this field.
   /// If issue_tracker is missing but repository is present and points to GitHub,
   /// then the pub.dev site uses the default issue tracker
-  /// (https://github.com/<user>/<repository>/issues).
+  /// https://github.com/user/repository/issues
   static const String issueTracker = r'https://github.com/ziqq/flutter_simple_country_picker/issues';
 
   /// Documentation
@@ -324,7 +323,9 @@ sealed class Pubspec {
   ///
   /// Current app [topics]
   ///
-  /// Package authors can use the topics field to categorize their package. Topics can be used to assist discoverability during search with filters on pub.dev. Pub.dev displays the topics on the package page as well as in the search results.
+  /// Package authors can use the topics field to categorize their package.
+  /// Topics can be used to assist discoverability during search with filters on pub.dev.
+  /// Pub.dev displays the topics on the package page as well as in the search results.
   ///
   /// The field consists of a list of names. For example:
   ///
@@ -356,7 +357,7 @@ sealed class Pubspec {
   /// Environment
   static const Map<String, String> environment = <String, String>{
     'sdk': '>=3.6.0 <4.0.0',
-    'flutter': '>=3.6.0 <4.0.0',
+    'flutter': '>=3.29.2',
   };
 
   /// Platforms
@@ -427,7 +428,7 @@ sealed class Pubspec {
     'flutter_localizations': <String, Object>{
       'sdk': r'flutter',
     },
-    'intl': r'^0.19.0',
+    'intl': r'^0.20.2',
     'meta': r'^1.9.0',
     'collection': r'^1.19.0',
   };
@@ -440,9 +441,9 @@ sealed class Pubspec {
     'flutter_test': <String, Object>{
       'sdk': r'flutter',
     },
-    'flutter_lints': r'^5.0.0',
+    'flutter_lints': r'^6.0.0',
     'build_runner': r'^2.4.15',
-    'pubspec_generator': r'^4.0.0',
+    'pubspec_generator': r'^5.0.0',
     'mockito': r'^5.4.5',
     'l': r'^5.0.0',
   };
