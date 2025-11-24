@@ -94,7 +94,7 @@ class Country {
   /// An example of a telephone number without the phone code
   final String example;
 
-  /// Country name (country code) [phone code]
+  /// Country name (country code)
   final String displayName;
 
   /// An example of a telephone number with the phone code and plus sign

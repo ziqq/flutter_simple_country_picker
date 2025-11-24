@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/src/constant/constant.dart';
 
 /// {@template country_picker_theme}
-/// Custom theme for the [CountryPicker] widget.
+/// Custom country picker theme.
 /// {@endtemplate}
 @immutable
 class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
@@ -361,7 +361,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   }
 }
 
-/// Alternative way of defining [UiTheme].
+/// Alternative way of defining [CountryPickerTheme].
 ///
 /// Example:
 ///
