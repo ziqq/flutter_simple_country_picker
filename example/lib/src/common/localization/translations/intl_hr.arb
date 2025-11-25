@@ -18,5 +18,6 @@
   "title": "Preview",
   "description": "Provjerite kôd zemlje i unesite svoj broj telefona.",
   "nextLable": "Dalje",
-  "passwordLable": "Lozinka"
+  "passwordLable": "Lozinka",
+  "submitButton": "Nastavi"
 }

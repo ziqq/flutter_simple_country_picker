@@ -7,11 +7,12 @@ import 'package:flutter/material.dart';
 /// {@endtemplate}
 class CommonPadding extends EdgeInsets {
   const CommonPadding._(final double value)
-      : super.symmetric(horizontal: value);
+    : super.symmetric(horizontal: value);
 
   /// {@macro common_padding}
   factory CommonPadding.of(BuildContext context) => CommonPadding._(
-      math.max((MediaQuery.sizeOf(context).width - 375) / 2, 16));
+    math.max((MediaQuery.sizeOf(context).width - 375) / 2, 16),
+  );
 
   /// {@macro common_padding}
   static Widget widget(BuildContext context, [Widget? child]) =>

@@ -12,8 +12,8 @@ class AdaptivePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => context.screenSizeWhen(
-        desktop: WebPreview.new,
-        tablet: WebPreview.new,
-        phone: MobilePreview.new,
-      );
+    desktop: WebPreview.new,
+    tablet: WebPreview.new,
+    phone: MobilePreview.new,
+  );
 }

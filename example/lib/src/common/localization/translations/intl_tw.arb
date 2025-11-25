@@ -18,5 +18,6 @@
   "title": "Preview",
   "description": "檢查國家代碼並輸入您的電話號碼。",
   "nextLable": "下一步",
-  "passwordLable": "密碼"
+  "passwordLable": "密碼",
+  "submitButton": "繼續"
 }

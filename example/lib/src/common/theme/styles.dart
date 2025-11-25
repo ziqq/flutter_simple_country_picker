@@ -21,32 +21,29 @@ class AppStyles {
 
   /// The defalt border of the input fields.
   OutlineInputBorder get defaultBorder => OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(
-          width: 1,
-          color: CupertinoDynamicColor.resolve(
-            CupertinoColors.separator,
-            context,
-          ),
-        ),
-      );
+    borderRadius: BorderRadius.circular(10),
+    borderSide: BorderSide(
+      width: 1,
+      color: CupertinoDynamicColor.resolve(CupertinoColors.separator, context),
+    ),
+  );
 
   /// The focused border of the input fields.
   InputBorder? get focusedBorder => defaultBorder.copyWith(
-        borderSide: defaultBorder.borderSide.copyWith(
-          color: Theme.of(context).colorScheme.primary,
-        ),
-      );
+    borderSide: defaultBorder.borderSide.copyWith(
+      color: Theme.of(context).colorScheme.primary,
+    ),
+  );
 
   /// The default text style of the input field.
   TextStyle? get textStyle => Theme.of(context).textTheme.bodyLarge;
 
   /// The secondary text style of the input field.
   TextStyle? get secodaryTextStyle => textStyle?.copyWith(
-        fontSize: 14,
-        color: CupertinoDynamicColor.resolve(
-          CupertinoColors.secondaryLabel,
-          context,
-        ),
-      );
+    fontSize: 14,
+    color: CupertinoDynamicColor.resolve(
+      CupertinoColors.secondaryLabel,
+      context,
+    ),
+  );
 }

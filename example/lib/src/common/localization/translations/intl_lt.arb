@@ -18,5 +18,6 @@
   "title": "Preview",
   "description": "Patikrinkite šalies kodą ir įveskite savo telefono numerį.",
   "nextLable": "Kitas",
-  "passwordLable": "Slaptažodis"
+  "passwordLable": "Slaptažodis",
+  "submitButton": "Tęsti"
 }

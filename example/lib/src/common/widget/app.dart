@@ -1,5 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'dart:developer';
+
 import 'package:example/src/common/constant/constants.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/router/example_navigator.dart';
@@ -42,9 +44,10 @@ class App extends StatefulWidget {
       maybeOf(context) ?? _notFoundStateOfType();
 }
 
+/// State for [App] widget.
 class _AppState extends State<App> {
   /// Disable recreate widget tree
-  final Key _builderKey = GlobalKey();
+  final Key _builderKey = GlobalKey(debugLabel: 'AppBuilderKey');
 
   /// Supported locales
   // ignore: unused_field
@@ -77,62 +80,77 @@ class _AppState extends State<App> {
     const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
   ];
 
-  /// App locale
+  /// Current locale of the app.
   final ValueNotifier<Locale> locale = ValueNotifier(const Locale('en'));
 
   /// App theme mode
   final ValueNotifier<ThemeMode> themeMode = ValueNotifier(ThemeMode.system);
 
+  /// Combined listenable
+  late final Listenable _listenable = Listenable.merge([themeMode, locale]);
+
+  @override
+  void initState() {
+    super.initState();
+    final systemLocale = WidgetsBinding.instance.platformDispatcher.locale;
+    locale.value =
+        ExampleLocalization.supportedLocales.any(
+          (l) => l.languageCode == systemLocale.languageCode,
+        )
+        ? systemLocale
+        : const Locale('en');
+  }
+
   @override
   void dispose() {
     themeMode.dispose();
+    locale.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => ValueListenableBuilder(
-    valueListenable: themeMode,
-    builder: (context, themeMode, _) => ValueListenableBuilder(
-      valueListenable: locale,
-      builder: (context, locale, _) => MaterialApp(
-        title: 'Country picker example',
-        debugShowCheckedModeBanner: false,
-        darkTheme: AppThemeData.dark(),
-        theme: AppThemeData.light(),
-        themeMode: themeMode,
-        locale: locale,
-        supportedLocales: ExampleLocalization.supportedLocales,
-        localizationsDelegates: const [
-          GlobalCupertinoLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: _listenable,
+    builder: (context, _) => MaterialApp(
+      key: ValueKey(locale.value),
+      title: 'Country picker example',
+      debugShowCheckedModeBanner: false,
+      darkTheme: AppThemeData.dark(),
+      theme: AppThemeData.light(),
+      themeMode: themeMode.value,
+      locale: locale.value,
+      supportedLocales: ExampleLocalization.supportedLocales,
+      localizationsDelegates: const [
+        GlobalCupertinoLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
 
-          /// Add [CountriesLocalization] in app [localizationsDelegates]
-          CountriesLocalization.delegate,
+        /// Order of custom delegates is important
+        ///
+        /// Example localization
+        ExampleLocalization.delegate,
 
-          /// Example localization
-          ExampleLocalization.delegate,
-        ],
-        localeResolutionCallback: (locale, supportedLocales) {
-          if (locale == null) {
-            return supportedLocales.first;
-          }
-          for (final supportedLocale in supportedLocales) {
-            if (supportedLocale.languageCode == locale.languageCode) {
-              return supportedLocale;
+        ///
+        /// Add [CountriesLocalization] in app [localizationsDelegates]
+        CountriesLocalization.delegate,
+      ],
+      /* localeResolutionCallback: (locale, supportedLocales) {
+            if (locale == null) {
+              return supportedLocales.first;
             }
-          }
-          return supportedLocales.first;
-        },
-        builder: (context, _) => MediaQuery(
-          key: _builderKey,
-          data: MediaQuery.of(
-            context,
-          ).copyWith(textScaler: TextScaler.noScaling),
-          child: ExampleNavigator(
-            key: const ValueKey<String>('home'),
-            home: MaterialPage(child: widget.home),
-          ),
+            for (final supportedLocale in supportedLocales) {
+              if (supportedLocale.languageCode == locale.languageCode) {
+                return supportedLocale;
+              }
+            }
+            return supportedLocales.first;
+          }, */
+      builder: (context, _) => MediaQuery(
+        key: _builderKey,
+        data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+        child: ExampleNavigator(
+          key: const ValueKey<String>('home'),
+          pages: <ExamplePage>[HomePage<Object?>(child: widget.home)],
         ),
       ),
     ),
@@ -144,7 +162,7 @@ class AppThemeModeSwitcherButton extends StatelessWidget {
   /// {@macro app}
   const AppThemeModeSwitcherButton({super.key});
 
-  ThemeMode _decodeBrightness(Brightness brightness) =>
+  ThemeMode _themeModeFromBrightness(Brightness brightness) =>
       brightness == Brightness.light ? ThemeMode.dark : ThemeMode.light;
 
   @override
@@ -155,8 +173,8 @@ class AppThemeModeSwitcherButton extends StatelessWidget {
           ? const Icon(Icons.dark_mode_rounded)
           : const Icon(Icons.light_mode_rounded),
       onPressed: () {
-        HapticFeedback.heavyImpact();
-        App.of(context)?.themeMode.value = _decodeBrightness(brightness);
+        HapticFeedback.heavyImpact().ignore();
+        App.of(context)?.themeMode.value = _themeModeFromBrightness(brightness);
       },
     );
   }
@@ -171,31 +189,21 @@ class AppLocaleSwitcherButton extends StatelessWidget {
     super.key, // ignore: unused_element
   });
 
-  @override
-  Widget build(BuildContext context) => SizedBox(
-    width: 40,
-    height: 28,
-    child: PullDownButton(
-      menuOffset: kDefaultPadding,
-      buttonBuilder: _buttonBuilder,
-      itemBuilder: (_) => _itemBuilder(context),
-    ),
-  );
-
   List<PullDownMenuItem> _itemBuilder(BuildContext context) {
     final itemTheme = PullDownMenuItemTheme(
       textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 14),
     );
     final locale = App.of(context)?.locale;
-    return CountriesLocalization.supportedLocales
-        .map(
+    return ExampleLocalization.supportedLocales
+        .map<PullDownMenuItem>(
           (e) => PullDownMenuItem.selectable(
             selected: locale?.value == e,
             title: e.languageCode,
             itemTheme: itemTheme,
             onTap: () {
-              HapticFeedback.heavyImpact();
+              HapticFeedback.mediumImpact().ignore();
               locale?.value = e;
+              log('Selected locale: ${e.languageCode}');
             },
           ),
         )
@@ -218,7 +226,7 @@ class AppLocaleSwitcherButton extends StatelessWidget {
         minimumSize: Size.zero,
         padding: EdgeInsets.zero,
         onPressed: () {
-          HapticFeedback.heavyImpact();
+          HapticFeedback.heavyImpact().ignore();
           showMenu.call();
         },
         child: Text(
@@ -230,4 +238,15 @@ class AppLocaleSwitcherButton extends StatelessWidget {
       ),
     );
   }
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 40,
+    height: 28,
+    child: PullDownButton(
+      menuOffset: kDefaultPadding,
+      buttonBuilder: _buttonBuilder,
+      itemBuilder: (_) => _itemBuilder(context),
+    ),
+  );
 }

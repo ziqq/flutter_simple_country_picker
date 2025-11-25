@@ -1,190 +1,299 @@
+// autor - <a.a.ustinoff@gmail.com> Anton Ustinoff
+
 import 'dart:collection';
 
+import 'package:flutter/foundation.dart' show listEquals, SynchronousFuture;
 import 'package:flutter/material.dart';
 
-/// {@template example_navigator}
-/// Simplified example navigator that allows to change the pages declaratively.
-///
-/// You can add a custom controller with interceptors and other features.
-///
-/// You can pass controller down the widget tree to change the pages
-/// from anywhere with InheritedWidget.
+/// Typedefinition for the authentifation navigation state.
+typedef ExampleNavigatorState = List<ExamplePage>;
+
+/// {@template authentication_navigator}
+/// ExampleNavigator widget.
 /// {@endtemplate}
 class ExampleNavigator extends StatefulWidget {
-  /// {@macro example_navigator}
-  const ExampleNavigator({
-    required this.home,
-    this.controller,
+  /// Default constructor: uncontrolled by external controller.
+  /// {@macro authentication_navigator}
+  ExampleNavigator({
+    required this.pages,
+    this.guards = const [],
+    this.observers = const [],
+    this.transitionDelegate = const DefaultTransitionDelegate<Object?>(),
+    this.revalidate,
+    this.onBackButtonPressed,
     super.key,
-  });
+  }) : assert(pages.isNotEmpty, 'pages cannot be empty'),
+       controller = null;
 
-  /// Fallback page when the pages list is empty.
-  final Page<Object?> home;
+  /// Controlled constructor: driven by an external ValueNotifier.
+  /// {@macro navigator}
+  ExampleNavigator.controlled({
+    required ValueNotifier<ExampleNavigatorState> this.controller,
+    this.guards = const [],
+    this.observers = const [],
+    this.transitionDelegate = const DefaultTransitionDelegate<Object?>(),
+    this.revalidate,
+    this.onBackButtonPressed,
+    super.key,
+  }) : assert(controller.value.isNotEmpty, 'controller cannot be empty'),
+       pages = controller.value;
 
-  /// Custom controller to change the pages declaratively.
-  final ValueNotifier<List<Page<Object?>>>? controller;
+  /// The [AuthenticationNavigatorState] from the closest instance of this class
+  /// that encloses the given context, if any.
+  static AuthenticationNavigatorState? maybeOf(BuildContext context) =>
+      context.findAncestorStateOfType<AuthenticationNavigatorState>();
 
-  /// Change the pages declaratively.
+  /// The [ExampleNavigatorState] from the closest instance of this class
+  /// that encloses the given context, if any.
+  static ExampleNavigatorState? stateOf(BuildContext context) =>
+      maybeOf(context)?.state;
+
+  /// The [NavigatorState] from the closest instance of this class
+  /// that encloses the given context, if any.
+  static NavigatorState? navigatorOf(BuildContext context) =>
+      maybeOf(context)?.navigator;
+
+  /// Change the pages.
   static void change(
     BuildContext context,
-    List<Page<Object?>> Function(List<Page<Object?>>) fn,
-  ) =>
-      context.findAncestorStateOfType<_ExampleNavigatorState>()?.change(fn);
+    ExampleNavigatorState Function(ExampleNavigatorState pages) fn,
+  ) => maybeOf(context)?.change(fn);
+
+  /// Add a new page onto the stack.
+  static void push(BuildContext context, ExamplePage page) =>
+      change(context, (state) => [...state, page]);
+
+  /// Pop the top(last) page off the stack.
+  static void pop(BuildContext context) => change(context, (state) {
+    if (state.isNotEmpty) state.removeLast();
+    return state;
+  });
+
+  /// Reset to the initial pages.
+  static void reset(BuildContext context) {
+    final navigator = maybeOf(context);
+    if (navigator == null) return;
+    navigator.change((_) => navigator.widget.pages);
+  }
+
+  /// Initial pages to display.
+  final ExampleNavigatorState pages;
+
+  /// Optional external controller.
+  final ValueNotifier<ExampleNavigatorState>? controller;
+
+  /// Guard to apply to the pages.
+  final List<
+    ExampleNavigatorState Function(
+      BuildContext context,
+      ExampleNavigatorState state,
+    )
+  >
+  guards;
+
+  /// Observers to attach to the Navigator.
+  final List<NavigatorObserver> observers;
+
+  /// TransitionDelegate to use for page transitions.
+  final TransitionDelegate<Object?> transitionDelegate;
+
+  /// Optional external signal to re-run guards.
+  final Listenable? revalidate;
+
+  /// The callback function that will be called when the back button is pressed.
+  ///
+  /// It must return a boolean with true if this navigator will handle the request;
+  /// otherwise, return a boolean with false.
+  ///
+  /// Also you can mutate the [ExampleNavigatorState] to change the navigation stack.
+  final ({ExampleNavigatorState state, bool handled}) Function(
+    ExampleNavigatorState state,
+  )?
+  onBackButtonPressed;
 
   @override
-  State<ExampleNavigator> createState() => _ExampleNavigatorState();
+  AuthenticationNavigatorState createState() => AuthenticationNavigatorState();
 }
 
-/// State for widget [ExampleNavigator].
-class _ExampleNavigatorState extends State<ExampleNavigator> {
-  late ValueNotifier<List<Page<Object?>>> _controller;
+/// State for the [ExampleNavigator] widget.
+class AuthenticationNavigatorState extends State<ExampleNavigator>
+    with WidgetsBindingObserver {
+  /// Internal observer to get the NavigatorState.
+  NavigatorState? get navigator => _observer.navigator;
+  final NavigatorObserver _observer = NavigatorObserver();
+
+  /// Current pages list.
+  ExampleNavigatorState get state => _state.value;
+
+  late final ValueNotifier<ExampleNavigatorState> _state;
+
+  /// Combined observers (including internal one).
+  late List<NavigatorObserver> _observers;
 
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller ??
-        ValueNotifier<List<Page<Object?>>>(<Page<Object?>>[widget.home]);
-    if (_controller.value.isEmpty)
-      _controller.value = <Page<Object?>>[widget.home];
-    _controller.addListener(_onStateChanged);
+    _state = ValueNotifier<ExampleNavigatorState>(widget.pages);
+    widget.revalidate?.addListener(revalidate);
+    _observers = <NavigatorObserver>[_observer, ...widget.observers];
+    widget.controller?.addListener(_controllerListener);
+    _controllerListener();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
-  void didUpdateWidget(covariant ExampleNavigator oldWidget) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    revalidate();
+  }
+
+  @override
+  void didUpdateWidget(ExampleNavigator oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!identical(_controller, widget.controller)) {
-      _controller.removeListener(_onStateChanged);
-      _controller = widget.controller ??
-          ValueNotifier<List<Page<Object?>>>(<Page<Object?>>[widget.home]);
-      if (_controller.value.isEmpty)
-        _controller.value = <Page<Object?>>[widget.home];
-      _controller.addListener(_onStateChanged);
+    if (oldWidget.revalidate != widget.revalidate) {
+      oldWidget.revalidate?.removeListener(revalidate);
+      widget.revalidate?.addListener(revalidate);
+    }
+    if (!identical(oldWidget.observers, widget.observers)) {
+      _observers = [_observer, ...widget.observers];
+    }
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller?.removeListener(_controllerListener);
+      widget.controller?.addListener(_controllerListener);
+      _controllerListener();
     }
   }
 
   @override
   void dispose() {
-    _controller.removeListener(_onStateChanged);
+    widget.controller?.removeListener(_controllerListener);
+    widget.revalidate?.removeListener(revalidate);
+    WidgetsBinding.instance.removeObserver(this);
+    _state.dispose();
     super.dispose();
   }
 
-  /// Change the pages declaratively.
-  void change(List<Page<Object?>> Function(List<Page<Object?>>) fn) {
-    final pages = fn(_controller.value);
-    if (identical(pages, _controller.value)) return; // No changes
-    // Remove duplicates and null keys
-    final set = <LocalKey>{};
-    final newPages = <Page<Object?>>[];
-    for (var i = pages.length - 1; i >= 0; i--) {
-      final page = pages[i];
-      final key = page.key;
-      if (set.contains(page.key) || key == null) continue;
-      set.add(key);
-      newPages.insert(0, page);
+  @override
+  Future<bool> didPopRoute() {
+    // If the back button handler is defined, call it.
+    final backButtonHandler = widget.onBackButtonPressed;
+    if (backButtonHandler != null) {
+      final result = backButtonHandler(_state.value.toList());
+      change((pages) => result.state);
+      return SynchronousFuture(result.handled);
     }
-    if (newPages.isEmpty) newPages.add(widget.home);
-    _controller.value = UnmodifiableListView<Page<Object?>>(newPages);
+
+    // Otherwise, handle the back button press with the default behavior.
+    if (_state.value.length < 2) return SynchronousFuture(false);
+    _onDidRemovePage(_state.value.last);
+    return SynchronousFuture(true);
   }
 
-  @protected
-  void _onStateChanged() => setState(() {});
+  void _setStateToController() {
+    if (widget.controller
+        case ValueNotifier<ExampleNavigatorState> controller) {
+      controller
+        ..removeListener(_controllerListener)
+        ..value = _state.value
+        ..addListener(_controllerListener);
+    }
+  }
 
-  @protected
-  bool _onPopPage(Page<Object?> route) {
-    if (!route.canPop) return false;
-    final pages = _controller.value;
-    if (pages.length <= 1) return false;
-    // You can implement custom logic here
-    _controller.value =
-        UnmodifiableListView<Page<Object?>>(pages.sublist(0, pages.length - 1));
-    return true;
+  void _controllerListener() {
+    final controller = widget.controller;
+    if (controller == null || !mounted) return;
+    final newValue = controller.value;
+    if (identical(newValue, _state.value)) return;
+    final ctx = context;
+    final next = widget.guards.fold(newValue.toList(), (s, g) => g(ctx, s));
+    if (next.isEmpty || listEquals(next, _state.value)) {
+      _setStateToController(); // Revert the controller value
+    } else {
+      _state.value = UnmodifiableListView<ExamplePage>(next);
+      _setStateToController();
+      // setState(() {});
+    }
+  }
+
+  /// Revalidate the pages.
+  void revalidate() {
+    if (!mounted) return;
+    final ctx = context;
+    final next = widget.guards.fold(_state.value.toList(), (s, g) => g(ctx, s));
+    if (next.isEmpty || listEquals(next, _state.value)) return;
+    _state.value = UnmodifiableListView<ExamplePage>(next);
+    _setStateToController();
+  }
+
+  /// Applies a programmatic change to the navigation stack.
+  void change(ExampleNavigatorState Function(ExampleNavigatorState pages) fn) {
+    final prev = _state.value.toList();
+    var next = fn(prev);
+    if (next.isEmpty) return;
+    if (!mounted) return;
+    final ctx = context;
+    next = widget.guards.fold(next, (s, g) => g(ctx, s));
+    if (next.isEmpty || listEquals(next, _state.value)) return;
+    _state.value = UnmodifiableListView<ExamplePage>(next);
+    _setStateToController();
+  }
+
+  void _onDidRemovePage(Page<Object?> page) {
+    change((pages) => pages..removeWhere((p) => p.key == page.key));
   }
 
   @override
-  Widget build(BuildContext context) => Navigator(
-        pages: _controller.value.toList(growable: false),
-        onDidRemovePage: _onPopPage,
-      );
+  Widget build(BuildContext context) => ValueListenableBuilder(
+    valueListenable: _state,
+    builder: (_, pages, _) => Navigator(
+      transitionDelegate: widget.transitionDelegate,
+      reportsRouteUpdateToEngine: false,
+      onDidRemovePage: _onDidRemovePage,
+      observers: _observers,
+      pages: pages,
+    ),
+  );
 }
 
-/// {@template app_pages}
-/// Pages and screens of the example app.
+/// {@template auth_page}
+/// A custom authentication page class that extends [MaterialPage]
+/// to represent a page in the app's navigation stack.
 /// {@endtemplate}
-enum AppPages {
-  /// Country input preview
-  inputPreview('County Phone Input Preview'),
+@immutable
+sealed class ExamplePage extends MaterialPage<Object?> {
+  /// Creates a new instance of [ExamplePage].
+  /// {@macro auth_page}
+  const ExamplePage({
+    required String super.name,
+    required Map<String, Object?>? super.arguments,
+    required super.child,
+    required LocalKey super.key,
+  });
 
-  /// Country form preview
-  formPreview('County Form Preview'),
+  @override
+  String get name => super.name ?? 'unknown';
 
-  /// Country picker preview
-  pickerPreview('Country Picker Preview');
+  @override
+  Map<String, Object?>? get arguments => switch (super.arguments) {
+    Map<String, Object?> args when args.isNotEmpty => args,
+    _ => const <String, Object?>{},
+  };
 
-  /// {@macro app_pages}
-  const AppPages(this.title);
+  @override
+  int get hashCode => key.hashCode;
 
-  /// Page title
-  final String title;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is ExamplePage && other.key == key;
+}
 
-  /// Create a new page
-  Page<Object?> get page => MaterialPage<Object?>(
-        key: ValueKey<AppPages>(this),
-        child: Builder(
-          builder: (context) => Scaffold(
-            appBar: AppBar(
-              title: Text(title),
-              actions: <Widget>[
-                // Show modal dialog
-                IconButton(
-                  icon: const Icon(Icons.warning),
-                  tooltip: 'Show modal dialog',
-                  onPressed: () => showDialog<void>(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Warning'),
-                      content: const Text('This is a warning message.'),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('OK'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // Go to input preview page
-                IconButton(
-                  icon: const Icon(Icons.settings),
-                  tooltip: 'Drop routes and go to input preview',
-                  onPressed: () => ExampleNavigator.change(
-                    context,
-                    (pages) => [
-                      AppPages.inputPreview.page,
-                      AppPages.pickerPreview.page,
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            body: SafeArea(
-              child: ListView(
-                shrinkWrap: true,
-                // Show list of new routes
-                children: AppPages.values
-                    .where((e) => e != this)
-                    .map<Widget>(
-                      (e) => ListTile(
-                        title: Text(e.title),
-                        onTap: () => ExampleNavigator.change(
-                          context,
-                          (pages) => [...pages, e.page],
-                        ),
-                      ),
-                    )
-                    .toList(growable: false),
-              ),
-            ),
-          ),
-        ),
+/// Home page of the example app.
+final class HomePage<T> extends ExamplePage {
+  /// Creates a new instance of [HomePage].
+  const HomePage({required super.child})
+    : super(
+        name: 'home',
+        arguments: const <String, Object?>{},
+        key: const ValueKey<String>('home_page'),
       );
 }

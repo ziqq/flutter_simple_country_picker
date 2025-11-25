@@ -18,5 +18,6 @@
   "title": "Podgląd",
   "description": "Sprawdź kod kraju i wprowadź swój numer telefonu.",
   "nextLable": "Dalej",
-  "passwordLable": "Hasło"
+  "passwordLable": "Hasło",
+  "submitButton": "Kontynuuj"
 }

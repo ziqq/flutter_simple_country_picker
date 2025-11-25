@@ -5,5 +5,12 @@ const double kDefaultPadding = 16;
 const String kDefaultCountry = '🇷🇺 Россия';
 
 /// Filtered countries
-final kFilteredCountries =
-    List<String>.unmodifiable(['RU', 'AM', 'BY', 'KG', 'MD', 'TJ', 'UZ']);
+final kFilteredCountries = List<String>.unmodifiable([
+  'RU',
+  'AM',
+  'BY',
+  'KG',
+  'MD',
+  'TJ',
+  'UZ',
+]);

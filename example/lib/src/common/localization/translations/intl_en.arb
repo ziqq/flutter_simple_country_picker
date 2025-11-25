@@ -18,5 +18,6 @@
   "title": "Preview",
   "description": "Check the country code and enter your phone number.",
   "nextLable": "Next",
-  "passwordLable": "Password"
+  "passwordLable": "Password",
+  "submitButton": "Submit"
 }

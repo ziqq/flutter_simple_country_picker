@@ -30,6 +30,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "localeCode": MessageLookupByLibrary.simpleMessage("ne_NE"),
     "nextLable": MessageLookupByLibrary.simpleMessage("अर्को"),
     "passwordLable": MessageLookupByLibrary.simpleMessage("पासवर्ड"),
+    "submitButton": MessageLookupByLibrary.simpleMessage("जारी राख्नुहोस्"),
     "title": MessageLookupByLibrary.simpleMessage("टेट्राडका"),
   };
 }

@@ -21,25 +21,25 @@ class CommonHeader extends StatelessWidget implements PreferredSizeWidget {
 
   /// {@macro scaffold_padding}
   static Widget sliver(String title, [Widget? child]) => SliverAppBar(
-        pinned: true,
-        title: _Header(title),
-        leading: const AppLocaleSwitcherButton(),
-        actions: const [AppThemeModeSwitcherButton()],
-      );
+    pinned: true,
+    title: _Header(title),
+    leading: const AppLocaleSwitcherButton(),
+    actions: const [AppThemeModeSwitcherButton()],
+  );
 
   @override
   Widget build(BuildContext context) => AppBar(
-        centerTitle: true,
-        backgroundColor: backgroundColor,
-        title: title != null && title!.isNotEmpty ? _Header(title!) : null,
-        leading: const Row(
-          children: [
-            SizedBox(width: kDefaultPadding),
-            AppLocaleSwitcherButton(),
-          ],
-        ),
-        actions: const [AppThemeModeSwitcherButton()],
-      );
+    centerTitle: true,
+    backgroundColor: backgroundColor,
+    title: title != null && title!.isNotEmpty ? _Header(title!) : null,
+    leading: const Row(
+      children: [
+        SizedBox(width: kDefaultPadding),
+        AppLocaleSwitcherButton(),
+      ],
+    ),
+    actions: const [AppThemeModeSwitcherButton()],
+  );
 }
 
 /// Title widget of [CommonHeader].
@@ -57,12 +57,12 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-        children: [
-          Text(title, style: Theme.of(context).textTheme.titleLarge),
-          Text(
-            'Version: ${Pubspec.version.canonical}',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ],
-      );
+    children: [
+      Text(title, style: Theme.of(context).textTheme.titleLarge),
+      Text(
+        'Version: ${Pubspec.version.canonical}',
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+    ],
+  );
 }

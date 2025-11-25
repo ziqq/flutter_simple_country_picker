@@ -18,5 +18,6 @@
   "title": "Preview",
   "description": "检查国家代码并输入您的电话号码。",
   "nextLable": "下一步",
-  "passwordLable": "密码"
+  "passwordLable": "密码",
+  "submitButton": "继续"
 }

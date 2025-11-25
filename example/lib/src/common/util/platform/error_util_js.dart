@@ -6,8 +6,7 @@ Future<void> $captureException(
   StackTrace stackTrace,
   String? hint,
   bool fatal,
-) =>
-    Future<void>.value(null);
+) => Future<void>.value(null);
 
 ///
 Future<void> $captureMessage(
@@ -15,5 +14,4 @@ Future<void> $captureMessage(
   StackTrace? stackTrace,
   String? hint,
   bool warning,
-) =>
-    Future<void>.value(null);
+) => Future<void>.value(null);

@@ -70,9 +70,7 @@ final ThemeData _appLightTheme = ThemeData.light().copyWith(
       backgroundColor: WidgetStateProperty.all<Color>(_primaryColor),
       foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
       shape: WidgetStateProperty.all<OutlinedBorder>(
-        RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
       textStyle: WidgetStateProperty.all<TextStyle>(
         const TextStyle(
@@ -119,9 +117,7 @@ final ThemeData _appDarkTheme = ThemeData.dark().copyWith(
       backgroundColor: WidgetStateProperty.all<Color>(_primaryColor),
       foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
       shape: WidgetStateProperty.all<OutlinedBorder>(
-        RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
       textStyle: WidgetStateProperty.all<TextStyle>(
         const TextStyle(

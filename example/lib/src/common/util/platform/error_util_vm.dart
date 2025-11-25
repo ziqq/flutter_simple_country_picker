@@ -16,8 +16,7 @@ Future<void> $captureException(
   StackTrace stackTrace,
   String? hint,
   bool fatal,
-) =>
-    Future<void>.value();
+) => Future<void>.value();
 
 /*
  * Sentry.captureMessage(
@@ -42,8 +41,7 @@ Future<void> $captureMessage(
   StackTrace? stackTrace,
   String? hint,
   bool warning,
-) =>
-    Future<void>.value();
+) => Future<void>.value();
 /* warning || stackTrace != null
         ? FirebaseCrashlytics.instance.recordError(
             message,

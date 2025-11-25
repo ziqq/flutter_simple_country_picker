@@ -18,5 +18,6 @@
   "title": "Preview",
   "description": "Überprüfen Sie den Ländercode und geben Sie Ihre Telefonnummer ein.",
   "nextLable": "Weiter",
-  "passwordLable": "Passwort"
+  "passwordLable": "Passwort",
+  "submitButton": "Fortfahren"
 }

@@ -30,6 +30,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "localeCode": MessageLookupByLibrary.simpleMessage("uk_UA"),
     "nextLable": MessageLookupByLibrary.simpleMessage("Далі"),
     "passwordLable": MessageLookupByLibrary.simpleMessage("Пароль"),
+    "submitButton": MessageLookupByLibrary.simpleMessage("Продовжити"),
     "title": MessageLookupByLibrary.simpleMessage("Preview"),
   };
 }

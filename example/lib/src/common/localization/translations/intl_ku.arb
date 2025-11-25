@@ -18,5 +18,6 @@
   "title": "Preview",
   "description": "Kodê welatê kontrol bike û telefonê xwe binivîse.",
   "nextLable": "Pêş",
-  "passwordLable": "Şîfre"
+  "passwordLable": "Şîfre",
+  "submitButton": "Berdewam bike"
 }

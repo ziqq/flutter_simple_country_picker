@@ -38,40 +38,40 @@ class _ExperimentalPreviewState extends State<ExperimentalPreview> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              CommonHeader.sliver('County Phone Input Experimental Preview'),
-              SliverPadding(
-                padding: CommonPadding.of(context),
-                sliver: SliverList.list(
-                  children: [
-                    const SizedBox(height: kDefaultPadding * 2),
-                    CountryPhoneInputExperimental(
-                      autofocus: false,
-                      controller: _controller,
-                      mask: _mask,
-                      country: _country,
-                      countryCode: _countryCode,
-                      onTap: () {
-                        showCountryPicker(
-                          context: context,
-                          favorite: ['RU'],
-                          exclude: ['KN', 'MF'],
-                          showPhoneCode: true,
-                          onSelect: _onSelect,
-                          onDone: () => log('onDone callded...'),
-                        );
-                      },
-                    ),
-                    if (MediaQuery.of(context).viewPadding.bottom == 0) ...[
-                      const SizedBox(height: kDefaultPadding),
-                    ],
-                  ],
+    body: SafeArea(
+      child: CustomScrollView(
+        slivers: [
+          CommonHeader.sliver('County Phone Input Experimental Preview'),
+          SliverPadding(
+            padding: CommonPadding.of(context),
+            sliver: SliverList.list(
+              children: [
+                const SizedBox(height: kDefaultPadding * 2),
+                CountryPhoneInputExperimental(
+                  autofocus: false,
+                  controller: _controller,
+                  mask: _mask,
+                  country: _country,
+                  countryCode: _countryCode,
+                  onTap: () {
+                    showCountryPicker(
+                      context: context,
+                      favorite: ['RU'],
+                      exclude: ['KN', 'MF'],
+                      showPhoneCode: true,
+                      onSelect: _onSelect,
+                      onDone: () => log('onDone callded...'),
+                    );
+                  },
                 ),
-              ),
-            ],
+                if (MediaQuery.of(context).viewPadding.bottom == 0) ...[
+                  const SizedBox(height: kDefaultPadding),
+                ],
+              ],
+            ),
           ),
-        ),
-      );
+        ],
+      ),
+    ),
+  );
 }

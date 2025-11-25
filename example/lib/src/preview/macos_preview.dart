@@ -79,10 +79,7 @@ class _MacOSPreviewState extends State<MacOSPreview>
                   ),
                 ),
                 children: [
-                  CountryPicker$MacOS(
-                    onSelect: onSelect,
-                    selected: selected,
-                  ),
+                  CountryPicker$MacOS(onSelect: onSelect, selected: selected),
                   CountryInput$MacOS(
                     controller: controller,
                     inputFormatters: [formater],
@@ -104,10 +101,9 @@ class _MacOSPreviewState extends State<MacOSPreview>
                 onPressed: onSubmit,
                 child: Text(
                   localization.nextLable,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: CupertinoColors.white),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: CupertinoColors.white,
+                  ),
                 ),
               ),
             ),
@@ -118,9 +114,8 @@ class _MacOSPreviewState extends State<MacOSPreview>
   }
 }
 
-/// {@template country_input_macos}
 /// CountryInput$MacOS widget.
-/// {@endtemplate}
+/// {@macro county_picker_macos}
 class CountryInput$MacOS extends StatelessWidget {
   /// {@macro country_input_macos}
   const CountryInput$MacOS({
@@ -168,9 +163,7 @@ class CountryInput$MacOS extends StatelessWidget {
                 placeholder: selectedCountry.mask,
                 style: textTheme.bodyLarge,
                 padding: EdgeInsets.zero,
-                decoration: const BoxDecoration(
-                  color: Colors.transparent,
-                ),
+                decoration: const BoxDecoration(color: Colors.transparent),
               ),
             ),
           ),
@@ -180,9 +173,8 @@ class CountryInput$MacOS extends StatelessWidget {
   }
 }
 
-/// {@template county_picker_macos}
 /// CountryPicker$MacOS widget.
-/// {@endtemplate}
+/// {@macro county_picker_macos}
 class CountryPicker$MacOS extends StatefulWidget {
   /// {@macro county_picker_macos}
   const CountryPicker$MacOS({
@@ -248,8 +240,9 @@ class CountryPicker$MacOS extends StatefulWidget {
 /// State for widget [CountryPicker$MacOS].
 class _CountryPicker$MacOSState extends State<CountryPicker$MacOS> {
   // Fix corrent emoji flag for web.
-  final String? _effectiveFontFamily =
-      kIsWeb ? FontFamily.notoColorEmoji : null;
+  final String? _effectiveFontFamily = kIsWeb
+      ? FontFamily.notoColorEmoji
+      : null;
 
   List<PullDownMenuItem> _itemBuilder(
     List<Country> countries, [
@@ -259,23 +252,25 @@ class _CountryPicker$MacOSState extends State<CountryPicker$MacOS> {
     final itemTheme = PullDownMenuItemTheme(
       textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 14),
     );
-    return countries.map((e) {
-      final title = localization
-          .getCountryNameByCode(e.countryCode)
-          ?.replaceAll(CountriesLocalization.countryNameRegExp, ' ');
-      return PullDownMenuItem(
-        itemTheme: itemTheme,
-        iconWidget: Text(
-          e.flagEmoji,
-          style: itemTheme.textStyle?.copyWith(
-            fontSize: 14,
-            fontFamily: _effectiveFontFamily,
-          ),
-        ),
-        title: '$title +${e.phoneCode}',
-        onTap: () => widget.onSelect?.call(e),
-      );
-    }).toList(growable: false);
+    return countries
+        .map((e) {
+          final title = localization
+              .getCountryNameByCode(e.countryCode)
+              ?.replaceAll(CountriesLocalization.countryNameRegExp, ' ');
+          return PullDownMenuItem(
+            itemTheme: itemTheme,
+            iconWidget: Text(
+              e.flagEmoji,
+              style: itemTheme.textStyle?.copyWith(
+                fontSize: 14,
+                fontFamily: _effectiveFontFamily,
+              ),
+            ),
+            title: '$title +${e.phoneCode}',
+            onTap: () => widget.onSelect?.call(e),
+          );
+        })
+        .toList(growable: false);
   }
 
   Widget _buttonBuilder(
@@ -339,48 +334,44 @@ class _CountryPicker$MacOSState extends State<CountryPicker$MacOS> {
     final localizations = CountriesLocalization.of(context);
 
     Widget scope({
-      required Widget Function(
-        BuildContext context,
-        CountriesState state,
-      ) builder,
-    }) =>
-        CountriesScope(
-          child: Builder(
-            builder: (context) => ValueListenableBuilder(
-              valueListenable: CountriesScope.of(context),
-              builder: (context, state, _) {
-                if (state.isLoading || state.countries.isEmpty) {
-                  return const Center(
-                    child: SizedBox(
-                      height: 44,
-                      child: CircularProgressIndicator.adaptive(),
-                    ),
-                  );
-                }
-                return builder(context, state);
-              },
-            ),
-          ),
-        );
+      required Widget Function(BuildContext context, CountriesState state)
+      builder,
+    }) => CountriesScope(
+      child: Builder(
+        builder: (context) => ValueListenableBuilder(
+          valueListenable: CountriesScope.of(context),
+          builder: (context, state, _) {
+            if (state.isLoading || state.countries.isEmpty) {
+              return const Center(
+                child: SizedBox(
+                  height: 44,
+                  child: CircularProgressIndicator.adaptive(),
+                ),
+              );
+            }
+            return builder(context, state);
+          },
+        ),
+      ),
+    );
 
     return scope(
       builder: (context, state) => ValueListenableBuilder(
-        valueListenable: widget.selected ?? ValueNotifier(null),
+        valueListenable: widget.selected ?? ValueNotifier<Country?>(null),
         builder: (context, selected, _) {
-          final $selected = selected ??
-              state.countries.firstWhereOrNull((e) =>
-                  e.name ==
-                  localizations.getCountryNameByCode(e.countryCode)) ??
+          final $selected =
+              selected ??
+              state.countries.firstWhereOrNull(
+                (e) =>
+                    e.name == localizations.getCountryNameByCode(e.countryCode),
+              ) ??
               state.countries[0];
 
           return PullDownButton(
             menuOffset: kDefaultPadding,
             itemBuilder: (_) => _itemBuilder(state.countries, $selected),
-            buttonBuilder: (_, showMenu) => _buttonBuilder(
-              context,
-              showMenu,
-              $selected,
-            ),
+            buttonBuilder: (_, showMenu) =>
+                _buttonBuilder(context, showMenu, $selected),
           );
         },
       ),

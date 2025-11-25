@@ -18,5 +18,6 @@
   "title": "Preview",
   "description": "Verifique el código de país e ingrese su número de teléfono.",
   "nextLable": "Siguiente",
-  "passwordLable": "Contraseña"
+  "passwordLable": "Contraseña",
+  "submitButton": "Continuar"
 }

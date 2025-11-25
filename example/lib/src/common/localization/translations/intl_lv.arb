@@ -18,5 +18,6 @@
   "title": "Preview",
   "description": "Pārbaudiet valsts kodu un ievadiet savu tālruņa numuru.",
   "nextLable": "Nākamais",
-  "passwordLable": "Parole"
+  "passwordLable": "Parole",
+  "submitButton": "Turpināt"
 }

@@ -18,5 +18,6 @@
   "title": "Preview",
   "description": "Controleer de landcode en voer uw telefoonnummer in.",
   "nextLable": "Volgende",
-  "passwordLable": "Wachtwoord"
+  "passwordLable": "Wachtwoord",
+  "submitButton": "Doorgaan"
 }

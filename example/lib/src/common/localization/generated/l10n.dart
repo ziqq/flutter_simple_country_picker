@@ -28,10 +28,9 @@ class GeneratedLocalization {
   static const AppLocalizationDelegate delegate = AppLocalizationDelegate();
 
   static Future<GeneratedLocalization> load(Locale locale) {
-    final name =
-        (locale.countryCode?.isEmpty ?? false)
-            ? locale.languageCode
-            : locale.toString();
+    final name = (locale.countryCode?.isEmpty ?? false)
+        ? locale.languageCode
+        : locale.toString();
     final localeName = Intl.canonicalizedLocale(name);
     return initializeMessages(localeName).then((_) {
       Intl.defaultLocale = localeName;
@@ -112,6 +111,11 @@ class GeneratedLocalization {
   String get passwordLable {
     return Intl.message('Password', name: 'passwordLable', desc: '', args: []);
   }
+
+  /// `Submit`
+  String get submitButton {
+    return Intl.message('Submit', name: 'submitButton', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate
@@ -124,10 +128,10 @@ class AppLocalizationDelegate
       Locale.fromSubtags(languageCode: 'ar'),
       Locale.fromSubtags(languageCode: 'cn'),
       Locale.fromSubtags(languageCode: 'de'),
+      Locale.fromSubtags(languageCode: 'el'),
       Locale.fromSubtags(languageCode: 'es'),
       Locale.fromSubtags(languageCode: 'et'),
       Locale.fromSubtags(languageCode: 'fr'),
-      Locale.fromSubtags(languageCode: 'gr'),
       Locale.fromSubtags(languageCode: 'hr'),
       Locale.fromSubtags(languageCode: 'it'),
       Locale.fromSubtags(languageCode: 'ku'),

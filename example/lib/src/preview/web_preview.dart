@@ -157,10 +157,7 @@ class CountryInput$Web extends StatelessWidget {
             CountriesLocalization.of(context).phonePlaceholder,
             style: secodaryTextStyle?.copyWith(fontSize: 16),
           ),
-          prefix: Text(
-            '+${selectedCountry.phoneCode} ',
-            style: textStyle,
-          ),
+          prefix: Text('+${selectedCountry.phoneCode} ', style: textStyle),
           hintText: selectedCountry.mask,
           hintStyle: textStyle?.copyWith(
             color: CupertinoDynamicColor.resolve(
@@ -271,39 +268,38 @@ class _CountryPicker$DesktopState extends State<CountryPicker$Web> {
     );
 
     Widget scope({
-      required Widget Function(
-        BuildContext context,
-        CountriesState state,
-      ) builder,
-    }) =>
-        CountriesScope(
-          child: Builder(
-            builder: (context) => ValueListenableBuilder(
-              valueListenable: CountriesScope.of(context),
-              builder: (context, state, _) {
-                if (state.isLoading || state.countries.isEmpty) {
-                  return const Center(
-                    child: SizedBox(
-                      height: 44,
-                      child: CircularProgressIndicator.adaptive(),
-                    ),
-                  );
-                }
-                return builder(context, state);
-              },
-            ),
-          ),
-        );
+      required Widget Function(BuildContext context, CountriesState state)
+      builder,
+    }) => CountriesScope(
+      child: Builder(
+        builder: (context) => ValueListenableBuilder(
+          valueListenable: CountriesScope.of(context),
+          builder: (context, state, _) {
+            if (state.isLoading || state.countries.isEmpty) {
+              return const Center(
+                child: SizedBox(
+                  height: 44,
+                  child: CircularProgressIndicator.adaptive(),
+                ),
+              );
+            }
+            return builder(context, state);
+          },
+        ),
+      ),
+    );
 
     return scope(
       builder: (context, state) => ValueListenableBuilder(
         valueListenable: widget.selected ?? ValueNotifier(null),
         builder: (context, selected, _) {
           final localization = CountriesLocalization.of(context);
-          final $selected = selected ??
-              state.countries.firstWhereOrNull((e) =>
-                  e.name ==
-                  localizations.getCountryNameByCode(e.countryCode)) ??
+          final $selected =
+              selected ??
+              state.countries.firstWhereOrNull(
+                (e) =>
+                    e.name == localizations.getCountryNameByCode(e.countryCode),
+              ) ??
               state.countries[0];
 
           return DropdownMenu(
@@ -349,21 +345,29 @@ class _CountryPicker$DesktopState extends State<CountryPicker$Web> {
             ),
             label: const Text('Country'),
             initialSelection: $selected,
-            dropdownMenuEntries: state.countries.map((e) {
-              final label = localization
-                  .getCountryNameByCode(e.countryCode)
-                  ?.replaceAll(CountriesLocalization.countryNameRegExp, ' ');
-              return DropdownMenuEntry(
-                value: e,
-                label: label.toString(),
-                trailingIcon: Text('+${e.phoneCode}', style: secodaryTextStyle),
-                leadingIcon: Text(
-                  e.flagEmoji,
-                  style: textStyle?.copyWith(fontFamily: _fontFamily),
-                ),
-                // onTap: () => widget.onSelect?.call(e),
-              );
-            }).toList(growable: false),
+            dropdownMenuEntries: state.countries
+                .map((e) {
+                  final label = localization
+                      .getCountryNameByCode(e.countryCode)
+                      ?.replaceAll(
+                        CountriesLocalization.countryNameRegExp,
+                        ' ',
+                      );
+                  return DropdownMenuEntry(
+                    value: e,
+                    label: label.toString(),
+                    trailingIcon: Text(
+                      '+${e.phoneCode}',
+                      style: secodaryTextStyle,
+                    ),
+                    leadingIcon: Text(
+                      e.flagEmoji,
+                      style: textStyle?.copyWith(fontFamily: _fontFamily),
+                    ),
+                    // onTap: () => widget.onSelect?.call(e),
+                  );
+                })
+                .toList(growable: false),
             onSelected: (country) {
               if (country == null) return;
               widget.onSelect?.call(country);

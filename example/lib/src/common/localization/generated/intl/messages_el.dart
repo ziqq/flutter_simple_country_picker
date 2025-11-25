@@ -30,6 +30,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "localeCode": MessageLookupByLibrary.simpleMessage("el-GR"),
     "nextLable": MessageLookupByLibrary.simpleMessage("Επόμενο"),
     "passwordLable": MessageLookupByLibrary.simpleMessage("Κωδικός"),
+    "submitButton": MessageLookupByLibrary.simpleMessage("Συνέχεια"),
     "title": MessageLookupByLibrary.simpleMessage("Προεπισκόπηση"),
   };
 }

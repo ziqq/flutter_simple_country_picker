@@ -145,10 +145,9 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
           ),
           content: Text(
             'PHONE: ${phone ?? completedPhoneNumber}',
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium
-                ?.copyWith(color: CupertinoColors.white),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: CupertinoColors.white),
           ),
         ),
       );

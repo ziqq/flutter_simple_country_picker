@@ -13,39 +13,38 @@ Future<void> $initializeApp({
   void Function(int progress, String message)? onProgress,
   FutureOr<void> Function(void dependencies)? onSuccess,
   void Function(Object error, StackTrace stackTrace)? onError,
-}) =>
-    _$initializeApp ??= Future<void>(() async {
-      late final WidgetsBinding binding;
-      final stopwatch = Stopwatch()..start();
-      try {
-        binding = WidgetsFlutterBinding.ensureInitialized()..deferFirstFrame();
-        /* await SystemChrome.setPreferredOrientations([
+}) => _$initializeApp ??= Future<void>(() async {
+  late final WidgetsBinding binding;
+  final stopwatch = Stopwatch()..start();
+  try {
+    binding = WidgetsFlutterBinding.ensureInitialized()..deferFirstFrame();
+    /* await SystemChrome.setPreferredOrientations([
             DeviceOrientation.portraitUp,
             DeviceOrientation.portraitDown,
           ]); */
-        await _catchExceptions();
-        /* final dependencies = await $initializeDependencies(
+    await _catchExceptions();
+    /* final dependencies = await $initializeDependencies(
            onProgress: onProgress).timeout(const Duration(minutes: 7)); */
-        await onSuccess?.call(null);
-        return;
-      } on Object catch (error, stackTrace) {
-        onError?.call(error, stackTrace);
-        ErrorUtil.logError(
-          error,
-          stackTrace,
-          hint: 'Failed to initialize app',
-        ).ignore();
-        rethrow;
-      } finally {
-        stopwatch.stop();
-        binding.addPostFrameCallback((_) {
-          // Closes splash screen, and show the app layout.
-          binding.allowFirstFrame();
-          //final context = binding.renderViewElement;
-        });
-        _$initializeApp = null;
-      }
+    await onSuccess?.call(null);
+    return;
+  } on Object catch (error, stackTrace) {
+    onError?.call(error, stackTrace);
+    ErrorUtil.logError(
+      error,
+      stackTrace,
+      hint: 'Failed to initialize app',
+    ).ignore();
+    rethrow;
+  } finally {
+    stopwatch.stop();
+    binding.addPostFrameCallback((_) {
+      // Closes splash screen, and show the app layout.
+      binding.allowFirstFrame();
+      //final context = binding.renderViewElement;
     });
+    _$initializeApp = null;
+  }
+});
 
 /// Resets the app's state to its initial state.
 @visibleForTesting

@@ -18,5 +18,6 @@
   "title": "Preview",
   "description": "Kontrollige riigikoodi ja sisestage oma telefoninumber.",
   "nextLable": "Järgmine",
-  "passwordLable": "Parool"
+  "passwordLable": "Parool",
+  "submitButton": "Jätka"
 }

@@ -79,10 +79,7 @@ class _LinuxPreviewState extends State<LinuxPreview>
                   ),
                 ),
                 children: [
-                  CountryPicker$Linux(
-                    onSelect: onSelect,
-                    selected: selected,
-                  ),
+                  CountryPicker$Linux(onSelect: onSelect, selected: selected),
                   CountryInput$Linux(
                     controller: controller,
                     inputFormatters: [formater],
@@ -165,9 +162,7 @@ class CountryInput$Linux extends StatelessWidget {
                 placeholder: selectedCountry.mask,
                 style: textTheme.bodyLarge,
                 padding: EdgeInsets.zero,
-                decoration: const BoxDecoration(
-                  color: Colors.transparent,
-                ),
+                decoration: const BoxDecoration(color: Colors.transparent),
               ),
             ),
           ),
@@ -245,8 +240,9 @@ class CountryPicker$Linux extends StatefulWidget {
 /// State for widget [CountryPicker$Linux].
 class _CountryPicker$LinuxState extends State<CountryPicker$Linux> {
   // Fix corrent emoji flag for web.
-  final String? _effectiveFontFamily =
-      kIsWeb ? FontFamily.notoColorEmoji : null;
+  final String? _effectiveFontFamily = kIsWeb
+      ? FontFamily.notoColorEmoji
+      : null;
 
   List<PullDownMenuItem> _itemBuilder(
     List<Country> countries, [
@@ -256,23 +252,25 @@ class _CountryPicker$LinuxState extends State<CountryPicker$Linux> {
     final itemTheme = PullDownMenuItemTheme(
       textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 14),
     );
-    return countries.map((e) {
-      final title = localization
-          .getCountryNameByCode(e.countryCode)
-          ?.replaceAll(CountriesLocalization.countryNameRegExp, ' ');
-      return PullDownMenuItem(
-        itemTheme: itemTheme,
-        iconWidget: Text(
-          e.flagEmoji,
-          style: itemTheme.textStyle?.copyWith(
-            fontSize: 14,
-            fontFamily: _effectiveFontFamily,
-          ),
-        ),
-        title: '$title +${e.phoneCode}',
-        onTap: () => widget.onSelect?.call(e),
-      );
-    }).toList(growable: false);
+    return countries
+        .map((e) {
+          final title = localization
+              .getCountryNameByCode(e.countryCode)
+              ?.replaceAll(CountriesLocalization.countryNameRegExp, ' ');
+          return PullDownMenuItem(
+            itemTheme: itemTheme,
+            iconWidget: Text(
+              e.flagEmoji,
+              style: itemTheme.textStyle?.copyWith(
+                fontSize: 14,
+                fontFamily: _effectiveFontFamily,
+              ),
+            ),
+            title: '$title +${e.phoneCode}',
+            onTap: () => widget.onSelect?.call(e),
+          );
+        })
+        .toList(growable: false);
   }
 
   Widget _buttonBuilder(
@@ -336,48 +334,44 @@ class _CountryPicker$LinuxState extends State<CountryPicker$Linux> {
     final localizations = CountriesLocalization.of(context);
 
     Widget scope({
-      required Widget Function(
-        BuildContext context,
-        CountriesState state,
-      ) builder,
-    }) =>
-        CountriesScope(
-          child: Builder(
-            builder: (context) => ValueListenableBuilder(
-              valueListenable: CountriesScope.of(context),
-              builder: (context, state, _) {
-                if (state.isLoading || state.countries.isEmpty) {
-                  return const Center(
-                    child: SizedBox(
-                      height: 44,
-                      child: CircularProgressIndicator.adaptive(),
-                    ),
-                  );
-                }
-                return builder(context, state);
-              },
-            ),
-          ),
-        );
+      required Widget Function(BuildContext context, CountriesState state)
+      builder,
+    }) => CountriesScope(
+      child: Builder(
+        builder: (context) => ValueListenableBuilder(
+          valueListenable: CountriesScope.of(context),
+          builder: (context, state, _) {
+            if (state.isLoading || state.countries.isEmpty) {
+              return const Center(
+                child: SizedBox(
+                  height: 44,
+                  child: CircularProgressIndicator.adaptive(),
+                ),
+              );
+            }
+            return builder(context, state);
+          },
+        ),
+      ),
+    );
 
     return scope(
       builder: (context, state) => ValueListenableBuilder(
         valueListenable: widget.selected ?? ValueNotifier(null),
         builder: (context, selected, _) {
-          final $selected = selected ??
-              state.countries.firstWhereOrNull((e) =>
-                  e.name ==
-                  localizations.getCountryNameByCode(e.countryCode)) ??
+          final $selected =
+              selected ??
+              state.countries.firstWhereOrNull(
+                (e) =>
+                    e.name == localizations.getCountryNameByCode(e.countryCode),
+              ) ??
               state.countries[0];
 
           return PullDownButton(
             menuOffset: kDefaultPadding,
             itemBuilder: (_) => _itemBuilder(state.countries, $selected),
-            buttonBuilder: (_, showMenu) => _buttonBuilder(
-              context,
-              showMenu,
-              $selected,
-            ),
+            buttonBuilder: (_, showMenu) =>
+                _buttonBuilder(context, showMenu, $selected),
           );
         },
       ),

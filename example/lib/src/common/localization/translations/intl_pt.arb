@@ -18,5 +18,6 @@
   "title": "Visualizar",
   "description": "Verifique o código do país e insira seu número de telefone.",
   "nextLable": "Próximo",
-  "passwordLable": "Senha"
+  "passwordLable": "Senha",
+  "submitButton": "Continuar"
 }

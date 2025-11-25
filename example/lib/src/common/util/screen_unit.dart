@@ -26,12 +26,9 @@ extension ScreenUtilExtension on BuildContext {
     required final ScreenSizeWhenResult Function() phone,
     required final ScreenSizeWhenResult Function() tablet,
     required final ScreenSizeWhenResult Function() desktop,
-  }) =>
-      ScreenUtil.screenSizeOf(this).when(
-        phone: phone,
-        tablet: tablet,
-        desktop: desktop,
-      );
+  }) => ScreenUtil.screenSizeOf(
+    this,
+  ).when(phone: phone, tablet: tablet, desktop: desktop);
 
   /// The [screenSizeMaybeWhen] method is equivalent to [screenSizeWhen],
   /// but doesn't require all callbacks to be specified.
@@ -39,18 +36,14 @@ extension ScreenUtilExtension on BuildContext {
   /// On the other hand, it adds an extra [orElse] required parameter,
   /// for fallback behavior.
   ScreenSizeWhenResult
-      screenSizeMaybeWhen<ScreenSizeWhenResult extends Object?>({
+  screenSizeMaybeWhen<ScreenSizeWhenResult extends Object?>({
     required final ScreenSizeWhenResult Function() orElse,
     final ScreenSizeWhenResult Function()? phone,
     final ScreenSizeWhenResult Function()? tablet,
     final ScreenSizeWhenResult Function()? desktop,
-  }) =>
-          ScreenUtil.screenSizeOf(this).maybeWhen(
-            phone: phone,
-            tablet: tablet,
-            desktop: desktop,
-            orElse: orElse,
-          );
+  }) => ScreenUtil.screenSizeOf(
+    this,
+  ).maybeWhen(phone: phone, tablet: tablet, desktop: desktop, orElse: orElse);
 }
 
 /// {@template screen_util}
@@ -154,12 +147,11 @@ sealed class ScreenSize {
     final ScreenSizeWhenResult Function()? phone,
     final ScreenSizeWhenResult Function()? tablet,
     final ScreenSizeWhenResult Function()? desktop,
-  }) =>
-      when<ScreenSizeWhenResult>(
-        phone: phone ?? orElse,
-        tablet: tablet ?? orElse,
-        desktop: desktop ?? orElse,
-      );
+  }) => when<ScreenSizeWhenResult>(
+    phone: phone ?? orElse,
+    tablet: tablet ?? orElse,
+    desktop: desktop ?? orElse,
+  );
 
   @override
   String toString() => representation;
@@ -176,8 +168,7 @@ final class ScreenSize$Phone extends ScreenSize {
     required final ScreenSizeWhenResult Function() phone,
     required final ScreenSizeWhenResult Function() tablet,
     required final ScreenSizeWhenResult Function() desktop,
-  }) =>
-      phone();
+  }) => phone();
 
   @override
   bool get isPhone => true;
@@ -207,8 +198,7 @@ final class ScreenSize$Tablet extends ScreenSize {
     required final ScreenSizeWhenResult Function() phone,
     required final ScreenSizeWhenResult Function() tablet,
     required final ScreenSizeWhenResult Function() desktop,
-  }) =>
-      tablet();
+  }) => tablet();
 
   @override
   bool get isPhone => false;
@@ -238,8 +228,7 @@ final class ScreenSize$Desktop extends ScreenSize {
     required final ScreenSizeWhenResult Function() phone,
     required final ScreenSizeWhenResult Function() tablet,
     required final ScreenSizeWhenResult Function() desktop,
-  }) =>
-      desktop();
+  }) => desktop();
 
   @override
   bool get isPhone => false;

@@ -18,5 +18,6 @@
   "title": "Preview",
   "description": "Sjekk landskoden og skriv inn telefonnummeret ditt.",
   "nextLable": "Neste",
-  "passwordLable": "Passord"
+  "passwordLable": "Passord",
+  "submitButton": "Fortsett"
 }

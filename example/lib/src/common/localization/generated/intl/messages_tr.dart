@@ -30,6 +30,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "localeCode": MessageLookupByLibrary.simpleMessage("tr_TR"),
     "nextLable": MessageLookupByLibrary.simpleMessage("İleri"),
     "passwordLable": MessageLookupByLibrary.simpleMessage("Şifre"),
+    "submitButton": MessageLookupByLibrary.simpleMessage("Devam et"),
     "title": MessageLookupByLibrary.simpleMessage("Preview"),
   };
 }

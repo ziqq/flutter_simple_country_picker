@@ -18,5 +18,6 @@
   "title": "Preview",
   "description": "Ülke kodunu kontrol edin ve telefon numaranızı girin.",
   "nextLable": "İleri",
-  "passwordLable": "Şifre"
+  "passwordLable": "Şifre",
+  "submitButton": "Devam et"
 }
