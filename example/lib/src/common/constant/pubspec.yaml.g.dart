@@ -124,12 +124,12 @@ sealed class Pubspec {
   static final DateTime timestamp = DateTime.utc(
     2025,
     11,
-    24,
-    10,
-    10,
-    48,
-    651,
-    712,
+    25,
+    8,
+    21,
+    3,
+    16,
+    193,
   );
 
   /// Name
@@ -164,7 +164,7 @@ sealed class Pubspec {
   /// Think of the description as the sales pitch for your package.
   /// Users see it when they [browse for packages](https://pub.dev/packages).
   /// The description is plain text: no markdown or HTML.
-  static const String description = r'The Flutter package that provides an easy-to-use country selection widget. It allows users to select a country from a comprehensive list of countries, making it simple to integrate country picking functionality into your Flutter applications. The package supports Android, iOS, and web platforms, and offers customization options for fonts and styles. Made with ❤️ by ziqq.';
+  static const String description = r'An easy-to-use country selection widget for Flutter. Allows users to select a country from a comprehensive list. Supports Android, iOS, web, Windows and Linux platforms.';
 
   /// Homepage
   ///
@@ -395,8 +395,10 @@ sealed class Pubspec {
   static const Map<String, Object> platforms = <String, Object>{
     'android': r'',
     'ios': r'',
+    'linux': r'',
     'macos': r'',
     'web': r'',
+    'windows': r'',
   };
 
   /// Dependencies

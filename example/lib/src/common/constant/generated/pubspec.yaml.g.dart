@@ -507,7 +507,7 @@ sealed class Pubspec {
     },
     'flutter_gen': <String, Object>{
       'output': r'lib/src/common/constant/',
-      'line_length': 120,
+      'line_length': 80,
     },
     'flutter_intl': <String, Object>{
       'enabled': true,

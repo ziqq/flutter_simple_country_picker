@@ -75,7 +75,7 @@
       },
       "command": [
         "fvm dart run build_runner build --build-filter '${fileDirname}/*.dart'",
-        "&& fvm dart format --fix -l 120 '${fileDirname}'"
+        "&& fvm dart format --fix -l 80 '${fileDirname}'"
       ],
       "group": {
         "kind": "none",
@@ -159,7 +159,7 @@
         "! -name '*.*.dart' ",
         "! -name 'messages_.*.dart' ",
         "! -name 'l10n.dart' ",
-        "-print0 | xargs -0 fvm dart format --set-exit-if-changed --line-length 120"
+        "-print0 | xargs -0 fvm dart format --set-exit-if-changed --line-length 80"
       ],
       "dependsOn": [],
       "args": [],

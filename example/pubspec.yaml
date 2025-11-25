@@ -82,7 +82,7 @@ flutter:
 flutter_gen:
   output: lib/src/common/constant/
   # exclude: test
-  line_length: 120
+  line_length: 80
 
 flutter_intl:
   enabled: true
