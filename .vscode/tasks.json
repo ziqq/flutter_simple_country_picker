@@ -182,6 +182,43 @@
       }
     },
     {
+      "label": "dart:format:example",
+      "detail": "Format all files in the project",
+      "icon": {
+        "color": "terminal.ansiGreen",
+        "id": "lightbulb-autofix"
+      },
+      "type": "shell",
+      "command": [
+        "find lib test ",
+        "-path '*/generated/*' -prune -o ",
+        "-type f -name '*.dart' ",
+        "! -name '*.*.dart' ",
+        "! -name 'messages_.*.dart' ",
+        "! -name 'l10n.dart' ",
+        "-print0 | xargs -0 fvm dart format --set-exit-if-changed --line-length 80"
+      ],
+      "dependsOn": [],
+      "args": [],
+      "group": {
+        "kind": "none",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder}/example"
+      },
+      "isBackground": false,
+      "presentation": {
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false,
+        "group": "dart"
+      }
+    },
+    {
       "label": "flutter:test:app",
       "detail": "Run app tests",
       "icon": {
