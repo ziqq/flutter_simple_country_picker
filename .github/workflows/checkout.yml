@@ -39,6 +39,15 @@ on:
       - "pubspec.yaml"
       - "example/pubspec.yaml"
 
+permissions:
+  actions: read
+  id-token: write
+  contents: read
+  checks: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   checkout:
@@ -50,12 +59,10 @@ jobs:
     env:
       pub-cache-name: pub
       threshold: 50
-    permissions:
-      actions: read
-      id-token: write
-      contents: read
-      checks: write
     timeout-minutes: 15
+    concurrency:
+      group: checkout-${{ github.workflow }}-${{ github.ref_name }}
+      cancel-in-progress: true
     steps:
       - name: Get latest code
         id: checkout
