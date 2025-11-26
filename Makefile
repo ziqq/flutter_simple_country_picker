@@ -76,7 +76,7 @@ update: get build-runner ## Update dependencies and codegen
 				@cd example fvm flutter pub get || (echo "¯\_(ツ)_/¯Get dependencies error"; exit 1)
 
 .PHONY: analyze
-analyze: get ## Analyze code
+analyze: ## Analyze code
 				@fvm flutter analyze --fatal-warnings --no-fatal-infos lib/ test/ || (echo "¯\_(ツ)_/¯ Analyze code error"; exit 1)
 
 .PHONY: check
