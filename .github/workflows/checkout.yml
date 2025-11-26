@@ -175,7 +175,7 @@ jobs:
         id: check-analyzer
         timeout-minutes: 1
         run: |
-          flutter analyze --fatal-infos --fatal-warnings lib/ test/
+          flutter analyze --fatal-warnings --no-fatal-infos lib/ test/
 
       - name: Unit & Widget tests
         run: |

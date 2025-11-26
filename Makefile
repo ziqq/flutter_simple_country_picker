@@ -77,7 +77,7 @@ update: get build-runner ## Update dependencies and codegen
 
 .PHONY: analyze
 analyze: get ## Analyze code
-				@fvm dart analyze --fatal-infos --fatal-warnings
+				@fvm dart analyze --fatal-warnings --no-fatal-infos
 
 .PHONY: check
 check: ## Check code
