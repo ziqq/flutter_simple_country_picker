@@ -4,7 +4,7 @@ PWD   :=$(shell pwd)
 .DEFAULT_GOAL := all
 .PHONY: all
 all: ## build pipeline
-all: get format check test-unit
+all: get format analyze check test-unit
 
 .PHONY: ci
 ci: ## CI build pipeline
@@ -80,10 +80,10 @@ analyze: get ## Analyze code
 				@fvm dart analyze --fatal-infos --fatal-warnings
 
 .PHONY: check
-check: analyze test-unit ## Check code
+check: ## Check code
 				@fvm dart pub publish --dry-run
 				@fvm dart pub global activate pana
-				@pana --json --no-warning --line-length 80 > log.pana.json
+				@pana --json --no-warning > log.pana.json
 
 .PHONY: publish
 publish: ## Publish package
