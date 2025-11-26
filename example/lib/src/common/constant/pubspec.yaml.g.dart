@@ -92,13 +92,13 @@ sealed class Pubspec {
   static const PubspecVersion version = (
     /// Non-canonical string representation of the version as provided
     /// in the pubspec.yaml file.
-    representation: r'0.2.7',
+    representation: r'0.2.8',
 
     /// Returns a 'canonicalized' representation
     /// of the application version.
     /// This represents the version string in accordance with
     /// Semantic Versioning (SemVer) standards.
-    canonical: r'0.2.7',
+    canonical: r'0.2.8',
 
     /// MAJOR version when you make incompatible API changes.
     /// The major version number: 1 in "1.2.3".
@@ -111,7 +111,7 @@ sealed class Pubspec {
 
     /// PATCH version when you make backward compatible bug fixes.
     /// The patch version number: 3 in "1.2.3".
-    patch: 7,
+    patch: 8,
 
     /// The pre-release identifier: "foo" in "1.2.3-foo".
     preRelease: <String>[],
@@ -124,12 +124,12 @@ sealed class Pubspec {
   static final DateTime timestamp = DateTime.utc(
     2025,
     11,
-    25,
+    26,
     8,
-    21,
-    3,
-    16,
-    193,
+    13,
+    37,
+    526,
+    937,
   );
 
   /// Name
@@ -248,7 +248,6 @@ sealed class Pubspec {
   /// This aims to help users fund the development of their dependencies.
   static const List<Object> funding = <Object>[
     r'https://www.buymeacoffee.com/ziqq',
-    r'https://www.patreon.com/ziqq',
     r'https://boosty.to/ziqq',
   ];
 
@@ -447,7 +446,7 @@ sealed class Pubspec {
     'build_runner': r'^2.4.15',
     'pubspec_generator': r'^5.0.0',
     'mockito': r'^5.4.5',
-    'l': r'^5.0.0',
+    'l': r'^5.0.1',
   };
 
   /// Dependency overrides
