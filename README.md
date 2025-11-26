@@ -9,23 +9,20 @@
 <!-- [![GitHub stars](https://img.shields.io/github/stars/ziqq/flutter_simple_country_picker?style=social)](https://github.com/ziqq/flutter_simple_country_picker/) -->
 
 
-
 # flutter_simple_country_picker
 
 
+<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/full_example_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/full_example_dark.png"  width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/filtered_example_light.png" width="385px">  <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/filtered_example_dark.png" width="385px">
 
-<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/master/.github/images/full_example_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/master/.github/images/full_example_dark.png"  width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/master/.github/images/filtered_example_light.png" width="385px">  <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/master/.github/images/filtered_example_dark.png" width="385px">
-
-<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/tree/feat/windows-preview/.github/images/macos_preview_light.png" width="770px">
-<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/tree/feat/windows-preview/.github/images/macos_preview_dark.png" width="770px">
-<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/tree/feat/windows-preview/.github/images/web_preview_light.png" width="770px">
-<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/tree/feat/windows-preview/.github/images/web_preview_dark.png" width="770px">
+<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/macos_preview_light.png" width="770px">
+<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/macos_preview_dark.png" width="770px">
+<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/web_preview_light.png" width="770px">
+<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/web_preview_dark.png" width="770px">
 
 
 ##  Description
 
 The Flutter package that provides an easy-to-use country selection widget. It allows users to select a country from a comprehensive list of countries, making it simple to integrate country picking functionality into your Flutter applications. The package supports Android, iOS, and web platforms, and offers customization options for fonts and styles.
-
 
 
 ## Getting Started
@@ -35,7 +32,6 @@ The Flutter package that provides an easy-to-use country selection widget. It al
  ```yaml
  flutter_simple_country_picker: <version>
  ```
-
 
 
 ## Installation
@@ -110,11 +106,9 @@ Optional argumets of the `showCountryPicker` function:
 To view a complete list of countries, please refer to the [All countries list](https://github.com/ziqq/flutter_simple_country_picker/wiki/All-Countries-list).
 
 
-
 ## Changelog
 
 Refer to the [Changelog](https://github.com/ziqq/flutter_simple_country_picker/blob/master/CHANGELOG.md) to get all release notes.
-
 
 
 ## Maintainers
@@ -122,13 +116,11 @@ Refer to the [Changelog](https://github.com/ziqq/flutter_simple_country_picker/b
 [Anton Ustinoff (ziqq)](https://github.com/ziqq)
 
 
-
 ## Funding
 
 If you want to support the development of our library, there are several ways you can do it:
 
 - [Buy me a coffee](https://www.buymeacoffee.com/ziqq)
-- [Support on Patreon](https://www.patreon.com/ziqq)
 - [Subscribe through Boosty](https://boosty.to/ziqq)
 
 

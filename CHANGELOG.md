@@ -1,3 +1,8 @@
+## 0.2.8
+- **CHANGED**: `README`
+- **CHANGED**: Package metadata
+- **UPDATED**: Bump dependencies
+
 ## 0.2.7
 - **CHANGED**: Refactoring `CountryPickerTheme`, `CountryUtil`
 - **CHANGED**: Bump dependencies
