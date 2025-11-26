@@ -102,10 +102,11 @@ class ExampleNavigator extends StatefulWidget {
 
   /// The callback function that will be called when the back button is pressed.
   ///
-  /// It must return a boolean with true if this navigator will handle the request;
-  /// otherwise, return a boolean with false.
+  /// It must return a boolean with true if this navigator
+  /// will handle the request, otherwise, return a boolean with false.
   ///
-  /// Also you can mutate the [ExampleNavigatorState] to change the navigation stack.
+  /// Also you can mutate the [ExampleNavigatorState]
+  /// to change the navigation stack.
   final ({ExampleNavigatorState state, bool handled}) Function(
     ExampleNavigatorState state,
   )?
