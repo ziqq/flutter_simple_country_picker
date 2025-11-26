@@ -28,7 +28,7 @@ import 'package:flutter_simple_country_picker/src/widget/status_bar_gesture_dete
 ///
 /// The [showWorldWide] argument can be used to show "World Wide"
 ///
-/// The [useAutofocus] argument can be used
+/// The [autofocus] argument can be used
 /// to initially expand virtual keyboard.
 ///
 /// The [showSearch] argument can be used to show/hide the search bar.
@@ -36,14 +36,17 @@ import 'package:flutter_simple_country_picker/src/widget/status_bar_gesture_dete
 class CountriesListView extends StatefulWidget {
   /// {@macro country_list_view}
   const CountriesListView({
-    this.onSelect,
-    this.selected,
     this.exclude,
     this.favorite,
     this.filter,
+    this.selected,
+    this.onSelect,
+    this.autofocus = false,
+    @Deprecated(
+        'Use autofocus instead. This will be removed in v0.3.0 releases.')
+    this.useAutofocus = false,
     this.showPhoneCode = false,
     this.showWorldWide = false,
-    this.useAutofocus = false,
     bool? showSearch,
     super.key,
   }) : showSearch = showSearch ?? filter == null || filter.length > 8;
@@ -59,6 +62,10 @@ class CountriesListView extends StatefulWidget {
   final bool showWorldWide;
 
   /// An optional argument for initially expanding virtual keyboard
+  final bool autofocus;
+
+  /// An optional argument for initially expanding virtual keyboard
+  @Deprecated('Use autofocus instead. This will be removed in v0.3.0 releases.')
   final bool useAutofocus;
 
   /// {@macro select_country_callback}
@@ -161,7 +168,7 @@ class _CountriesListViewState extends State<CountriesListView> {
                     valueListenable: _controller,
                     builder: (context, state, _) => CupertinoSearchTextField(
                       placeholder: localization.search,
-                      autofocus: widget.useAutofocus,
+                      autofocus: widget.autofocus || widget.useAutofocus,
                       controller: _controller.search,
                       onSuffixTap: _controller.search?.clear,
                       style: TextStyle(

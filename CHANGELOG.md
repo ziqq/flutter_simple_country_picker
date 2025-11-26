@@ -1,3 +1,9 @@
+## 0.2.9
+- **ADDED**: New `autofocus` argument to replace `useAutofocus`
+- **CHANGED**: Make `useAutofocus` deprecated
+- **CHANGED**: Refactoring controller and state
+- **CHANGED**: `CountryPickerTheme` make properties nullable
+
 ## 0.2.8
 - **CHANGED**: `README`
 - **CHANGED**: Package metadata

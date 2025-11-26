@@ -29,7 +29,7 @@ import 'package:flutter_simple_country_picker/src/widget/countries_list_view.dar
 /// [onDone] callback which is called when CountryPicker is dismiss,
 /// whether a country is selected or not.
 ///
-/// [useAutofocus] can be used to initially expand virtual keyboard
+/// [autofocus] can be used to initially expand virtual keyboard
 ///
 /// An optional [showSearch] argument can be used to show/hide the search bar.
 ///
@@ -54,10 +54,12 @@ void showCountryPicker({
   List<String>? exclude,
   List<String>? favorite,
   List<String>? filter,
+  bool autofocus = false,
   bool isDismissible = true,
   bool isScrollControlled = true,
   bool showPhoneCode = false,
   bool showWorldWide = false,
+  @Deprecated('Use autofocus instead. This will be removed in v0.3.0 releases.')
   bool useAutofocus = false,
   bool useHaptickFeedback = true,
   bool useRootNavigator = false,
@@ -83,10 +85,10 @@ void showCountryPicker({
         filter: filter,
         selected: selected,
         onSelect: onSelect,
+        autofocus: autofocus || useAutofocus,
         showSearch: showSearch,
         showPhoneCode: showPhoneCode,
         showWorldWide: showWorldWide,
-        useAutofocus: useAutofocus,
       ),
     ),
   ).whenComplete(() => onDone?.call());

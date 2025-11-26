@@ -1,3 +1,8 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 24 June 2024
+ */
+
 import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
@@ -13,17 +18,17 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     with Diagnosticable {
   /// {@macro country_picker_theme}
   factory CountryPickerTheme({
-    required Color? accentColor,
-    required Color? backgroundColor,
-    required Color? barrierColor,
-    required Color? dividerColor,
-    required Color? secondaryBackgroundColor,
-    required TextStyle? textStyle,
-    required TextStyle? searchTextStyle,
-    required double? flagSize,
-    required double? padding,
-    required double? indent,
-    required double? radius,
+    Color? accentColor,
+    Color? backgroundColor,
+    Color? barrierColor,
+    Color? dividerColor,
+    Color? secondaryBackgroundColor,
+    double? flagSize,
+    double? padding,
+    double? indent,
+    double? radius,
+    TextStyle? textStyle,
+    TextStyle? searchTextStyle,
     InputDecoration? inputDecoration,
   }) {
     flagSize ??= kDefaultFlagSize;
@@ -31,9 +36,9 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     indent ??= kDefaultIndent;
     radius ??= kDefaultRadius;
     return CountryPickerTheme.raw(
-      accentColor: accentColor ?? CupertinoColors.systemBlue,
-      backgroundColor: backgroundColor ?? CupertinoColors.systemBackground,
-      barrierColor: barrierColor ?? kCupertinoModalBarrierColor,
+      accentColor: accentColor,
+      backgroundColor: backgroundColor,
+      barrierColor: barrierColor,
       dividerColor: dividerColor,
       secondaryBackgroundColor: secondaryBackgroundColor,
       inputDecoration: inputDecoration,
@@ -132,7 +137,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   // );
 
   /// The accent color.
-  final Color accentColor;
+  final Color? accentColor;
 
   /// The background color.
   final Color? backgroundColor;
@@ -366,9 +371,9 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
 /// Example:
 ///
 /// ```dart
-/// CupertinoApp(
+/// MaterialApp(
 ///    builder: (context, child) => InheritedCountryPickerTheme(
-///      data: const InheritedCountryPickerTheme(
+///      data: const CountryPickerTheme(
 ///        ...
 ///      ),
 ///      child: child ?? const SizedBox.shrink(),
@@ -413,7 +418,7 @@ class InheritedCountryPickerTheme extends InheritedTheme {
 /// Default [CountryPickerTheme]
 /// {@macro country_picker_theme}
 @immutable
-class _CountryPickerTheme$Default extends CountryPickerTheme {
+final class _CountryPickerTheme$Default extends CountryPickerTheme {
   /// Creates [_CountryPickerTheme$Default].
   /// {@macro country_picker_theme}
   _CountryPickerTheme$Default(

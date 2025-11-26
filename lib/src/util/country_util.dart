@@ -1,3 +1,8 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 24 June 2024
+ */
+
 import 'package:meta/meta.dart';
 
 /// {@template country_util}

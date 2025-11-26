@@ -1,7 +1,12 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 24 June 2024
+ */
+
 library;
 
 export 'src/constant/typedef.dart';
-export 'src/controller/countries_state.dart';
+export 'src/controller/countries_controller.dart' show CountriesState;
 export 'src/localization/localization.dart';
 export 'src/model/country.dart';
 export 'src/theme/country_picker_theme.dart';

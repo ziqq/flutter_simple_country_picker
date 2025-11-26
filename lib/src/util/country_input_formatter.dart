@@ -1,3 +1,8 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 24 June 2024
+ */
+
 import 'dart:math';
 
 import 'package:flutter/services.dart';

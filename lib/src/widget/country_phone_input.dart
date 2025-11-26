@@ -17,12 +17,13 @@ class CountryPhoneInput extends StatefulWidget {
     this.favorite,
     this.filter,
     this.placeholder,
-    this.isScrollControlled = false,
+    this.autofocus = false,
     this.showPhoneCode = false,
     this.showWorldWide = false,
-    this.useAutofocus = false,
     this.shouldReplace8 = true,
+    this.useAutofocus = false,
     this.useHaptickFeedback = true,
+    this.isScrollControlled = false,
     this.showSearch,
     super.key,
   });
@@ -45,6 +46,9 @@ class CountryPhoneInput extends StatefulWidget {
   /// Placeholder text.
   final String? placeholder;
 
+  /// Use autofocus for the search countryies input field.
+  final bool autofocus;
+
   /// Controls the scrolling behavior of the modal window.
   final bool isScrollControlled;
 
@@ -61,6 +65,7 @@ class CountryPhoneInput extends StatefulWidget {
   final bool shouldReplace8;
 
   /// Use autofocus for the search countryies input field.
+  @Deprecated('Use autofocus instead. This will be removed in v0.3.0 releases.')
   final bool useAutofocus;
 
   /// Use haptic feedback?
@@ -254,7 +259,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
               showSearch: widget.showSearch,
               showPhoneCode: widget.showPhoneCode,
               showWorldWide: widget.showWorldWide,
-              useAutofocus: widget.useAutofocus,
+              autofocus: widget.autofocus || widget.useAutofocus,
               useHaptickFeedback: widget.useHaptickFeedback,
               selected: _selected,
               onSelect: _onSelect,
