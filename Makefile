@@ -77,7 +77,7 @@ update: get build-runner ## Update dependencies and codegen
 
 .PHONY: analyze
 analyze: get ## Analyze code
-				@fvm dart analyze --fatal-warnings --no-fatal-infos
+				@fvm flutter analyze --fatal-warnings --no-fatal-infos lib/ test/ || (echo "¯\_(ツ)_/¯ Analyze code error"; exit 1)
 
 .PHONY: check
 check: ## Check code
