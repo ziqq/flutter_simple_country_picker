@@ -79,6 +79,7 @@ check: ## Check code
 				@fvm dart pub publish --dry-run
 				@fvm dart pub global activate pana
 				@pana --json --no-warning > log.pana.json
+				@fvm dart pub publish --dry-run
 
 .PHONY: publish
 publish: ## Publish package
