@@ -55,12 +55,12 @@ MaterialApp(
     Locale('en'),
   ],
   localizationsDelegates: [
-    GlobalCupertinoLocalizations.delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-
     /// Add [CountryLocalizations] in app [localizationsDelegates]
     CountryLocalizations.delegate,
+
+    GlobalWidgetsLocalizations.delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
   ],
   home: HomePage(),
 );
