@@ -282,6 +282,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
     final textStyle = pickerTheme.textStyle;
     final constraints = BoxConstraints(
       minHeight: pickerTheme.inputHeight,
+      maxHeight: pickerTheme.inputHeight,
       minWidth: pickerTheme.inputHeight,
     );
     return ValueListenableBuilder(
@@ -316,10 +317,14 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                   child: Center(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
+                      spacing: 3,
                       children: [
                         if (selected?.flagEmoji != null &&
                             selected!.flagEmoji.isNotEmpty) ...[
-                          Text(selected.flagEmoji, style: textStyle),
+                          Text(
+                            selected.flagEmoji,
+                            style: textStyle?.copyWith(letterSpacing: 0),
+                          ),
                         ],
                         Text('+${selected?.phoneCode}', style: textStyle),
                       ],
