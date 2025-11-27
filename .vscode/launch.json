@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run App (Debug)",
+      "name": "example:debug",
       "type": "dart",
       "request": "launch",
       "flutterMode": "debug",
@@ -11,7 +11,7 @@
       "env": {}
     },
     {
-      "name": "Run Mobile preview (Debug)",
+      "name": "preview:mobile:debug",
       "type": "dart",
       "request": "launch",
       "flutterMode": "debug",
@@ -20,7 +20,7 @@
       "env": {}
     },
     {
-      "name": "Run Web preview (Debug)",
+      "name": "preview:web:debug",
       "type": "dart",
       "request": "launch",
       "flutterMode": "debug",
@@ -31,7 +31,7 @@
       "env": {}
     },
     {
-      "name": "Run macOS preview (Debug)",
+      "name": "preview:macos:debug",
       "type": "dart",
       "request": "launch",
       "flutterMode": "debug",
@@ -42,7 +42,7 @@
       "env": {}
     },
     {
-      "name": "Run Windows preview (Debug)",
+      "name": "preview:windows:debug",
       "type": "dart",
       "request": "launch",
       "flutterMode": "debug",
@@ -53,7 +53,7 @@
       "env": {}
     },
     {
-      "name": "Run Linux preview (Debug)",
+      "name": "preview:linux:debug",
       "type": "dart",
       "request": "launch",
       "flutterMode": "debug",
@@ -64,7 +64,7 @@
       "env": {}
     },
     {
-      "name": "Integration tests (Debug)",
+      "name": "test:integration:example",
       "type": "dart",
       "program": "${workspaceFolder}/example/integration_test/app_test.dart",
       "request": "launch",
