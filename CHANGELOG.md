@@ -1,4 +1,5 @@
 ## 0.3.0
+- **ADDED**: More localizations support
 - **CHANGED**: Refactoring `CountryController.getCountries` to measure performance
 - **REMOVED**: `flutter_localizations` and `flutter_intl` from dependencies
 - **CHANGED**: Make controller method as `async`

@@ -88,16 +88,16 @@ Optional argumets of the `showCountryPicker` function:
 | `exclude`           | List of countries to exclude from the list.                                         |
 | `filter`            | List of countries to filter the list.                                               |
 | `favorite`          | List of countries to show at the top of the list.                                   |
-| `showPhoneCode`     | Displays the phone code before the country name.                                    |
-| `showWorldWide`     | Shows the "World Wide" option at the beginning of the list.                         |
-| `useAutofocus`      | Automatically opens the keyboard when the picker is loaded.                         |
-| `showSearch`        | Enables or disables the search bar.                                                 |
+| `autofocus`         | Automatically opens the keyboard when the picker is loaded.                         |
 | `isDismissible`     | Allows the user to close the modal by swiping it down.                              |
 | `isScrollControlled`| Controls the scrolling behavior of the modal window.                                |
+| `showSearch`        | Enables or disables the search bar.                                                 |
+| `showPhoneCode`     | Displays the phone code before the country name.                                    |
+| `showWorldWide`     | Shows the "World Wide" option at the beginning of the list.                         |
 | `useHaptickFeedback`| Enables haptic feedback.                                                            |
 | `useSafeArea`       | Enables the safe area for the modal window.                                         |
 | `onSelect`          | Callback when the select a country.                                                 |
-| `onDone`            | Callback when the CountryPicker is dismissed, whether a country is selected or not. |
+| `whenComplete`      | Callback when the CountryPicker is dismissed, whether a country is selected or not. |
 
 
 
