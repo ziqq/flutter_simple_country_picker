@@ -76,10 +76,11 @@ analyze: ## Analyze code
 
 .PHONY: check
 check: ## Check code
+  			@fvm dart pub global activate dependency_validator
+  			@fvm dart pub global run dependency_validator:dependency_validator
 				@fvm dart pub publish --dry-run
 				@fvm dart pub global activate pana
 				@pana --json --no-warning > log.pana.json
-				@fvm dart pub publish --dry-run
 
 .PHONY: publish
 publish: ## Publish package
