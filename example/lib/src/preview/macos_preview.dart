@@ -7,7 +7,7 @@ import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/util/app_zone.dart';
 import 'package:example/src/common/util/country_picker_state_mixin.dart';
 import 'package:example/src/common/widget/app.dart';
-import 'package:example/src/common/widget/common_header.dart';
+import 'package:example/src/common/widget/common_app_bar.dart';
 import 'package:example/src/common/widget/common_logo.dart';
 import 'package:example/src/common/widget/common_padding.dart';
 import 'package:flutter/cupertino.dart';
@@ -53,7 +53,7 @@ class _MacOSPreviewState extends State<MacOSPreview>
   Widget build(BuildContext context) {
     final localization = ExampleLocalization.of(context);
     return Scaffold(
-      appBar: const CommonHeader(title: MacOSPreview.title),
+      appBar: const CommonAppBar(title: MacOSPreview.title),
       body: Padding(
         padding: CommonPadding.of(context),
         child: Column(

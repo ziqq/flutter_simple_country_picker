@@ -3,18 +3,26 @@ import 'package:example/src/common/constant/pubspec.yaml.g.dart';
 import 'package:example/src/common/widget/app.dart';
 import 'package:flutter/material.dart';
 
-/// {@template common_header}
-/// CommonHeader widget.
+/// {@template common_app_bar}
+/// CommonAppBar widget.
 /// {@endtemplate}
-class CommonHeader extends StatelessWidget implements PreferredSizeWidget {
-  /// {@macro common_header}
-  const CommonHeader({this.title, this.backgroundColor, super.key});
+class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
+  /// {@macro common_app_bar}
+  const CommonAppBar({
+    this.backgroundColor,
+    this.bottom,
+    this.title,
+    super.key,
+  });
 
   /// Title of the header.
   final String? title;
 
   /// Background color of the header.
   final Color? backgroundColor;
+
+  /// Bottom widget of the app bar.
+  final PreferredSizeWidget? bottom;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -30,6 +38,7 @@ class CommonHeader extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) => AppBar(
     centerTitle: true,
+    bottom: bottom,
     backgroundColor: backgroundColor,
     title: title != null && title!.isNotEmpty ? _Header(title!) : null,
     leading: const Row(
@@ -42,11 +51,11 @@ class CommonHeader extends StatelessWidget implements PreferredSizeWidget {
   );
 }
 
-/// Title widget of [CommonHeader].
+/// Title widget of [CommonAppBar].
 ///
-/// {@macro common_header}
+/// {@macro common_app_bar}
 class _Header extends StatelessWidget {
-  /// {@macro common_header}
+  /// {@macro common_app_bar}
   const _Header(
     this.title, {
     super.key, // ignore: unused_element_parameter

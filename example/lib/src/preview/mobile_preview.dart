@@ -5,8 +5,8 @@ import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/util/app_zone.dart';
 import 'package:example/src/common/util/country_picker_state_mixin.dart';
 import 'package:example/src/common/widget/app.dart';
+import 'package:example/src/common/widget/common_app_bar.dart';
 import 'package:example/src/common/widget/common_bottom_space.dart';
-import 'package:example/src/common/widget/common_header.dart';
 import 'package:example/src/common/widget/common_padding.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +46,7 @@ class _MobilePreviewState extends State<MobilePreview>
     final pickerTheme = CountryPickerTheme.of(context);
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: const CommonHeader(title: MobilePreview.title),
+      appBar: const CommonAppBar(title: MobilePreview.title),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.only(bottom: CommonBottomSpacer.heightOf(context)),
         child: ColoredBox(

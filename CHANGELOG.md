@@ -1,3 +1,7 @@
+## 0.4.0
+- **ADDED**: `CountryPhoneInput.extended` constructor for extended functionality
+- **CHANGED**: Updated documentation for `CountryPhoneInput` widget
+
 ## 0.3.0
 - **ADDED**: More localizations support
 - **CHANGED**: Refactoring `CountryController.getCountries` to measure performance

@@ -8,7 +8,7 @@ import 'package:example/src/common/theme/styles.dart';
 import 'package:example/src/common/util/app_zone.dart';
 import 'package:example/src/common/util/country_picker_state_mixin.dart';
 import 'package:example/src/common/widget/app.dart';
-import 'package:example/src/common/widget/common_header.dart';
+import 'package:example/src/common/widget/common_app_bar.dart';
 import 'package:example/src/common/widget/common_logo.dart';
 import 'package:example/src/common/widget/common_padding.dart';
 import 'package:flutter/cupertino.dart';
@@ -50,7 +50,7 @@ class _WindowsPreviewState extends State<WindowsPreview>
     // final mediaQuery = MediaQuery.of(context);
     return Scaffold(
       backgroundColor: AppStyles.of(context).backgroundColor,
-      appBar: CommonHeader(
+      appBar: CommonAppBar(
         title: WindowsPreview.title,
         backgroundColor: AppStyles.of(context).backgroundColor,
       ),

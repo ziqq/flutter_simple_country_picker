@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:example/src/common/constant/constants.dart';
 import 'package:example/src/common/util/app_zone.dart';
 import 'package:example/src/common/widget/app.dart';
-import 'package:example/src/common/widget/common_header.dart';
+import 'package:example/src/common/widget/common_app_bar.dart';
 import 'package:example/src/common/widget/common_padding.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -90,7 +90,7 @@ class _PreviewState extends State<Preview> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: const CommonHeader(title: 'Preview'),
+    appBar: const CommonAppBar(title: 'Preview'),
     body: SafeArea(
       child: Padding(
         padding: CommonPadding.of(context),
