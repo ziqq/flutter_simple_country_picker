@@ -164,7 +164,7 @@ final class CountryController extends ValueNotifier<CountryState> {
        _filter = filter,
        _showPhoneCode = showPhoneCode,
        search = TextEditingController(),
-       super(CountryState.idle(countries: countries ?? [], useGroup: true));
+       super(CountryState.idle(countries: countries ?? [], useGroup: false));
 
   /// Countries provider.
   final CountryProvider _provider;
@@ -211,7 +211,7 @@ final class CountryController extends ValueNotifier<CountryState> {
   }
 
   /// Get countries
-  void getCountries() => _handle(() async {
+  Future<void> getCountries() => _handle(() async {
     final stopwatch = Stopwatch()..start();
     try {
       final countries = await _provider.getAll();
@@ -274,25 +274,26 @@ final class CountryController extends ValueNotifier<CountryState> {
   });
 
   /// Search countries
-  void _onSearch([CountryLocalizations? localization]) => _handle(() async {
-    final searchText = search?.text ?? '';
-    var newCountries = <Country>[];
+  Future<void> _onSearch([CountryLocalizations? localization]) =>
+      _handle(() async {
+        final searchText = search?.text ?? '';
+        var newCountries = <Country>[];
 
-    if (searchText.isEmpty) {
-      newCountries.addAll(_original);
-    } else {
-      newCountries = _original
-          .where((c) => c.startsWith(searchText, localization))
-          .toList();
-    }
+        if (searchText.isEmpty) {
+          newCountries.addAll(_original);
+        } else {
+          newCountries = _original
+              .where((c) => c.startsWith(searchText, localization))
+              .toList();
+        }
 
-    _setState(
-      CountryState.idle(
-        countries: newCountries.toList(growable: false),
-        useGroup: state.useGroup,
-      ),
-    );
-  });
+        _setState(
+          CountryState.idle(
+            countries: newCountries.toList(growable: false),
+            useGroup: state.useGroup,
+          ),
+        );
+      });
 
   Future<void> _handle(Future<void> Function() fn) async {
     _setState(

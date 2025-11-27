@@ -31,15 +31,12 @@ void _$controllerTest() => group('CountryController -', () {
     () async {
       final countries = [mockCountry];
 
-      when(provider.getAll()).thenReturn(Future.value(countries));
+      when(provider.getAll()).thenAnswer((_) async => Future.value(countries));
 
       expect(controller.state.isIdle, isTrue);
 
       // Start fetching countries
-      controller.getCountries();
-
-      // Wait for the async operation to complete
-      await Future<void>.delayed(Duration.zero);
+      await controller.getCountries();
 
       // Verify that the state is idle with countries after fetching
       expect(controller.state.countries, countries);
@@ -52,13 +49,12 @@ void _$controllerTest() => group('CountryController -', () {
   test('getCountries excludes countries based on the exclude list', () async {
     final countries = [mockCountry.copyWith(name: 'Canada', countryCode: 'CA')];
 
-    when(provider.getAll()).thenReturn(Future.value(countries));
+    when(provider.getAll()).thenAnswer((_) async => Future.value(countries));
 
     // Initialize controller with exclude list
-    controller = CountryController(provider: provider, exclude: ['US'])
-      ..getCountries();
+    controller = CountryController(provider: provider, exclude: ['US']);
 
-    await Future<void>.delayed(Duration.zero);
+    await controller.getCountries();
 
     // Check that 'United States' is excluded
     expect(controller.state.countries, [
@@ -73,16 +69,16 @@ void _$controllerTest() => group('CountryController -', () {
       mockCountry.copyWith(name: 'Mexico', countryCode: 'MX'),
     ];
 
-    when(provider.getAll()).thenReturn(Future.value(countries));
+    when(provider.getAll()).thenAnswer((_) async => Future.value(countries));
 
     // Initialize controller with filter list
     controller = CountryController(
       provider: provider,
       filter: ['CA', 'MX'],
       showPhoneCode: false,
-    )..getCountries();
+    );
 
-    await Future<void>.delayed(Duration.zero);
+    await controller.getCountries();
 
     // Check that only 'Canada' and 'Mexico' are in the list
     expect(controller.state.countries, [
@@ -98,8 +94,8 @@ void _$controllerTest() => group('CountryController -', () {
       mockCountry.copyWith(name: 'Mexico', countryCode: 'MX'),
     ];
 
-    when(provider.getAll()).thenReturn(Future.value(countries));
-    await Future.sync(() => controller.getCountries());
+    when(provider.getAll()).thenAnswer((_) async => Future.value(countries));
+    await controller.getCountries();
 
     controller.search?.clear();
 
@@ -109,7 +105,7 @@ void _$controllerTest() => group('CountryController -', () {
   test('Handles error state correctly', () async {
     final controller = CountryController(provider: provider);
     when(provider.getAll()).thenThrow(Exception('Error'));
-    await Future.sync(controller.getCountries);
+    await controller.getCountries();
     expect(controller.state.isError, isTrue);
   });
 

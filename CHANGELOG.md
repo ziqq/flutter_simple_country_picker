@@ -1,6 +1,7 @@
 ## 0.3.0
 - **CHANGED**: Refactoring `CountryController.getCountries` to measure performance
 - **REMOVED**: `flutter_localizations` and `flutter_intl` from dependencies
+- **CHANGED**: Make controller method as `async`
 
 ## 0.2.9
 - **ADDED**: New `autofocus` argument to replace `useAutofocus`
