@@ -1,3 +1,7 @@
+## 0.3.0
+- **CHANGED**: Refactoring `CountryController.getCountries` to measure performance
+- **REMOVED**: `flutter_localizations` and `flutter_intl` from dependencies
+
 ## 0.2.9
 - **ADDED**: New `autofocus` argument to replace `useAutofocus`
 - **CHANGED**: Make `useAutofocus` deprecated

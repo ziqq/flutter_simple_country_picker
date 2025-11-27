@@ -1,9 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_simple_country_picker/src/constant/constant.dart';
+import 'package:flutter/material.dart'
+    show
+        BuildContext,
+        VoidCallback,
+        BorderRadius,
+        ClipRRect,
+        Radius,
+        showModalBottomSheet;
+import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_simple_country_picker/src/constant/typedef.dart';
 import 'package:flutter_simple_country_picker/src/theme/country_picker_theme.dart';
-import 'package:flutter_simple_country_picker/src/widget/countries_list_view.dart';
+import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart';
 
 /// {@template show_country_picker}
 /// Shows a bottom sheet containing a list of countries to select one.
@@ -26,7 +32,7 @@ import 'package:flutter_simple_country_picker/src/widget/countries_list_view.dar
 ///
 /// An optional [showPhoneCode] argument can be used to show phone code.
 ///
-/// [onDone] callback which is called when CountryPicker is dismiss,
+/// [whenComplete] callback which is called when CountryPicker is dismiss,
 /// whether a country is selected or not.
 ///
 /// [autofocus] can be used to initially expand virtual keyboard
@@ -44,42 +50,44 @@ import 'package:flutter_simple_country_picker/src/widget/countries_list_view.dar
 /// {@endtemplate}
 void showCountryPicker({
   required BuildContext context,
-
-  /// {@macro select_country_callback}
-  SelectCountryCallback? onSelect,
-
-  /// {@macro select_country_notifier}
-  SelectedCountry? selected,
-  VoidCallback? onDone,
   List<String>? exclude,
   List<String>? favorite,
   List<String>? filter,
+  SelectCountryCallback? onSelect,
+  SelectedCountry? selected,
+  @Deprecated(
+    'Use whenComplete instead. This method will be removed in v1.0.0 releases.',
+  )
+  VoidCallback? onDone,
+  VoidCallback? whenComplete,
   bool autofocus = false,
   bool isDismissible = true,
   bool isScrollControlled = true,
   bool showPhoneCode = false,
   bool showWorldWide = false,
-  @Deprecated('Use autofocus instead. This will be removed in v0.3.0 releases.')
+  @Deprecated(
+    'Use autofocus instead. This propery will be removed in v1.0.0 releases.',
+  )
   bool useAutofocus = false,
   bool useHaptickFeedback = true,
   bool useRootNavigator = false,
   bool useSafeArea = true,
   bool? showSearch,
 }) {
-  final pickerTheme = CountryPickerTheme.maybeOf(context);
-  final radius = Radius.circular(pickerTheme?.radius ?? kDefaultRadius);
+  final pickerTheme = CountryPickerTheme.resolve(context);
+  final radius = Radius.circular(pickerTheme.radius);
   final borderRadius = BorderRadius.only(topLeft: radius, topRight: radius);
   if (useHaptickFeedback) HapticFeedback.mediumImpact().ignore();
   showModalBottomSheet<void>(
     context: context,
-    useSafeArea: useSafeArea,
-    useRootNavigator: useRootNavigator,
     isDismissible: isDismissible,
     isScrollControlled: isScrollControlled,
-    barrierColor: pickerTheme?.barrierColor,
+    useSafeArea: useSafeArea,
+    useRootNavigator: useRootNavigator,
+    barrierColor: pickerTheme.barrierColor,
     builder: (context) => ClipRRect(
       borderRadius: borderRadius,
-      child: CountriesListView(
+      child: CountryListView(
         exclude: exclude,
         favorite: favorite,
         filter: filter,
@@ -89,7 +97,8 @@ void showCountryPicker({
         showSearch: showSearch,
         showPhoneCode: showPhoneCode,
         showWorldWide: showWorldWide,
+        useHaptickFeedback: useHaptickFeedback,
       ),
     ),
-  ).whenComplete(() => onDone?.call());
+  ).whenComplete(() => (whenComplete ?? onDone)?.call()).ignore();
 }

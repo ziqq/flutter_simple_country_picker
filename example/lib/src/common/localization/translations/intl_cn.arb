@@ -13,7 +13,7 @@
   "language": "简体中文",
   "@language": {
     "type": "text",
-    "description": "Language"
+    "description": "Chinese language"
   },
   "title": "Preview",
   "description": "检查国家代码并输入您的电话号码。",

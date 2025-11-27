@@ -195,11 +195,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.0.0"
-  flutter_localizations:
-    dependency: "direct main"
-    description: flutter
-    source: sdk
-    version: "0.0.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -247,14 +242,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  intl:
-    dependency: "direct main"
-    description:
-      name: intl
-      sha256: "3df61194eb431efc39c4ceba583b95633a403f46c9fd341e550ce0bfa50e9aa5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.20.2"
   io:
     dependency: transitive
     description:
@@ -407,14 +394,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
-  pubspec_generator:
-    dependency: "direct dev"
-    description:
-      name: pubspec_generator
-      sha256: "2c7f710ce8f8ad238b25c5d902d237ca2f928be8f005889ef2ce479d893deccd"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.0.0"
   pubspec_parse:
     dependency: transitive
     description:
@@ -589,5 +568,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.9.0 <4.0.0"
-  flutter: ">=3.29.2"
+  dart: ">=3.10.0 <4.0.0"
+  flutter: ">=3.38.0"

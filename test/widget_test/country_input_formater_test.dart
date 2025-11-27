@@ -14,9 +14,7 @@ void main() {
 
     setUp(() {
       controller = TextEditingController();
-      formatter = CountryInputFormatter(
-        mask: '+# (###) ###-##-##',
-      );
+      formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
       testWidget = TextField(
         key: _key,
         controller: controller,
@@ -154,8 +152,9 @@ void main() {
       expect(controller.text, '1A2-23');
     });
 
-    testWidgets('should maintain correct cursor position after formatting',
-        (tester) async {
+    testWidgets('should maintain correct cursor position after formatting', (
+      tester,
+    ) async {
       final controller = TextEditingController();
       final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
 
@@ -189,8 +188,9 @@ void main() {
       expect(controller.selection.baseOffset, text.length);
     });
 
-    testWidgets('should handle deletion of characters correctly',
-        (tester) async {
+    testWidgets('should handle deletion of characters correctly', (
+      tester,
+    ) async {
       final controller = TextEditingController();
       final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
 
@@ -213,16 +213,19 @@ void main() {
       expect(controller.text, '+1 (234) 567-89-01');
 
       // Удаляем последние 3 символа
-      controller.text =
-          controller.text.substring(0, controller.text.length - 3);
+      controller.text = controller.text.substring(
+        0,
+        controller.text.length - 3,
+      );
       await tester.pump();
 
       // Проверяем отформатированный текст после удаления
       expect(controller.text, '+1 (234) 567-89');
     });
 
-    testWidgets('should ignore input with only invalid characters',
-        (tester) async {
+    testWidgets('should ignore input with only invalid characters', (
+      tester,
+    ) async {
       final controller = TextEditingController();
       final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
 

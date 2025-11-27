@@ -50,19 +50,14 @@ class CountryInputFormatter implements TextInputFormatter {
   }) : _type = type {
     updateMask(
       mask: mask,
-      filter: filter ??
-          {
-            '#': RegExp('[0-9]'),
-            '0': RegExp('[^0-9]'),
-            'A': RegExp('[^0-9]'),
-          },
+      filter:
+          filter ??
+          {'#': RegExp('[0-9]'), '0': RegExp('[^0-9]'), 'A': RegExp('[^0-9]')},
       newValue: initialText == null
           ? null
           : TextEditingValue(
               text: initialText,
-              selection: TextSelection.collapsed(
-                offset: initialText.length,
-              ),
+              selection: TextSelection.collapsed(offset: initialText.length),
             ),
     );
   }
@@ -73,10 +68,11 @@ class CountryInputFormatter implements TextInputFormatter {
     Map<String, RegExp>? filter,
     String? initialText,
   }) : this(
-            mask: mask,
-            filter: filter,
-            initialText: initialText,
-            type: CountryInputCompletionType.eager);
+         mask: mask,
+         filter: filter,
+         initialText: initialText,
+         type: CountryInputCompletionType.eager,
+       );
 
   /// Update the mask and optionally update the [filter] and [type].
   /// Pass a [newValue] to reformat an existing text value.
@@ -99,9 +95,7 @@ class CountryInputFormatter implements TextInputFormatter {
       final unmaskedText = getUnmaskedText();
       targetValue = TextEditingValue(
         text: unmaskedText,
-        selection: TextSelection.collapsed(
-          offset: unmaskedText.length,
-        ),
+        selection: TextSelection.collapsed(offset: unmaskedText.length),
       );
     }
     clear();
@@ -143,17 +137,17 @@ class CountryInputFormatter implements TextInputFormatter {
 
   /// Mask the provided [text] with the current mask.
   String maskText(String text) => CountryInputFormatter(
-        mask: _mask,
-        filter: _maskFilter,
-        initialText: text,
-      ).getMaskedText();
+    mask: _mask,
+    filter: _maskFilter,
+    initialText: text,
+  ).getMaskedText();
 
   /// Unmask the provided [text].
   String unmaskText(String text) => CountryInputFormatter(
-        mask: _mask,
-        filter: _maskFilter,
-        initialText: text,
-      ).getUnmaskedText();
+    mask: _mask,
+    filter: _maskFilter,
+    initialText: text,
+  ).getUnmaskedText();
 
   @override
   TextEditingValue formatEditUpdate(
@@ -180,15 +174,15 @@ class CountryInputFormatter implements TextInputFormatter {
 
     var beforeSelectionStart = afterSelection.isValid
         ? beforeSelection.isValid
-            ? beforeSelection.start
-            : 0
+              ? beforeSelection.start
+              : 0
         : 0;
 
-    for (var i = 0;
-        i < beforeSelectionStart &&
-            i < beforeText.length &&
-            i < afterText.length;
-        i++) {
+    for (
+      var i = 0;
+      i < beforeSelectionStart && i < beforeText.length && i < afterText.length;
+      i++
+    ) {
       if (beforeText[i] != afterText[i]) {
         beforeSelectionStart = i;
         break;
@@ -197,8 +191,8 @@ class CountryInputFormatter implements TextInputFormatter {
 
     final beforeSelectionLength = afterSelection.isValid
         ? beforeSelection.isValid
-            ? beforeSelection.end - beforeSelectionStart
-            : 0
+              ? beforeSelection.end - beforeSelectionStart
+              : 0
         : oldValue.text.length;
 
     final lengthDifference =
@@ -218,9 +212,11 @@ class CountryInputFormatter implements TextInputFormatter {
     var currentResultSelectionStart = 0;
     var currentResultSelectionLength = 0;
 
-    for (var i = 0;
-        i < min(beforeReplaceStart + beforeReplaceLength, mask.length);
-        i++) {
+    for (
+      var i = 0;
+      i < min(beforeReplaceStart + beforeReplaceLength, mask.length);
+      i++
+    ) {
       if (_maskChars.contains(mask[i]) && currentResultTextLength > 0) {
         currentResultTextLength -= 1;
         if (i < beforeReplaceStart) {
@@ -232,16 +228,22 @@ class CountryInputFormatter implements TextInputFormatter {
       }
     }
 
-    final replacementText =
-        afterText.substring(afterChangeStart, afterChangeEnd);
+    final replacementText = afterText.substring(
+      afterChangeStart,
+      afterChangeEnd,
+    );
     var targetCursorPosition = currentResultSelectionStart;
     if (replacementText.isEmpty) {
-      _resultTextArray.removeRange(currentResultSelectionStart,
-          currentResultSelectionStart + currentResultSelectionLength);
+      _resultTextArray.removeRange(
+        currentResultSelectionStart,
+        currentResultSelectionStart + currentResultSelectionLength,
+      );
     } else {
       if (currentResultSelectionLength > 0) {
-        _resultTextArray.removeRange(currentResultSelectionStart,
-            currentResultSelectionStart + currentResultSelectionLength);
+        _resultTextArray.removeRange(
+          currentResultSelectionStart,
+          currentResultSelectionStart + currentResultSelectionLength,
+        );
         currentResultSelectionLength = 0;
       }
       _resultTextArray.insert(currentResultSelectionStart, replacementText);
@@ -257,10 +259,13 @@ class CountryInputFormatter implements TextInputFormatter {
         }
       }
       if (prefixLength > 0) {
-        final resultPrefix =
-            _resultTextArray._symbolArray.take(prefixLength).toList();
-        final effectivePrefixLength =
-            min(_resultTextArray.length, resultPrefix.length);
+        final resultPrefix = _resultTextArray._symbolArray
+            .take(prefixLength)
+            .toList();
+        final effectivePrefixLength = min(
+          _resultTextArray.length,
+          resultPrefix.length,
+        );
         for (var j = 0; j < effectivePrefixLength; j++) {
           if (mask[j] != resultPrefix[j]) {
             _resultTextArray.removeRange(0, j);
@@ -374,8 +379,9 @@ class CountryInputFormatter implements TextInputFormatter {
       _resultTextArray.removeRange(_maskLength, _resultTextArray.length);
     }
 
-    final finalCursorPosition =
-        cursorPos < 0 ? _resultTextMasked.length : cursorPos;
+    final finalCursorPosition = cursorPos < 0
+        ? _resultTextMasked.length
+        : cursorPos;
 
     return TextEditingValue(
       text: _resultTextMasked,

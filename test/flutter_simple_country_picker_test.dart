@@ -1,25 +1,24 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'unit_test/countries_controller_test.dart'
-    as unit_countries_controller_test;
-import 'unit_test/countries_parser_test.dart' as unit_countries_parser_test;
-import 'unit_test/countries_provider_test.dart' as unit_country_provider_test;
-import 'unit_test/countries_state_test.dart' as unit_countries_state_test;
 import 'unit_test/country_codes_test.dart' as unit_country_codes_test;
+import 'unit_test/country_controller_test.dart'
+    as unit_countries_controller_test;
 import 'unit_test/country_input_formater_test.dart'
     as unit_country_input_formater_test;
+import 'unit_test/country_parser_test.dart' as unit_countries_parser_test;
 import 'unit_test/country_picker_theme_test.dart'
     as unit_country_picker_theme_test;
+import 'unit_test/country_provider_test.dart' as unit_country_provider_test;
 import 'unit_test/country_test.dart' as unit_country_test;
 import 'unit_test/country_util_test.dart' as unit_countries_util_test;
-import 'widget_test/countries_parser_test.dart' as widget_countries_parser_test;
-import 'widget_test/countries_scope_test.dart' as widget_countries_scope_test;
 import 'widget_test/country_input_formater_test.dart'
     as widget_country_input_formater_test;
+import 'widget_test/country_parser_test.dart' as widget_countries_parser_test;
 import 'widget_test/country_phone_input_test.dart'
     as widget_country_phone_input_test;
 import 'widget_test/country_picker_theme_test.dart'
     as widget_country_picker_theme_test;
+import 'widget_test/country_scope_test.dart' as widget_countries_scope_test;
 import 'widget_test/country_test.dart' as widget_country_test;
 import 'widget_test/show_country_picker_test.dart'
     as widget_show_country_picker_test;
@@ -33,7 +32,6 @@ void main() {
       unit_countries_controller_test.main();
       unit_countries_parser_test.main();
       unit_country_provider_test.main();
-      unit_countries_state_test.main();
       unit_countries_util_test.main();
       unit_country_codes_test.main();
       unit_country_test.main();

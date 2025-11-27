@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field
+
 import 'dart:developer';
 
 import 'package:example/src/common/constant/constants.dart';
@@ -27,6 +29,7 @@ class _ExperimentalPreviewState extends State<ExperimentalPreview> {
   String _countryCode = '7';
   String? _mask = '000 000 0000';
 
+  // ignore: unused_element
   void _onSelect(Country country) {
     log('Selected country $country');
     setState(() {
@@ -47,22 +50,22 @@ class _ExperimentalPreviewState extends State<ExperimentalPreview> {
             sliver: SliverList.list(
               children: [
                 const SizedBox(height: kDefaultPadding * 2),
-                CountryPhoneInputExperimental(
+                const CountryPhoneInput.extended(
                   autofocus: false,
-                  controller: _controller,
-                  mask: _mask,
-                  country: _country,
-                  countryCode: _countryCode,
-                  onTap: () {
-                    showCountryPicker(
-                      context: context,
-                      favorite: ['RU'],
-                      exclude: ['KN', 'MF'],
-                      showPhoneCode: true,
-                      onSelect: _onSelect,
-                      onDone: () => log('onDone callded...'),
-                    );
-                  },
+                  // controller: _controller,
+                  // mask: _mask,
+                  // country: _country,
+                  // countryCode: _countryCode,
+                  // onTap: () {
+                  //   showCountryPicker(
+                  //     context: context,
+                  //     favorite: ['RU'],
+                  //     exclude: ['KN', 'MF'],
+                  //     showPhoneCode: true,
+                  //     onSelect: _onSelect,
+                  //     onDone: () => log('onDone callded...'),
+                  //   );
+                  // },
                 ),
                 if (MediaQuery.of(context).viewPadding.bottom == 0) ...[
                   const SizedBox(height: kDefaultPadding),

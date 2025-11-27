@@ -31,7 +31,7 @@ showCountryPicker(
 ```
 
 ### For localization:
-Add the `CountriesLocalization.delegate` in the list of your app delegates.
+Add the `CountryLocalizations.delegate` in the list of your app delegates.
 ```Dart
 MaterialApp(
       supportedLocales: [
@@ -41,7 +41,7 @@ MaterialApp(
         const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'), // Generic traditional Chinese 'zh_Hant'
       ],
       localizationsDelegates: [
-        CountriesLocalization.delegate,
+        CountryLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

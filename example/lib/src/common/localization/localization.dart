@@ -1,11 +1,11 @@
 import 'package:example/src/common/localization/generated/l10n.dart'
     as generated
-    show GeneratedLocalization, AppLocalizationDelegate;
+    show ExampleGeneratedLocalization, AppLocalizationDelegate;
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
 /// ExampleLocalization.
-final class ExampleLocalization extends generated.GeneratedLocalization {
+final class ExampleLocalization extends generated.ExampleGeneratedLocalization {
   ExampleLocalization._(this.locale);
 
   ///
@@ -13,7 +13,7 @@ final class ExampleLocalization extends generated.GeneratedLocalization {
 
   /// ExampleLocalization delegate.
   static const LocalizationsDelegate<ExampleLocalization> delegate =
-      _LocalizationView(generated.AppLocalizationDelegate());
+      _ExampleLocalizationDelegate(generated.AppLocalizationDelegate());
 
   /// Current localization instance.
   static ExampleLocalization get current => _current;
@@ -43,30 +43,35 @@ final class ExampleLocalization extends generated.GeneratedLocalization {
   /// Get supported locales.
   static List<Locale> get supportedLocales =>
       const generated.AppLocalizationDelegate().supportedLocales;
+
+  /// Loads the [locale].
+  static Future<ExampleLocalization> load(Locale locale) =>
+      ExampleLocalization.delegate.load(locale);
 }
 
 @immutable
-final class _LocalizationView
+final class _ExampleLocalizationDelegate
     extends LocalizationsDelegate<ExampleLocalization> {
   @literal
-  const _LocalizationView(
-    LocalizationsDelegate<generated.GeneratedLocalization> delegate,
+  const _ExampleLocalizationDelegate(
+    LocalizationsDelegate<generated.ExampleGeneratedLocalization> delegate,
   ) : _delegate = delegate;
 
-  final LocalizationsDelegate<generated.GeneratedLocalization> _delegate;
+  final LocalizationsDelegate<generated.ExampleGeneratedLocalization> _delegate;
 
   @override
   bool isSupported(Locale locale) => _delegate.isSupported(locale);
 
   @override
   Future<ExampleLocalization> load(Locale locale) =>
-      generated.GeneratedLocalization.load(locale).then<ExampleLocalization>(
-        (localization) =>
-            ExampleLocalization._current = ExampleLocalization._(locale),
+      generated.ExampleGeneratedLocalization.load(
+        locale,
+      ).then<ExampleLocalization>(
+        (_) => ExampleLocalization._current = ExampleLocalization._(locale),
       );
 
   @override
-  bool shouldReload(covariant _LocalizationView old) =>
+  bool shouldReload(covariant _ExampleLocalizationDelegate old) =>
       _delegate.shouldReload(old._delegate);
 }
 

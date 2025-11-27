@@ -124,12 +124,12 @@ sealed class Pubspec {
   static final DateTime timestamp = DateTime.utc(
     2025,
     11,
-    26,
+    27,
     11,
     10,
-    4,
-    728,
-    769,
+    56,
+    214,
+    503,
   );
 
   /// Name
@@ -511,11 +511,11 @@ sealed class Pubspec {
     },
     'flutter_intl': <String, Object>{
       'enabled': true,
-      'class_name': r'GeneratedLocalization',
+      'class_name': r'ExampleGeneratedLocalization',
       'main_locale': r'en',
       'arb_dir': r'lib/src/common/localization/translations',
       'output_dir': r'lib/src/common/localization/generated',
-      'use_deferred_loading': false,
+      'nullable_getter': false,
     },
   };
 

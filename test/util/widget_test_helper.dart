@@ -1,7 +1,6 @@
 // autor - <a.a.ustinoff@gmail.com> Anton Ustinoff
 
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
@@ -29,8 +28,8 @@ import 'package:meta/meta.dart';
 /// );
 /// ```
 
-@isTestGroup
-class WidgetTestHelper {
+@internal
+final class WidgetTestHelper {
   const WidgetTestHelper._();
 
   @isTest
@@ -41,17 +40,15 @@ class WidgetTestHelper {
     await t.pumpWidget(
       MaterialApp(
         localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
-          GlobalCupertinoLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
+          CountryLocalizations.delegate,
         ],
-        supportedLocales: CountriesLocalization.supportedLocales,
+        supportedLocales: CountryLocalizations.supportedLocales,
         locale: const Locale('ru'),
         home: Material(
           child: Builder(
             builder: (context) {
               result = WidgetTestResult(
-                localizations: CountriesLocalization.of(context),
+                localizations: CountryLocalizations.of(context),
                 context: context,
               );
 
@@ -86,29 +83,24 @@ class WidgetTestHelper {
   static Widget createWidgetUnderTest({
     required WidgetBuilder builder,
     Locale locale = const Locale.fromSubtags(languageCode: 'ru'),
-  }) =>
-      MaterialApp(
-        localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
-          GlobalWidgetsLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-          CountriesLocalization.delegate,
-        ],
-        locale: locale,
-        supportedLocales: CountriesLocalization.supportedLocales,
-        home: Builder(builder: (context) => builder(context)),
-      );
+  }) => MaterialApp(
+    localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+      CountryLocalizations.delegate,
+    ],
+    locale: locale,
+    supportedLocales: CountryLocalizations.supportedLocales,
+    home: Builder(builder: (context) => builder(context)),
+  );
 }
 
 @immutable
-@isTest
+@internal
 class WidgetTestResult {
   const WidgetTestResult({required this.localizations, required this.context});
 
-  final CountriesLocalization localizations;
+  final CountryLocalizations? localizations;
   final BuildContext context;
 
   @override
-  String toString() =>
-      'WidgetTestResult(localizations: ${localizations.languageCode})';
+  String toString() => 'WidgetTestResult{locale: ${localizations?.locale}}';
 }

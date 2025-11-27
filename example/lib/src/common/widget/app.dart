@@ -1,7 +1,5 @@
 // ignore_for_file: library_private_types_in_public_api
 
-import 'dart:developer';
-
 import 'package:example/src/common/constant/constants.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/router/example_navigator.dart';
@@ -49,35 +47,18 @@ class _AppState extends State<App> {
   /// Disable recreate widget tree
   final Key _builderKey = GlobalKey(debugLabel: 'AppBuilderKey');
 
-  /// Supported locales
-  // ignore: unused_field
-  final List<Locale> _supportedLocales = <Locale>[
-    const Locale('en'),
-    const Locale('ar'),
-    const Locale('es'),
-    const Locale('de'),
-    const Locale('fr'),
-    const Locale('el'),
-    const Locale('et'),
-    const Locale('nb'),
-    const Locale('nn'),
-    const Locale('pl'),
-    const Locale('pt'),
-    const Locale('ru'),
-    const Locale('hi'),
-    const Locale('ne'),
-    const Locale('uk'),
-    const Locale('hr'),
-    const Locale('tr'),
-    const Locale('lv'),
-    const Locale('lt'),
-    const Locale('ku'),
-    const Locale('nl'),
-    const Locale('it'),
-    // Generic simplified Chinese 'zh_Hans'
-    const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
-    // Generic traditional Chinese 'zh_Hant'
-    const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+  /// Localization delegates
+  final localizationsDelegates = const <LocalizationsDelegate<Object?>>[
+    /// Example localization
+    ExampleLocalization.delegate,
+
+    /// Order localization delegates is important
+    ///
+    /// Add [CountriesLocalization] in app [localizationsDelegates]
+    CountryLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
   ];
 
   /// Current locale of the app.
@@ -119,32 +100,19 @@ class _AppState extends State<App> {
       theme: AppThemeData.light(),
       themeMode: themeMode.value,
       locale: locale.value,
+      localizationsDelegates: localizationsDelegates,
       supportedLocales: ExampleLocalization.supportedLocales,
-      localizationsDelegates: const [
-        GlobalCupertinoLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-
-        /// Order of custom delegates is important
-        ///
-        /// Example localization
-        ExampleLocalization.delegate,
-
-        ///
-        /// Add [CountriesLocalization] in app [localizationsDelegates]
-        CountriesLocalization.delegate,
-      ],
       /* localeResolutionCallback: (locale, supportedLocales) {
-            if (locale == null) {
-              return supportedLocales.first;
-            }
-            for (final supportedLocale in supportedLocales) {
-              if (supportedLocale.languageCode == locale.languageCode) {
-                return supportedLocale;
-              }
-            }
-            return supportedLocales.first;
-          }, */
+        if (locale == null) {
+          return supportedLocales.first;
+        }
+        for (final supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == locale.languageCode) {
+            return supportedLocale;
+          }
+        }
+        return supportedLocales.first;
+      }, */
       builder: (context, _) => MediaQuery(
         key: _builderKey,
         data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
@@ -203,7 +171,6 @@ class AppLocaleSwitcherButton extends StatelessWidget {
             onTap: () {
               HapticFeedback.mediumImpact().ignore();
               locale?.value = e;
-              log('Selected locale: ${e.languageCode}');
             },
           ),
         )

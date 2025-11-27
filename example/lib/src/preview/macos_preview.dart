@@ -248,15 +248,15 @@ class _CountryPicker$MacOSState extends State<CountryPicker$MacOS> {
     List<Country> countries, [
     Country? selected,
   ]) {
-    final localization = CountriesLocalization.of(context);
+    final localization = CountryLocalizations.of(context);
     final itemTheme = PullDownMenuItemTheme(
       textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 14),
     );
     return countries
         .map((e) {
           final title = localization
-              .getCountryNameByCode(e.countryCode)
-              ?.replaceAll(CountriesLocalization.countryNameRegExp, ' ');
+              ?.getCountryNameByCode(e.countryCode)
+              ?.replaceAll(CountryLocalizations.countryNameRegExp, ' ');
           return PullDownMenuItem(
             itemTheme: itemTheme,
             iconWidget: Text(
@@ -331,15 +331,15 @@ class _CountryPicker$MacOSState extends State<CountryPicker$MacOS> {
   @override
   Widget build(BuildContext context) {
     // final isRtl = Directionality.of(context) == TextDirection.rtl;
-    final localizations = CountriesLocalization.of(context);
+    final localizations = CountryLocalizations.of(context);
 
     Widget scope({
-      required Widget Function(BuildContext context, CountriesState state)
+      required Widget Function(BuildContext context, CountryState state)
       builder,
-    }) => CountriesScope(
+    }) => CountryScope(
       child: Builder(
         builder: (context) => ValueListenableBuilder(
-          valueListenable: CountriesScope.of(context),
+          valueListenable: CountryScope.of(context),
           builder: (context, state, _) {
             if (state.isLoading || state.countries.isEmpty) {
               return const Center(
@@ -363,7 +363,8 @@ class _CountryPicker$MacOSState extends State<CountryPicker$MacOS> {
               selected ??
               state.countries.firstWhereOrNull(
                 (e) =>
-                    e.name == localizations.getCountryNameByCode(e.countryCode),
+                    e.name ==
+                    localizations?.getCountryNameByCode(e.countryCode),
               ) ??
               state.countries[0];
 

@@ -2,7 +2,7 @@ name: flutter_simple_country_picker
 
 description: An easy-to-use country selection widget for Flutter. Allows users to select a country from a comprehensive list. Supports Android, iOS, web, Windows and Linux platforms.
 
-version: 0.2.9
+version: 0.3.0
 
 homepage: https://github.com/ziqq/flutter_simple_country_picker
 
@@ -33,17 +33,12 @@ platforms:
 #    path: example.png
 
 environment:
-  sdk: '>=3.6.0 <4.0.0'
-  flutter: ">=3.29.2"
+  sdk: '>=3.10.0 <4.0.0'
+  flutter: ">=3.38.0"
 
 dependencies:
   flutter:
     sdk: flutter
-
-  # Localization
-  flutter_localizations:
-    sdk: flutter
-  intl: '^0.20.2'
 
   # Annotations
   meta: '^1.9.0'
@@ -64,21 +59,9 @@ dev_dependencies:
 
   # Code generation
   build_runner: ^2.4.15
-  pubspec_generator: ^5.0.0
 
   # Test utilities
   mockito: ^5.4.5
 
   # Logging
   l: ^5.0.1
-
-flutter:
-  generate: true
-
-flutter_intl:
-  enabled: true
-  class_name: GeneratedLocalization
-  main_locale: en
-  arb_dir: lib/src/localization/translations
-  output_dir: lib/src/localization/generated
-  use_deferred_loading: false

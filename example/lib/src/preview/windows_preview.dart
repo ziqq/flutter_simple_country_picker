@@ -154,7 +154,7 @@ class CountryInput$Web extends StatelessWidget {
             ),
           ),
           label: Text(
-            CountriesLocalization.of(context).phonePlaceholder,
+            'CountryLocalizations.of(context).phonePlaceholder',
             style: secodaryTextStyle?.copyWith(fontSize: 16),
           ),
           prefix: Text('+${selectedCountry.phoneCode} ', style: textStyle),
@@ -247,7 +247,7 @@ class _CountryPicker$DesktopState extends State<CountryPicker$Web> {
   @override
   Widget build(BuildContext context) {
     // final isRtl = Directionality.of(context) == TextDirection.rtl;
-    final localizations = CountriesLocalization.of(context);
+    final localizations = CountryLocalizations.of(context);
     final theme = Theme.of(context);
     final textStyle = theme.textTheme.bodyLarge?.copyWith(fontSize: 14);
     final secodaryTextStyle = textStyle?.copyWith(
@@ -268,12 +268,12 @@ class _CountryPicker$DesktopState extends State<CountryPicker$Web> {
     );
 
     Widget scope({
-      required Widget Function(BuildContext context, CountriesState state)
+      required Widget Function(BuildContext context, CountryState state)
       builder,
-    }) => CountriesScope(
+    }) => CountryScope(
       child: Builder(
         builder: (context) => ValueListenableBuilder(
-          valueListenable: CountriesScope.of(context),
+          valueListenable: CountryScope.of(context),
           builder: (context, state, _) {
             if (state.isLoading || state.countries.isEmpty) {
               return const Center(
@@ -293,12 +293,13 @@ class _CountryPicker$DesktopState extends State<CountryPicker$Web> {
       builder: (context, state) => ValueListenableBuilder(
         valueListenable: widget.selected ?? ValueNotifier(null),
         builder: (context, selected, _) {
-          final localization = CountriesLocalization.of(context);
+          final localization = CountryLocalizations.of(context);
           final $selected =
               selected ??
               state.countries.firstWhereOrNull(
                 (e) =>
-                    e.name == localizations.getCountryNameByCode(e.countryCode),
+                    e.name ==
+                    localizations?.getCountryNameByCode(e.countryCode),
               ) ??
               state.countries[0];
 
@@ -348,11 +349,8 @@ class _CountryPicker$DesktopState extends State<CountryPicker$Web> {
             dropdownMenuEntries: state.countries
                 .map((e) {
                   final label = localization
-                      .getCountryNameByCode(e.countryCode)
-                      ?.replaceAll(
-                        CountriesLocalization.countryNameRegExp,
-                        ' ',
-                      );
+                      ?.getCountryNameByCode(e.countryCode)
+                      ?.replaceAll(CountryLocalizations.countryNameRegExp, ' ');
                   return DropdownMenuEntry(
                     value: e,
                     label: label.toString(),

@@ -5,8 +5,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_code/country_codes.dart';
-import 'package:flutter_simple_country_picker/src/controller/countries_parser.dart';
+import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
+import 'package:flutter_simple_country_picker/src/controller/country_parser.dart';
 import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 import 'package:meta/meta.dart';
 
@@ -43,20 +43,19 @@ class Country {
 
   /// Create a country from a JSON object
   Country.fromJson(Map<String, Object?> json)
-      : phoneCode = json['e164_cc'].toString(),
-        countryCode = json['iso2_cc'].toString(),
-        e164Sc = json['e164_sc'] as int,
-        geographic = json['geographic'] as bool? ?? false,
-        level = json['level'] as int,
-        name = json['name'].toString(),
-        nameLocalized = '',
-        example = json['example'].toString(),
-        displayName = json['display_name'].toString(),
-        fullExampleWithPlusSign =
-            json['full_example_with_plus_sign']?.toString(),
-        mask = json['mask']?.toString(),
-        displayNameNoCountryCode = json['display_name_no_e164_cc'].toString(),
-        e164Key = json['e164_key'].toString();
+    : phoneCode = json['e164_cc'].toString(),
+      countryCode = json['iso2_cc'].toString(),
+      e164Sc = json['e164_sc'] as int,
+      geographic = json['geographic'] as bool? ?? false,
+      level = json['level'] as int,
+      name = json['name'].toString(),
+      nameLocalized = '',
+      example = json['example'].toString(),
+      displayName = json['display_name'].toString(),
+      fullExampleWithPlusSign = json['full_example_with_plus_sign']?.toString(),
+      mask = json['mask']?.toString(),
+      displayNameNoCountryCode = json['display_name_no_e164_cc'].toString(),
+      e164Key = json['e164_key'].toString();
 
   /// The world wide country
   static const Country worldWide = Country(
@@ -113,10 +112,10 @@ class Country {
 
   /// Get the country name localized
   String? getTranslatedName(BuildContext context) =>
-      CountriesLocalization.of(context).getCountryNameByCode(countryCode);
+      CountryLocalizations.of(context)?.getCountryNameByCode(countryCode);
 
   /// Check if the country starts with a query
-  bool startsWith(String query, CountriesLocalization? localization) {
+  bool startsWith(String query, CountryLocalizations? localization) {
     var $query = query.toLowerCase();
     if (query.startsWith('+')) $query = query.replaceAll('+', '').trim();
     return phoneCode.startsWith($query) ||
@@ -145,24 +144,23 @@ class Country {
     String? mask,
     String? name,
     String? nameLocalized,
-  }) =>
-      Country(
-        phoneCode: phoneCode ?? this.phoneCode,
-        countryCode: countryCode ?? this.countryCode,
-        e164Sc: e164Sc ?? this.e164Sc,
-        e164Key: e164Key ?? this.e164Key,
-        geographic: geographic ?? this.geographic,
-        level: level ?? this.level,
-        displayName: displayName ?? this.displayName,
-        displayNameNoCountryCode:
-            displayNameNoCountryCode ?? this.displayNameNoCountryCode,
-        example: example ?? this.example,
-        fullExampleWithPlusSign:
-            fullExampleWithPlusSign ?? this.fullExampleWithPlusSign,
-        mask: mask ?? this.mask,
-        name: name ?? this.name,
-        nameLocalized: nameLocalized ?? this.nameLocalized,
-      );
+  }) => Country(
+    phoneCode: phoneCode ?? this.phoneCode,
+    countryCode: countryCode ?? this.countryCode,
+    e164Sc: e164Sc ?? this.e164Sc,
+    e164Key: e164Key ?? this.e164Key,
+    geographic: geographic ?? this.geographic,
+    level: level ?? this.level,
+    displayName: displayName ?? this.displayName,
+    displayNameNoCountryCode:
+        displayNameNoCountryCode ?? this.displayNameNoCountryCode,
+    example: example ?? this.example,
+    fullExampleWithPlusSign:
+        fullExampleWithPlusSign ?? this.fullExampleWithPlusSign,
+    mask: mask ?? this.mask,
+    name: name ?? this.name,
+    nameLocalized: nameLocalized ?? this.nameLocalized,
+  );
 
   /// Parse a country from a string
   @useResult
@@ -170,7 +168,7 @@ class Country {
     if (country == worldWide.countryCode) {
       return worldWide;
     } else {
-      return CountriesParser.parse(country);
+      return CountryParser.parse(country);
     }
   }
 
@@ -180,7 +178,7 @@ class Country {
     if (country == worldWide.countryCode) {
       return worldWide;
     } else {
-      return CountriesParser.tryParse(country);
+      return CountryParser.tryParse(country);
     }
   }
 

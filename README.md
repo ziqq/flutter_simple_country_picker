@@ -45,7 +45,7 @@ The Flutter package that provides an easy-to-use country selection widget. It al
 
 ## Example
 
-Add the `CountriesLocalization.delegate` in the list of your app delegates. Set supported locales [Locale('ru'), Locale('en')]. And set your locale `ru` or `en`.
+Add the `CountryLocalizations.delegate` in the list of your app delegates. Set supported locales [Locale('ru'), Locale('en')]. And set your locale `ru` or `en`.
 
 ```Dart
 MaterialApp(
@@ -59,8 +59,8 @@ MaterialApp(
     GlobalMaterialLocalizations.delegate,
     GlobalWidgetsLocalizations.delegate,
 
-    /// Add [CountriesLocalization] in app [localizationsDelegates]
-    CountriesLocalization.delegate,
+    /// Add [CountryLocalizations] in app [localizationsDelegates]
+    CountryLocalizations.delegate,
   ],
   home: HomePage(),
 );

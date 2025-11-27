@@ -7,7 +7,7 @@ import 'dart:async' as _i3;
 
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart'
     as _i4;
-import 'package:flutter_simple_country_picker/src/controller/countries_provider.dart'
+import 'package:flutter_simple_country_picker/src/controller/country_provider.dart'
     as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
@@ -26,29 +26,27 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: subtype_of_sealed_class
 // ignore_for_file: invalid_use_of_internal_member
 
-/// A class which mocks [CountriesProvider].
+/// A class which mocks [CountryProvider].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockCountriesProvider extends _i1.Mock implements _i2.CountriesProvider {
+class MockCountryProvider extends _i1.Mock implements _i2.CountryProvider {
   @override
-  _i3.FutureOr<List<_i4.Country>> getAll() => (super.noSuchMethod(
-        Invocation.method(
-          #getAll,
-          [],
-        ),
-        returnValue: _i3.Future<List<_i4.Country>>.value(<_i4.Country>[]),
-        returnValueForMissingStub:
-            _i3.Future<List<_i4.Country>>.value(<_i4.Country>[]),
-      ) as _i3.FutureOr<List<_i4.Country>>);
+  _i3.Future<List<_i4.Country>> getAll() =>
+      (super.noSuchMethod(
+            Invocation.method(#getAll, []),
+            returnValue: _i3.Future<List<_i4.Country>>.value(<_i4.Country>[]),
+            returnValueForMissingStub: _i3.Future<List<_i4.Country>>.value(
+              <_i4.Country>[],
+            ),
+          )
+          as _i3.Future<List<_i4.Country>>);
 
   @override
   List<_i4.Country> findCountriesByCode(List<String>? codes) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #findCountriesByCode,
-          [codes],
-        ),
-        returnValue: <_i4.Country>[],
-        returnValueForMissingStub: <_i4.Country>[],
-      ) as List<_i4.Country>);
+            Invocation.method(#findCountriesByCode, [codes]),
+            returnValue: <_i4.Country>[],
+            returnValueForMissingStub: <_i4.Country>[],
+          )
+          as List<_i4.Country>);
 }

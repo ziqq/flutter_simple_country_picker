@@ -26,17 +26,11 @@ void main() {
       });
 
       test('should throw ArgumentError for empty string', () {
-        expect(
-          () => CountryUtil.countryCodeToEmoji(''),
-          throwsArgumentError,
-        );
+        expect(() => CountryUtil.countryCodeToEmoji(''), throwsArgumentError);
       });
 
       test('should throw ArgumentError for single character input', () {
-        expect(
-          () => CountryUtil.countryCodeToEmoji('U'),
-          throwsArgumentError,
-        );
+        expect(() => CountryUtil.countryCodeToEmoji('U'), throwsArgumentError);
       });
 
       test('should throw ArgumentError for input longer than 2 characters', () {
@@ -51,48 +45,24 @@ void main() {
       });
 
       test('should throw ArgumentError for non-alphabetic characters', () {
-        expect(
-          () => CountryUtil.countryCodeToEmoji('1A'),
-          throwsArgumentError,
-        );
-        expect(
-          () => CountryUtil.countryCodeToEmoji('@#'),
-          throwsArgumentError,
-        );
-        expect(
-          () => CountryUtil.countryCodeToEmoji('A#'),
-          throwsArgumentError,
-        );
+        expect(() => CountryUtil.countryCodeToEmoji('1A'), throwsArgumentError);
+        expect(() => CountryUtil.countryCodeToEmoji('@#'), throwsArgumentError);
+        expect(() => CountryUtil.countryCodeToEmoji('A#'), throwsArgumentError);
       });
 
       test('should throw ArgumentError for non-ASCII characters', () {
-        expect(
-          () => CountryUtil.countryCodeToEmoji('ÜÖ'),
-          throwsArgumentError,
-        );
+        expect(() => CountryUtil.countryCodeToEmoji('ÜÖ'), throwsArgumentError);
       });
 
       test('should throw ArgumentError for invalid inputs', () {
-        expect(
-          () => CountryUtil.countryCodeToEmoji(''),
-          throwsArgumentError,
-        );
-        expect(
-          () => CountryUtil.countryCodeToEmoji('U'),
-          throwsArgumentError,
-        );
+        expect(() => CountryUtil.countryCodeToEmoji(''), throwsArgumentError);
+        expect(() => CountryUtil.countryCodeToEmoji('U'), throwsArgumentError);
         expect(
           () => CountryUtil.countryCodeToEmoji('USA'),
           throwsArgumentError,
         );
-        expect(
-          () => CountryUtil.countryCodeToEmoji('1A'),
-          throwsArgumentError,
-        );
-        expect(
-          () => CountryUtil.countryCodeToEmoji('@#'),
-          throwsArgumentError,
-        );
+        expect(() => CountryUtil.countryCodeToEmoji('1A'), throwsArgumentError);
+        expect(() => CountryUtil.countryCodeToEmoji('@#'), throwsArgumentError);
       });
     });
   });

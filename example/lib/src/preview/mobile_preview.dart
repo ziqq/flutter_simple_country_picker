@@ -5,9 +5,9 @@ import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/util/app_zone.dart';
 import 'package:example/src/common/util/country_picker_state_mixin.dart';
 import 'package:example/src/common/widget/app.dart';
+import 'package:example/src/common/widget/common_bottom_space.dart';
 import 'package:example/src/common/widget/common_header.dart';
 import 'package:example/src/common/widget/common_padding.dart';
-import 'package:example/src/common/widget/common_space_box.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
@@ -31,7 +31,7 @@ class MobilePreview extends StatefulWidget {
 /// State for [MobilePreview].
 class _MobilePreviewState extends State<MobilePreview>
     with CountryPickerPreviewStateMixin {
-  final ValueNotifier<String> _countryPhoneController = ValueNotifier(
+  final ValueNotifier<String> _countryPhoneController = ValueNotifier<String>(
     '88881234567',
   ) /* 78881234567 */ /* +78881234567 */;
 
@@ -42,68 +42,24 @@ class _MobilePreviewState extends State<MobilePreview>
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: const CommonHeader(title: MobilePreview.title),
-    body: SafeArea(
-      child: Padding(
-        padding: CommonPadding.of(context),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CountryPhoneInput(
-              key: const ValueKey<String>('country_phone_input'),
-              filter: kFilteredCountries,
-              controller: _countryPhoneController,
-            ),
-            const SizedBox(height: kDefaultPadding),
-
-            // --- Password input --- //
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: CupertinoDynamicColor.resolve(
-                  CupertinoColors.secondarySystemBackground,
-                  context,
-                ),
-                borderRadius: const BorderRadius.all(Radius.circular(10)),
-              ),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 56),
-                child: Center(
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      hintStyle: Theme.of(context).textTheme.bodyLarge,
-                      hintText: ExampleLocalization.of(context).passwordLable,
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: kDefaultPadding,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: kDefaultPadding * 2),
-
-            // --- Submit button --- //
-            SizedBox(
-              width: double.infinity,
-              child: CupertinoButton.filled(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: kDefaultPadding,
-                ),
-                onPressed: onSubmit,
-                child: const Text('Submit'),
-              ),
-            ),
-            const SizedBox(height: kDefaultPadding * 2),
-
-            SizedBox(
-              width: double.infinity,
-              child: CupertinoButton.filled(
+  Widget build(BuildContext context) {
+    final pickerTheme = CountryPickerTheme.of(context);
+    final theme = Theme.of(context);
+    return Scaffold(
+      appBar: const CommonHeader(title: MobilePreview.title),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: CommonBottomSpacer.heightOf(context)),
+        child: ColoredBox(
+          color: theme.scaffoldBackgroundColor,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              CupertinoButton(
                 key: const ValueKey<String>('full_picker_button'),
                 padding: const EdgeInsets.symmetric(
                   horizontal: kDefaultPadding,
                 ),
+                sizeStyle: CupertinoButtonSize.medium,
                 onPressed: () => showCountryPicker(
                   context: context,
                   // Can be used to exclude one ore more country
@@ -114,17 +70,14 @@ class _MobilePreviewState extends State<MobilePreview>
                   showPhoneCode: true,
                   onSelect: onSelect,
                 ),
-                child: const Text('Show full picker'),
+                child: const Text('Show picker'),
               ),
-            ),
-            const SizedBox(height: kDefaultPadding),
-            SizedBox(
-              width: double.infinity,
-              child: CupertinoButton.filled(
+              CupertinoButton(
                 key: const ValueKey<String>('filtered_picker_button'),
                 padding: const EdgeInsets.symmetric(
                   horizontal: kDefaultPadding,
                 ),
+                sizeStyle: CupertinoButtonSize.medium,
                 onPressed: () => showCountryPicker(
                   context: context,
                   isScrollControlled: false,
@@ -135,15 +88,77 @@ class _MobilePreviewState extends State<MobilePreview>
                   showPhoneCode: true,
                   onSelect: onSelect,
                 ),
-                child: const Text('Show filtered picker'),
+                child: const Text('Show picker (filtered)'),
               ),
-            ),
-
-            // --- Withe space --- //
-            const CommonSpaceBox(),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
+      body: SafeArea(
+        child: Padding(
+          padding: CommonPadding.of(context),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: kDefaultPadding,
+            children: [
+              CountryPhoneInput(
+                key: const ValueKey<String>('country_phone_input'),
+                controller: _countryPhoneController,
+                filter: kFilteredCountries,
+                // isScrollControlled: true,
+              ),
+
+              // --- Password input --- //
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: CupertinoDynamicColor.resolve(
+                    CupertinoColors.secondarySystemBackground,
+                    context,
+                  ),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(pickerTheme.radius),
+                  ),
+                ),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: pickerTheme.inputHeight,
+                  ),
+                  child: Center(
+                    child: TextFormField(
+                      cursorColor: theme.textTheme.bodyLarge?.color,
+                      cursorHeight: theme.textTheme.bodyLarge?.fontSize,
+                      decoration: InputDecoration(
+                        hintText: ExampleLocalization.of(context).passwordLable,
+                        hintStyle: theme.textTheme.bodyLarge,
+
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: kDefaultPadding,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // --- Submit button --- //
+              SizedBox(
+                width: double.infinity,
+                child: CupertinoButton.filled(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: kDefaultPadding,
+                  ),
+                  onPressed: onSubmit,
+                  child: Text(ExampleLocalization.of(context).submitButton),
+                ),
+              ),
+
+              // --- Withe space --- //
+              const CommonBottomSpacer(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

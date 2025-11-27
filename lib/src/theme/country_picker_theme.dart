@@ -27,10 +27,12 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     double? padding,
     double? indent,
     double? radius,
+    double? inputHeight,
+    InputDecoration? inputDecoration,
     TextStyle? textStyle,
     TextStyle? searchTextStyle,
-    InputDecoration? inputDecoration,
   }) {
+    inputHeight ??= kDefaultInputHeight;
     flagSize ??= kDefaultFlagSize;
     padding ??= kDefaultPadding;
     indent ??= kDefaultIndent;
@@ -43,6 +45,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       secondaryBackgroundColor: secondaryBackgroundColor,
       inputDecoration: inputDecoration,
       searchTextStyle: searchTextStyle,
+      inputHeight: inputHeight,
       textStyle: textStyle,
       flagSize: flagSize,
       padding: padding,
@@ -59,6 +62,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     required this.dividerColor,
     required this.secondaryBackgroundColor,
     required this.inputDecoration,
+    required this.inputHeight,
     required this.searchTextStyle,
     required this.textStyle,
     required this.flagSize,
@@ -91,24 +95,30 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     return CountryPickerTheme(
       accentColor:
           other?.accentColor ?? theme?.accentColor ?? defaults.accentColor,
-      backgroundColor: other?.backgroundColor ??
+      backgroundColor:
+          other?.backgroundColor ??
           theme?.backgroundColor ??
           defaults.backgroundColor,
       barrierColor:
           other?.barrierColor ?? theme?.barrierColor ?? defaults.barrierColor,
       dividerColor:
           other?.dividerColor ?? theme?.dividerColor ?? defaults.dividerColor,
-      secondaryBackgroundColor: other?.secondaryBackgroundColor ??
+      secondaryBackgroundColor:
+          other?.secondaryBackgroundColor ??
           theme?.secondaryBackgroundColor ??
           defaults.secondaryBackgroundColor,
-      inputDecoration: other?.inputDecoration ??
+      inputDecoration:
+          other?.inputDecoration ??
           theme?.inputDecoration ??
           defaults.inputDecoration,
+      inputHeight:
+          other?.inputHeight ?? theme?.inputHeight ?? defaults.inputHeight,
       searchTextStyle: defaults.textStyle
           ?.merge(theme?.searchTextStyle)
           .merge(other?.searchTextStyle),
-      textStyle:
-          defaults.textStyle?.merge(theme?.textStyle).merge(other?.textStyle),
+      textStyle: defaults.textStyle
+          ?.merge(theme?.textStyle)
+          .merge(other?.textStyle),
       flagSize: other?.flagSize ?? theme?.flagSize ?? defaults.flagSize,
       padding: other?.padding ?? theme?.padding ?? defaults.padding,
       indent: other?.indent ?? theme?.indent ?? defaults.indent,
@@ -160,6 +170,9 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   /// The decoration used for the inputs.
   final InputDecoration? inputDecoration;
 
+  /// The height of the phone input.
+  final double inputHeight;
+
   /// The flag size.
   ///
   /// If null, set to `25`
@@ -188,28 +201,29 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     Color? dividerColor,
     Color? secondaryBackgroundColor,
     InputDecoration? inputDecoration,
-    TextStyle? searchTextStyle,
-    TextStyle? textStyle,
+    double? inputHeight,
     double? flagSize,
     double? padding,
     double? indent,
     double? radius,
-  }) =>
-      CountryPickerTheme(
-        accentColor: accentColor ?? this.accentColor,
-        backgroundColor: backgroundColor ?? this.backgroundColor,
-        barrierColor: barrierColor ?? this.barrierColor,
-        dividerColor: dividerColor ?? this.dividerColor,
-        secondaryBackgroundColor:
-            secondaryBackgroundColor ?? this.secondaryBackgroundColor,
-        inputDecoration: inputDecoration ?? this.inputDecoration,
-        searchTextStyle: searchTextStyle ?? this.searchTextStyle,
-        textStyle: textStyle ?? this.textStyle,
-        flagSize: flagSize ?? this.flagSize,
-        padding: padding ?? this.padding,
-        indent: indent ?? this.indent,
-        radius: radius ?? this.radius,
-      );
+    TextStyle? searchTextStyle,
+    TextStyle? textStyle,
+  }) => CountryPickerTheme(
+    accentColor: accentColor ?? this.accentColor,
+    backgroundColor: backgroundColor ?? this.backgroundColor,
+    barrierColor: barrierColor ?? this.barrierColor,
+    dividerColor: dividerColor ?? this.dividerColor,
+    secondaryBackgroundColor:
+        secondaryBackgroundColor ?? this.secondaryBackgroundColor,
+    inputDecoration: inputDecoration ?? this.inputDecoration,
+    inputHeight: inputHeight ?? this.inputHeight,
+    flagSize: flagSize ?? this.flagSize,
+    padding: padding ?? this.padding,
+    indent: indent ?? this.indent,
+    radius: radius ?? this.radius,
+    searchTextStyle: searchTextStyle ?? this.searchTextStyle,
+    textStyle: textStyle ?? this.textStyle,
+  );
 
   /// Controls how the properties change on theme changes
   @override
@@ -233,6 +247,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         other.searchTextStyle,
         t,
       ),
+      inputHeight: ui.lerpDouble(inputHeight, other.inputHeight, t),
       textStyle: TextStyle.lerp(textStyle, other.textStyle, t),
       flagSize: ui.lerpDouble(flagSize, other.flagSize, t),
       padding: ui.lerpDouble(padding, other.padding, t),
@@ -243,19 +258,20 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
 
   @override
   int get hashCode => Object.hashAll([
-        accentColor,
-        backgroundColor,
-        barrierColor,
-        dividerColor,
-        inputDecoration,
-        secondaryBackgroundColor,
-        searchTextStyle,
-        textStyle,
-        flagSize,
-        padding,
-        indent,
-        radius,
-      ]);
+    accentColor,
+    backgroundColor,
+    barrierColor,
+    dividerColor,
+    inputDecoration,
+    inputHeight,
+    secondaryBackgroundColor,
+    searchTextStyle,
+    textStyle,
+    flagSize,
+    padding,
+    indent,
+    radius,
+  ]);
 
   @override
   bool operator ==(Object other) {
@@ -268,6 +284,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         other.secondaryBackgroundColor == secondaryBackgroundColor &&
         other.searchTextStyle == searchTextStyle &&
         other.inputDecoration == inputDecoration &&
+        other.inputHeight == inputHeight &&
         other.textStyle == textStyle &&
         other.flagSize == flagSize &&
         other.padding == padding &&
@@ -312,6 +329,13 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
           'inputDecoration',
           inputDecoration,
           defaultValue: const InputDecoration(),
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<double>(
+          'inputHeight',
+          inputHeight,
+          defaultValue: kDefaultInputHeight,
         ),
       )
       ..add(
@@ -405,14 +429,8 @@ class InheritedCountryPickerTheme extends InheritedTheme {
       data != oldWidget.data;
 
   @override
-  Widget wrap(
-    BuildContext context,
-    Widget child,
-  ) =>
-      InheritedCountryPickerTheme(
-        data: data,
-        child: child,
-      );
+  Widget wrap(BuildContext context, Widget child) =>
+      InheritedCountryPickerTheme(data: data, child: child);
 }
 
 /// Default [CountryPickerTheme]
@@ -429,40 +447,44 @@ final class _CountryPickerTheme$Default extends CountryPickerTheme {
     Color? dividerColor,
     Color? secondaryBackgroundColor,
     InputDecoration? inputDecoration,
+    int? inputHeight,
     double? radius,
     double? padding,
     double? indent,
     double? flagSize,
-    super.textStyle,
+    TextStyle? textStyle,
     super.searchTextStyle,
   }) : super.raw(
-          accentColor: accentColor ??
-              CupertinoDynamicColor.resolve(
-                CupertinoColors.systemBlue,
-                context,
-              ),
-          secondaryBackgroundColor: secondaryBackgroundColor ??
-              CupertinoDynamicColor.resolve(
-                CupertinoColors.secondarySystemBackground,
-                context,
-              ),
-          backgroundColor: backgroundColor ??
-              CupertinoDynamicColor.resolve(
-                CupertinoColors.systemBackground,
-                context,
-              ),
-          barrierColor: barrierColor ?? kCupertinoModalBarrierColor,
-          dividerColor: dividerColor ??
-              CupertinoDynamicColor.resolve(
-                CupertinoColors.opaqueSeparator,
-                context,
-              ),
-          inputDecoration: inputDecoration ?? const InputDecoration(),
-          radius: radius ?? kDefaultRadius,
-          indent: indent ?? kDefaultIndent,
-          padding: padding ?? kDefaultPadding,
-          flagSize: flagSize ?? kDefaultFlagSize,
-        );
+         accentColor:
+             accentColor ??
+             CupertinoDynamicColor.resolve(CupertinoColors.systemBlue, context),
+         secondaryBackgroundColor:
+             secondaryBackgroundColor ??
+             CupertinoDynamicColor.resolve(
+               CupertinoColors.secondarySystemBackground,
+               context,
+             ),
+         backgroundColor:
+             backgroundColor ??
+             CupertinoDynamicColor.resolve(
+               CupertinoColors.systemBackground,
+               context,
+             ),
+         barrierColor: barrierColor ?? kCupertinoModalBarrierColor,
+         dividerColor:
+             dividerColor ??
+             CupertinoDynamicColor.resolve(
+               CupertinoColors.opaqueSeparator,
+               context,
+             ),
+         inputDecoration: inputDecoration ?? const InputDecoration(),
+         inputHeight: kDefaultInputHeight,
+         radius: radius ?? kDefaultRadius,
+         indent: indent ?? kDefaultIndent,
+         padding: padding ?? kDefaultPadding,
+         flagSize: flagSize ?? kDefaultFlagSize,
+         textStyle: textStyle ?? Theme.of(context).textTheme.bodyLarge,
+       );
 
   /// A build context used to resolve [CupertinoDynamicColor]s defined in this
   /// theme.
