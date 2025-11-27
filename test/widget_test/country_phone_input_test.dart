@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoButton;
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
@@ -80,7 +81,7 @@ void main() => group('CountryPhoneInput -', () {
       expect(find.byType(CountryPhoneInput), findsOneWidget);
 
       // Tapping on the country code area
-      await tester.tap(find.byType(GestureDetector));
+      await tester.tap(find.byType(CupertinoButton));
       await tester.pumpAndSettle();
 
       // Verify the bottom sheet is present
@@ -113,7 +114,7 @@ void main() => group('CountryPhoneInput -', () {
 
       expect(find.byType(CountryPhoneInput), findsOneWidget);
 
-      await tester.tap(find.byType(GestureDetector));
+      await tester.tap(find.byType(CupertinoButton));
       await tester.pumpAndSettle(const Duration(seconds: 3));
 
       // Check if the ListView containing countries is present
