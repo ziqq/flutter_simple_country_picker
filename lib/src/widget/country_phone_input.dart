@@ -102,8 +102,8 @@ class CountryPhoneInput extends StatefulWidget {
 mixin _CountryPhoneInputStateMixin on State<CountryPhoneInput> {
   final ValueNotifier<CountryPickerTheme?> _pickerTheme = ValueNotifier(null);
   late final TextEditingController _phoneController;
-  late final ValueNotifier<String> _controller;
   late final CountryInputFormatter _formater;
+  late ValueNotifier<String> _controller;
   late ValueNotifier<Country?> _selected;
 
   @override

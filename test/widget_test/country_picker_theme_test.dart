@@ -25,7 +25,7 @@ void main() => group('CountryPickerTheme -', () {
     );
 
     await tester.pumpWidget(
-      WidgetTestHelper.createWidgetUnderTest(
+      createWidgetUnderTest(
         locale: const Locale('en'),
         builder: (context) => Scaffold(
           body: InheritedCountryPickerTheme(
@@ -35,6 +35,7 @@ void main() => group('CountryPickerTheme -', () {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.byKey(_key), findsOneWidget);
 
@@ -45,7 +46,7 @@ void main() => group('CountryPickerTheme -', () {
 
   testWidgets('resolves correct values', (tester) async {
     await tester.pumpWidget(
-      WidgetTestHelper.createWidgetUnderTest(
+      createWidgetUnderTest(
         builder: (context) => Scaffold(
           body: InheritedCountryPickerTheme(
             data: CountryPickerTheme.resolve(context),
@@ -54,6 +55,7 @@ void main() => group('CountryPickerTheme -', () {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.byKey(_key), findsOneWidget);
 
@@ -81,13 +83,14 @@ void main() => group('CountryPickerTheme -', () {
     );
 
     await tester.pumpWidget(
-      WidgetTestHelper.createWidgetUnderTest(
+      createWidgetUnderTest(
         builder: (context) => InheritedCountryPickerTheme(
           data: themeData,
           child: const Scaffold(body: SizedBox.shrink(key: _key)),
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.byKey(_key), findsOneWidget);
 
@@ -111,10 +114,11 @@ void main() => group('CountryPickerTheme -', () {
 
   testWidgets('with fallback to defaults', (tester) async {
     await tester.pumpWidget(
-      WidgetTestHelper.createWidgetUnderTest(
+      createWidgetUnderTest(
         builder: (context) => const Scaffold(body: SizedBox.shrink(key: _key)),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.byKey(_key), findsOneWidget);
 
@@ -124,7 +128,7 @@ void main() => group('CountryPickerTheme -', () {
     expect(defaultTheme.accentColor, CupertinoColors.systemBlue);
     expect(defaultTheme.backgroundColor, CupertinoColors.systemBackground);
     expect(defaultTheme.barrierColor, kCupertinoModalBarrierColor);
-    expect(defaultTheme.textStyle?.fontSize, null);
+    expect(defaultTheme.textStyle?.fontSize, 16.0);
     expect(defaultTheme.flagSize, 25.0);
   });
 });

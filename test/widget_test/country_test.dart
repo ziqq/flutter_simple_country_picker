@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../util/widget_test_helper.dart';
 
-const _key = Key('country');
+const _key = ValueKey<String>('country');
 
 void main() => group('Country -', () {
   group('getTranslatedName', () {
@@ -25,12 +25,13 @@ void main() => group('Country -', () {
       });
 
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
+        createWidgetUnderTest(
           locale: const Locale('en'),
           builder: (context) =>
               const Scaffold(key: _key, body: SizedBox.shrink()),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byKey(_key), findsOneWidget);
 

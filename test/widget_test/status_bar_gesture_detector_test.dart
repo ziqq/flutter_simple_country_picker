@@ -15,7 +15,7 @@ void main() => group('StatusBarGestureDetector -', () {
     var tapped = false;
 
     await tester.pumpWidget(
-      WidgetTestHelper.createWidgetUnderTest(
+      createWidgetUnderTest(
         locale: const Locale('en'),
         builder: (context) => Scaffold(
           body: SafeArea(
@@ -27,7 +27,7 @@ void main() => group('StatusBarGestureDetector -', () {
               child: ListView.builder(
                 key: _key,
                 itemCount: 1000,
-                itemBuilder: (_, __) => const SizedBox(height: 56),
+                itemBuilder: (_, _) => const SizedBox(height: 56),
               ),
             ),
           ),

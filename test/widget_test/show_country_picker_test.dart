@@ -10,7 +10,7 @@ import '../util/widget_test_helper.dart';
 void main() => group('showCountryPicker -', () {
   testWidgets('displays bottom sheet with country list view', (tester) async {
     await tester.pumpWidget(
-      WidgetTestHelper.createWidgetUnderTest(
+      createWidgetUnderTest(
         builder: (context) => Scaffold(
           body: Builder(
             builder: (context) => ElevatedButton(
@@ -23,6 +23,7 @@ void main() => group('showCountryPicker -', () {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Show Picker'));
     await tester.pumpAndSettle();
@@ -37,7 +38,7 @@ void main() => group('showCountryPicker -', () {
     Country? selectedCountry;
 
     await tester.pumpWidget(
-      WidgetTestHelper.createWidgetUnderTest(
+      createWidgetUnderTest(
         builder: (context) => Scaffold(
           body: Builder(
             builder: (context) => ElevatedButton(
@@ -53,6 +54,7 @@ void main() => group('showCountryPicker -', () {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Show Picker'));
     await tester.pumpAndSettle();
@@ -71,11 +73,12 @@ void main() => group('showCountryPicker -', () {
     final themeData = CountryPickerTheme(
       accentColor: CupertinoColors.systemBlue,
       backgroundColor: Colors.white,
+      secondaryBackgroundColor: Colors.blueAccent,
       barrierColor: Colors.black54,
       dividerColor: Colors.grey,
-      secondaryBackgroundColor: Colors.blueAccent,
       textStyle: const TextStyle(fontSize: 16),
       searchTextStyle: const TextStyle(fontSize: 14),
+      inputHeight: 70,
       flagSize: 25,
       padding: 10,
       indent: 10,
@@ -84,12 +87,12 @@ void main() => group('showCountryPicker -', () {
     );
 
     await tester.pumpWidget(
-      WidgetTestHelper.createWidgetUnderTest(
-        builder: (context) => Scaffold(
-          body: InheritedCountryPickerTheme(
-            data: themeData,
-            child: Builder(
-              builder: (context) => ElevatedButton(
+      createWidgetUnderTest(
+        builder: (context) => InheritedCountryPickerTheme(
+          data: themeData,
+          child: Builder(
+            builder: (context) => Scaffold(
+              body: ElevatedButton(
                 onPressed: () {
                   showCountryPicker(context: context, onSelect: (_) {});
                 },
@@ -100,6 +103,7 @@ void main() => group('showCountryPicker -', () {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Show Picker'));
     await tester.pumpAndSettle();
@@ -116,7 +120,7 @@ void main() => group('showCountryPicker -', () {
 
   testWidgets('shows search bar when showSearch is true', (tester) async {
     await tester.pumpWidget(
-      WidgetTestHelper.createWidgetUnderTest(
+      createWidgetUnderTest(
         builder: (context) => Scaffold(
           body: Builder(
             builder: (context) => ElevatedButton(
@@ -133,6 +137,7 @@ void main() => group('showCountryPicker -', () {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Show Picker'));
     await tester.pumpAndSettle();
@@ -145,7 +150,7 @@ void main() => group('showCountryPicker -', () {
     var onDoneCalled = false;
 
     await tester.pumpWidget(
-      WidgetTestHelper.createWidgetUnderTest(
+      createWidgetUnderTest(
         builder: (context) => Scaffold(
           body: Builder(
             builder: (context) => ElevatedButton(
@@ -153,7 +158,7 @@ void main() => group('showCountryPicker -', () {
                 showCountryPicker(
                   context: context,
                   onSelect: (_) {},
-                  onDone: () => onDoneCalled = true,
+                  whenComplete: () => onDoneCalled = true,
                 );
               },
               child: const Text('Show Picker'),
@@ -162,6 +167,7 @@ void main() => group('showCountryPicker -', () {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Show Picker'));
     await tester.pumpAndSettle();
@@ -188,7 +194,7 @@ void main() => group('showCountryPicker -', () {
     );
 
     await tester.pumpWidget(
-      WidgetTestHelper.createWidgetUnderTest(
+      createWidgetUnderTest(
         builder: (context) => Scaffold(
           body: Builder(
             builder: (context) => ElevatedButton(
@@ -205,6 +211,7 @@ void main() => group('showCountryPicker -', () {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Show Picker'));
     await tester.pumpAndSettle();

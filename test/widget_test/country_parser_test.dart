@@ -22,9 +22,8 @@ void main() => group('CountryParser -', () {
   testWidgets('should display selected country based on country name', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      WidgetTestHelper.createWidgetUnderTest(builder: (_) => mockWidget),
-    );
+    await tester.pumpWidget(createWidgetUnderTest(builder: (_) => mockWidget));
+    await tester.pumpAndSettle();
 
     expect(find.byKey(_key), findsOneWidget);
 
@@ -42,9 +41,8 @@ void main() => group('CountryParser -', () {
   });
 
   testWidgets('should throw error for invalid country name', (tester) async {
-    await tester.pumpWidget(
-      WidgetTestHelper.createWidgetUnderTest(builder: (_) => mockWidget),
-    );
+    await tester.pumpWidget(createWidgetUnderTest(builder: (_) => mockWidget));
+    await tester.pumpAndSettle();
 
     expect(find.byKey(_key), findsOneWidget);
 
@@ -66,11 +64,12 @@ void main() => group('CountryParser -', () {
     tester,
   ) async {
     await tester.pumpWidget(
-      WidgetTestHelper.createWidgetUnderTest(
+      createWidgetUnderTest(
         locale: const Locale.fromSubtags(languageCode: 'es'),
         builder: (_) => mockWidget,
       ),
     );
+    await tester.pumpAndSettle();
 
     final context = tester.firstElement(find.byKey(_key));
 
@@ -94,7 +93,7 @@ void main() => group('CountryParser -', () {
     tester,
   ) async {
     await tester.pumpWidget(
-      WidgetTestHelper.createWidgetUnderTest(
+      createWidgetUnderTest(
         locale: const Locale.fromSubtags(languageCode: 'de'),
         builder: (_) => mockWidget,
       ),
@@ -105,7 +104,6 @@ void main() => group('CountryParser -', () {
       'Germany',
       locales: null, // No locale provided
     );
-
     expect(country.name, 'Germany');
     expect(country.countryCode, 'DE');
   });
@@ -114,14 +112,13 @@ void main() => group('CountryParser -', () {
     tester,
   ) async {
     await tester.pumpWidget(
-      WidgetTestHelper.createWidgetUnderTest(
+      createWidgetUnderTest(
         locale: const Locale.fromSubtags(languageCode: 'us'),
         builder: (_) => mockWidget,
       ),
     );
 
     final country = CountryParser.parseCountryCode('US');
-
     expect(country.name, 'United States');
     expect(country.countryCode, 'US');
   });
@@ -129,12 +126,8 @@ void main() => group('CountryParser -', () {
   testWidgets('should handle tryParseCountryCode with invalid code', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      WidgetTestHelper.createWidgetUnderTest(builder: (_) => mockWidget),
-    );
-
+    await tester.pumpWidget(createWidgetUnderTest(builder: (_) => mockWidget));
     final country = CountryParser.tryParseCountryCode('InvalidCode');
-
     expect(country, isNull); // should return null for invalid country code
   });
 });

@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../util/widget_test_helper.dart';
 
-const ValueKey<String> _key = ValueKey<String>('country_input_text_field');
+const _key = ValueKey<String>('country_input_text_field');
 
 void main() {
   group('CountryInputFormatter -', () {
@@ -13,8 +13,8 @@ void main() {
     late Widget testWidget;
 
     setUp(() {
-      controller = TextEditingController();
       formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
+      controller = TextEditingController();
       testWidget = TextField(
         key: _key,
         controller: controller,
@@ -29,19 +29,18 @@ void main() {
 
     testWidgets('should format input correctly', (tester) async {
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
-          builder: (_) => Scaffold(body: testWidget),
-        ),
+        createWidgetUnderTest(builder: (_) => Scaffold(body: testWidget)),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byType(TextField), findsOneWidget);
 
       // Вводим текст в TextField
-      await tester.enterText(find.byKey(_key), '1234567890');
+      await tester.enterText(find.byKey(_key), '12345678900');
       await tester.pump();
 
       // Проверяем отформатированный текст
-      expect(controller.text, '+1 (234) 567-89-0');
+      expect(controller.text, '+1 (234) 567-89-00');
     });
 
     testWidgets('should correctly report isFill property', (tester) async {
@@ -49,7 +48,7 @@ void main() {
       final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
 
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
+        createWidgetUnderTest(
           builder: (_) => Scaffold(
             body: TextField(
               key: _key,
@@ -59,6 +58,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Enter a partial number
       await tester.enterText(find.byKey(_key), formatter.unmaskText('12345'));
@@ -110,7 +110,7 @@ void main() {
       final controller = TextEditingController();
 
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
+        createWidgetUnderTest(
           builder: (_) => Scaffold(
             body: TextField(
               key: _key,

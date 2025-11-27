@@ -5,19 +5,20 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../util/widget_test_helper.dart';
 
-const _key = Key('country_phone_input');
+const _key = ValueKey<String>('country_phone_input');
 
 void main() => group('CountryPhoneInput -', () {
   group('initialization -', () {
     testWidgets('should display the default country '
         'if no initial country is provided', (tester) async {
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
+        createWidgetUnderTest(
           locale: const Locale('en'),
           builder: (context) =>
               const Scaffold(key: _key, body: CountryPhoneInput()),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byKey(_key), findsOneWidget);
 
@@ -45,7 +46,7 @@ void main() => group('CountryPhoneInput -', () {
       final controller = ValueNotifier<String>('+447911123456');
 
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
+        createWidgetUnderTest(
           locale: const Locale('en'),
           builder: (context) => Scaffold(
             key: _key,
@@ -56,6 +57,8 @@ void main() => group('CountryPhoneInput -', () {
           ),
         ),
       );
+      await tester.pumpAndSettle();
+
       final phoneField = find.byType(TextFormField);
       expect(phoneField, findsOneWidget);
       find.widgetWithText(TextFormField, '+447911123456');
@@ -67,11 +70,12 @@ void main() => group('CountryPhoneInput -', () {
       tester,
     ) async {
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
+        createWidgetUnderTest(
           locale: const Locale('en'),
           builder: (context) => const Scaffold(body: CountryPhoneInput()),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byType(CountryPhoneInput), findsOneWidget);
 
@@ -99,12 +103,13 @@ void main() => group('CountryPhoneInput -', () {
       });
 
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
+        createWidgetUnderTest(
           locale: const Locale('en'),
           builder: (context) =>
               Scaffold(body: CountryPhoneInput(initialCountry: initialCountry)),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byType(CountryPhoneInput), findsOneWidget);
 
@@ -132,7 +137,7 @@ void main() => group('CountryPhoneInput -', () {
       const customPlaceholder = 'Enter phone number';
 
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
+        createWidgetUnderTest(
           locale: const Locale('en'),
           builder: (context) => const Scaffold(
             key: _key,
@@ -140,6 +145,7 @@ void main() => group('CountryPhoneInput -', () {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byKey(_key), findsOneWidget);
       expect(find.text(customPlaceholder), findsOneWidget);
@@ -165,7 +171,7 @@ void main() => group('CountryPhoneInput -', () {
       });
 
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
+        createWidgetUnderTest(
           locale: const Locale('en'),
           builder: (context) => Scaffold(
             key: _key,
@@ -173,6 +179,7 @@ void main() => group('CountryPhoneInput -', () {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final phoneInputField = find.byType(TextFormField);
       await tester.enterText(phoneInputField, '12345678');
@@ -199,13 +206,14 @@ void main() => group('CountryPhoneInput -', () {
       );
 
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
+        createWidgetUnderTest(
           locale: const Locale('en'),
           builder: (context) => Scaffold(
             body: CountryPhoneInput(key: _key, initialCountry: initialCountry),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // 2. Verify phone code is "+7"
       expect(find.byKey(_key), findsOneWidget);
@@ -213,16 +221,16 @@ void main() => group('CountryPhoneInput -', () {
 
       // 3. Rebuild widget with updatedCountry
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
+        createWidgetUnderTest(
           locale: const Locale('en'),
           builder: (context) => Scaffold(
             body: CountryPhoneInput(key: _key, initialCountry: updatedCountry),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // 4. Pump and verify phone code is now "44"
-      await tester.pump();
       expect(find.textContaining('+1'), findsOneWidget);
     });
 
@@ -243,7 +251,7 @@ void main() => group('CountryPhoneInput -', () {
 
       // 2. Pump widget with oldController
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
+        createWidgetUnderTest(
           locale: const Locale('en'),
           builder: (context) => Scaffold(
             body: CountryPhoneInput(
@@ -254,16 +262,16 @@ void main() => group('CountryPhoneInput -', () {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // 3. Check text contains oldController value
-      await tester.pump();
       expect(find.byKey(_key), findsOneWidget);
       expect(find.textContaining('+7'), findsOneWidget);
       expect(find.textContaining('123 456 7890'), findsOneWidget);
 
       // 4. Rebuild with newController
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
+        createWidgetUnderTest(
           locale: const Locale('en'),
           builder: (context) => Scaffold(
             body: CountryPhoneInput(
@@ -274,9 +282,9 @@ void main() => group('CountryPhoneInput -', () {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // 5. Pump and verify text changed
-      await tester.pump();
       expect(find.byKey(_key), findsOneWidget);
       expect(find.textContaining('+7'), findsNothing);
       expect(find.textContaining('+1'), findsOneWidget);
@@ -290,7 +298,7 @@ void main() => group('CountryPhoneInput -', () {
       final controller = ValueNotifier<String>('+7 8 1234567');
 
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
+        createWidgetUnderTest(
           locale: const Locale('en'),
           builder: (context) => Scaffold(
             key: _key,
@@ -301,14 +309,14 @@ void main() => group('CountryPhoneInput -', () {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
-      await tester.pump();
       // Expect the leading "8" to remain since shouldReplace8=false
       expect(find.textContaining('8'), findsWidgets);
 
       // 2. Rebuild with shouldReplace8=true
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
+        createWidgetUnderTest(
           locale: const Locale('en'),
           builder: (context) => Scaffold(
             key: _key,
@@ -319,9 +327,9 @@ void main() => group('CountryPhoneInput -', () {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // 3. Pump and verify leading 8 is removed
-      await tester.pump();
       expect(find.textContaining('8'), findsNothing);
     });
   });

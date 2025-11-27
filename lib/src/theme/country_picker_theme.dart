@@ -122,7 +122,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       flagSize: other?.flagSize ?? theme?.flagSize ?? defaults.flagSize,
       padding: other?.padding ?? theme?.padding ?? defaults.padding,
       indent: other?.indent ?? theme?.indent ?? defaults.indent,
-      radius: other?.radius ?? defaults.radius,
+      radius: other?.radius ?? theme?.radius ?? defaults.radius,
     );
   }
 
@@ -171,6 +171,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   final InputDecoration? inputDecoration;
 
   /// The height of the phone input.
+  /// Default is `56.0`.
   final double inputHeight;
 
   /// The flag size.
@@ -190,7 +191,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
 
   /// The border radius of elements.
   ///
-  /// If null, set to `10.0`
+  /// If null, set to `12.0`
   final double radius;
 
   @override
@@ -384,7 +385,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         DiagnosticsProperty<double>(
           'radius',
           radius,
-          defaultValue: kDefaultIndent,
+          defaultValue: kDefaultRadius,
         ),
       );
   }
@@ -447,7 +448,7 @@ final class _CountryPickerTheme$Default extends CountryPickerTheme {
     Color? dividerColor,
     Color? secondaryBackgroundColor,
     InputDecoration? inputDecoration,
-    int? inputHeight,
+    double? inputHeight,
     double? radius,
     double? padding,
     double? indent,
@@ -478,7 +479,7 @@ final class _CountryPickerTheme$Default extends CountryPickerTheme {
                context,
              ),
          inputDecoration: inputDecoration ?? const InputDecoration(),
-         inputHeight: kDefaultInputHeight,
+         inputHeight: inputHeight ?? kDefaultInputHeight,
          radius: radius ?? kDefaultRadius,
          indent: indent ?? kDefaultIndent,
          padding: padding ?? kDefaultPadding,

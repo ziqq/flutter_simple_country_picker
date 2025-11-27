@@ -52,8 +52,6 @@ class _AppState extends State<App> {
     /// Example localization
     ExampleLocalization.delegate,
 
-    /// Order localization delegates is important
-    ///
     /// Add [CountriesLocalization] in app [localizationsDelegates]
     CountryLocalizations.delegate,
     GlobalWidgetsLocalizations.delegate,

@@ -20,7 +20,7 @@ void main() {
           .firstWhere((e) => e.countryCode == expectedCountry.countryCode);
 
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
+        createWidgetUnderTest(
           builder: (_) => const Scaffold(
             body: CountryScope(showPhoneCode: true, child: SizedBox()),
           ),
@@ -49,7 +49,7 @@ void main() {
           .toList(growable: false);
 
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
+        createWidgetUnderTest(
           builder: (_) => const Scaffold(
             body: CountryScope(showPhoneCode: true, child: SizedBox()),
           ),
@@ -76,7 +76,7 @@ void main() {
       final code = country.countryCode;
 
       await tester.pumpWidget(
-        WidgetTestHelper.createWidgetUnderTest(
+        createWidgetUnderTest(
           builder: (_) => const Scaffold(
             body: CountryScope(showPhoneCode: true, child: SizedBox()),
           ),
