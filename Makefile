@@ -20,11 +20,6 @@ help: ## Help dialog
 				@echo ''
 				@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-.DEFAULT_GOAL := all
-.PHONY: all
-all: ## build pipeline
-all: generate format check test
-
 .PHONY: precommit
 precommit: ## validate the branch before commit
 precommit: all
