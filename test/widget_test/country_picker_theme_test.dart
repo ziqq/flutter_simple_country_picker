@@ -128,7 +128,7 @@ void main() => group('CountryPickerTheme -', () {
     expect(defaultTheme.accentColor, CupertinoColors.systemBlue);
     expect(defaultTheme.backgroundColor, CupertinoColors.systemBackground);
     expect(defaultTheme.barrierColor, kCupertinoModalBarrierColor);
-    expect(defaultTheme.textStyle?.fontSize, 16.0);
-    expect(defaultTheme.flagSize, 25.0);
+    expect(defaultTheme.textStyle?.fontSize, 17.0);
+    expect(defaultTheme.flagSize, 22.0);
   });
 });
