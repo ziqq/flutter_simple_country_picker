@@ -57,8 +57,22 @@ final class CountryLocalizations {
   /// ```dart
   /// CountryLocalizations.of(context).countryName(countryCode: country.countryCode),
   /// ```
-  static CountryLocalizations? of(BuildContext context) =>
-      Localizations.of<CountryLocalizations>(context, CountryLocalizations);
+  // static CountryLocalizations of(BuildContext context) =>
+  //     Localizations.of<CountryLocalizations>(context, CountryLocalizations);
+
+  /// Get localization instance for the widget structure.
+  static CountryLocalizations of(BuildContext context) =>
+      switch (Localizations.of<CountryLocalizations>(
+        context,
+        CountryLocalizations,
+      )) {
+        CountryLocalizations localization => localization,
+        _ => throw ArgumentError(
+          'Out of scope, not found inherited widget '
+              'a CountryLocalizations of the exact type',
+          'out_of_scope',
+        ),
+      };
 
   /// A [LocalizationsDelegate] that uses [_CountryLocalizationsDelegate.load]
   /// to create an instance of this class.
@@ -116,10 +130,17 @@ final class CountryLocalizations {
 
   /// The localized country name for the given country code.
   String? getCountryNameByCode(String countryCode) =>
-      toLocalizedString(countryCode);
+      _toLocalizedString(countryCode);
+
+  /// The formatted localized country name for the given country code.
+  String? getFormatedCountryNameByCode(String countryCode) {
+    final name = getCountryNameByCode(countryCode);
+    if (name == null) return null;
+    return name.replaceAll(CountryLocalizations.countryNameRegExp, ' ');
+  }
 
   /// The localized string for the given key.
-  String? toLocalizedString(String key) {
+  String? _toLocalizedString(String key) {
     switch (locale.languageCode) {
       case 'zh':
         switch (locale.scriptCode) {
@@ -199,6 +220,21 @@ final class CountryLocalizations {
         return en[key];
     }
   }
+
+  /// The localized label for cancel button.
+  String get cancelButton => _toLocalizedString('cancelButton') ?? 'Cancel';
+
+  /// The localized placeholder for phone number input.
+  String get phonePlaceholder =>
+      _toLocalizedString('phonePlaceholder') ?? 'Phone number';
+
+  /// The localized label for select country header.
+  String get selectCountryLabel =>
+      _toLocalizedString('selectCountryLabel') ?? 'Select your country';
+
+  /// The localized placeholder for search field.
+  String get searchPlaceholder =>
+      _toLocalizedString('searchPlaceholder') ?? 'Search';
 }
 
 class _CountryLocalizationsDelegate

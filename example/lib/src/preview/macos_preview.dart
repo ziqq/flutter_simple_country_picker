@@ -254,9 +254,9 @@ class _CountryPicker$MacOSState extends State<CountryPicker$MacOS> {
     );
     return countries
         .map((e) {
-          final title = localization
-              ?.getCountryNameByCode(e.countryCode)
-              ?.replaceAll(CountryLocalizations.countryNameRegExp, ' ');
+          final title = localization.getFormatedCountryNameByCode(
+            e.countryCode,
+          );
           return PullDownMenuItem(
             itemTheme: itemTheme,
             iconWidget: Text(
@@ -363,8 +363,7 @@ class _CountryPicker$MacOSState extends State<CountryPicker$MacOS> {
               selected ??
               state.countries.firstWhereOrNull(
                 (e) =>
-                    e.name ==
-                    localizations?.getCountryNameByCode(e.countryCode),
+                    e.name == localizations.getCountryNameByCode(e.countryCode),
               ) ??
               state.countries[0];
 

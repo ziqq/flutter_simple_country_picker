@@ -1,3 +1,6 @@
+## 0.5.0
+- **ADDED**: Adaptive modal presentation for `iOS` platform in `showCountryPicker` function
+
 ## 0.4.0
 - **ADDED**: `CountryPhoneInput.extended` constructor for extended functionality
 - **CHANGED**: Updated documentation for `CountryPhoneInput` widget

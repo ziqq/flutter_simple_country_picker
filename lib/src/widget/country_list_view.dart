@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
@@ -7,7 +8,6 @@ import 'package:flutter_simple_country_picker/src/controller/country_controller.
 import 'package:flutter_simple_country_picker/src/controller/country_provider.dart';
 import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 import 'package:flutter_simple_country_picker/src/widget/status_bar_gesture_detector.dart';
-import 'package:meta/meta.dart';
 
 /// {@template country_list_view}
 /// CountryListView widget.
@@ -23,6 +23,8 @@ class CountryListView extends StatefulWidget {
     this.filter,
     this.selected,
     this.onSelect,
+    this.scrollController,
+    this.adaptive = false,
     this.autofocus = false,
     @Deprecated(
       'Use autofocus instead. This will be removed in v1.0.0 releases.',
@@ -38,6 +40,9 @@ class CountryListView extends StatefulWidget {
          filter == null || exclude == null,
          'Cannot provide both filter and exclude',
        );
+
+  /// An optional argument for adaptive modal presentation.
+  final bool adaptive;
 
   /// An optional argument for autofocus the search bar.
   final bool autofocus;
@@ -58,6 +63,9 @@ class CountryListView extends StatefulWidget {
 
   /// Whether to use haptic feedback on user interactions.
   final bool useHaptickFeedback;
+
+  /// Scroll controller.
+  final ScrollController? scrollController;
 
   /// {@macro select_country_callback}
   final SelectCountryCallback? onSelect;
@@ -85,12 +93,13 @@ class CountryListView extends StatefulWidget {
 
 /// State for [CountryListView].
 class _CountriesListViewState extends State<CountryListView> {
-  final ScrollController _scrollController = ScrollController();
+  late final ScrollController _scrollController;
   late final CountryController _controller;
 
   @override
   void initState() {
     super.initState();
+    _scrollController = widget.scrollController ?? ScrollController();
     _controller = CountryController(
       provider: CountryProvider(),
       favorite: widget.favorite,
@@ -108,7 +117,7 @@ class _CountriesListViewState extends State<CountryListView> {
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    if (widget.scrollController == null) _scrollController.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -144,8 +153,9 @@ class _CountriesListViewState extends State<CountryListView> {
 
   /// Build search bar widget.
   Widget _buildSearchBar() {
-    final localization = CountryLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final pickerTheme = CountryPickerTheme.resolve(context);
+    final localization = CountryLocalizations.of(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -169,13 +179,16 @@ class _CountriesListViewState extends State<CountryListView> {
                     autofocus: widget.autofocus || widget.useAutofocus,
                     controller: _controller.search,
                     onSuffixTap: _controller.search?.clear,
-                    placeholder: localization?.toLocalizedString(
-                      'searchPlaceholder',
+                    placeholder: localization.searchPlaceholder,
+                    style: const TextStyle(fontWeight: FontWeight.w400),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(pickerTheme.radius),
                     ),
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      color: Theme.of(context).textTheme.bodyLarge?.color,
-                    ),
+                    backgroundColor: isDark
+                        ? pickerTheme.backgroundColor?.withValues(
+                            alpha: widget.adaptive ? 1 : .5,
+                          )
+                        : null,
                     suffixInsets: EdgeInsetsDirectional.only(
                       end: pickerTheme.indent / 2,
                     ),
@@ -190,7 +203,10 @@ class _CountriesListViewState extends State<CountryListView> {
                   padding: EdgeInsets.zero,
                   sizeStyle: CupertinoButtonSize.small,
                   child: Text(
-                    localization?.toLocalizedString('cancelButton') ?? 'Cancel',
+                    localization.cancelButton,
+                    style: pickerTheme.textStyle?.copyWith(
+                      color: pickerTheme.accentColor,
+                    ),
                   ),
                   onPressed: () {
                     if (widget.useHaptickFeedback) {
@@ -223,67 +239,75 @@ class _CountriesListViewState extends State<CountryListView> {
 
   @override
   Widget build(BuildContext context) {
-    final pickerTheme = CountryPickerTheme.resolve(context);
+    final gestureInsets = MediaQuery.systemGestureInsetsOf(context);
+    final viewPadding = MediaQuery.viewPaddingOf(context);
     final localization = CountryLocalizations.of(context);
-    final child = GestureDetector(
-      onTap: _unfocus,
-      child: StatusBarGestureDetector(
-        onTap: (_) => StatusBarGestureDetector.scrollToTop(_scrollController),
-        child: CustomScrollView(
-          controller: _scrollController,
-          slivers: <Widget>[
-            // --- Title --- //
-            ValueListenableBuilder(
-              valueListenable: _controller,
-              builder: (context, state, _) {
-                if (state.useGroup) {
-                  return const SliverToBoxAdapter(child: SizedBox.shrink());
-                }
-                return SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      left: pickerTheme.padding,
-                      right: pickerTheme.padding,
-                      top: pickerTheme.padding / 2,
-                      bottom: pickerTheme.padding / 2,
-                    ),
-                    child: Text(
-                      localization?.toLocalizedString('selectCountryLabel') ??
-                          'Select your country',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-
-            // --- Countries list --- //
-            _CountriesList(
-              controller: _controller,
-              selected: widget.selected,
-              onSelect: widget.onSelect,
-            ),
-          ],
-        ),
-      ),
-    );
+    final pickerTheme = CountryPickerTheme.resolve(context);
     return Scaffold(
       backgroundColor: pickerTheme.backgroundColor,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: ValueListenableBuilder(
           valueListenable: _controller,
-          // TODO(ziqq): Refactor to avoid ignore
-          // Anton Ustinoff <a.a.ustinoff@gmail.com>, 26 November 2025
-          // ignore: unnecessary_underscores
-          builder: (_, state, __) => widget.showSearch && state.useGroup
+          builder: (_, state, _) => widget.showSearch && state.useGroup
               ? _buildSearchBar()
               : _buildDivider(),
         ),
       ),
-      body: child,
+      body: GestureDetector(
+        onTap: _unfocus,
+        child: StatusBarGestureDetector(
+          onTap: (_) => StatusBarGestureDetector.scrollToTop(_scrollController),
+          child: CustomScrollView(
+            controller: _scrollController,
+            slivers: <Widget>[
+              // --- Title --- //
+              ValueListenableBuilder(
+                valueListenable: _controller,
+                builder: (context, state, _) {
+                  if (state.useGroup) {
+                    return const SliverToBoxAdapter(child: SizedBox.shrink());
+                  }
+                  return SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        left: pickerTheme.padding,
+                        right: pickerTheme.padding,
+                        top: pickerTheme.padding / 2,
+                        bottom: pickerTheme.padding / 2,
+                      ),
+                      child: Text(
+                        localization.selectCountryLabel,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+
+              // --- Countries list --- //
+              _CountriesList(
+                controller: _controller,
+                selected: widget.selected,
+                onSelect: widget.onSelect,
+              ),
+
+              // --- Bottom spacer --- //
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: viewPadding.bottom > 0
+                      ? viewPadding.bottom
+                      : gestureInsets.bottom > 0
+                      ? gestureInsets.bottom
+                      : pickerTheme.padding,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -331,17 +355,17 @@ class _CountriesListState extends State<_CountriesList> {
     widget.controller.removeListener(_groupByName);
   }
 
-  /// Get grouped countries by name initial letter.
+  /// Get grouped countries by name as initial letter.
   Map<String, List<Country>>? _getGroupedCountries() {
     if (!mounted) return null;
     final localization = CountryLocalizations.of(context);
     final state = widget.controller.state;
     final countries = state.countries
-        .map(
+        .map<Country>(
           (country) => country.copyWith(
-            nameLocalized: localization
-                ?.getCountryNameByCode(country.countryCode)
-                ?.replaceAll(CountryLocalizations.countryNameRegExp, ' '),
+            nameLocalized: localization.getFormatedCountryNameByCode(
+              country.countryCode,
+            ),
           ),
         )
         .where(
@@ -349,6 +373,7 @@ class _CountriesListState extends State<_CountriesList> {
               country.nameLocalized != null &&
               (country.nameLocalized?.isNotEmpty ?? false),
         )
+        .whereType<Country>()
         .toList(growable: false);
     final groupedBy = groupBy(countries, (c) => c.nameLocalized![0]);
     return Map<String, List<Country>>.fromEntries(
@@ -356,6 +381,7 @@ class _CountriesListState extends State<_CountriesList> {
     );
   }
 
+  /// Group countries by name as initial letter.
   void _groupByName() {
     if (!mounted || !widget.controller.state.useGroup) return;
     final pickerTheme = CountryPickerTheme.resolve(context);
@@ -384,10 +410,13 @@ class _CountriesListState extends State<_CountriesList> {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         key,
-                        style: const TextStyle(
+                        style: TextStyle(
                           height: 1,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          fontWeight: switch (defaultTargetPlatform) {
+                            TargetPlatform.iOS => FontWeight.w700,
+                            _ => FontWeight.w600,
+                          },
                         ),
                       ),
                     ),
@@ -395,16 +424,23 @@ class _CountriesListState extends State<_CountriesList> {
                 ),
               ),
             ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate((context, index) {
+            SliverList.separated(
+              separatorBuilder: (_, _) => Divider(
+                height: 1,
+                thickness: 1,
+                indent: pickerTheme.padding,
+                endIndent: pickerTheme.padding,
+                color: pickerTheme.dividerColor,
+              ),
+              itemBuilder: (context, index) {
                 final country = countries[index];
                 return _CountryListTile(
                   key: ValueKey<String>(country.e164Key),
-                  country: country,
                   onSelect: widget.onSelect,
-                  useBorder: index < countries.length - 1,
+                  country: country,
                 );
-              }, childCount: countries.length),
+              },
+              itemCount: countries.length,
             ),
           ],
         ),
@@ -417,34 +453,37 @@ class _CountriesListState extends State<_CountriesList> {
   Widget build(BuildContext context) => ValueListenableBuilder(
     valueListenable: widget.controller,
     builder: (context, state, _) {
-      if (state.isLoading)
+      // --- Loading state --- //
+      if (state.isLoading) {
         return const SliverFillRemaining(
           child: Center(child: CircularProgressIndicator.adaptive()),
         );
-      else if (state.useGroup)
+      }
+
+      // --- Grouped countries --- //
+      if (state.useGroup) {
         return ValueListenableBuilder(
           valueListenable: _grouped,
-          // TODO(ziqq): Refactor to avoid ignore
-          // Anton Ustinoff <a.a.ustinoff@gmail.com>, 26 November 2025
-          // ignore: unnecessary_underscores
-          builder: (_, grouped, __) => SliverMainAxisGroup(slivers: grouped),
+          builder: (_, grouped, _) => SliverMainAxisGroup(slivers: grouped),
         );
-      else
-        return ValueListenableBuilder(
-          valueListenable: widget.selected ?? ValueNotifier<Country?>(null),
-          builder: (context, selected, _) => SliverList.builder(
-            itemCount: state.countries.length,
-            itemBuilder: (context, index) {
-              final country = state.countries[index];
-              return _CountryListTile.simple(
-                key: ValueKey<String>(country.e164Key),
-                country: country,
-                onSelect: widget.onSelect,
-                selected: selected == country,
-              );
-            },
-          ),
-        );
+      }
+
+      // --- Plain countries list --- //
+      return ValueListenableBuilder(
+        valueListenable: widget.selected ?? ValueNotifier<Country?>(null),
+        builder: (context, selected, _) => SliverList.builder(
+          itemCount: state.countries.length,
+          itemBuilder: (context, index) {
+            final country = state.countries[index];
+            return _CountryListTile.simple(
+              key: ValueKey<String>(country.e164Key),
+              country: country,
+              onSelect: widget.onSelect,
+              selected: selected == country,
+            );
+          },
+        ),
+      );
     },
   );
 }
@@ -458,7 +497,6 @@ class _CountryListTile extends StatelessWidget {
     this.onSelect,
     this.simple = false,
     this.selected = false,
-    this.useBorder = false,
     super.key, // ignore: unused_element
   });
 
@@ -475,9 +513,6 @@ class _CountryListTile extends StatelessWidget {
   /// Is selected?
   final bool selected;
 
-  /// Use boder?
-  final bool useBorder;
-
   /// Current country.
   final Country country;
 
@@ -489,22 +524,34 @@ class _CountryListTile extends StatelessWidget {
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     final pickerTheme = CountryPickerTheme.resolve(context);
     final localization = CountryLocalizations.of(context);
-    final effectiveTextStyle = pickerTheme.textStyle;
+    final effectiveTextStyle = pickerTheme.textStyle?.copyWith(height: 1.2);
 
-    final nameLocalized = localization
-        ?.getCountryNameByCode(country.countryCode)
-        ?.replaceAll(CountryLocalizations.countryNameRegExp, ' ');
+    final nameLocalized = localization.getFormatedCountryNameByCode(
+      country.countryCode,
+    );
 
     final title = Text(
       nameLocalized ?? country.name,
       style: effectiveTextStyle,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
     );
 
     final effectiveTitle = switch (simple) {
-      false => title,
+      false => Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        spacing: pickerTheme.padding / 4,
+        children: [
+          _Flag(country: country),
+          Flexible(child: title),
+        ],
+      ),
       true => Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          title,
+          _Flag(country: country),
+          SizedBox(width: pickerTheme.padding / 4),
+          Flexible(child: title),
           Text(
             ' (${isRtl ? '' : '+'}${country.phoneCode}${isRtl ? '+' : ''})',
             style: effectiveTextStyle,
@@ -513,18 +560,22 @@ class _CountryListTile extends StatelessWidget {
       ),
     };
 
-    final Widget? effectiveTrailing = switch ((simple, selected)) {
+    final effectiveTrailing = switch ((simple, selected)) {
       (true, true) => Icon(
         CupertinoIcons.checkmark_circle_fill,
         color: pickerTheme.accentColor,
       ),
       (true, false) => null,
-      (false, _) => Text(
-        '${isRtl ? '' : '+'}${country.phoneCode}${isRtl ? '+' : ''}',
-        style: effectiveTextStyle?.copyWith(
-          color: CupertinoDynamicColor.resolve(
-            CupertinoColors.secondaryLabel,
-            context,
+      (false, _) => Padding(
+        padding: EdgeInsets.only(top: pickerTheme.padding / 5),
+        child: Text(
+          '${isRtl ? '' : '+'}${country.phoneCode}${isRtl ? '+' : ''}',
+          style: effectiveTextStyle?.copyWith(
+            color: CupertinoDynamicColor.resolve(
+              CupertinoColors.secondaryLabel,
+              context,
+            ),
+            height: 1,
           ),
         ),
       ),
@@ -534,53 +585,64 @@ class _CountryListTile extends StatelessWidget {
       // Add Material Widget with transparent color
       // so the ripple effect of InkWell will show on tap
       color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          final useHaptickFeedback = context
-              .findAncestorStateOfType<_CountriesListViewState>()
-              ?.widget
-              .useHaptickFeedback;
+      type: MaterialType.card,
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          highlightColor: CupertinoDynamicColor.resolve(
+            CupertinoColors.systemGrey4,
+            context,
+          ),
+          hoverColor: Colors.transparent,
+          splashColor: Colors.transparent,
+        ),
+        child: InkWell(
+          onTap: () {
+            final useHaptickFeedback = context
+                .findAncestorStateOfType<_CountriesListViewState>()
+                ?.widget
+                .useHaptickFeedback;
 
-          if (useHaptickFeedback ?? true) HapticFeedback.heavyImpact().ignore();
-          onSelect?.call(country.copyWith(nameLocalized: nameLocalized));
-          Navigator.of(context).maybePop<void>();
-        },
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              dense: true,
-              minLeadingWidth: 0,
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: pickerTheme.padding,
-              ),
-              // shape: useBorder && !simple
-              //     ? Border(
-              //         bottom: BorderSide(
-              //           color: pickerTheme.dividerColor ??
-              //               CupertinoDynamicColor.resolve(
-              //                 CupertinoColors.opaqueSeparator,
-              //                 context,
-              //               ),
-              //           width: 1,
-              //         ),
-              //       )
-              //     : null,
-              leading: _Flag(country: country),
-              title: effectiveTitle,
-              trailing: effectiveTrailing,
-              subtitle: simple ? null : Text(country.name),
+            if (useHaptickFeedback ?? true) {
+              HapticFeedback.heavyImpact().ignore();
+            }
+            onSelect?.call(country.copyWith(nameLocalized: nameLocalized));
+            Navigator.of(context).maybePop<void>();
+          },
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: simple
+                  ? pickerTheme.padding / 1.25
+                  : pickerTheme.padding / 2,
+              bottom: simple
+                  ? pickerTheme.padding / 1.25
+                  : pickerTheme.padding / 1.35,
+              left: pickerTheme.padding,
+              right: pickerTheme.padding,
             ),
-            if (useBorder && !simple) ...[
-              Divider(
-                height: 1,
-                thickness: 1,
-                indent: pickerTheme.padding,
-                endIndent: pickerTheme.padding,
-                color: pickerTheme.dividerColor,
-              ),
-            ],
-          ],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // --- Title of the country --- //
+                      effectiveTitle,
+
+                      // --- Country name --- //
+                      if (!simple) ...[
+                        Text(
+                          country.name,
+                          style: pickerTheme.secondaryTextStyle,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                if (effectiveTrailing != null) effectiveTrailing,
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -595,7 +657,7 @@ class _CountryListTile$Simple extends _CountryListTile {
     super.selected = false,
     super.onSelect,
     super.key, // ignore: unused_element_parameter
-  }) : super(simple: true, useBorder: false);
+  }) : super(simple: true);
 }
 
 /// Flag widget.
@@ -618,12 +680,12 @@ class _Flag extends StatelessWidget {
     return SizedBox(
       // The conditional 50 prevents irregularities
       // caused by the flags in RTL mode
-      width: isRtl ? 50 : null,
+      width: isRtl ? 44 : null,
       child: Text(
         country.iswWorldWide
             ? '\uD83C\uDF0D'
             : CountryUtil.countryCodeToEmoji(country.countryCode),
-        style: TextStyle(fontSize: pickerTheme.flagSize ?? 25),
+        style: TextStyle(fontSize: pickerTheme.flagSize ?? 22, height: 1),
       ),
     );
   }

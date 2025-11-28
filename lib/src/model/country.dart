@@ -119,7 +119,7 @@ class Country {
 
   /// Get the localized country name
   String? getTranslatedName(BuildContext context) =>
-      CountryLocalizations.of(context)?.getCountryNameByCode(countryCode);
+      CountryLocalizations.of(context).getCountryNameByCode(countryCode);
 
   /// Check if the country starts with a query
   bool startsWith(String query, CountryLocalizations? localization) {

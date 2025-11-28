@@ -132,7 +132,6 @@ class _MobilePreviewState extends State<Preview>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     return Scaffold(
       appBar: const CommonAppBar(title: 'Preview'),
       bottomNavigationBar: Padding(
@@ -177,6 +176,19 @@ class _MobilePreviewState extends State<Preview>
                   onSelect: onSelect,
                 ),
                 child: const Text('Show picker (filtered)'),
+              ),
+              CupertinoButton(
+                key: const ValueKey<String>('adaptive_picker_button'),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: kDefaultPadding,
+                ),
+                sizeStyle: CupertinoButtonSize.medium,
+                onPressed: () => showCountryPicker(
+                  context: context,
+                  adaptive: true,
+                  onSelect: onSelect,
+                ),
+                child: const Text('Show picker (adaptive)'),
               ),
             ],
           ),

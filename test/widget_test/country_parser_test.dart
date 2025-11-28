@@ -80,9 +80,9 @@ void main() => group('CountryParser -', () {
       locales: [const Locale('es')],
     );
 
-    final nameLocalized = CountryLocalizations.of(context)
-        ?.getCountryNameByCode(country.countryCode)
-        ?.replaceAll(CountryLocalizations.countryNameRegExp, ' ');
+    final nameLocalized = CountryLocalizations.of(
+      context,
+    ).getFormatedCountryNameByCode(country.countryCode);
 
     expect(nameLocalized, 'Estados Unidos');
     expect(country.name, 'United States');

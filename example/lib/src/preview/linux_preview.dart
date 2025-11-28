@@ -253,10 +253,10 @@ class _CountryPicker$LinuxState extends State<CountryPicker$Linux> {
       textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 14),
     );
     return countries
-        .map((e) {
-          final title = localization
-              ?.getCountryNameByCode(e.countryCode)
-              ?.replaceAll(CountryLocalizations.countryNameRegExp, ' ');
+        .map<PullDownMenuItem>((e) {
+          final title = localization.getFormatedCountryNameByCode(
+            e.countryCode,
+          );
           return PullDownMenuItem(
             itemTheme: itemTheme,
             iconWidget: Text(
@@ -363,8 +363,7 @@ class _CountryPicker$LinuxState extends State<CountryPicker$Linux> {
               selected ??
               state.countries.firstWhereOrNull(
                 (e) =>
-                    e.name ==
-                    localizations?.getCountryNameByCode(e.countryCode),
+                    e.name == localizations.getCountryNameByCode(e.countryCode),
               ) ??
               state.countries[0];
 

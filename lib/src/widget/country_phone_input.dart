@@ -352,7 +352,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                         hintText:
                             widget.placeholder ??
                             selected.mask ??
-                            localization?.toLocalizedString('phonePlaceholder'),
+                            localization.phonePlaceholder,
                         hintStyle: textStyle?.copyWith(
                           color: CupertinoDynamicColor.resolve(
                             CupertinoColors.placeholderText,
@@ -422,7 +422,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
     final textStyle = pickerTheme.textStyle;
     final defaultTextStyle = textStyle?.copyWith(
       fontSize: 20,
-      fontWeight: FontWeight.w500,
+
       color: CupertinoDynamicColor.resolve(CupertinoColors.label, context),
     );
     final divider = Divider(
@@ -465,7 +465,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
               child: SizedBox(
                 width: double.infinity,
                 child: Text(
-                  '${selected.flagEmoji} ${localization?.getCountryNameByCode(selected.countryCode)?.replaceAll(CountryLocalizations.countryNameRegExp, ' ')}',
+                  '${selected.flagEmoji} ${localization.getFormatedCountryNameByCode(selected.countryCode)}',
                   style: defaultTextStyle,
                 ),
               ),
@@ -488,7 +488,9 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                   padding: padding,
                   child: Text(
                     '+${selected.phoneCode}',
-                    style: defaultTextStyle,
+                    style: defaultTextStyle?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -526,12 +528,13 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                         hintText:
                             widget.placeholder ??
                             selected.mask ??
-                            localization?.toLocalizedString('phonePlaceholder'),
+                            localization.phonePlaceholder,
                         hintStyle: defaultTextStyle?.copyWith(
                           color: CupertinoDynamicColor.resolve(
                             CupertinoColors.placeholderText,
                             context,
                           ),
+                          fontWeight: FontWeight.w500,
                         ),
                         border: InputBorder.none,
                         errorBorder: InputBorder.none,

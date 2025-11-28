@@ -298,8 +298,7 @@ class _CountryPicker$DesktopState extends State<CountryPicker$Web> {
               selected ??
               state.countries.firstWhereOrNull(
                 (e) =>
-                    e.name ==
-                    localizations?.getCountryNameByCode(e.countryCode),
+                    e.name == localizations.getCountryNameByCode(e.countryCode),
               ) ??
               state.countries[0];
 
@@ -348,9 +347,9 @@ class _CountryPicker$DesktopState extends State<CountryPicker$Web> {
             initialSelection: $selected,
             dropdownMenuEntries: state.countries
                 .map((e) {
-                  final label = localization
-                      ?.getCountryNameByCode(e.countryCode)
-                      ?.replaceAll(CountryLocalizations.countryNameRegExp, ' ');
+                  final label = localization.getFormatedCountryNameByCode(
+                    e.countryCode,
+                  );
                   return DropdownMenuEntry(
                     value: e,
                     label: label.toString(),

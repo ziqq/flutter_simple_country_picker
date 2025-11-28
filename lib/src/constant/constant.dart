@@ -15,7 +15,7 @@ const double kDefaultInputHeight = 56;
 
 /// Default flag size
 @internal
-const double kDefaultFlagSize = 25;
+const double kDefaultFlagSize = 22;
 
 /// Default padding
 @internal

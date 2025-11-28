@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'
     show
         BuildContext,
@@ -5,7 +7,11 @@ import 'package:flutter/material.dart'
         BorderRadius,
         ClipRRect,
         Radius,
-        showModalBottomSheet;
+        showModalBottomSheet,
+        BoxDecoration,
+        DecoratedBox,
+        DraggableScrollableSheet,
+        Colors;
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_simple_country_picker/src/constant/typedef.dart';
 import 'package:flutter_simple_country_picker/src/theme/country_picker_theme.dart';
@@ -37,6 +43,8 @@ import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart'
 ///
 /// [autofocus] can be used to initially expand virtual keyboard
 ///
+/// [adaptive] can be used to show iOS style bottom sheet on iOS platform.
+///
 /// An optional [showSearch] argument can be used to show/hide the search bar.
 ///
 /// The `context` argument is used to look up the [Scaffold] for the bottom
@@ -60,9 +68,11 @@ void showCountryPicker({
   )
   VoidCallback? onDone,
   VoidCallback? whenComplete,
+  bool adaptive = false,
   bool autofocus = false,
   bool isDismissible = true,
   bool isScrollControlled = true,
+  bool shouldCloseOnSwipeDown = false,
   bool showPhoneCode = false,
   bool showWorldWide = false,
   @Deprecated(
@@ -74,31 +84,56 @@ void showCountryPicker({
   bool useSafeArea = true,
   bool? showSearch,
 }) {
+  final isiOS = defaultTargetPlatform == TargetPlatform.iOS;
   final pickerTheme = CountryPickerTheme.resolve(context);
   final radius = Radius.circular(pickerTheme.radius);
   final borderRadius = BorderRadius.only(topLeft: radius, topRight: radius);
-  if (useHaptickFeedback) HapticFeedback.mediumImpact().ignore();
-  showModalBottomSheet<void>(
-    context: context,
-    isDismissible: isDismissible,
-    isScrollControlled: isScrollControlled,
-    useSafeArea: useSafeArea,
-    useRootNavigator: useRootNavigator,
-    barrierColor: pickerTheme.barrierColor,
-    builder: (context) => ClipRRect(
+  final child = DraggableScrollableSheet(
+    expand: isScrollControlled,
+    initialChildSize: isScrollControlled ? 1.0 : 1.0,
+    minChildSize: isScrollControlled
+        ? (shouldCloseOnSwipeDown ? .99 : 1.0)
+        : .9,
+    builder: (context, scrollController) => ClipRRect(
       borderRadius: borderRadius,
-      child: CountryListView(
-        exclude: exclude,
-        favorite: favorite,
-        filter: filter,
-        selected: selected,
-        onSelect: onSelect,
-        autofocus: autofocus || useAutofocus,
-        showSearch: showSearch,
-        showPhoneCode: showPhoneCode,
-        showWorldWide: showWorldWide,
-        useHaptickFeedback: useHaptickFeedback,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: borderRadius,
+          color: pickerTheme.backgroundColor,
+        ),
+        child: CountryListView(
+          exclude: exclude,
+          favorite: favorite,
+          filter: filter,
+          selected: selected,
+          onSelect: onSelect,
+          adaptive: adaptive,
+          autofocus: autofocus || useAutofocus,
+          showSearch: showSearch,
+          showPhoneCode: showPhoneCode,
+          showWorldWide: showWorldWide,
+          useHaptickFeedback: useHaptickFeedback,
+          scrollController: isScrollControlled ? null : scrollController,
+        ),
       ),
     ),
-  ).whenComplete(() => (whenComplete ?? onDone)?.call()).ignore();
+  );
+  if (useHaptickFeedback) HapticFeedback.heavyImpact().ignore();
+  if (adaptive && isiOS) {
+    showCupertinoSheet<void>(
+      context: context,
+      builder: (context) => child,
+    ).whenComplete(() => (whenComplete ?? onDone)?.call()).ignore();
+  } else {
+    showModalBottomSheet<void>(
+      context: context,
+      isDismissible: isDismissible,
+      isScrollControlled: isScrollControlled,
+      useSafeArea: useSafeArea,
+      useRootNavigator: useRootNavigator,
+      backgroundColor: Colors.transparent,
+      barrierColor: pickerTheme.barrierColor,
+      builder: (context) => child,
+    ).whenComplete(() => (whenComplete ?? onDone)?.call()).ignore();
+  }
 }

@@ -30,6 +30,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     double? inputHeight,
     InputDecoration? inputDecoration,
     TextStyle? textStyle,
+    TextStyle? secondaryTextStyle,
     TextStyle? searchTextStyle,
   }) {
     inputHeight ??= kDefaultInputHeight;
@@ -44,8 +45,9 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       dividerColor: dividerColor,
       secondaryBackgroundColor: secondaryBackgroundColor,
       inputDecoration: inputDecoration,
-      searchTextStyle: searchTextStyle,
       inputHeight: inputHeight,
+      secondaryTextStyle: secondaryTextStyle,
+      searchTextStyle: searchTextStyle,
       textStyle: textStyle,
       flagSize: flagSize,
       padding: padding,
@@ -63,6 +65,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     required this.secondaryBackgroundColor,
     required this.inputDecoration,
     required this.inputHeight,
+    required this.secondaryTextStyle,
     required this.searchTextStyle,
     required this.textStyle,
     required this.flagSize,
@@ -113,6 +116,9 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
           defaults.inputDecoration,
       inputHeight:
           other?.inputHeight ?? theme?.inputHeight ?? defaults.inputHeight,
+      secondaryTextStyle: defaults.secondaryTextStyle
+          ?.merge(theme?.secondaryTextStyle)
+          .merge(other?.secondaryTextStyle),
       searchTextStyle: defaults.textStyle
           ?.merge(theme?.searchTextStyle)
           .merge(other?.searchTextStyle),
@@ -161,8 +167,11 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   /// The secondary background color.
   final Color? secondaryBackgroundColor;
 
-  /// The style to use for country name text.
+  /// Base text style.
   final TextStyle? textStyle;
+
+  /// The style to use for country name text.
+  final TextStyle? secondaryTextStyle;
 
   /// The style to use for search field text.
   final TextStyle? searchTextStyle;
@@ -176,7 +185,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
 
   /// The flag size.
   ///
-  /// If null, set to `25`
+  /// If null, set to `22.0`
   final double? flagSize;
 
   /// The padding around elements.
@@ -207,6 +216,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     double? padding,
     double? indent,
     double? radius,
+    TextStyle? secondaryTextStyle,
     TextStyle? searchTextStyle,
     TextStyle? textStyle,
   }) => CountryPickerTheme(
@@ -222,6 +232,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     padding: padding ?? this.padding,
     indent: indent ?? this.indent,
     radius: radius ?? this.radius,
+    secondaryTextStyle: secondaryTextStyle ?? this.secondaryTextStyle,
     searchTextStyle: searchTextStyle ?? this.searchTextStyle,
     textStyle: textStyle ?? this.textStyle,
   );
@@ -241,6 +252,11 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       secondaryBackgroundColor: Color.lerp(
         secondaryBackgroundColor,
         other.secondaryBackgroundColor,
+        t,
+      ),
+      secondaryTextStyle: TextStyle.lerp(
+        secondaryTextStyle,
+        other.secondaryTextStyle,
         t,
       ),
       searchTextStyle: TextStyle.lerp(
@@ -266,6 +282,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     inputDecoration,
     inputHeight,
     secondaryBackgroundColor,
+    secondaryTextStyle,
     searchTextStyle,
     textStyle,
     flagSize,
@@ -283,6 +300,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         other.backgroundColor == backgroundColor &&
         other.dividerColor == dividerColor &&
         other.secondaryBackgroundColor == secondaryBackgroundColor &&
+        other.secondaryTextStyle == secondaryTextStyle &&
         other.searchTextStyle == searchTextStyle &&
         other.inputDecoration == inputDecoration &&
         other.inputHeight == inputHeight &&
@@ -350,6 +368,13 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         DiagnosticsProperty<TextStyle?>(
           'textStyle',
           textStyle,
+          defaultValue: null,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextStyle?>(
+          'secondaryTextStyle',
+          secondaryTextStyle,
           defaultValue: null,
         ),
       )
@@ -454,6 +479,7 @@ final class _CountryPickerTheme$Default extends CountryPickerTheme {
     double? indent,
     double? flagSize,
     TextStyle? textStyle,
+    TextStyle? secondaryTextStyle,
     super.searchTextStyle,
   }) : super.raw(
          accentColor:
@@ -484,7 +510,22 @@ final class _CountryPickerTheme$Default extends CountryPickerTheme {
          indent: indent ?? kDefaultIndent,
          padding: padding ?? kDefaultPadding,
          flagSize: flagSize ?? kDefaultFlagSize,
-         textStyle: textStyle ?? Theme.of(context).textTheme.bodyLarge,
+         textStyle:
+             textStyle ??
+             Theme.of(context).textTheme.bodyLarge?.copyWith(
+               letterSpacing: defaultTargetPlatform == TargetPlatform.iOS
+                   ? -0.41
+                   : 0,
+               fontWeight: FontWeight.normal,
+               fontSize: 17,
+             ),
+         secondaryTextStyle:
+             secondaryTextStyle ??
+             Theme.of(context).textTheme.bodyLarge?.copyWith(
+               fontSize: 12,
+               height: 1.2,
+               fontWeight: FontWeight.normal,
+             ),
        );
 
   /// A build context used to resolve [CupertinoDynamicColor]s defined in this
