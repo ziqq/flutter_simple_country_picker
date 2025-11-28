@@ -74,7 +74,7 @@ class Country {
   /// The country phone code
   final String phoneCode;
 
-  /// The country code, ISO (alpha-2)
+  /// The country code, ISO (iso2_cc / alpha-2)
   final String countryCode;
 
   /// The country e164Sc
@@ -110,7 +110,14 @@ class Country {
   /// The country e164 key
   final String e164Key;
 
-  /// Get the country name localized
+  /// Зrovides country flag as emoji.
+  /// Can be displayed using:
+  ///```dart
+  /// Text(country.flagEmoji)
+  /// ```
+  String get flagEmoji => CountryUtil.countryCodeToEmoji(countryCode);
+
+  /// Get the localized country name
   String? getTranslatedName(BuildContext context) =>
       CountryLocalizations.of(context)?.getCountryNameByCode(countryCode);
 
@@ -225,12 +232,4 @@ class Country {
 
   @override
   int get hashCode => countryCode.hashCode ^ phoneCode.hashCode;
-
-  /// provides country flag as emoji.
-  /// Can be displayed using
-  ///
-  ///```dart
-  /// Text(country.flagEmoji)
-  /// ```
-  String get flagEmoji => CountryUtil.countryCodeToEmoji(countryCode);
 }
