@@ -1,11 +1,13 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 24 June 2024
+ */
+
 import 'package:meta/meta.dart';
 
-/// List of country codes
-/// Albany: 00 000 0000
-/// Aljir: 000 00 00 00
-/// Barbados: +1246 000 0000
+/// List of country codes and related information.
 @internal
-const List<Map<String, dynamic>> countries = [
+const List<Map<String, Object?>> countries = <Map<String, Object?>>[
   // Favorites
   {
     'e164_cc': '7',
@@ -3316,17 +3318,11 @@ const List<Map<String, dynamic>> countries = [
 ];
 
 /// List of favorites countries
-/// Россия
-/// Абхазия
-/// Армения
-/// Бералусь
-/// Кыргызстан
-/// ПМР Молдова
-/// Таджикистан
-/// Узбекистан
-/// Другой код старны
+/// List contains countries:
+/// Russia, Kazakhstan, Armenia, Belarus,
+/// Kyrgyzstan, Moldova, Tajikistan, Uzbekistan
 @internal
-final List<Map<String, dynamic>> countries$Favorite = [
+final List<Map<String, Object?>> countries$Favorite = <Map<String, Object?>>[
   {
     'e164_cc': '7',
     'iso2_cc': 'RU',
