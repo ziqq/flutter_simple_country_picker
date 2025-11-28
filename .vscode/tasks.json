@@ -219,8 +219,8 @@
       }
     },
     {
-      "label": "flutter:test:app",
-      "detail": "Run app tests",
+      "label": "flutter:test:unit:&:widget",
+      "detail": "Run package unit and widget tests",
       "icon": {
         "color": "terminal.ansiGreen",
         "id": "bug",
@@ -230,8 +230,8 @@
       ],
       "type": "shell",
       "command": [
-        "fvm flutter test --color --coverage --concurrency=50 --platform=tester --reporter=expanded --timeout=30s test/unit_test.dart test/widget_test.dart",
-        "&& lcov --remove coverage/lcov.info 'packages/*' '**/generated/*' '*.g.dart' -o 'coverage/lcov.cleaned.info'",
+        "fvm flutter test --color --coverage --concurrency=50 --platform=tester --reporter=expanded --timeout=30s test/flutter_simple_country_picker_test.dart",
+        "&& lcov --remove coverage/lcov.info 'lib/src/localization/*' -o coverage/lcov.info",
         "&& genhtml coverage/lcov.cleaned.info --output=coverage -o coverage/html",
       ],
       "args": [],
