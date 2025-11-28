@@ -247,7 +247,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
   void _onSelect(Country country) {
     if (!mounted) return;
     if (country == _selected.value) return;
-    if (country.mask == null || (country.mask?.isEmpty ?? true)) {
+    if (country.mask?.isEmpty ?? true) {
       ScaffoldMessenger.maybeOf(context)
         ?..clearSnackBars()
         ..showSnackBar(
@@ -294,6 +294,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
           ConstrainedBox(
             constraints: constraints,
             child: CupertinoButton(
+              key: const ValueKey<String>('country_picker_button'),
               onPressed: () => showCountryPicker(
                 context: context,
                 exclude: widget.exclude,
@@ -339,10 +340,11 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                   painter: _painter,
                   child: Center(
                     child: TextFormField(
+                      key: const ValueKey<String>('country_phone_input'),
                       autofocus: widget.autofocus,
                       controller: _phoneController,
                       inputFormatters: [_formater],
-                      keyboardType: TextInputType.phone,
+                      keyboardType: TextInputType.number,
                       onChanged: (_) {
                         widget.onChanged?.call(_controller.value);
                       },
@@ -439,6 +441,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
 
             // --- Country name with flag --- //
             CupertinoButton(
+              key: const ValueKey<String>('country_picker_button_extended'),
               padding: EdgeInsets.only(
                 top: pickerTheme.indent,
                 left: pickerTheme.padding,
@@ -506,6 +509,9 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                       horizontal: padding.horizontal / 2.5,
                     ),
                     child: TextFormField(
+                      key: const ValueKey<String>(
+                        'country_phone_input_extended',
+                      ),
                       autofocus: widget.autofocus,
                       controller: _phoneController,
                       inputFormatters: [_formater],

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../util/widget_test_helper.dart';
+import '../util/test_util.dart';
 
 const _key = Key('country_picker_theme');
 

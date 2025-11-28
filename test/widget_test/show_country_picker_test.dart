@@ -5,7 +5,7 @@ import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart
 import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../util/widget_test_helper.dart';
+import '../util/test_util.dart';
 
 void main() => group('showCountryPicker -', () {
   testWidgets('displays bottom sheet with country list view', (tester) async {

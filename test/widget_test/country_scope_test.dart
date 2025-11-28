@@ -5,7 +5,7 @@ import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../util/widget_test_helper.dart';
+import '../util/test_util.dart';
 
 void main() {
   group('CountryScope -', () {
