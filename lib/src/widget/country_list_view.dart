@@ -125,9 +125,10 @@ class _CountriesListViewState extends State<CountryListView> {
   void _unfocus() {
     if (!mounted) return;
     final currentFocus = FocusScope.of(context);
-    if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
-      FocusManager.instance.primaryFocus?.unfocus();
-    }
+    if (currentFocus.hasPrimaryFocus) return;
+    if (currentFocus.focusedChild == null) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    // if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {}
   }
 
   /// Build divider widget.
