@@ -65,7 +65,7 @@ void main() {
       expect(CountryScope.countriesOf(context, listen: false), expectedArr);
     });
 
-    testWidgets('should return <Country?> from getByCountryCode', (
+    testWidgets('should return <Country?> from getCountryByCode', (
       tester,
     ) async {
       final index = math.Random().nextInt(countries.length - 1);
@@ -89,7 +89,7 @@ void main() {
       // Получаем контроллер из скоупа
       final context = tester.element(find.byType(SizedBox));
 
-      expect(CountryScope.getByCountryCode(context, code), country);
+      expect(CountryScope.getCountryByCode(context, code), country);
     });
   });
 }

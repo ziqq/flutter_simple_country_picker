@@ -157,15 +157,15 @@ void _$stateTest() {
       expect(state.countries, equals(countriesList));
     });
 
-    test('getByCountryCode should return correct country', () {
+    test('getCountryByCode should return correct country', () {
       final state = CountryState.idle(
         countries: countriesList,
         useGroup: false,
       );
 
-      expect(state.getByCountryCode('RU'), equals(country1));
-      expect(state.getByCountryCode('KZ'), equals(country2));
-      expect(state.getByCountryCode('MX'), isNull);
+      expect(state.getCountryByCode('RU'), equals(country1));
+      expect(state.getCountryByCode('KZ'), equals(country2));
+      expect(state.getCountryByCode('MX'), isNull);
     });
 
     test('CountryState equality should be based on countriesList list', () {

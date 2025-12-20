@@ -112,7 +112,7 @@ class _CountriesListViewState extends State<CountryListView> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _controller.initListeners(CountryLocalizations.of(context));
+    _controller.initLocalization(CountryLocalizations.of(context));
   }
 
   @override
