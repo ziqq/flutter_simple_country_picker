@@ -6,7 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
-import 'package:flutter_simple_country_picker/src/controller/country_parser.dart';
+import 'package:flutter_simple_country_picker/src/data/country_parser.dart';
 import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 import 'package:meta/meta.dart';
 

@@ -2,8 +2,7 @@ import 'package:collection/collection.dart' show DeepCollectionEquality;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/controller/country_controller.dart';
-import 'package:flutter_simple_country_picker/src/controller/country_provider.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter_simple_country_picker/src/data/country_provider.dart';
 
 /// {@template country_scope}
 /// CountryScope widget.
@@ -25,7 +24,6 @@ import 'package:meta/meta.dart';
 ///
 /// The [showPhoneCode] argument can be used to show phone code.
 /// {@endtemplate}
-@experimental
 class CountryScope extends StatefulWidget {
   /// {@macro country_scope}
   const CountryScope({

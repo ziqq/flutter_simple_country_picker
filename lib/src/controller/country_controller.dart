@@ -5,7 +5,7 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_simple_country_picker/src/controller/country_provider.dart';
+import 'package:flutter_simple_country_picker/src/data/country_provider.dart';
 import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:flutter_simple_country_picker/src/model/country.dart';
 
@@ -102,9 +102,8 @@ abstract base class CountryState {
       'CountryState.$type{countries: ${countries.length}, useGroup: $useGroup}';
 }
 
-/// {@macro country_state}
-///
 /// Loading state.
+/// {@macro country_state}
 final class CountryState$Loading extends CountryState {
   /// {@macro country_state}
   CountryState$Loading({
@@ -118,9 +117,8 @@ final class CountryState$Loading extends CountryState {
   String get type => 'loading';
 }
 
-/// {@macro country_state}
-///
 /// Idle state.
+/// {@macro country_state}
 final class CountryState$Idle extends CountryState {
   /// {@macro country_state}
   CountryState$Idle({
@@ -134,9 +132,8 @@ final class CountryState$Idle extends CountryState {
   String get type => 'idle';
 }
 
-/// {@macro country_state}
-///
 /// Error state.
+/// {@macro country_state}
 final class CountryState$Error extends CountryState {
   /// {@macro country_state}
   CountryState$Error({
@@ -152,6 +149,8 @@ final class CountryState$Error extends CountryState {
 
 /// {@template country_controller}
 /// Countries controller.
+/// Manages the state of countries
+/// and provides methods to fetch and search countries.
 /// {@endtemplate}
 @internal
 final class CountryController extends ValueNotifier<CountryState> {

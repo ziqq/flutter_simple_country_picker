@@ -7,7 +7,7 @@ import 'dart:async' as _i3;
 
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart'
     as _i4;
-import 'package:flutter_simple_country_picker/src/controller/country_provider.dart'
+import 'package:flutter_simple_country_picker/src/data/country_provider.dart'
     as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
