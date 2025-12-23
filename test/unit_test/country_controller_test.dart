@@ -203,7 +203,7 @@ void _$stateTest() {
       );
       expect(
         state1.toString(),
-        'CountryState.idle{countries: ${[country1, country2]}}',
+        'CountryState.idle{countries: ${state1.countries.length}, useGroup: false}',
       );
     });
   });

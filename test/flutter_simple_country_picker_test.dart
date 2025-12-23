@@ -1,16 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'unit_test/country_codes_test.dart' as unit_country_codes_test;
-import 'unit_test/country_controller_test.dart'
-    as unit_countries_controller_test;
+import 'unit_test/country_controller_test.dart' as unit_country_controller_test;
 import 'unit_test/country_input_formater_test.dart'
     as unit_country_input_formater_test;
-import 'unit_test/country_parser_test.dart' as unit_countries_parser_test;
+import 'unit_test/country_parser_test.dart' as unit_country_parser_test;
 import 'unit_test/country_picker_theme_test.dart'
     as unit_country_picker_theme_test;
 import 'unit_test/country_provider_test.dart' as unit_country_provider_test;
 import 'unit_test/country_test.dart' as unit_country_test;
-import 'unit_test/country_util_test.dart' as unit_countries_util_test;
+import 'unit_test/country_util_test.dart' as unit_country_util_test;
 import 'widget_test/country_input_formater_test.dart'
     as widget_country_input_formater_test;
 import 'widget_test/country_parser_test.dart' as widget_countries_parser_test;
@@ -29,10 +28,10 @@ void main() {
   group('flutter_simple_country_picker -', () {
     group('unit_test -', () {
       unit_country_input_formater_test.main();
-      unit_countries_controller_test.main();
-      unit_countries_parser_test.main();
+      unit_country_controller_test.main();
+      unit_country_parser_test.main();
       unit_country_provider_test.main();
-      unit_countries_util_test.main();
+      unit_country_util_test.main();
       unit_country_codes_test.main();
       unit_country_test.main();
       unit_country_picker_theme_test.main();
