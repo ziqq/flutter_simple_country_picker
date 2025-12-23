@@ -95,7 +95,7 @@ abstract base class CountryState {
           error == other.error &&
           useGroup == other.useGroup &&
           stackTrace == other.stackTrace &&
-          identical(countries, other.countries));
+          listEquals(countries, other.countries));
 
   @override
   String toString() =>
