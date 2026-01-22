@@ -43,19 +43,34 @@ class Country {
 
   /// Create a country from a JSON object
   Country.fromJson(Map<String, Object?> json)
-    : phoneCode = json['e164_cc'].toString(),
+    : e164Key = json['e164_key'].toString(),
+      phoneCode = json['e164_cc'].toString(),
       countryCode = json['iso2_cc'].toString(),
-      e164Sc = json['e164_sc'] as int,
-      geographic = json['geographic'] as bool? ?? false,
-      level = json['level'] as int,
-      name = json['name'].toString(),
+      e164Sc = switch (json['e164_sc']) {
+        String vstring => int.tryParse(vstring) ?? 0,
+        double vdouble => vdouble.toInt(),
+        int vint => vint,
+        _ => 0,
+      },
+      geographic = switch (json['geographic']) {
+        String vstring => vstring.toLowerCase() == 'true',
+        int vint => vint != 0,
+        bool vbool => vbool,
+        _ => false,
+      },
+      level = switch (json['level']) {
+        String vstring => int.tryParse(vstring) ?? 0,
+        double vdouble => vdouble.toInt(),
+        int vint => vint,
+        _ => 0,
+      },
       nameLocalized = '',
+      name = json['name'].toString(),
       example = json['example'].toString(),
       displayName = json['display_name'].toString(),
       fullExampleWithPlusSign = json['full_example_with_plus_sign']?.toString(),
       mask = json['mask']?.toString(),
-      displayNameNoCountryCode = json['display_name_no_e164_cc'].toString(),
-      e164Key = json['e164_key'].toString();
+      displayNameNoCountryCode = json['display_name_no_e164_cc'].toString();
 
   /// The world wide country
   static const Country worldWide = Country(

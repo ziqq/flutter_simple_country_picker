@@ -5,6 +5,8 @@
 
 import 'package:meta/meta.dart';
 
+// TODO(ziqq): Add phone mask to each country in country_codes.dart, https://github.com/ziqq/flutter_simple_country_picker/issues/11
+// Anton Ustinoff <a.a.ustinoff@gmail.com>, 22 January 2026
 /// List of country codes and related information.
 @internal
 const List<Map<String, Object?>> countries = <Map<String, Object?>>[
