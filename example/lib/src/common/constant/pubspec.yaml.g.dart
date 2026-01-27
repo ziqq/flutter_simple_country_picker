@@ -92,13 +92,13 @@ sealed class Pubspec {
   static const PubspecVersion version = (
     /// Non-canonical string representation of the version as provided
     /// in the pubspec.yaml file.
-    representation: r'0.2.9',
+    representation: r'0.5.1',
 
     /// Returns a 'canonicalized' representation
     /// of the application version.
     /// This represents the version string in accordance with
     /// Semantic Versioning (SemVer) standards.
-    canonical: r'0.2.9',
+    canonical: r'0.5.1',
 
     /// MAJOR version when you make incompatible API changes.
     /// The major version number: 1 in "1.2.3".
@@ -107,11 +107,11 @@ sealed class Pubspec {
     /// MINOR version when you add functionality
     /// in a backward compatible manner.
     /// The minor version number: 2 in "1.2.3".
-    minor: 2,
+    minor: 5,
 
     /// PATCH version when you make backward compatible bug fixes.
     /// The patch version number: 3 in "1.2.3".
-    patch: 9,
+    patch: 1,
 
     /// The pre-release identifier: "foo" in "1.2.3-foo".
     preRelease: <String>[],
@@ -122,14 +122,14 @@ sealed class Pubspec {
 
   /// Build date and time (UTC)
   static final DateTime timestamp = DateTime.utc(
-    2025,
-    11,
-    26,
-    11,
-    15,
-    13,
-    614,
-    868,
+    2026,
+    1,
+    27,
+    9,
+    27,
+    40,
+    19,
+    762,
   );
 
   /// Name
@@ -355,8 +355,8 @@ sealed class Pubspec {
 
   /// Environment
   static const Map<String, String> environment = <String, String>{
-    'sdk': '>=3.6.0 <4.0.0',
-    'flutter': '>=3.29.2',
+    'sdk': '>=3.10.0 <4.0.0',
+    'flutter': '>=3.38.0',
   };
 
   /// Platforms
@@ -426,10 +426,6 @@ sealed class Pubspec {
     'flutter': <String, Object>{
       'sdk': r'flutter',
     },
-    'flutter_localizations': <String, Object>{
-      'sdk': r'flutter',
-    },
-    'intl': r'^0.20.2',
     'meta': r'^1.9.0',
     'collection': r'^1.19.0',
   };
@@ -442,9 +438,11 @@ sealed class Pubspec {
     'flutter_test': <String, Object>{
       'sdk': r'flutter',
     },
+    'flutter_localizations': <String, Object>{
+      'sdk': r'flutter',
+    },
     'flutter_lints': r'^6.0.0',
     'build_runner': r'^2.4.15',
-    'pubspec_generator': r'^5.0.0',
     'mockito': r'^5.4.5',
     'l': r'^5.0.1',
   };
@@ -501,17 +499,6 @@ sealed class Pubspec {
     'dependencies': dependencies,
     'dev_dependencies': devDependencies,
     'dependency_overrides': dependencyOverrides,
-    'flutter': <String, Object>{
-      'generate': true,
-    },
-    'flutter_intl': <String, Object>{
-      'enabled': true,
-      'class_name': r'GeneratedLocalization',
-      'main_locale': r'en',
-      'arb_dir': r'lib/src/localization/translations',
-      'output_dir': r'lib/src/localization/generated',
-      'use_deferred_loading': false,
-    },
   };
 
 }

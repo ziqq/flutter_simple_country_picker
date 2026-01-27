@@ -134,13 +134,13 @@
       "type": "shell",
       "command": [
         "fvm dart pub global activate pubspec_generator",
-        "&& fvm dart pub global run pubspec_generator:generate -o lib/src/common/constant/generated/pubspec.yaml.g.dart",
+        "&& fvm dart pub global run pubspec_generator:generate -o example/lib/src/common/constant/pubspec.yaml.g.dart",
       ],
       "dependsOn": [
         "flutter:pub:get"
       ],
       "options": {
-        "cwd": "${workspaceFolder}/example"
+        "cwd": "${workspaceFolder}"
       },
       "problemMatcher": []
     },
