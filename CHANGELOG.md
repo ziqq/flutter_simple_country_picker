@@ -1,3 +1,6 @@
+## 0.6.0
+- **FIXED**: Bahamas coutry code from `12421` to `1242`
+
 ## 0.5.2
 - **ADDED**: `countryController` to `CountryPhoneInput` widget
 -

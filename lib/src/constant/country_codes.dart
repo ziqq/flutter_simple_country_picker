@@ -330,7 +330,7 @@ const List<Map<String, Object?>> countries = <Map<String, Object?>>[
     'e164_key': '994-AZ-0',
   },
   {
-    'e164_cc': '12421',
+    'e164_cc': '1242',
     'iso2_cc': 'BS',
     'e164_sc': 0,
     'geographic': true,
