@@ -16,6 +16,7 @@ class CountryPhoneInput extends StatefulWidget {
     this.initialCountry,
     this.controller,
     this.onChanged,
+    this.onCountryChanged,
     this.exclude,
     this.favorite,
     this.filter,
@@ -36,7 +37,8 @@ class CountryPhoneInput extends StatefulWidget {
   const factory CountryPhoneInput.extended({
     Country? initialCountry,
     ValueNotifier<String>? controller,
-    void Function(String phone)? onChanged,
+    ValueChanged<String>? onChanged,
+    ValueChanged<Country>? onCountryChanged,
     List<String>? exclude,
     List<String>? favorite,
     List<String>? filter,
@@ -48,24 +50,6 @@ class CountryPhoneInput extends StatefulWidget {
     bool isScrollControlled,
     bool? showSearch,
   }) = CountryPhoneInput$Extended;
-
-  /// The initial country.
-  final Country? initialCountry;
-
-  /// Called whne the phone number is changed.
-  final ValueNotifier<String>? controller;
-
-  /// List of country codes to exclude.
-  final List<String>? exclude;
-
-  /// List of favorite country codes.
-  final List<String>? favorite;
-
-  /// List of filtered country codes.
-  final List<String>? filter;
-
-  /// Placeholder text.
-  final String? placeholder;
 
   /// Use autofocus for the search countryies input field.
   final bool autofocus;
@@ -92,8 +76,29 @@ class CountryPhoneInput extends StatefulWidget {
   /// Use haptic feedback?
   final bool useHaptickFeedback;
 
+  /// List of country codes to exclude.
+  final List<String>? exclude;
+
+  /// List of favorite country codes.
+  final List<String>? favorite;
+
+  /// List of filtered country codes.
+  final List<String>? filter;
+
+  /// Placeholder text.
+  final String? placeholder;
+
+  /// The initial country.
+  final Country? initialCountry;
+
+  /// Called whne the phone number is changed.
+  final ValueNotifier<String>? controller;
+
   /// Called when the phone number is changed.
-  final void Function(String phone)? onChanged;
+  final ValueChanged<String>? onChanged;
+
+  /// Called when the country is changed.
+  final ValueChanged<Country>? onCountryChanged;
 
   @override
   State<CountryPhoneInput> createState() => _CountryPhoneInputState();
@@ -263,9 +268,10 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
         );
       return;
     }
-    _phoneController.clear();
     _formater.clear();
+    _phoneController.clear();
     _selected.value = country;
+    widget.onCountryChanged?.call(country);
   }
 }
 
@@ -290,7 +296,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
       valueListenable: _selected,
       builder: (context, selected, _) => Row(
         spacing: pickerTheme.indent,
-        children: [
+        children: <Widget>[
           ConstrainedBox(
             constraints: constraints,
             child: CupertinoButton(
@@ -390,6 +396,7 @@ class CountryPhoneInput$Extended extends CountryPhoneInput {
     super.autofocus,
     super.controller,
     super.onChanged,
+    super.onCountryChanged,
     super.exclude,
     super.favorite,
     super.filter,

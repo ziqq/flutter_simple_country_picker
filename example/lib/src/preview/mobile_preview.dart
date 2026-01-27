@@ -1,5 +1,7 @@
 // Anton Ustinoff <a.a.ustinoff@gmail.com>, 14 October 2024
 
+import 'dart:developer' as dev show log;
+
 import 'package:example/src/common/constant/constants.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/util/app_zone.dart';
@@ -100,11 +102,12 @@ class _MobilePreviewState extends State<MobilePreview>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             spacing: kDefaultPadding,
-            children: [
+            children: <Widget>[
               CountryPhoneInput(
                 key: const ValueKey<String>('country_phone_input'),
                 controller: _countryPhoneController,
                 filter: kFilteredCountries,
+                onCountryChanged: (c) => dev.log('Country changed: $c'),
                 // isScrollControlled: true,
               ),
 

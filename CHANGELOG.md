@@ -1,3 +1,6 @@
+## 0.5.1
+- **ADDED**: `onCountryChanged` callback to `CountryPhoneInput` widget
+
 ## 0.5.0
 - **ADDED**: Adaptive modal presentation for `iOS` platform in `showCountryPicker` function
 
