@@ -16,6 +16,7 @@ class CountryPhoneInput extends StatefulWidget {
     this.initialCountry,
     this.controller,
     this.onChanged,
+    this.countryController,
     this.onCountryChanged,
     this.exclude,
     this.favorite,
@@ -38,6 +39,7 @@ class CountryPhoneInput extends StatefulWidget {
     Country? initialCountry,
     ValueNotifier<String>? controller,
     ValueChanged<String>? onChanged,
+    ValueNotifier<Country>? countryController,
     ValueChanged<Country>? onCountryChanged,
     List<String>? exclude,
     List<String>? favorite,
@@ -91,11 +93,14 @@ class CountryPhoneInput extends StatefulWidget {
   /// The initial country.
   final Country? initialCountry;
 
-  /// Called whne the phone number is changed.
+  /// Controller for the phone number input.
   final ValueNotifier<String>? controller;
 
   /// Called when the phone number is changed.
   final ValueChanged<String>? onChanged;
+
+  /// Controller for the selected country.
+  final ValueNotifier<Country>? countryController;
 
   /// Called when the country is changed.
   final ValueChanged<Country>? onCountryChanged;
@@ -110,7 +115,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
   late final TextEditingController _phoneController;
   late final CountryInputFormatter _formater;
   late ValueNotifier<String> _controller;
-  late ValueNotifier<Country> _selected;
+  late ValueNotifier<Country> _countryController;
 
   @override
   void initState() {
@@ -118,13 +123,15 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     final initialCountry = widget.initialCountry ?? Country.ru();
     _phoneController = TextEditingController()..addListener(_onPhoneChanged);
     _controller = widget.controller ?? ValueNotifier<String>('');
+
+    _countryController =
+        widget.countryController ?? ValueNotifier<Country>(initialCountry);
+    _countryController.addListener(_onSelectedChanged);
+
     _formater = CountryInputFormatter(
-      mask: initialCountry.mask,
+      mask: _countryController.value.mask,
       filter: {'0': RegExp('[0-9]')},
     );
-
-    _selected = ValueNotifier<Country>(initialCountry);
-    _selected.addListener(_onSelectedChanged);
 
     // If the controller has an initial value
     if (_controller.value.isNotEmpty) {
@@ -132,7 +139,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       var text = _controller.value;
 
       // Check if the phone code is not removed from the text
-      final phoneCode = _selected.value.phoneCode;
+      final phoneCode = _countryController.value.phoneCode;
       if (phoneCode.isNotEmpty) {
         text = text.replaceFirst(RegExp(r'^\+?' + phoneCode + r'\s?'), '');
       }
@@ -156,8 +163,8 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
 
   @override
   void didChangeDependencies() {
-    _pickerTheme.value = CountryPickerTheme.resolve(context);
     super.didChangeDependencies();
+    _pickerTheme.value = CountryPickerTheme.resolve(context);
   }
 
   @override
@@ -168,7 +175,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     final initialCountry = widget.initialCountry;
     if (widget.initialCountry != oldWidget.initialCountry &&
         initialCountry != null) {
-      _selected.value = initialCountry;
+      _countryController.value = initialCountry;
       _formater.updateMask(mask: initialCountry.mask);
     }
 
@@ -181,7 +188,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       final oldValue = _phoneController.value;
       var text = _controller.value;
 
-      final phoneCode = _selected.value.phoneCode;
+      final phoneCode = _countryController.value.phoneCode;
       if (phoneCode.isNotEmpty) {
         text = text.replaceFirst(RegExp(r'^\+?' + phoneCode + r'\s?'), '');
       }
@@ -195,6 +202,19 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       _phoneController.selection = TextSelection.collapsed(
         offset: _phoneController.text.length,
       );
+    }
+
+    // Check if the country controller has changed
+    if (!identical(oldWidget.countryController, widget.countryController)) {
+      final current = _countryController;
+      if (oldWidget.countryController == null) {
+        current.removeListener(_onSelectedChanged);
+        scheduleMicrotask(current.dispose);
+      }
+      _countryController =
+          widget.countryController ??
+          ValueNotifier<Country>(initialCountry ?? Country.ru());
+      _countryController.addListener(_onSelectedChanged);
     }
 
     // Check if the shouldReplace8 has changed
@@ -220,24 +240,23 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     _phoneController
       ..removeListener(_onPhoneChanged)
       ..dispose();
-    _selected
-      ..removeListener(_onSelectedChanged)
-      ..dispose();
+    _countryController.removeListener(_onSelectedChanged);
     if (widget.controller == null) _controller.dispose();
+    if (widget.countryController == null) _countryController.dispose();
     super.dispose();
   }
 
   void _onPhoneChanged() {
     if (!mounted) return;
     _controller.value =
-        '+${_selected.value.phoneCode} ${_phoneController.text}';
+        '+${_countryController.value.phoneCode} ${_phoneController.text}';
   }
 
   void _onSelectedChanged() {
     if (!mounted) return;
 
     // Check if the mask is present
-    final mask = _selected.value.mask;
+    final mask = _countryController.value.mask;
     if (mask == null || mask.isEmpty) return;
 
     // Update the formatter mask
@@ -251,7 +270,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
 
   void _onSelect(Country country) {
     if (!mounted) return;
-    if (country == _selected.value) return;
+    if (country == _countryController.value) return;
     if (country.mask?.isEmpty ?? true) {
       ScaffoldMessenger.maybeOf(context)
         ?..clearSnackBars()
@@ -270,7 +289,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     }
     _formater.clear();
     _phoneController.clear();
-    _selected.value = country;
+    _countryController.value = country;
     widget.onCountryChanged?.call(country);
   }
 }
@@ -278,9 +297,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
 /// State for widget [CountryPhoneInput].
 class _CountryPhoneInputState extends State<CountryPhoneInput>
     with _CountryPhoneInputStateMixin {
-  late final _BackgroundPainter _painter = _BackgroundPainter(
-    pickerTheme: _pickerTheme,
-  );
+  late final _painter = _BackgroundPainter(pickerTheme: _pickerTheme);
 
   @override
   Widget build(BuildContext context) {
@@ -293,7 +310,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
       minWidth: pickerTheme.inputHeight,
     );
     return ValueListenableBuilder(
-      valueListenable: _selected,
+      valueListenable: _countryController,
       builder: (context, selected, _) => Row(
         spacing: pickerTheme.indent,
         children: <Widget>[
@@ -312,7 +329,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                 showWorldWide: widget.showWorldWide,
                 isScrollControlled: widget.isScrollControlled,
                 useHaptickFeedback: widget.useHaptickFeedback,
-                selected: _selected,
+                selected: _countryController,
                 onSelect: _onSelect,
               ),
               padding: EdgeInsets.symmetric(horizontal: pickerTheme.padding),
@@ -396,6 +413,7 @@ class CountryPhoneInput$Extended extends CountryPhoneInput {
     super.autofocus,
     super.controller,
     super.onChanged,
+    super.countryController,
     super.onCountryChanged,
     super.exclude,
     super.favorite,
@@ -440,7 +458,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
     return Material(
       color: pickerTheme.backgroundColor,
       child: ValueListenableBuilder(
-        valueListenable: _selected,
+        valueListenable: _countryController,
         builder: (_, selected, _) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -466,7 +484,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                 showWorldWide: widget.showWorldWide,
                 isScrollControlled: widget.isScrollControlled,
                 useHaptickFeedback: widget.useHaptickFeedback,
-                selected: _selected,
+                selected: _countryController,
                 onSelect: _onSelect,
               ),
               child: SizedBox(

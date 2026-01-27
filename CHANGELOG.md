@@ -1,3 +1,6 @@
+## 0.5.2
+- **ADDED**: `countryController` to `CountryPhoneInput` widget
+-
 ## 0.5.1
 - **ADDED**: `onCountryChanged` callback to `CountryPhoneInput` widget
 
