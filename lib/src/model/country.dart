@@ -3,7 +3,7 @@
  * Date: 24 June 2024
  */
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart' show BuildContext;
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:flutter_simple_country_picker/src/data/country_parser.dart';
@@ -66,10 +66,10 @@ class Country {
       },
       nameLocalized = '',
       name = json['name'].toString(),
+      mask = json['mask']?.toString(),
       example = json['example'].toString(),
       displayName = json['display_name'].toString(),
       fullExampleWithPlusSign = json['full_example_with_plus_sign']?.toString(),
-      mask = json['mask']?.toString(),
       displayNameNoCountryCode = json['display_name_no_e164_cc'].toString();
 
   /// The world wide country
@@ -131,6 +131,9 @@ class Country {
   /// Text(country.flagEmoji)
   /// ```
   String get flagEmoji => CountryUtil.countryCodeToEmoji(countryCode);
+
+  /// Check to world wide
+  bool get iswWorldWide => countryCode == Country.worldWide.countryCode;
 
   /// Get the localized country name
   String? getTranslatedName(BuildContext context) =>
@@ -207,22 +210,20 @@ class Country {
   /// Convert the country to a JSON object
   Map<String, Object?> toJson() {
     final data = <String, Object?>{};
-    data['e164_cc'] = phoneCode;
     data['iso2_cc'] = countryCode;
+    data['e164_cc'] = phoneCode;
+    data['e164_key'] = e164Key;
     data['e164_sc'] = e164Sc;
     data['geographic'] = geographic;
     data['level'] = level;
     data['name'] = name;
+    data['mask'] = mask;
     data['example'] = example;
     data['display_name'] = displayName;
     data['full_example_with_plus_sign'] = fullExampleWithPlusSign;
     data['display_name_no_e164_cc'] = displayNameNoCountryCode;
-    data['e164_key'] = e164Key;
     return data;
   }
-
-  /// Check to world wide
-  bool get iswWorldWide => countryCode == Country.worldWide.countryCode;
 
   @override
   String toString() {

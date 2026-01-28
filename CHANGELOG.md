@@ -1,3 +1,6 @@
+## 0.6.2
+- **FIXED**: `Country` model to include `mask` field in `toJson` method
+
 ## 0.6.1
 - **FIXED**: `CountryInputFormatter` the default mask filter has been fixed, now it is possible to have a mask with values ​`​0`, `#`, `A`
 
