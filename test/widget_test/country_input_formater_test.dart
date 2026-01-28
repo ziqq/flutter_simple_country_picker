@@ -13,7 +13,7 @@ void main() {
     late Widget testWidget;
 
     setUp(() {
-      formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
+      formatter = CountryInputFormatter(mask: '+0 (000) 000-00-00');
       controller = TextEditingController();
       testWidget = TextField(
         key: _key,
@@ -27,7 +27,61 @@ void main() {
       formatter.clear();
     });
 
-    testWidgets('should format input correctly', (tester) async {
+    testWidgets('should format input correctly with mask #', (tester) async {
+      formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
+      controller = TextEditingController();
+      testWidget = TextField(
+        key: _key,
+        controller: controller,
+        inputFormatters: [formatter],
+      );
+
+      await tester.pumpWidget(
+        createWidgetUnderTest(builder: (_) => Scaffold(body: testWidget)),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TextField), findsOneWidget);
+
+      // Вводим текст в TextField
+      await tester.enterText(find.byKey(_key), '12345678900');
+      await tester.pump();
+
+      // Проверяем отформатированный текст
+      expect(controller.text, '+1 (234) 567-89-00');
+    });
+
+    testWidgets('should format input correctly with mask 0', (tester) async {
+      formatter = CountryInputFormatter(mask: '+0 (000) 000-00-00');
+      controller = TextEditingController();
+      testWidget = TextField(
+        key: _key,
+        controller: controller,
+        inputFormatters: [formatter],
+      );
+      await tester.pumpWidget(
+        createWidgetUnderTest(builder: (_) => Scaffold(body: testWidget)),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TextField), findsOneWidget);
+
+      // Вводим текст в TextField
+      await tester.enterText(find.byKey(_key), '12345678900');
+      await tester.pump();
+
+      // Проверяем отформатированный текст
+      expect(controller.text, '+1 (234) 567-89-00');
+    });
+
+    testWidgets('should format input correctly with mask A', (tester) async {
+      formatter = CountryInputFormatter(mask: '+A (AAA) AAA-AA-AA');
+      controller = TextEditingController();
+      testWidget = TextField(
+        key: _key,
+        controller: controller,
+        inputFormatters: [formatter],
+      );
       await tester.pumpWidget(
         createWidgetUnderTest(builder: (_) => Scaffold(body: testWidget)),
       );

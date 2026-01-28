@@ -7,6 +7,13 @@ import 'dart:math';
 
 import 'package:flutter/services.dart';
 
+/// Default filter for country input formatter.
+final _kDefaultFilter = <String, RegExp>{
+  '#': RegExp('[0-9]'),
+  '0': RegExp('[0-9]'),
+  'A': RegExp('[0-9]'),
+};
+
 /// Country input completion type.
 enum CountryInputCompletionType {
   /// Lazy completion type where unfiltered characters are completed
@@ -29,30 +36,28 @@ enum CountryInputCompletionType {
 ///
 /// - [CountryInputCompletionType.lazy] (default): unfiltered characters are
 /// auto-completed after the next filtered character is input.
-///   Example: with mask "#/#", input "1", then "2" results in "1", then "1/2".
+/// Example: with mask `#/#`, input `1`, then `2` results in `1`, then `1/2`.
 ///
 /// - [CountryInputCompletionType.eager]: unfiltered characters
 /// are auto-completed immediately after the previous filtered character
 /// is input.
-///
-/// Example: with mask "#/#", input "1", then "2" results in "1/", then "1/2".
+/// Example: with mask `#/#`, input `1`, then `2` results in `1/`, then `1/2`.
 class CountryInputFormatter implements TextInputFormatter {
   /// Constructor to initialize the formatter with [mask], [filter],
   /// and optional [initialText].
-  /// You can choose between [CountryInputCompletionType.lazy] or
+  ///
+  /// You can choose [type] between [CountryInputCompletionType.lazy] or
   /// [CountryInputCompletionType.eager] to control the behavior of
   /// character completion.
   CountryInputFormatter({
     String? mask,
-    Map<String, RegExp>? filter,
     String? initialText,
+    Map<String, RegExp>? filter,
     CountryInputCompletionType type = CountryInputCompletionType.lazy,
   }) : _type = type {
     updateMask(
       mask: mask,
-      filter:
-          filter ??
-          {'#': RegExp('[0-9]'), '0': RegExp('[^0-9]'), 'A': RegExp('[^0-9]')},
+      filter: filter ?? _kDefaultFilter,
       newValue: initialText == null
           ? null
           : TextEditingValue(
@@ -83,12 +88,8 @@ class CountryInputFormatter implements TextInputFormatter {
     TextEditingValue? newValue,
   }) {
     _mask = mask;
-    if (filter != null) {
-      _updateFilter(filter);
-    }
-    if (type != null) {
-      _type = type;
-    }
+    if (type != null) _type = type;
+    if (filter != null) _updateFilter(filter);
     _calcMaskLength();
     var targetValue = newValue;
     if (targetValue == null) {
@@ -102,16 +103,15 @@ class CountryInputFormatter implements TextInputFormatter {
     return formatEditUpdate(TextEditingValue.empty, targetValue);
   }
 
-  CountryInputCompletionType _type;
-
   /// Get the current completion type.
   CountryInputCompletionType get type => _type;
+  CountryInputCompletionType _type;
 
   String? _mask;
+  int _maskLength = 0;
   List<String> _maskChars = [];
   Map<String, RegExp>? _maskFilter;
 
-  int _maskLength = 0;
   final _TextMatcher _resultTextArray = _TextMatcher();
   String _resultTextMasked = '';
 
@@ -149,6 +149,7 @@ class CountryInputFormatter implements TextInputFormatter {
     initialText: text,
   ).getUnmaskedText();
 
+  /// Format the text input according to the mask and filter.
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
@@ -259,7 +260,7 @@ class CountryInputFormatter implements TextInputFormatter {
         }
       }
       if (prefixLength > 0) {
-        final resultPrefix = _resultTextArray._symbolArray
+        final resultPrefix = _resultTextArray.symbols
             .take(prefixLength)
             .toList();
         final effectivePrefixLength = min(
@@ -279,12 +280,12 @@ class CountryInputFormatter implements TextInputFormatter {
       }
     }
 
+    var cursorPos = -1;
     var curTextPos = 0;
     var maskPos = 0;
-    _resultTextMasked = '';
-    var cursorPos = -1;
-    var nonMaskedCount = 0;
     var maskInside = 0;
+    var nonMaskedCount = 0;
+    _resultTextMasked = '';
 
     while (maskPos < mask.length) {
       final curMaskChar = mask[maskPos];
@@ -412,32 +413,43 @@ class CountryInputFormatter implements TextInputFormatter {
   }
 }
 
+/// Internal helper class to manage text as a list of symbols.
 class _TextMatcher {
-  final List<String> _symbolArray = <String>[];
+  _TextMatcher() : _symbols = <String>[];
 
-  int get length => _symbolArray.fold(0, (prev, match) => prev + match.length);
+  /// Get the symbol array.
+  List<String> get symbols => _symbols;
+  final List<String> _symbols;
 
-  void removeRange(int start, int end) => _symbolArray.removeRange(start, end);
+  /// Get the length of the symbol array.
+  int get length => _symbols.fold(0, (prev, match) => prev + match.length);
 
+  /// Remove a range of symbols from the array.
+  void removeRange(int start, int end) => _symbols.removeRange(start, end);
+
+  /// Insert a substring at the specified [start] index.
   void insert(int start, String substring) {
     for (var i = 0; i < substring.length; i++) {
-      _symbolArray.insert(start + i, substring[i]);
+      _symbols.insert(start + i, substring[i]);
     }
   }
 
-  void removeAt(int index) => _symbolArray.removeAt(index);
+  /// Remove a symbol at the specified [index].
+  void removeAt(int index) => _symbols.removeAt(index);
 
-  String operator [](int index) => _symbolArray[index];
+  /// Set the symbol array to the characters of the provided [text].
+  void set(String text) {
+    _symbols.clear();
+    for (var i = 0; i < text.length; i++) {
+      _symbols.add(text[i]);
+    }
+  }
 
-  void clear() => _symbolArray.clear();
+  /// Clear the symbol array.
+  void clear() => _symbols.clear();
 
   @override
-  String toString() => _symbolArray.join();
+  String toString() => _symbols.join();
 
-  void set(String text) {
-    _symbolArray.clear();
-    for (var i = 0; i < text.length; i++) {
-      _symbolArray.add(text[i]);
-    }
-  }
+  String operator [](int index) => _symbols[index];
 }

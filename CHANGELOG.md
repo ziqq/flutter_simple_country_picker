@@ -1,3 +1,6 @@
+## 0.6.1
+- **FIXED**: `CountryInputFormatter` the default mask filter has been fixed, now it is possible to have a mask with values ​`​0`, `#`, `A`
+
 ## 0.6.0
 - **BREAKING CHANGES**: Bahamas coutry code from `12421` to `1242`
 - **BREAKING CHANGES**: `CountryPhoneInput` widget now requires `CountryPhoneController` in exchange for `ValueNotifier<String>`
