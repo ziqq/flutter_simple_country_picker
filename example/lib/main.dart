@@ -34,8 +34,8 @@ class Preview extends StatefulWidget {
 class _MobilePreviewState extends State<Preview>
     with CountryPickerPreviewStateMixin {
   static const _tabs = {0: Text('Preview'), 1: Text('Preview extended')};
-  final ValueNotifier<String> _countryPhoneController = ValueNotifier('');
-  final ValueNotifier<int> _groupValue = ValueNotifier(0);
+  final _countryPhoneController = CountryPhoneController.empty();
+  final _groupValue = ValueNotifier(0);
 
   @override
   void dispose() {

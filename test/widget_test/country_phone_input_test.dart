@@ -78,7 +78,7 @@ void _$defaultCountryPhoneInputTest() {
         tester,
       ) async {
         final initialCountry = getCountryByISO2asJSON('GB');
-        final controller = ValueNotifier<String>('+447911123456');
+        final controller = CountryPhoneController.apply('+447911123456');
 
         await tester.pumpWidget(
           createWidgetUnderTest(
@@ -413,8 +413,8 @@ void _$defaultCountryPhoneInputTest() {
         tester,
       ) async {
         // 1. Create initial controller with some phone
-        final oldController = ValueNotifier<String>('+71234567890');
-        final newController = ValueNotifier<String>('+11234567890');
+        final oldController = CountryPhoneController.apply('+71234567890');
+        final newController = CountryPhoneController.apply('+11234567890');
 
         final initialCountry = Country.fromJson(
           countries.firstWhere((c) => c['e164_key'] == '7-RU-0'),
@@ -468,7 +468,7 @@ void _$defaultCountryPhoneInputTest() {
         tester,
       ) async {
         // 1. Pump with shouldReplace8=false, and see no leading removal
-        final controller = ValueNotifier<String>('+7 8 1234567');
+        final controller = CountryPhoneController.apply('+7 8 1234567');
 
         await tester.pumpWidget(
           createWidgetUnderTest(

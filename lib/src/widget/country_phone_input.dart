@@ -37,7 +37,7 @@ class CountryPhoneInput extends StatefulWidget {
   /// {@macro country_phone_input}
   const factory CountryPhoneInput.extended({
     Country? initialCountry,
-    ValueNotifier<String>? controller,
+    CountryPhoneController? controller,
     ValueChanged<String>? onChanged,
     ValueNotifier<Country>? countryController,
     ValueChanged<Country>? onCountryChanged,
@@ -94,7 +94,7 @@ class CountryPhoneInput extends StatefulWidget {
   final Country? initialCountry;
 
   /// Controller for the phone number input.
-  final ValueNotifier<String>? controller;
+  final CountryPhoneController? controller;
 
   /// Called when the phone number is changed.
   final ValueChanged<String>? onChanged;
@@ -114,7 +114,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
   final ValueNotifier<CountryPickerTheme?> _pickerTheme = ValueNotifier(null);
   late final TextEditingController _phoneController;
   late final CountryInputFormatter _formater;
-  late ValueNotifier<String> _controller;
+  late CountryPhoneController _controller;
   late ValueNotifier<Country> _countryController;
 
   @override
@@ -122,7 +122,9 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     super.initState();
     final initialCountry = widget.initialCountry ?? Country.ru();
     _phoneController = TextEditingController()..addListener(_onPhoneChanged);
-    _controller = widget.controller ?? ValueNotifier<String>('');
+    _controller =
+        widget.controller ??
+        CountryPhoneController.apply(initialCountry.countryCode);
 
     _countryController =
         widget.countryController ?? ValueNotifier<Country>(initialCountry);
@@ -183,7 +185,10 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     if (!identical(oldWidget.controller, widget.controller)) {
       final current = _controller;
       if (oldWidget.controller == null) scheduleMicrotask(current.dispose);
-      _controller = widget.controller ?? ValueNotifier<String>('');
+      final initialCountry = widget.initialCountry ?? Country.ru();
+      _controller =
+          widget.controller ??
+          CountryPhoneController.apply(initialCountry.countryCode);
 
       final oldValue = _phoneController.value;
       var text = _controller.value;

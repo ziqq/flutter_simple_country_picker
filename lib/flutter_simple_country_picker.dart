@@ -7,6 +7,7 @@ library;
 
 export 'src/constant/typedef.dart';
 export 'src/controller/country_controller.dart' show CountryState;
+export 'src/controller/country_phone_controller.dart';
 export 'src/localization/country_localizations.dart' show CountryLocalizations;
 export 'src/model/country.dart';
 export 'src/theme/country_picker_theme.dart';

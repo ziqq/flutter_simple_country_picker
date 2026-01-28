@@ -5,6 +5,8 @@ import 'unit_test/country_controller_test.dart' as unit_country_controller_test;
 import 'unit_test/country_input_formater_test.dart'
     as unit_country_input_formater_test;
 import 'unit_test/country_parser_test.dart' as unit_country_parser_test;
+import 'unit_test/country_phone_controller_test.dart'
+    as unit_country_phone_controller_test;
 import 'unit_test/country_picker_theme_test.dart'
     as unit_country_picker_theme_test;
 import 'unit_test/country_provider_test.dart' as unit_country_provider_test;
@@ -27,6 +29,7 @@ import 'widget_test/status_bar_gesture_detector_test.dart'
 void main() {
   group('flutter_simple_country_picker -', () {
     group('unit_test -', () {
+      unit_country_phone_controller_test.main();
       unit_country_input_formater_test.main();
       unit_country_controller_test.main();
       unit_country_parser_test.main();

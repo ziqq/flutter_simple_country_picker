@@ -33,7 +33,7 @@ class MobilePreview extends StatefulWidget {
 /// State for [MobilePreview].
 class _MobilePreviewState extends State<MobilePreview>
     with CountryPickerPreviewStateMixin {
-  final ValueNotifier<String> _countryPhoneController = ValueNotifier<String>(
+  final _countryPhoneController = CountryPhoneController.apply(
     '88881234567',
   ) /* 78881234567 */ /* +78881234567 */;
 

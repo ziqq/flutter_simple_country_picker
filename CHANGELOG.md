@@ -1,4 +1,10 @@
 ## 0.6.0
+- **BREAKING CHANGES**: Bahamas coutry code from `12421` to `1242`
+- **BREAKING CHANGES**: `CountryPhoneInput` widget now requires `CountryPhoneController` in exchange for `ValueNotifier<String>`
+- **ADDED**: `CountryPhoneController` to manage country and phone number state, formatting, and validation
+- **ADDED**: Tests for country codes data completeness in `CountryPhoneController` tests
+- **CHANGED**: Refactoring country codes data to include `mask` field with `null` values
+- **CHANGED**: Updated unit tests to handle new country codes data structure
 - **FIXED**: Bahamas coutry code from `12421` to `1242`
 
 ## 0.5.2
