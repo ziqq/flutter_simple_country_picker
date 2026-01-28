@@ -347,7 +347,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   spacing: 3,
-                  children: [
+                  children: <Widget>[
                     if (selected.flagEmoji.isNotEmpty) ...[
                       Text(
                         selected.flagEmoji,
@@ -376,6 +376,9 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                       onChanged: (_) {
                         widget.onChanged?.call(_controller.value);
                       },
+                      cursorHeight: textStyle?.fontSize,
+                      cursorColor: textStyle?.color,
+                      style: textStyle,
                       decoration: InputDecoration(
                         hintText:
                             widget.placeholder ??

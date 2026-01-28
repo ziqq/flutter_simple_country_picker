@@ -1,3 +1,6 @@
+## 0.6.3
+- **FIXED**: `CountryPhoneInput` widget to apply `textStyle` to cursor properties
+
 ## 0.6.2
 - **FIXED**: `Country` model to include `mask` field in `toJson` method
 
