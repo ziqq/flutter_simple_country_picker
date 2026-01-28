@@ -68,11 +68,11 @@ Example usage of the `showCountryPicker` function:
 showCountryPicker(
   context: context,
   exclude: ['RU', 'EN'],
-  whenComplete: () {
-    print('CountryPicker dismissed');
+  onSelect: (country) {
+    print('CountryPicker | select new country: ${country.displayName}');
   },
-  onSelect: (Country country) {
-    print('Selected country: ${country.displayName}');
+  whenComplete: () {
+    print('CountryPicker | dismissed');
   },
 );
 ```
