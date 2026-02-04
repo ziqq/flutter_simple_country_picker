@@ -17,7 +17,7 @@ abstract base class CountryState {
   /// {@macro country_state}
   CountryState._({
     required this.countries,
-    required this.useGroup,
+    required this.showGroup,
     this.error,
     this.stackTrace,
   });
@@ -27,7 +27,7 @@ abstract base class CountryState {
   /// {@macro country_state}
   factory CountryState.loading({
     required List<Country> countries,
-    required bool useGroup,
+    required bool showGroup,
     Object? error,
     StackTrace? stackTrace,
   }) = CountryState$Loading;
@@ -37,7 +37,7 @@ abstract base class CountryState {
   /// {@macro country_state}
   factory CountryState.idle({
     required List<Country> countries,
-    required bool useGroup,
+    required bool showGroup,
     Object? error,
     StackTrace? stackTrace,
   }) = CountryState$Idle;
@@ -47,7 +47,7 @@ abstract base class CountryState {
   /// {@macro country_state}
   factory CountryState.error({
     required List<Country> countries,
-    required bool useGroup,
+    required bool showGroup,
     Object? error,
     StackTrace? stackTrace,
   }) = CountryState$Error;
@@ -67,8 +67,8 @@ abstract base class CountryState {
   /// List of countries.
   final List<Country> countries;
 
-  /// Check if use group in countries list.
-  final bool useGroup;
+  /// Show grouped countries by initial letter.
+  final bool showGroup;
 
   /// Error object, if any.
   final Object? error;
@@ -85,7 +85,7 @@ abstract base class CountryState {
   Country? getCountryByCode(String countryCode) => _table[countryCode];
 
   @override
-  int get hashCode => Object.hashAll([countries, useGroup, type]);
+  int get hashCode => Object.hashAll([countries, showGroup, type]);
 
   @override
   bool operator ==(Object other) =>
@@ -93,13 +93,13 @@ abstract base class CountryState {
       (other is CountryState &&
           type == other.type &&
           error == other.error &&
-          useGroup == other.useGroup &&
+          showGroup == other.showGroup &&
           stackTrace == other.stackTrace &&
           listEquals(countries, other.countries));
 
   @override
   String toString() =>
-      'CountryState.$type{countries: ${countries.length}, useGroup: $useGroup}';
+      'CountryState.$type{countries: ${countries.length}, showGroup: $showGroup}';
 }
 
 /// Loading state.
@@ -108,7 +108,7 @@ final class CountryState$Loading extends CountryState {
   /// {@macro country_state}
   CountryState$Loading({
     required super.countries,
-    required super.useGroup,
+    required super.showGroup,
     super.error,
     super.stackTrace,
   }) : super._();
@@ -123,7 +123,7 @@ final class CountryState$Idle extends CountryState {
   /// {@macro country_state}
   CountryState$Idle({
     required super.countries,
-    required super.useGroup,
+    required super.showGroup,
     super.error,
     super.stackTrace,
   }) : super._();
@@ -138,7 +138,7 @@ final class CountryState$Error extends CountryState {
   /// {@macro country_state}
   CountryState$Error({
     required super.countries,
-    required super.useGroup,
+    required super.showGroup,
     super.error,
     super.stackTrace,
   }) : super._();
@@ -158,6 +158,7 @@ final class CountryController extends ValueNotifier<CountryState> {
   CountryController({
     required CountryProvider provider,
     bool showPhoneCode = true,
+    bool? showGroup,
     List<Country>? countries,
     List<String>? exclude,
     List<String>? favorite,
@@ -168,13 +169,15 @@ final class CountryController extends ValueNotifier<CountryState> {
        _filter = filter,
        _showPhoneCode = showPhoneCode,
        search = TextEditingController(),
-       super(CountryState.idle(countries: countries ?? [], useGroup: false));
+       super(
+         CountryState.idle(
+           countries: countries ?? [],
+           showGroup: showGroup ?? false,
+         ),
+       );
 
   /// Countries provider.
   final CountryProvider _provider;
-
-  /// Used to show phone code.
-  final bool _showPhoneCode;
 
   /// An optional [exclude] argument can be used to exclude(remove) one ore more
   /// country from the countries list. It takes a list of country code(iso2).
@@ -190,6 +193,9 @@ final class CountryController extends ValueNotifier<CountryState> {
   /// Note: Can't provide both [filter] and [exclude]
   final List<String>? _filter;
 
+  /// Used to show phone code.
+  final bool _showPhoneCode;
+
   /// Search controller.
   TextEditingController? search;
 
@@ -202,10 +208,18 @@ final class CountryController extends ValueNotifier<CountryState> {
   /// Current state.
   CountryState get state => value;
 
+  /// Check if the controller is disposed.
+  bool get isDisposed => _$isDisposed;
+  bool _$isDisposed = false;
+
   /// Add listener to search controller and provide localization.
   ///
   /// Localization is used to search countries by localized name.
   void initLocalization(CountryLocalizations? localization) {
+    if (isDisposed) {
+      assert(false, 'A $runtimeType was already disposed.');
+      return;
+    }
     if (_localization != null) search?.removeListener(_onSearch);
     search?.addListener(_onSearch);
     _localization = localization;
@@ -259,7 +273,7 @@ final class CountryController extends ValueNotifier<CountryState> {
       _setState(
         CountryState.idle(
           countries: $countries.toList(growable: false),
-          useGroup: $countries.length > 8,
+          showGroup: $countries.length > 15 || state.showGroup,
         ),
       );
     } finally {
@@ -275,7 +289,7 @@ final class CountryController extends ValueNotifier<CountryState> {
     }
   });
 
-  /// Search countries
+  /// Search countries by query.
   Future<void> _onSearch() => _handle(() async {
     final query = search?.text ?? '';
     var newCountries = <Country>[];
@@ -291,25 +305,28 @@ final class CountryController extends ValueNotifier<CountryState> {
     _setState(
       CountryState.idle(
         countries: newCountries.toList(growable: false),
-        useGroup: state.useGroup,
+        showGroup: state.showGroup,
       ),
     );
   });
 
-  Future<void> _handle(Future<void> Function() fn) async {
+  /// Handles a given operation with error handling and completion tracking.
+  ///
+  /// [handler] - The is the main operation to be executed.
+  Future<void> _handle(Future<void> Function() handler) async {
     try {
       _setState(
         CountryState.loading(
           countries: state.countries,
-          useGroup: state.useGroup,
+          showGroup: state.showGroup,
         ),
       );
-      await fn();
+      await handler();
     } on Object catch (e, s) {
       _setState(
         CountryState.error(
           countries: value.countries,
-          useGroup: state.useGroup,
+          showGroup: state.showGroup,
           error: e,
           stackTrace: s,
         ),
@@ -317,7 +334,9 @@ final class CountryController extends ValueNotifier<CountryState> {
     }
   }
 
+  /// Handle state update.
   void _setState(CountryState state) {
+    if (isDisposed) return;
     if (state == value) return;
     value = state;
     notifyListeners();
@@ -325,9 +344,16 @@ final class CountryController extends ValueNotifier<CountryState> {
 
   @override
   void dispose() {
+    if (isDisposed) {
+      assert(false, 'A $runtimeType was already disposed.');
+      return;
+    }
     search
       ?..removeListener(_onSearch)
       ..dispose();
+    _cache = <Country>[];
+    _localization = null;
+    _$isDisposed = true;
     super.dispose();
   }
 }
