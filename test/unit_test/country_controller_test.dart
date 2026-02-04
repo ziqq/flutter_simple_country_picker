@@ -109,9 +109,9 @@ void _$controllerTest() => group('CountryController -', () {
     expect(controller.state.isError, isTrue);
   });
 
-  test('useGroup should return bool as true', () {
+  test('showGroup should return bool as true', () {
     final controller = CountryController(provider: provider);
-    expect(controller.state.useGroup, isFalse);
+    expect(controller.state.showGroup, isFalse);
   });
 });
 
@@ -124,7 +124,7 @@ void _$stateTest() {
     test(r'CountryState$Loading should be loading state', () {
       final state = CountryState.loading(
         countries: countriesList,
-        useGroup: false,
+        showGroup: false,
       );
 
       expect(state.isLoading, isTrue);
@@ -136,7 +136,7 @@ void _$stateTest() {
     test(r'CountryState$Idle should be idle state', () {
       final state = CountryState.idle(
         countries: countriesList,
-        useGroup: false,
+        showGroup: false,
       );
 
       expect(state.isLoading, isFalse);
@@ -145,10 +145,10 @@ void _$stateTest() {
       expect(state.countries, equals(countriesList));
     });
 
-    test('CountryState$Error should be error state', () {
+    test(r'CountryState$Error should be error state', () {
       final state = CountryState.error(
         countries: countriesList,
-        useGroup: false,
+        showGroup: false,
       );
 
       expect(state.isLoading, isFalse);
@@ -160,37 +160,37 @@ void _$stateTest() {
     test('getCountryByCode should return correct country', () {
       final state = CountryState.idle(
         countries: countriesList,
-        useGroup: false,
+        showGroup: false,
       );
 
       expect(state.getCountryByCode('RU'), equals(country1));
-      expect(state.getCountryByCode('KZ'), equals(country2));
+      expect(state.getCountryByCode('AB'), equals(country2));
       expect(state.getCountryByCode('MX'), isNull);
     });
 
-    test('CountryState equality should be based on countriesList list', () {
+    test('equality should be based on countriesList list', () {
       final state1 = CountryState.idle(
         countries: [country1, country2],
-        useGroup: false,
+        showGroup: false,
       );
       final state2 = CountryState.idle(
         countries: [country1, country2],
-        useGroup: false,
+        showGroup: false,
       );
-      final state3 = CountryState.idle(countries: [country1], useGroup: false);
+      final state3 = CountryState.idle(countries: [country1], showGroup: false);
 
       expect(state1, state2);
       expect(state1 == state3, isFalse);
     });
 
-    test('CountryState hashCode should be not iqual', () {
+    test('hashCode should be not iqual', () {
       final state1 = CountryState.idle(
         countries: [country1, country2],
-        useGroup: false,
+        showGroup: false,
       );
       final state2 = CountryState.idle(
         countries: [country1, country2],
-        useGroup: false,
+        showGroup: false,
       );
 
       expect(state1.hashCode != state2.hashCode, isTrue);
@@ -199,11 +199,11 @@ void _$stateTest() {
     test('toString', () {
       final state1 = CountryState.idle(
         countries: [country1, country2],
-        useGroup: false,
+        showGroup: false,
       );
       expect(
         state1.toString(),
-        'CountryState.idle{countries: ${state1.countries.length}, useGroup: false}',
+        'CountryState.idle{countries: ${state1.countries.length}, showGroup: false}',
       );
     });
   });

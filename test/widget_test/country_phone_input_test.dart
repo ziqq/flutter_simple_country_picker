@@ -209,7 +209,7 @@ void _$defaultCountryPhoneInputTest() {
           'should change selected country, clear phone and apply new mask when country with mask tapped',
           (tester) async {
             // Initial country RU (has mask) and target country Armenia (has different mask)
-            final ru = Country.fromJson(countries$Favorite.first);
+            final ru = Country.fromJson(countries.first);
 
             await tester.pumpWidget(
               createWidgetUnderTest(
