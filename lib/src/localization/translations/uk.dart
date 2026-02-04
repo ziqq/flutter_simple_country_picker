@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 /// Ukrainian
 @internal
 final Map<String, String> uk = {
+  'AB': 'Абхазія',
   'AF': 'Афганістан',
   'AX': 'Аландські острови',
   'AL': 'Албанія',

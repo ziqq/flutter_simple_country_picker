@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 @internal
 final Map<String, String> ru = {
   'AF': 'Афганистан',
+  'AB': 'Абхазия',
   'AX': 'Аландские острова',
   'AL': 'Албания',
   'DZ': 'Алжир',
@@ -105,7 +106,7 @@ final Map<String, String> ru = {
   'HU': 'Венгрия',
   'IS': 'Исландия',
   'IN': 'Индия',
-  'ID': 'Индия',
+  'ID': 'Индонезия',
   'IR': 'Иран',
   'IQ': 'Ирак',
   'IE': 'Ирландия',

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 @internal
 final Map<String, String> he = {
   'AF': 'אפגניסטאן',
+  'AB': 'אבחזיה',
   'AX': 'אולאנד',
   'AL': 'אלבניה',
   'DZ': 'אלג׳יריה',

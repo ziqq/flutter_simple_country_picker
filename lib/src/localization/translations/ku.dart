@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 @internal
 final Map<String, String> ku = {
   'AF': 'ئەفغانستان',
+  'AB': 'ئابخازیا',
   'AX': 'ئاڵاند',
   'AL': 'ئەلبانیا',
   'DZ': 'ئەلجێریا',

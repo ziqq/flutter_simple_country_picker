@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 /// Taiwanese
 @internal
 final Map<String, String> tw = {
+  'AB': '阿布哈茲',
   'AF': '阿富汗',
   'AX': '奧蘭',
   'AL': '阿爾巴尼亞',

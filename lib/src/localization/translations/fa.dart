@@ -1,6 +1,7 @@
 /// Localization strings for Persian (Farsi) language.
 final Map<String, String> fa = {
   'AF': 'افغانستان',
+  'AB': 'ابخازیا',
   'AX': 'جزایر آلاند',
   'AL': 'آلبانی',
   'DZ': 'الجزایر',

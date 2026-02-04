@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 @internal
 final Map<String, String> cn = {
   'AF': '阿富汗',
+  'AB': '阿布哈兹',
   'AX': '奥兰',
   'AL': '阿尔巴尼亚',
   'DZ': '阿尔及利亚',
