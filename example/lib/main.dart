@@ -48,9 +48,9 @@ class _MobilePreviewState extends State<Preview>
     final pickerTheme = CountryPickerTheme.of(context);
     final theme = Theme.of(context);
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: .center,
       spacing: kDefaultPadding,
-      children: [
+      children: <Widget>[
         CountryPhoneInput(
           key: const ValueKey<String>('country_phone_input'),
           controller: _countryPhoneController,
@@ -81,10 +81,8 @@ class _MobilePreviewState extends State<Preview>
                       context,
                     ),
                   ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: kDefaultPadding,
-                  ),
+                  border: .none,
+                  contentPadding: const .symmetric(horizontal: kDefaultPadding),
                 ),
               ),
             ),
@@ -96,7 +94,7 @@ class _MobilePreviewState extends State<Preview>
           width: double.infinity,
           child: CupertinoButton.filled(
             onPressed: onSubmit,
-            padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+            padding: const .symmetric(horizontal: kDefaultPadding),
             child: Text(ExampleLocalization.of(context).submitButton),
           ),
         ),
@@ -108,7 +106,7 @@ class _MobilePreviewState extends State<Preview>
   }
 
   Widget _buildPreviewExtended(BuildContext context) => Column(
-    mainAxisAlignment: MainAxisAlignment.center,
+    mainAxisAlignment: .center,
     spacing: kDefaultPadding,
     children: <Widget>[
       CountryPhoneInput.extended(
@@ -122,7 +120,7 @@ class _MobilePreviewState extends State<Preview>
         width: double.infinity,
         child: CupertinoButton.filled(
           onPressed: onSubmit,
-          padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+          padding: const .symmetric(horizontal: kDefaultPadding),
           child: Text(ExampleLocalization.of(context).submitButton),
         ),
       ),
@@ -135,7 +133,7 @@ class _MobilePreviewState extends State<Preview>
     return Scaffold(
       appBar: const CommonAppBar(title: 'Preview'),
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(bottom: CommonBottomSpacer.heightOf(context)),
+        padding: .only(bottom: CommonBottomSpacer.heightOf(context)),
         child: ColoredBox(
           color: theme.scaffoldBackgroundColor,
           child: Column(
@@ -143,10 +141,8 @@ class _MobilePreviewState extends State<Preview>
             children: <Widget>[
               CupertinoButton(
                 key: const ValueKey<String>('full_picker_button'),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: kDefaultPadding,
-                ),
-                sizeStyle: CupertinoButtonSize.medium,
+                padding: const .symmetric(horizontal: kDefaultPadding),
+                sizeStyle: .medium,
                 onPressed: () => showCountryPicker(
                   context: context,
                   // Can be used to exclude one ore more country
@@ -161,10 +157,8 @@ class _MobilePreviewState extends State<Preview>
               ),
               CupertinoButton(
                 key: const ValueKey<String>('filtered_picker_button'),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: kDefaultPadding,
-                ),
-                sizeStyle: CupertinoButtonSize.medium,
+                padding: const .symmetric(horizontal: kDefaultPadding),
+                sizeStyle: .medium,
                 onPressed: () => showCountryPicker(
                   context: context,
                   isScrollControlled: false,
@@ -179,10 +173,8 @@ class _MobilePreviewState extends State<Preview>
               ),
               CupertinoButton(
                 key: const ValueKey<String>('adaptive_picker_button'),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: kDefaultPadding,
-                ),
-                sizeStyle: CupertinoButtonSize.medium,
+                padding: const .symmetric(horizontal: kDefaultPadding),
+                sizeStyle: .medium,
                 onPressed: () => showCountryPicker(
                   context: context,
                   adaptive: true,
@@ -200,8 +192,8 @@ class _MobilePreviewState extends State<Preview>
           child: ValueListenableBuilder(
             valueListenable: _groupValue,
             builder: (_, groupValue, _) => Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              mainAxisAlignment: .center,
+              children: <Widget>[
                 // --- Tabs --- //
                 SizedBox(
                   width: double.infinity,
