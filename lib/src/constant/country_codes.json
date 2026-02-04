@@ -593,12 +593,12 @@
     "e164_sc": 0,
     "geographic": true,
     "level": 1,
-    "name": "Cape Verde",
+    "name": "Cabo Verde",
     "example": "9911234",
-    "display_name": "Cape Verde (CV) [+238]",
+    "display_name": "Cabo Verde (CV) [+238]",
     "mask": null,
     "full_example_with_plus_sign": "+2389911234",
-    "display_name_no_e164_cc": "Cape Verde (CV)",
+    "display_name_no_e164_cc": "Cabo Verde (CV)",
     "e164_key": "238-CV-0"
   },
   {
@@ -873,12 +873,12 @@
     "e164_sc": 0,
     "geographic": true,
     "level": 1,
-    "name": "Czech Republic",
+    "name": "Czechia",
     "example": "601123456",
-    "display_name": "Czech Republic (CZ) [+420]",
+    "display_name": "Czechia (CZ) [+420]",
     "mask": null,
     "full_example_with_plus_sign": "+420601123456",
-    "display_name_no_e164_cc": "Czech Republic (CZ)",
+    "display_name_no_e164_cc": "Czechia (CZ)",
     "e164_key": "420-CZ-0"
   },
   {
@@ -943,12 +943,12 @@
     "e164_sc": 0,
     "geographic": true,
     "level": 1,
-    "name": "East Timor",
+    "name": "Timor‑Leste",
     "example": "77212345",
-    "display_name": "East Timor (TL) [+670]",
+    "display_name": "Timor‑Leste (TL) [+670]",
     "mask": null,
     "full_example_with_plus_sign": "+67077212345",
-    "display_name_no_e164_cc": "East Timor (TL)",
+    "display_name_no_e164_cc": "Timor‑Leste (TL)",
     "e164_key": "670-TL-0"
   },
   {
@@ -3169,12 +3169,12 @@
     "e164_sc": 0,
     "geographic": true,
     "level": 1,
-    "name": "Turkey",
+    "name": "Türkiye",
     "example": "5012345678",
-    "display_name": "Turkey (TR) [+90]",
+    "display_name": "Türkiye (TR) [+90]",
     "mask": "000 000 0000",
     "full_example_with_plus_sign": "+905012345678",
-    "display_name_no_e164_cc": "Turkey (TR)",
+    "display_name_no_e164_cc": "Türkiye (TR)",
     "e164_key": "90-TR-0"
   },
   {

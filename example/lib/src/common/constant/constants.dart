@@ -19,6 +19,6 @@ final List<String> kFilteredCountries = List<String>.unmodifiable([
   'MD', // Moldova
   'TJ', // Tajikistan
   'TH', // Thailand
-  'TR', // Turkey
+  'TR', // Türkiye
   'UZ', // Uzbekistan
 ]);

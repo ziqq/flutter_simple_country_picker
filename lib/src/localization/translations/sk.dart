@@ -63,7 +63,7 @@ final Map<String, String> sk = {
   'CU': 'Kuba',
   'CW': 'Curaçao',
   'CY': 'Cyprus',
-  'CZ': 'Česká republika',
+  'CZ': 'Česko',
   'DK': 'Dánsko',
   'DJ': 'Džibutsko',
   'DM': 'Dominika',

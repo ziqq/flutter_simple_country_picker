@@ -63,7 +63,7 @@ final Map<String, String> ht = {
   'CU': 'Kiba',
   'CW': 'Kurasao',
   'CY': 'Sezi',
-  'CZ': 'Repiblik Chek',
+  'CZ': 'Tcheki',
   'DK': 'Dannmak',
   'DJ': 'Djibouti',
   'DM': 'Dominik',

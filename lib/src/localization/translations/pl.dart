@@ -63,7 +63,7 @@ final Map<String, String> pl = {
   'CU': 'Kuba',
   'CW': 'Curaçao',
   'CY': 'Cypr',
-  'CZ': 'Republika Czeska',
+  'CZ': 'Czechia',
   'DK': 'Dania',
   'DJ': 'Dżibuti',
   'DM': 'Dominika',

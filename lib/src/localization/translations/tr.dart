@@ -43,7 +43,7 @@ final Map<String, String> tr = {
   'KH': 'Kamboçya',
   'CM': 'Kamerun',
   'CA': 'Kanada',
-  'CV': 'Cape Verde',
+  'CV': 'Cabo Verde',
   'BQ': 'Karayip Hollandası',
   'KY': 'Kayman Adaları',
   'CF': 'Orta Afrika Cumhuriyeti',

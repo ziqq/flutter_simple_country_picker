@@ -63,7 +63,7 @@ Map<String, String> ro = {
   'CU': 'Cuba',
   'CW': 'Curacao',
   'CY': 'Cipru',
-  'CZ': 'Republica Cehă',
+  'CZ': 'Cehia',
   'DK': 'Danemarca',
   'DJ': 'Djibouti',
   'DM': 'Dominica',
