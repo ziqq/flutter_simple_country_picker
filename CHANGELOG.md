@@ -1,3 +1,6 @@
+## 0.6.4
+- **ADDED**: mask field for `Iran` and `Indonesia` country code in country codes
+
 ## 0.6.3
 - **FIXED**: `CountryPhoneInput` widget to apply `textStyle` to cursor properties
 
