@@ -32,7 +32,6 @@ analyzer:
     # Tools
     - ".dart_tool/**"
     - "scripts/**"
-    - "tool/**"
     # Platform
     - "ios/**"
     - "android/**"
