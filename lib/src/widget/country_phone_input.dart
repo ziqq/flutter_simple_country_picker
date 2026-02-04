@@ -23,6 +23,7 @@ class CountryPhoneInput extends StatefulWidget {
     this.filter,
     this.placeholder,
     this.autofocus = false,
+    this.expand = false,
     this.showPhoneCode = false,
     this.showWorldWide = false,
     this.shouldReplace8 = true,
@@ -30,6 +31,8 @@ class CountryPhoneInput extends StatefulWidget {
     this.useHaptickFeedback = true,
     this.isScrollControlled = false,
     this.showSearch,
+    this.initialChildSize,
+    this.minChildSize,
     super.key,
   });
 
@@ -46,15 +49,28 @@ class CountryPhoneInput extends StatefulWidget {
     List<String>? filter,
     String? placeholder,
     bool autofocus,
+    bool expand,
+    bool isScrollControlled,
     bool showPhoneCode,
     bool showWorldWide,
     bool shouldReplace8,
-    bool isScrollControlled,
     bool? showSearch,
+    @Deprecated(
+      'Use autofocus instead. This will be removed in v1.0.0 releases.',
+    )
+    bool useAutofocus,
+    bool useHaptickFeedback,
+    double? initialChildSize,
+    double? minChildSize,
   }) = CountryPhoneInput$Extended;
 
   /// Use autofocus for the search countryies input field.
   final bool autofocus;
+
+  /// The [expand] argument can be used
+  /// to expand the bottom sheet to full height.
+  /// Default is `false`.
+  final bool expand;
 
   /// Controls the scrolling behavior of the modal window.
   final bool isScrollControlled;
@@ -65,11 +81,11 @@ class CountryPhoneInput extends StatefulWidget {
   /// Show "World Wide" in countires list.
   final bool showWorldWide;
 
-  /// Show countryies search bar?
-  final bool? showSearch;
-
   /// Replace 8 with +7 in the phone number.
   final bool shouldReplace8;
+
+  /// Show countryies search bar?
+  final bool? showSearch;
 
   /// Use autofocus for the search countryies input field.
   @Deprecated('Use autofocus instead. This will be removed in v1.0.0 releases.')
@@ -77,6 +93,12 @@ class CountryPhoneInput extends StatefulWidget {
 
   /// Use haptic feedback?
   final bool useHaptickFeedback;
+
+  /// Initial child size for the modal bottom sheet.
+  final double? initialChildSize;
+
+  /// Min child size for the modal bottom sheet.
+  final double? minChildSize;
 
   /// List of country codes to exclude.
   final List<String>? exclude;
@@ -332,8 +354,10 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                 showSearch: widget.showSearch,
                 showPhoneCode: widget.showPhoneCode,
                 showWorldWide: widget.showWorldWide,
-                isScrollControlled: widget.isScrollControlled,
                 useHaptickFeedback: widget.useHaptickFeedback,
+                isScrollControlled: widget.isScrollControlled,
+                initialChildSize: widget.initialChildSize,
+                minChildSize: widget.minChildSize,
                 selected: _countryController,
                 onSelect: _onSelect,
               ),
@@ -418,7 +442,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
 class CountryPhoneInput$Extended extends CountryPhoneInput {
   /// {@macro country_phone_input}
   const CountryPhoneInput$Extended({
-    super.autofocus,
+    super.initialCountry,
     super.controller,
     super.onChanged,
     super.countryController,
@@ -426,13 +450,18 @@ class CountryPhoneInput$Extended extends CountryPhoneInput {
     super.exclude,
     super.favorite,
     super.filter,
-    super.initialCountry,
+    super.autofocus,
+    super.expand,
     super.isScrollControlled,
     super.placeholder,
     super.shouldReplace8,
     super.showPhoneCode,
     super.showWorldWide,
     super.showSearch,
+    super.useAutofocus,
+    super.useHaptickFeedback,
+    super.initialChildSize,
+    super.minChildSize,
     super.key,
   });
 

@@ -1,5 +1,9 @@
 ## 0.6.4
-- **ADDED**: mask field for `Iran` and `Indonesia` country code in country codes
+- **ADDED**: mask field for `Indonesia`, `Iran`
+- **ADDED**: mask field for `Indonesia`, `Iran`
+- **CHANGED**: `useGroup` to `showGroup` in `CountryController`
+- **FIXED**: mask field for `Thailand` -> now it is `0 0000 0000` instead of `000 000 000`
+- **FIXED**: country code for `ID` - `Indonesia` instead of `India` for `tr` and `ru` localizations
 
 ## 0.6.3
 - **FIXED**: `CountryPhoneInput` widget to apply `textStyle` to cursor properties

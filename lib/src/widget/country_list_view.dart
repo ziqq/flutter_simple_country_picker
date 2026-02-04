@@ -33,10 +33,10 @@ class CountryListView extends StatefulWidget {
     this.showPhoneCode = false,
     this.showWorldWide = false,
     this.useHaptickFeedback = true,
-    bool? showSearch,
+    this.showGroup,
+    this.showSearch,
     super.key,
-  }) : showSearch = showSearch ?? filter == null || filter.length > 8,
-       assert(
+  }) : assert(
          filter == null || exclude == null,
          'Cannot provide both filter and exclude',
        );
@@ -47,8 +47,14 @@ class CountryListView extends StatefulWidget {
   /// An optional argument for autofocus the search bar.
   final bool autofocus;
 
-  /// An optional argument for showing search bar.
-  final bool showSearch;
+  /// An optional [showGroup] argument can be used
+  /// to show grouped countries by initial letter.
+  /// Default is `null`.
+  final bool? showGroup;
+
+  /// An optional [showSearch] argument can be used to show/hide the search bar.
+  /// Default is `null`.
+  final bool? showSearch;
 
   /// An optional [showPhoneCode] argument can be used to show phone code.
   final bool showPhoneCode;
@@ -250,7 +256,7 @@ class _CountriesListViewState extends State<CountryListView> {
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: ValueListenableBuilder(
           valueListenable: _controller,
-          builder: (_, state, _) => widget.showSearch && state.useGroup
+          builder: (_, state, _) => widget.showSearch ?? state.showGroup
               ? _buildSearchBar()
               : _buildDivider(),
         ),
@@ -266,16 +272,14 @@ class _CountriesListViewState extends State<CountryListView> {
               ValueListenableBuilder(
                 valueListenable: _controller,
                 builder: (context, state, _) {
-                  if (state.useGroup) {
+                  if (state.showGroup) {
                     return const SliverToBoxAdapter(child: SizedBox.shrink());
                   }
                   return SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.only(
-                        left: pickerTheme.padding,
-                        right: pickerTheme.padding,
-                        top: pickerTheme.padding / 2,
-                        bottom: pickerTheme.padding / 2,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: pickerTheme.padding,
+                        vertical: pickerTheme.padding / 2,
                       ),
                       child: Text(
                         localization.selectCountryLabel,
@@ -314,7 +318,6 @@ class _CountriesListViewState extends State<CountryListView> {
 }
 
 /// _CountriesList widget.
-///
 /// {@macro countries_list_view}
 class _CountriesList extends StatefulWidget {
   /// {@macro countries_list_view}
@@ -328,11 +331,11 @@ class _CountriesList extends StatefulWidget {
   /// Countries controller.
   final CountryController controller;
 
-  /// {@macro select_country_callback}
-  final SelectCountryCallback? onSelect;
-
   /// {@macro select_country_notifier}
   final SelectedCountry? selected;
+
+  /// {@macro select_country_callback}
+  final SelectCountryCallback? onSelect;
 
   @override
   State<_CountriesList> createState() => _CountriesListState();
@@ -350,41 +353,25 @@ class _CountriesListState extends State<_CountriesList> {
   }
 
   @override
+  void didUpdateWidget(covariant _CountriesList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller.removeListener(_groupByName);
+      widget.controller.addListener(_groupByName);
+      _groupByName();
+    }
+  }
+
+  @override
   void dispose() {
     super.dispose();
     _grouped.dispose();
     widget.controller.removeListener(_groupByName);
   }
 
-  /// Get grouped countries by name as initial letter.
-  Map<String, List<Country>>? _getGroupedCountries() {
-    if (!mounted) return null;
-    final localization = CountryLocalizations.of(context);
-    final state = widget.controller.state;
-    final countries = state.countries
-        .map<Country>(
-          (country) => country.copyWith(
-            nameLocalized: localization.getFormatedCountryNameByCode(
-              country.countryCode,
-            ),
-          ),
-        )
-        .where(
-          (country) =>
-              country.nameLocalized != null &&
-              (country.nameLocalized?.isNotEmpty ?? false),
-        )
-        .whereType<Country>()
-        .toList(growable: false);
-    final groupedBy = groupBy(countries, (c) => c.nameLocalized![0]);
-    return Map<String, List<Country>>.fromEntries(
-      groupedBy.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
-    );
-  }
-
   /// Group countries by name as initial letter.
   void _groupByName() {
-    if (!mounted || !widget.controller.state.useGroup) return;
+    if (!mounted || !widget.controller.state.showGroup) return;
     final pickerTheme = CountryPickerTheme.resolve(context);
     final countries = _getGroupedCountries();
     var grouped = <Widget>[];
@@ -450,6 +437,31 @@ class _CountriesListState extends State<_CountriesList> {
     _grouped.value = grouped;
   }
 
+  /// Get grouped countries by name as initial letter.
+  Map<String, List<Country>>? _getGroupedCountries() {
+    if (!mounted) return null;
+    final localization = CountryLocalizations.of(context);
+    final countries = widget.controller.state.countries
+        .map<Country>(
+          (country) => country.copyWith(
+            nameLocalized: localization.getFormatedCountryNameByCode(
+              country.countryCode,
+            ),
+          ),
+        )
+        .where(
+          (country) =>
+              country.nameLocalized != null &&
+              (country.nameLocalized?.isNotEmpty ?? false),
+        )
+        .whereType<Country>()
+        .toList(growable: false);
+    final groupedBy = groupBy(countries, (c) => c.nameLocalized![0]);
+    return Map<String, List<Country>>.fromEntries(
+      groupedBy.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => ValueListenableBuilder(
     valueListenable: widget.controller,
@@ -462,7 +474,7 @@ class _CountriesListState extends State<_CountriesList> {
       }
 
       // --- Grouped countries --- //
-      if (state.useGroup) {
+      if (state.showGroup) {
         return ValueListenableBuilder(
           valueListenable: _grouped,
           builder: (_, grouped, _) => SliverMainAxisGroup(slivers: grouped),
@@ -472,9 +484,9 @@ class _CountriesListState extends State<_CountriesList> {
       // --- Plain countries list --- //
       return ValueListenableBuilder(
         valueListenable: widget.selected ?? ValueNotifier<Country?>(null),
-        builder: (context, selected, _) => SliverList.builder(
+        builder: (_, selected, _) => SliverList.builder(
           itemCount: state.countries.length,
-          itemBuilder: (context, index) {
+          itemBuilder: (_, index) {
             final country = state.countries[index];
             return _CountryListTile.simple(
               key: ValueKey<String>(country.e164Key),
@@ -490,7 +502,6 @@ class _CountriesListState extends State<_CountriesList> {
 }
 
 /// _CountryListTile widget.
-///
 /// {@macro countries_list_view}
 class _CountryListTile extends StatelessWidget {
   const _CountryListTile({
@@ -542,15 +553,15 @@ class _CountryListTile extends StatelessWidget {
       false => Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         spacing: pickerTheme.padding / 4,
-        children: [
-          _Flag(country: country),
+        children: <Widget>[
+          _Flag(country),
           Flexible(child: title),
         ],
       ),
       true => Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          _Flag(country: country),
+          _Flag(country),
           SizedBox(width: pickerTheme.padding / 4),
           Flexible(child: title),
           Text(
@@ -622,11 +633,11 @@ class _CountryListTile extends StatelessWidget {
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+              children: <Widget>[
                 Flexible(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       // --- Title of the country --- //
                       effectiveTitle,
 
@@ -662,12 +673,11 @@ class _CountryListTile$Simple extends _CountryListTile {
 }
 
 /// Flag widget.
-///
 /// {@macro countries_list_view}
 class _Flag extends StatelessWidget {
   /// {@macro countries_list_view}
-  const _Flag({
-    required this.country,
+  const _Flag(
+    this.country, {
     super.key, // ignore: unused_element_parameter
   });
 
@@ -692,7 +702,6 @@ class _Flag extends StatelessWidget {
   }
 }
 
-/// {@macro countries_list_view}
 class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
   /// {@macro countries_list_view}
   _SliverHeaderDelegate({
