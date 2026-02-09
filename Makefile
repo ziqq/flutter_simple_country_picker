@@ -34,7 +34,11 @@ version: ## Check fvm flutter version
 
 .PHONY: generate
 generate: ## Generate code
-generate: get l10n build-runner
+				get l10n build-runner
+
+.PHONY: generate-json
+generate-json: ## Generate json country data from dart code
+				@fvm dart --disable-analytics run tool/generate_json.dart
 
 .PHONY: build-runner
 build-runner: ## Run build_runner:build

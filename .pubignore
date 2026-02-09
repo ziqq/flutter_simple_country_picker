@@ -1,6 +1,7 @@
 pubspec.lock
-reports/
+.coverage/
 coverage/
-build/
+reports/
 example/
+build/
 .fvm/**
