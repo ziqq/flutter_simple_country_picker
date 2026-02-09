@@ -273,7 +273,7 @@ final class CountryController extends ValueNotifier<CountryState> {
       _setState(
         CountryState.idle(
           countries: $countries.toList(growable: false),
-          showGroup: $countries.length > 15 || state.showGroup,
+          showGroup: state.showGroup,
         ),
       );
     } finally {
