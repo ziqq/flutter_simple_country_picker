@@ -1,3 +1,8 @@
+## 0.6.5
+- **ADDED**: `mask` field to `CY` - `Cyprus` country
+- **CHANGED**: removed checking on mask field in `CountryPhoneInput` widget, now if mask field is not null, it will be applied to phone number input
+- **FIXED**: `showGroup` in `CountryController` to be set based only on `showGroup` parameter, not on the number of countries in the list
+
 ## 0.6.4
 - **ADDED**: mask field for `Indonesia`, `Iran`
 - **CHANGED**: `useGroup` to `showGroup` in `CountryController`
