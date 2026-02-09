@@ -1,7 +1,7 @@
 // Anton Ustinoff <a.a.ustinoff@gmail.com>, 14 October 2024
 
 import 'package:collection/collection.dart';
-import 'package:example/src/common/constant/constants.dart';
+import 'package:example/src/common/constant/constant.dart';
 import 'package:example/src/common/constant/fonts.gen.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/util/app_zone.dart';

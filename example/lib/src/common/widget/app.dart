@@ -1,6 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api
 
-import 'package:example/src/common/constant/constants.dart';
+import 'package:example/src/common/constant/constant.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/router/example_navigator.dart';
 import 'package:example/src/common/theme/theme.dart';

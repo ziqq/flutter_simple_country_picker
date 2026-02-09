@@ -10,9 +10,14 @@ final List<String> kFilteredCountries = List<String>.unmodifiable([
   // 'AB', // Abkhazia
   'AZ', // Azerbaijan
   'AM', // Armenia
+  'AT', // Austria
   'BY', // Belarus
+  'CY', // Cyprus
+  'ES', // Spain
   'GE', // Georgia
+  'GR', // Greece
   'ID', // Indonesia
+  'IL', // Israel
   'IR', // Iran
   'KZ', // Kazakhstan
   'KG', // Kyrgyzstan
@@ -20,5 +25,6 @@ final List<String> kFilteredCountries = List<String>.unmodifiable([
   'TJ', // Tajikistan
   'TH', // Thailand
   'TR', // Türkiye
+  'US', // United States
   'UZ', // Uzbekistan
 ]);

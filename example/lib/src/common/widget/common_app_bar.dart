@@ -1,4 +1,4 @@
-import 'package:example/src/common/constant/constants.dart';
+import 'package:example/src/common/constant/constant.dart';
 import 'package:example/src/common/constant/pubspec.yaml.g.dart';
 import 'package:example/src/common/widget/app.dart';
 import 'package:flutter/material.dart';

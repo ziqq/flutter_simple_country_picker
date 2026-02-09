@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'dart:developer' as dev show log;
 
-import 'package:example/src/common/util/error_util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
@@ -18,22 +18,12 @@ Future<void> $initializeApp({
   final stopwatch = Stopwatch()..start();
   try {
     binding = WidgetsFlutterBinding.ensureInitialized()..deferFirstFrame();
-    /* await SystemChrome.setPreferredOrientations([
-            DeviceOrientation.portraitUp,
-            DeviceOrientation.portraitDown,
-          ]); */
     await _catchExceptions();
-    /* final dependencies = await $initializeDependencies(
-           onProgress: onProgress).timeout(const Duration(minutes: 7)); */
     await onSuccess?.call(null);
     return;
   } on Object catch (error, stackTrace) {
     onError?.call(error, stackTrace);
-    ErrorUtil.logError(
-      error,
-      stackTrace,
-      hint: 'Failed to initialize app',
-    ).ignore();
+    dev.log('Failed to initialize app', stackTrace: stackTrace, level: 1000);
     rethrow;
   } finally {
     stopwatch.stop();
@@ -57,25 +47,29 @@ Future<void> $disposeApp(void dependencies) async {}
 Future<void> _catchExceptions() async {
   try {
     PlatformDispatcher.instance.onError = (error, stackTrace) {
-      ErrorUtil.logError(
-        error,
-        stackTrace,
-        hint: 'ROOT ERROR\r\n${Error.safeToString(error)}',
-      ).ignore();
+      dev.log(
+        'Root error: ${Error.safeToString(error)}',
+        stackTrace: stackTrace,
+        level: 1000,
+      );
       return true;
     };
 
     final sourceFlutterError = FlutterError.onError;
     FlutterError.onError = (final details) {
-      ErrorUtil.logError(
-        details.exception,
-        details.stack ?? StackTrace.current,
-        hint: 'FLUTTER ERROR\r\n$details',
-      ).ignore();
+      dev.log(
+        'Flutter error: ${details.exceptionAsString()}',
+        stackTrace: details.stack,
+        level: 1000,
+      );
       // FlutterError.presentError(details);
       sourceFlutterError?.call(details);
     };
   } on Object catch (error, stackTrace) {
-    ErrorUtil.logError(error, stackTrace).ignore();
+    dev.log(
+      'Failed to set up error handling: ${Error.safeToString(error)}',
+      stackTrace: stackTrace,
+      level: 1000,
+    );
   }
 }

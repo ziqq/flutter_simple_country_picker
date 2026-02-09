@@ -1,4 +1,4 @@
-import 'package:example/src/common/constant/constants.dart';
+import 'package:example/src/common/constant/constant.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

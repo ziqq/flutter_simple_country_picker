@@ -2,7 +2,7 @@
 
 import 'dart:developer';
 
-import 'package:example/src/common/constant/constants.dart';
+import 'package:example/src/common/constant/constant.dart';
 import 'package:example/src/common/widget/common_app_bar.dart';
 import 'package:example/src/common/widget/common_padding.dart';
 import 'package:flutter/material.dart';

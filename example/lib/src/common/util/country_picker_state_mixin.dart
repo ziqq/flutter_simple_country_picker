@@ -26,6 +26,9 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
   // TODO(ziqq): Fix 78881234567 format
   String? _phone = '+7 888 123 4567'; // ignore: prefer_final_fields
 
+  /// Country phone controller
+  final countryPhoneController = CountryPhoneController.empty();
+
   /// Phone controller
   late final TextEditingController controller;
 
@@ -91,6 +94,7 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
 
   @override
   void dispose() {
+    countryPhoneController.dispose();
     controller
       ..removeListener(_onPhoneChanged)
       ..dispose();
@@ -144,7 +148,7 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
             context,
           ),
           content: Text(
-            'PHONE: ${phone ?? completedPhoneNumber}',
+            'PHONE: ${phone ?? countryPhoneController.value}',
             style: Theme.of(
               context,
             ).textTheme.bodyMedium?.copyWith(color: CupertinoColors.white),

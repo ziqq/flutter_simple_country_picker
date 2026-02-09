@@ -24,7 +24,6 @@ class AppError extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(8),
             child: Text(
-              // ErrorUtil.formatMessage(error)
               error?.toString() ?? 'Something went wrong',
               textScaler: TextScaler.noScaling,
             ),

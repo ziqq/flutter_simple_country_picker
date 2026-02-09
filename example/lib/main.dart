@@ -1,6 +1,6 @@
 import 'dart:developer' show log;
 
-import 'package:example/src/common/constant/constants.dart';
+import 'package:example/src/common/constant/constant.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/util/app_zone.dart';
 import 'package:example/src/common/util/country_picker_state_mixin.dart';
@@ -27,19 +27,16 @@ class Preview extends StatefulWidget {
   const Preview({super.key});
 
   @override
-  State<Preview> createState() => _MobilePreviewState();
+  State<Preview> createState() => _PreviewState();
 }
 
 /// State for [Preview].
-class _MobilePreviewState extends State<Preview>
-    with CountryPickerPreviewStateMixin {
+class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
   static const _tabs = {0: Text('Preview'), 1: Text('Preview extended')};
-  final _countryPhoneController = CountryPhoneController.empty();
-  final _groupValue = ValueNotifier(0);
+  final _groupValue = ValueNotifier<int>(0);
 
   @override
   void dispose() {
-    _countryPhoneController.dispose();
     _groupValue.dispose();
     super.dispose();
   }
@@ -53,7 +50,7 @@ class _MobilePreviewState extends State<Preview>
       children: <Widget>[
         CountryPhoneInput(
           key: const ValueKey<String>('country_phone_input'),
-          controller: _countryPhoneController,
+          controller: countryPhoneController,
           filter: kFilteredCountries,
           // isScrollControlled: true,
         ),
