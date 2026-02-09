@@ -284,7 +284,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
 
     // Check if the mask is present
     final mask = _countryController.value.mask;
-    if (mask == null || mask.isEmpty) return;
+    /* if (mask == null || mask.isEmpty) return; */
 
     // Update the formatter mask
     _formater.updateMask(mask: mask);
@@ -298,7 +298,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
   void _onSelect(Country country) {
     if (!mounted) return;
     if (country == _countryController.value) return;
-    if (country.mask?.isEmpty ?? true) {
+    /* if (country.mask?.isEmpty ?? true) {
       ScaffoldMessenger.maybeOf(context)
         ?..clearSnackBars()
         ..showSnackBar(
@@ -313,7 +313,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
           ),
         );
       return;
-    }
+    } */
     _formater.clear();
     _phoneController.clear();
     _countryController.value = country;
