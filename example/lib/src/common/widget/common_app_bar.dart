@@ -1,7 +1,8 @@
-import 'package:example/src/common/constant/constant.dart';
 import 'package:example/src/common/constant/pubspec.yaml.g.dart';
 import 'package:example/src/common/widget/app.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart'
+    show CountryPickerTheme;
 
 /// {@template common_app_bar}
 /// CommonAppBar widget.
@@ -41,10 +42,10 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
     bottom: bottom,
     backgroundColor: backgroundColor,
     title: title != null && title!.isNotEmpty ? _Header(title!) : null,
-    leading: const Row(
+    leading: Row(
       children: [
-        SizedBox(width: kDefaultPadding),
-        AppLocaleSwitcherButton(),
+        SizedBox(width: CountryPickerTheme.of(context).padding),
+        const AppLocaleSwitcherButton(),
       ],
     ),
     actions: const [AppThemeModeSwitcherButton()],

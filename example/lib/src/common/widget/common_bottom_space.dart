@@ -1,5 +1,6 @@
-import 'package:example/src/common/constant/constant.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart'
+    show CountryPickerTheme;
 
 /// {@template common_bottom_space}
 /// CommonBottomSpacer widget.
@@ -16,7 +17,7 @@ class CommonBottomSpacer extends StatelessWidget {
         ? viewPadding.bottom
         : gestureInsets.bottom > 0
         ? gestureInsets.bottom
-        : kDefaultPadding;
+        : CountryPickerTheme.of(context).padding;
   }
 
   @override

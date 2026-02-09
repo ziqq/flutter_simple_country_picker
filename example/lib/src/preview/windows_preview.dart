@@ -1,7 +1,6 @@
 // Anton Ustinoff <a.a.ustinoff@gmail.com>, 14 October 2024
 
 import 'package:collection/collection.dart';
-import 'package:example/src/common/constant/constant.dart';
 import 'package:example/src/common/constant/fonts.gen.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/theme/styles.dart';
@@ -35,7 +34,7 @@ class WindowsPreview extends StatefulWidget {
   const WindowsPreview({super.key});
 
   /// Title of the widget.
-  static const String title = 'Web';
+  static String title = 'Web';
 
   @override
   State<WindowsPreview> createState() => _WindowsPreviewState();
@@ -47,6 +46,7 @@ class _WindowsPreviewState extends State<WindowsPreview>
   @override
   Widget build(BuildContext context) {
     final localization = ExampleLocalization.of(context);
+    final pickerTheme = CountryPickerTheme.of(context);
     // final mediaQuery = MediaQuery.of(context);
     return Scaffold(
       backgroundColor: AppStyles.of(context).backgroundColor,
@@ -57,17 +57,17 @@ class _WindowsPreviewState extends State<WindowsPreview>
       body: Padding(
         padding: CommonPadding.of(context),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: .center,
           children: [
             const Spacer(),
 
             // --- Logo --- //
             const CommonLogo.text(),
-            const SizedBox(height: kDefaultPadding * 2),
+            SizedBox(height: pickerTheme.padding * 2),
 
             // --- Country picker --- //
             CountryPicker$Web(onSelect: onSelect, selected: selected),
-            const SizedBox(height: kDefaultPadding),
+            SizedBox(height: pickerTheme.padding),
 
             // --- Country phone number input --- //
             CountryInput$Web(
@@ -75,7 +75,7 @@ class _WindowsPreviewState extends State<WindowsPreview>
               controller: controller,
               selected: selected,
             ),
-            const SizedBox(height: kDefaultPadding),
+            SizedBox(height: pickerTheme.padding),
 
             SizedBox(
               height: 56,
@@ -117,6 +117,7 @@ class CountryInput$Web extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final pickerTheme = CountryPickerTheme.of(context);
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final textStyle = textTheme.bodyLarge;
@@ -128,7 +129,7 @@ class CountryInput$Web extends StatelessWidget {
       ),
     );
     final defaultBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: .circular(10),
       borderSide: BorderSide(
         width: 1,
         color: CupertinoDynamicColor.resolve(
@@ -165,9 +166,7 @@ class CountryInput$Web extends StatelessWidget {
               context,
             ),
           ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: kDefaultPadding,
-          ),
+          contentPadding: .symmetric(horizontal: pickerTheme.padding),
         ),
       ),
     );
@@ -248,6 +247,7 @@ class _CountryPicker$DesktopState extends State<CountryPicker$Web> {
   Widget build(BuildContext context) {
     // final isRtl = Directionality.of(context) == TextDirection.rtl;
     final localizations = CountryLocalizations.of(context);
+    final pickerTheme = CountryPickerTheme.of(context);
     final theme = Theme.of(context);
     final textStyle = theme.textTheme.bodyLarge?.copyWith(fontSize: 14);
     final secodaryTextStyle = textStyle?.copyWith(
@@ -257,7 +257,7 @@ class _CountryPicker$DesktopState extends State<CountryPicker$Web> {
       ),
     );
     final defaultBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: .circular(10),
       borderSide: BorderSide(
         width: 1,
         color: CupertinoDynamicColor.resolve(
@@ -315,9 +315,7 @@ class _CountryPicker$DesktopState extends State<CountryPicker$Web> {
                   color: theme.colorScheme.primary,
                 ),
               ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: kDefaultPadding,
-              ),
+              contentPadding: .symmetric(horizontal: pickerTheme.padding),
             ),
             menuHeight: MediaQuery.of(context).size.height * 0.4,
             menuStyle: MenuStyle(
@@ -329,9 +327,7 @@ class _CountryPicker$DesktopState extends State<CountryPicker$Web> {
               elevation: WidgetStateProperty.resolveWith<double?>((_) => 6),
               shape: WidgetStateProperty.resolveWith<OutlinedBorder?>(
                 (_) => const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(10),
-                  ),
+                  borderRadius: .vertical(bottom: Radius.circular(10)),
                 ),
               ),
             ),

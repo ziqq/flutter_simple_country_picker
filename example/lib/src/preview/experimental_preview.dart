@@ -2,7 +2,6 @@
 
 import 'dart:developer';
 
-import 'package:example/src/common/constant/constant.dart';
 import 'package:example/src/common/widget/common_app_bar.dart';
 import 'package:example/src/common/widget/common_padding.dart';
 import 'package:flutter/material.dart';
@@ -40,41 +39,44 @@ class _ExperimentalPreviewState extends State<ExperimentalPreview> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    body: SafeArea(
-      child: CustomScrollView(
-        slivers: [
-          CommonAppBar.sliver('County Phone Input Experimental Preview'),
-          SliverPadding(
-            padding: CommonPadding.of(context),
-            sliver: SliverList.list(
-              children: [
-                const SizedBox(height: kDefaultPadding * 2),
-                const CountryPhoneInput.extended(
-                  autofocus: false,
-                  // controller: _controller,
-                  // mask: _mask,
-                  // country: _country,
-                  // countryCode: _countryCode,
-                  // onTap: () {
-                  //   showCountryPicker(
-                  //     context: context,
-                  //     favorite: ['RU'],
-                  //     exclude: ['KN', 'MF'],
-                  //     showPhoneCode: true,
-                  //     onSelect: _onSelect,
-                  //     onDone: () => log('onDone callded...'),
-                  //   );
-                  // },
-                ),
-                if (MediaQuery.of(context).viewPadding.bottom == 0) ...[
-                  const SizedBox(height: kDefaultPadding),
+  Widget build(BuildContext context) {
+    final pickerTheme = CountryPickerTheme.of(context);
+    return Scaffold(
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            CommonAppBar.sliver('County Phone Input Experimental Preview'),
+            SliverPadding(
+              padding: CommonPadding.of(context),
+              sliver: SliverList.list(
+                children: [
+                  SizedBox(height: pickerTheme.padding * 2),
+                  const CountryPhoneInput.extended(
+                    autofocus: false,
+                    // controller: _controller,
+                    // mask: _mask,
+                    // country: _country,
+                    // countryCode: _countryCode,
+                    // onTap: () {
+                    //   showCountryPicker(
+                    //     context: context,
+                    //     favorite: ['RU'],
+                    //     exclude: ['KN', 'MF'],
+                    //     showPhoneCode: true,
+                    //     onSelect: _onSelect,
+                    //     onDone: () => log('onDone callded...'),
+                    //   );
+                    // },
+                  ),
+                  if (MediaQuery.of(context).viewPadding.bottom == 0) ...[
+                    SizedBox(height: pickerTheme.padding),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }

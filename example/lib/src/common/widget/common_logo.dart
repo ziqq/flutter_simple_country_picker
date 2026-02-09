@@ -1,7 +1,8 @@
-import 'package:example/src/common/constant/constant.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart'
+    show CountryPickerTheme;
 
 /// {@template common_logo}
 /// CommonLogo widget.
@@ -19,6 +20,7 @@ class CommonLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localization = ExampleLocalization.of(context);
+    final pickerTheme = CountryPickerTheme.of(context);
     final theme = Theme.of(context);
     final logo = CircleAvatar(
       radius: 38,
@@ -30,17 +32,18 @@ class CommonLogo extends StatelessWidget {
         ),
       ),
     );
+    final spacer = SizedBox(height: pickerTheme.padding);
     return _useText
         ? Column(
-            children: [
+            children: <Widget>[
               logo,
-              const SizedBox(height: kDefaultPadding),
+              spacer,
               Text(
                 localization.title,
                 style: theme.textTheme.headlineSmall,
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: kDefaultPadding),
+              spacer,
               Text(
                 localization.description,
                 style: theme.textTheme.bodySmall?.copyWith(

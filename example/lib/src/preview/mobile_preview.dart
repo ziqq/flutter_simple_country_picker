@@ -24,7 +24,7 @@ class MobilePreview extends StatefulWidget {
   const MobilePreview({super.key});
 
   /// Title of the widget.
-  static const String title = 'Preview Mobile';
+  static String title = 'Preview Mobile';
 
   @override
   State<MobilePreview> createState() => _MobilePreviewState();
@@ -48,9 +48,9 @@ class _MobilePreviewState extends State<MobilePreview>
     final pickerTheme = CountryPickerTheme.of(context);
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: const CommonAppBar(title: MobilePreview.title),
+      appBar: CommonAppBar(title: MobilePreview.title),
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(bottom: CommonBottomSpacer.heightOf(context)),
+        padding: .only(bottom: CommonBottomSpacer.heightOf(context)),
         child: ColoredBox(
           color: theme.scaffoldBackgroundColor,
           child: Column(
@@ -58,9 +58,7 @@ class _MobilePreviewState extends State<MobilePreview>
             children: <Widget>[
               CupertinoButton(
                 key: const ValueKey<String>('full_picker_button'),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: kDefaultPadding,
-                ),
+                padding: .symmetric(horizontal: pickerTheme.padding),
                 sizeStyle: CupertinoButtonSize.medium,
                 onPressed: () => showCountryPicker(
                   context: context,
@@ -76,9 +74,7 @@ class _MobilePreviewState extends State<MobilePreview>
               ),
               CupertinoButton(
                 key: const ValueKey<String>('filtered_picker_button'),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: kDefaultPadding,
-                ),
+                padding: .symmetric(horizontal: pickerTheme.padding),
                 sizeStyle: CupertinoButtonSize.medium,
                 onPressed: () => showCountryPicker(
                   context: context,
@@ -101,7 +97,7 @@ class _MobilePreviewState extends State<MobilePreview>
           padding: CommonPadding.of(context),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            spacing: kDefaultPadding,
+            spacing: pickerTheme.padding,
             children: <Widget>[
               CountryPhoneInput(
                 key: const ValueKey<String>('country_phone_input'),
@@ -135,8 +131,8 @@ class _MobilePreviewState extends State<MobilePreview>
                         hintStyle: theme.textTheme.bodyLarge,
 
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: kDefaultPadding,
+                        contentPadding: .symmetric(
+                          horizontal: pickerTheme.padding,
                         ),
                       ),
                     ),
@@ -148,9 +144,7 @@ class _MobilePreviewState extends State<MobilePreview>
               SizedBox(
                 width: double.infinity,
                 child: CupertinoButton.filled(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: kDefaultPadding,
-                  ),
+                  padding: .symmetric(horizontal: pickerTheme.padding),
                   onPressed: onSubmit,
                   child: Text(ExampleLocalization.of(context).submitButton),
                 ),

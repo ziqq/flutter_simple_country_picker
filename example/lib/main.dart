@@ -45,8 +45,8 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
     final pickerTheme = CountryPickerTheme.of(context);
     final theme = Theme.of(context);
     return Column(
+      spacing: pickerTheme.padding,
       mainAxisAlignment: .center,
-      spacing: kDefaultPadding,
       children: <Widget>[
         CountryPhoneInput(
           key: const ValueKey<String>('country_phone_input'),
@@ -62,7 +62,7 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
               CupertinoColors.secondarySystemBackground,
               context,
             ),
-            borderRadius: BorderRadius.all(Radius.circular(pickerTheme.radius)),
+            borderRadius: .all(.circular(pickerTheme.radius)),
           ),
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: pickerTheme.inputHeight),
@@ -79,7 +79,7 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
                     ),
                   ),
                   border: .none,
-                  contentPadding: const .symmetric(horizontal: kDefaultPadding),
+                  contentPadding: .symmetric(horizontal: pickerTheme.padding),
                 ),
               ),
             ),
@@ -91,7 +91,7 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
           width: double.infinity,
           child: CupertinoButton.filled(
             onPressed: onSubmit,
-            padding: const .symmetric(horizontal: kDefaultPadding),
+            padding: .symmetric(horizontal: pickerTheme.padding),
             child: Text(ExampleLocalization.of(context).submitButton),
           ),
         ),
@@ -102,30 +102,34 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
     );
   }
 
-  Widget _buildPreviewExtended(BuildContext context) => Column(
-    mainAxisAlignment: .center,
-    spacing: kDefaultPadding,
-    children: <Widget>[
-      CountryPhoneInput.extended(
-        onChanged: (phone) => log('Phone changed: $phone'),
-        filter: kFilteredCountries,
-        // isScrollControlled: true,
-      ),
-
-      // --- Submit button --- //
-      SizedBox(
-        width: double.infinity,
-        child: CupertinoButton.filled(
-          onPressed: onSubmit,
-          padding: const .symmetric(horizontal: kDefaultPadding),
-          child: Text(ExampleLocalization.of(context).submitButton),
+  Widget _buildPreviewExtended(BuildContext context) {
+    final pickerTheme = CountryPickerTheme.of(context);
+    return Column(
+      mainAxisAlignment: .center,
+      spacing: pickerTheme.padding,
+      children: <Widget>[
+        CountryPhoneInput.extended(
+          onChanged: (phone) => log('Phone changed: $phone'),
+          filter: kFilteredCountries,
+          // isScrollControlled: true,
         ),
-      ),
-    ],
-  );
+
+        // --- Submit button --- //
+        SizedBox(
+          width: double.infinity,
+          child: CupertinoButton.filled(
+            onPressed: onSubmit,
+            padding: .symmetric(horizontal: pickerTheme.padding),
+            child: Text(ExampleLocalization.of(context).submitButton),
+          ),
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final pickerTheme = CountryPickerTheme.of(context);
     final theme = Theme.of(context);
     return Scaffold(
       appBar: const CommonAppBar(title: 'Preview'),
@@ -134,11 +138,11 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
         child: ColoredBox(
           color: theme.scaffoldBackgroundColor,
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: <Widget>[
               CupertinoButton(
                 key: const ValueKey<String>('full_picker_button'),
-                padding: const .symmetric(horizontal: kDefaultPadding),
+                padding: .symmetric(horizontal: pickerTheme.padding),
                 sizeStyle: .medium,
                 onPressed: () => showCountryPicker(
                   context: context,
@@ -154,7 +158,7 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
               ),
               CupertinoButton(
                 key: const ValueKey<String>('filtered_picker_button'),
-                padding: const .symmetric(horizontal: kDefaultPadding),
+                padding: .symmetric(horizontal: pickerTheme.padding),
                 sizeStyle: .medium,
                 onPressed: () => showCountryPicker(
                   context: context,
@@ -170,7 +174,7 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
               ),
               CupertinoButton(
                 key: const ValueKey<String>('adaptive_picker_button'),
-                padding: const .symmetric(horizontal: kDefaultPadding),
+                padding: .symmetric(horizontal: pickerTheme.padding),
                 sizeStyle: .medium,
                 onPressed: () => showCountryPicker(
                   context: context,

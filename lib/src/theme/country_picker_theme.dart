@@ -8,7 +8,21 @@ import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_simple_country_picker/src/constant/constant.dart';
+
+/// Default height for [CountryPhoneInput].
+const double _kDefaultInputHeight = 56.0;
+
+/// Default flag size
+const double _kDefaultFlagSize = 22.0;
+
+/// Default padding
+const double _kDefaultPadding = 16.0;
+
+/// Default indent
+const double _kDefaultIndent = 10.0;
+
+/// Default radius
+const double _kDefaultRadius = 12.0;
 
 /// {@template country_picker_theme}
 /// Custom country picker theme.
@@ -33,11 +47,11 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     TextStyle? secondaryTextStyle,
     TextStyle? searchTextStyle,
   }) {
-    inputHeight ??= kDefaultInputHeight;
-    flagSize ??= kDefaultFlagSize;
-    padding ??= kDefaultPadding;
-    indent ??= kDefaultIndent;
-    radius ??= kDefaultRadius;
+    inputHeight ??= _kDefaultInputHeight;
+    flagSize ??= _kDefaultFlagSize;
+    padding ??= _kDefaultPadding;
+    indent ??= _kDefaultIndent;
+    radius ??= _kDefaultRadius;
     return CountryPickerTheme.raw(
       accentColor: accentColor,
       backgroundColor: backgroundColor,
@@ -132,12 +146,6 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     );
   }
 
-  /// A default light theme.
-  // factory CountryPickerTheme.light() => CountryPickerTheme();
-
-  /// A default dark theme.
-  // factory CountryPickerTheme.dark() => CountryPickerTheme();
-
   /// Get [CountryPickerTheme] from [InheritedCountryPickerTheme].
   ///
   /// If that's null get [CountryPickerTheme] from [ThemeData.extensions]
@@ -146,26 +154,20 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       InheritedCountryPickerTheme.maybeOf(context) ??
       Theme.of(context).extensions[CountryPickerTheme] as CountryPickerTheme?;
 
-  // static Never _notFoundInheritedWidgetOfExactType() => throw ArgumentError(
-  //   'Out of scope or out of extensions, not found inherited widget '
-  //       'a CountryPickerTheme of the exact type',
-  //   'out_of_scope or out_of_extensions',
-  // );
-
   /// The accent color.
   final Color? accentColor;
 
   /// The background color.
   final Color? backgroundColor;
 
+  /// The secondary background color.
+  final Color? secondaryBackgroundColor;
+
   /// The barrierColor color.
   final Color? barrierColor;
 
   /// The divider color.
   final Color? dividerColor;
-
-  /// The secondary background color.
-  final Color? secondaryBackgroundColor;
 
   /// Base text style.
   final TextStyle? textStyle;
@@ -354,7 +356,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         DiagnosticsProperty<double>(
           'inputHeight',
           inputHeight,
-          defaultValue: kDefaultInputHeight,
+          defaultValue: _kDefaultInputHeight,
         ),
       )
       ..add(
@@ -389,28 +391,28 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         DiagnosticsProperty<double>(
           'flagSize',
           flagSize,
-          defaultValue: kDefaultFlagSize,
+          defaultValue: _kDefaultFlagSize,
         ),
       )
       ..add(
         DiagnosticsProperty<double>(
           'padding',
           padding,
-          defaultValue: kDefaultPadding,
+          defaultValue: _kDefaultPadding,
         ),
       )
       ..add(
         DiagnosticsProperty<double>(
           'indent',
           indent,
-          defaultValue: kDefaultIndent,
+          defaultValue: _kDefaultIndent,
         ),
       )
       ..add(
         DiagnosticsProperty<double>(
           'radius',
           radius,
-          defaultValue: kDefaultRadius,
+          defaultValue: _kDefaultRadius,
         ),
       );
   }
@@ -505,11 +507,11 @@ final class _CountryPickerTheme$Default extends CountryPickerTheme {
                context,
              ),
          inputDecoration: inputDecoration ?? const InputDecoration(),
-         inputHeight: inputHeight ?? kDefaultInputHeight,
-         radius: radius ?? kDefaultRadius,
-         indent: indent ?? kDefaultIndent,
-         padding: padding ?? kDefaultPadding,
-         flagSize: flagSize ?? kDefaultFlagSize,
+         inputHeight: inputHeight ?? _kDefaultInputHeight,
+         radius: radius ?? _kDefaultRadius,
+         indent: indent ?? _kDefaultIndent,
+         padding: padding ?? _kDefaultPadding,
+         flagSize: flagSize ?? _kDefaultFlagSize,
          textStyle:
              textStyle ??
              Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -528,7 +530,7 @@ final class _CountryPickerTheme$Default extends CountryPickerTheme {
              ),
        );
 
-  /// A build context used to resolve [CupertinoDynamicColor]s defined in this
-  /// theme.
+  /// A build context used to resolve [CupertinoDynamicColor]
+  /// defined in this theme.
   final BuildContext context;
 }

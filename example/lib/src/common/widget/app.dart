@@ -1,6 +1,5 @@
 // ignore_for_file: library_private_types_in_public_api
 
-import 'package:example/src/common/constant/constant.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/router/example_navigator.dart';
 import 'package:example/src/common/theme/theme.dart';
@@ -205,13 +204,16 @@ class AppLocaleSwitcherButton extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-    width: 40,
-    height: 28,
-    child: PullDownButton(
-      menuOffset: kDefaultPadding,
-      buttonBuilder: _buttonBuilder,
-      itemBuilder: (_) => _itemBuilder(context),
-    ),
-  );
+  Widget build(BuildContext context) {
+    final pickerTheme = CountryPickerTheme.of(context);
+    return SizedBox(
+      width: 40,
+      height: 28,
+      child: PullDownButton(
+        buttonBuilder: _buttonBuilder,
+        menuOffset: pickerTheme.padding,
+        itemBuilder: (_) => _itemBuilder(context),
+      ),
+    );
+  }
 }

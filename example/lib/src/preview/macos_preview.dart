@@ -1,7 +1,6 @@
 // Anton Ustinoff <a.a.ustinoff@gmail.com>, 14 October 2024
 
 import 'package:collection/collection.dart';
-import 'package:example/src/common/constant/constant.dart';
 import 'package:example/src/common/constant/fonts.gen.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/util/app_zone.dart';
@@ -52,6 +51,7 @@ class _MacOSPreviewState extends State<MacOSPreview>
   @override
   Widget build(BuildContext context) {
     final localization = ExampleLocalization.of(context);
+    final pickerTheme = CountryPickerTheme.of(context);
     return Scaffold(
       appBar: const CommonAppBar(title: MacOSPreview.title),
       body: Padding(
@@ -62,11 +62,11 @@ class _MacOSPreviewState extends State<MacOSPreview>
           children: [
             // --- Logo --- //
             const CommonLogo.text(),
-            const SizedBox(height: kDefaultPadding * 2),
+            SizedBox(height: pickerTheme.padding * 2),
             ClipRRect(
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              borderRadius: const .all(.circular(10)),
               child: CupertinoListSection.insetGrouped(
-                margin: EdgeInsets.zero,
+                margin: .zero,
                 additionalDividerMargin: 0,
                 backgroundColor: CupertinoDynamicColor.resolve(
                   CupertinoColors.secondarySystemBackground,
@@ -88,12 +88,12 @@ class _MacOSPreviewState extends State<MacOSPreview>
                 ],
               ),
             ),
-            const SizedBox(height: kDefaultPadding),
+            SizedBox(height: pickerTheme.padding),
             SizedBox(
               height: 32,
               width: 100,
               child: CupertinoButton(
-                padding: EdgeInsets.zero,
+                padding: .zero,
                 color: CupertinoDynamicColor.resolve(
                   CupertinoColors.systemBlue,
                   context,
@@ -136,9 +136,10 @@ class CountryInput$MacOS extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final pickerTheme = CountryPickerTheme.of(context);
     final textTheme = Theme.of(context).textTheme;
     return ClipRRect(
-      borderRadius: const BorderRadius.all(Radius.circular(10)),
+      borderRadius: const .all(.circular(10)),
       child: ValueListenableBuilder(
         valueListenable: selected,
         builder: (context, selectedCountry, _) => CupertinoFormRow(
@@ -149,20 +150,20 @@ class CountryInput$MacOS extends StatelessWidget {
               style: textTheme.bodyLarge?.copyWith(height: 1),
             ),
           ),
-          padding: const EdgeInsets.only(
-            left: kDefaultPadding,
-            right: kDefaultPadding / 1.5,
+          padding: .only(
+            left: pickerTheme.padding,
+            right: pickerTheme.padding / 1.5,
           ),
           child: SizedBox(
             height: 44,
             child: Padding(
-              padding: const EdgeInsets.only(left: 5),
+              padding: const .only(left: 5),
               child: CupertinoTextField(
                 controller: controller,
                 inputFormatters: inputFormatters,
                 placeholder: selectedCountry.mask,
                 style: textTheme.bodyLarge,
-                padding: EdgeInsets.zero,
+                padding: .zero,
                 decoration: const BoxDecoration(color: Colors.transparent),
               ),
             ),
@@ -279,6 +280,7 @@ class _CountryPicker$MacOSState extends State<CountryPicker$MacOS> {
     Country selected,
   ) {
     final textStyle = Theme.of(context).textTheme.bodyLarge;
+    final pickerTheme = CountryPickerTheme.of(context);
     return GestureDetector(
       onTap: showMenu,
       child: ColoredBox(
@@ -295,14 +297,14 @@ class _CountryPicker$MacOSState extends State<CountryPicker$MacOS> {
               ),
             ),
           ),
-          padding: const EdgeInsets.only(
-            left: kDefaultPadding,
-            right: kDefaultPadding / 1.5,
+          padding: .only(
+            left: pickerTheme.padding,
+            right: pickerTheme.padding / 1.5,
           ),
           child: SizedBox(
             height: _kDefaultCountyInputHeight,
             child: Padding(
-              padding: const EdgeInsets.only(left: 5),
+              padding: const .only(left: 5),
               child: Row(
                 children: [
                   Expanded(
@@ -331,6 +333,7 @@ class _CountryPicker$MacOSState extends State<CountryPicker$MacOS> {
   @override
   Widget build(BuildContext context) {
     // final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final pickerTheme = CountryPickerTheme.of(context);
     final localizations = CountryLocalizations.of(context);
 
     Widget scope({
@@ -368,7 +371,7 @@ class _CountryPicker$MacOSState extends State<CountryPicker$MacOS> {
               state.countries[0];
 
           return PullDownButton(
-            menuOffset: kDefaultPadding,
+            menuOffset: pickerTheme.padding,
             itemBuilder: (_) => _itemBuilder(state.countries, $selected),
             buttonBuilder: (_, showMenu) =>
                 _buttonBuilder(context, showMenu, $selected),
