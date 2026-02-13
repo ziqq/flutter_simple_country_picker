@@ -60,7 +60,7 @@ class _ExperimentalPreviewState extends State<ExperimentalPreview> {
                     // onTap: () {
                     //   showCountryPicker(
                     //     context: context,
-                    //     favorite: ['RU'],
+                    //     favorites: ['RU'],
                     //     exclude: ['KN', 'MF'],
                     //     showPhoneCode: true,
                     //     onSelect: _onSelect,

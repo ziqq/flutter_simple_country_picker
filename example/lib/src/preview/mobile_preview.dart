@@ -65,7 +65,7 @@ class _MobilePreviewState extends State<MobilePreview>
                   // Can be used to exclude one ore more country
                   // from the countries list. Optional.
                   exclude: ['KN', 'MF'],
-                  favorite: ['RU'],
+                  favorites: ['RU'],
                   // Shows phone code before the country name. Optional.
                   showPhoneCode: true,
                   onSelect: onSelect,

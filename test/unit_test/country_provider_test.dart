@@ -11,9 +11,9 @@ void main() {
 
     tearDownAll(() async {});
 
-    group('getAll() -', () {
+    group('getCountries() -', () {
       test('returns all countries', () async {
-        final countries = await countriesProvider.getAll();
+        final countries = await countriesProvider.getCountries();
         expect(countries.length, countries.length);
       });
     });

@@ -82,7 +82,7 @@ Optional argumets of the `showCountryPicker` function:
 | Argument            | Description                                                                           |
 |---------------------|---------------------------------------------------------------------------------------|
 | `exclude`           | List of countries to exclude from the list.                                           |
-| `favorite`          | List of countries to show at the top of the list.                                     |
+| `favorites`          | List of countries to show at the top of the list.                                     |
 | `filter`            | List of countries to filter the list.                                                 |
 | `selected`          | Selected country notifier. Used to notify listeners when a country is selected.       |
 | `adaptive`          | Can be used to show iOS style bottom sheet on iOS platform.                           |

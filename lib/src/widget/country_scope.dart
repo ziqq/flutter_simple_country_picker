@@ -16,7 +16,7 @@ import 'package:flutter_simple_country_picker/src/data/country_provider.dart';
 /// The [exclude] argument can be used to exclude(remove) one ore more
 /// country from the countries list. It takes a list of country code(iso2).
 ///
-/// The [favorite] argument can be used to show countries
+/// The [favorites] argument can be used to show countries
 /// at the top of the list. It takes a list of country code(iso2).
 ///
 /// The [filter] argument can be used to filter the
@@ -29,7 +29,7 @@ class CountryScope extends StatefulWidget {
   const CountryScope({
     required this.child,
     this.exclude,
-    this.favorite,
+    this.favorites,
     this.filter,
     this.lazy = false,
     this.showPhoneCode = false,
@@ -45,8 +45,8 @@ class CountryScope extends StatefulWidget {
   /// List of country codes to exclude.
   final List<String>? exclude;
 
-  /// List of favorite country codes.
-  final List<String>? favorite;
+  /// List of favorites country codes.
+  final List<String>? favorites;
 
   /// List of filtered country codes.
   final List<String>? filter;
@@ -103,7 +103,7 @@ class _CountriesScopeState extends State<CountryScope> {
     _controller =
         CountryController(
             provider: CountryProvider(),
-            favorite: widget.favorite,
+            favorites: widget.favorites,
             exclude: widget.exclude,
             filter: widget.filter,
             showPhoneCode: widget.showPhoneCode,
@@ -130,6 +130,7 @@ class _CountriesScopeState extends State<CountryScope> {
 
   void _onStateChanded() {
     if (!mounted) return;
+    if (_controller.state.isLoading) return;
     if (identical(_controller.state, _state)) return;
     _state = _controller.state;
     _countries = _controller.state.countries.toList(growable: false);

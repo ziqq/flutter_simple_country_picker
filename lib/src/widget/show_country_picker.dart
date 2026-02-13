@@ -28,7 +28,7 @@ import 'package:meta/meta.dart';
 /// list of countries. It takes a list of country code(iso2).
 /// Note: Can't provide both [filter] and [exclude]
 ///
-/// An optional [favorite] argument can be used to show countries
+/// An optional [favorites] argument can be used to show countries
 /// at the top of the list. It takes a list of country code(iso2).
 ///
 /// An optional [selected] argument can be used to set the selected country.
@@ -86,7 +86,7 @@ import 'package:meta/meta.dart';
 void showCountryPicker({
   required BuildContext context,
   List<String>? exclude,
-  List<String>? favorite,
+  List<String>? favorites,
   List<String>? filter,
   SelectedCountry? selected,
   SelectCountryCallback? onSelect,
@@ -133,7 +133,7 @@ void showCountryPicker({
         ),
         child: CountryListView(
           exclude: exclude,
-          favorite: favorite,
+          favorites: favorites,
           filter: filter,
           selected: selected,
           onSelect: onSelect,
@@ -184,7 +184,7 @@ class CountryPickerOptions {
   /// {@macro country_picker_options}
   const CountryPickerOptions({
     this.exclude,
-    this.favorite,
+    this.favorites,
     this.filter,
     this.selected,
     this.onSelect,
@@ -217,8 +217,8 @@ class CountryPickerOptions {
   /// List of country codes to exclude.
   final List<String>? exclude;
 
-  /// List of favorite country codes.
-  final List<String>? favorite;
+  /// List of favorites country codes.
+  final List<String>? favorites;
 
   /// List of country codes to filter.
   final List<String>? filter;

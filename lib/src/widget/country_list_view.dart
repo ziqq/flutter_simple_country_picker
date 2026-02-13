@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +18,7 @@ class CountryListView extends StatefulWidget {
   /// {@macro country_list_view}
   const CountryListView({
     this.exclude,
-    this.favorite,
+    this.favorites,
     this.filter,
     this.selected,
     this.onSelect,
@@ -47,8 +46,7 @@ class CountryListView extends StatefulWidget {
   /// An optional argument for autofocus the search bar.
   final bool autofocus;
 
-  /// An optional [showGroup] argument can be used
-  /// to show grouped countries by initial letter.
+  /// Group countries by their first letter.
   /// Default is `null`.
   final bool? showGroup;
 
@@ -84,9 +82,9 @@ class CountryListView extends StatefulWidget {
   /// Note: Can't provide both [exclude] and [filter]
   final List<String>? exclude;
 
-  /// An optional [favorite] argument can be used to show countries
+  /// An optional [favorites] argument can be used to show countries
   /// at the top of the list. It takes a list of country code(iso2).
-  final List<String>? favorite;
+  final List<String>? favorites;
 
   /// An optional [filter] argument can be used to filter the
   /// list of countries. It takes a list of country code(iso2).
@@ -108,9 +106,10 @@ class _CountriesListViewState extends State<CountryListView> {
     _scrollController = widget.scrollController ?? ScrollController();
     _controller = CountryController(
       provider: CountryProvider(),
-      favorite: widget.favorite,
+      favorites: widget.favorites,
       exclude: widget.exclude,
       filter: widget.filter,
+      showGroup: widget.showGroup,
       showPhoneCode: widget.showPhoneCode,
     )..getCountries();
   }
@@ -343,7 +342,10 @@ class _CountriesList extends StatefulWidget {
 
 /// State for widget [_CountriesList].
 class _CountriesListState extends State<_CountriesList> {
-  final ValueNotifier<List<Widget>> _grouped = ValueNotifier<List<Widget>>([]);
+  final ValueNotifier<List<(String, List<Country>)>> _groups =
+      ValueNotifier<List<(String, List<Country>)>>([]);
+  List<Country>? _countries;
+  bool? _showGroup;
 
   @override
   void initState() {
@@ -364,141 +366,149 @@ class _CountriesListState extends State<_CountriesList> {
 
   @override
   void dispose() {
-    super.dispose();
-    _grouped.dispose();
     widget.controller.removeListener(_groupByName);
+    _groups.dispose();
+    super.dispose();
   }
 
   /// Group countries by name as initial letter.
   void _groupByName() {
-    if (!mounted || !widget.controller.state.showGroup) return;
-    final pickerTheme = CountryPickerTheme.resolve(context);
-    final countries = _getGroupedCountries();
-    var grouped = <Widget>[];
-    countries?.forEach(
-      (key, countries) => grouped.add(
-        SliverMainAxisGroup(
-          slivers: <Widget>[
-            SliverPersistentHeader(
-              key: ValueKey<String>(key),
-              floating: true,
-              pinned: true,
-              delegate: _SliverHeaderDelegate(
-                maxHeight: 13 * 2,
-                minHeight: 13 * 2,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: pickerTheme.secondaryBackgroundColor,
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: pickerTheme.padding,
-                    ),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        key,
-                        style: TextStyle(
-                          height: 1,
-                          fontSize: 15,
-                          fontWeight: switch (defaultTargetPlatform) {
-                            TargetPlatform.iOS => FontWeight.w700,
-                            _ => FontWeight.w600,
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SliverList.separated(
-              separatorBuilder: (_, _) => Divider(
-                height: 1,
-                thickness: 1,
-                indent: pickerTheme.padding,
-                endIndent: pickerTheme.padding,
-                color: pickerTheme.dividerColor,
-              ),
-              itemBuilder: (context, index) {
-                final country = countries[index];
-                return _CountryListTile(
-                  key: ValueKey<String>(country.e164Key),
-                  onSelect: widget.onSelect,
-                  country: country,
-                );
-              },
-              itemCount: countries.length,
-            ),
-          ],
-        ),
-      ),
-    );
-    _grouped.value = grouped;
+    if (!mounted) return;
+    final state = widget.controller.state;
+    if (!state.showGroup || !state.isIdle || state.countries.isEmpty) return;
+
+    if (_showGroup == state.showGroup &&
+        identical(_countries, state.countries)) {
+      return;
+    }
+
+    _countries = state.countries;
+    _showGroup = state.showGroup;
+
+    _groups.value = _buildGroups(state.countries);
   }
 
-  /// Get grouped countries by name as initial letter.
-  Map<String, List<Country>>? _getGroupedCountries() {
-    if (!mounted) return null;
-    final localization = CountryLocalizations.of(context);
-    final countries = widget.controller.state.countries
-        .map<Country>(
-          (country) => country.copyWith(
-            nameLocalized: localization.getFormatedCountryNameByCode(
-              country.countryCode,
-            ),
-          ),
-        )
-        .where(
-          (country) =>
-              country.nameLocalized != null &&
-              (country.nameLocalized?.isNotEmpty ?? false),
-        )
-        .whereType<Country>()
-        .toList(growable: false);
-    final groupedBy = groupBy(countries, (c) => c.nameLocalized![0]);
-    return Map<String, List<Country>>.fromEntries(
-      groupedBy.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
-    );
+  /// Build groups of countries.
+  List<(String, List<Country>)> _buildGroups(List<Country> countries) {
+    final result = <(String, List<Country>)>[];
+    List<Country>? bucket;
+    String? currentKey;
+
+    for (final country in countries) {
+      final name = country.nameLocalized;
+      if (name == null || name.isEmpty) continue;
+
+      final key = name.characters.first.toUpperCase();
+      if (key != currentKey) {
+        currentKey = key;
+        bucket = <Country>[];
+        result.add((key, bucket));
+      }
+      bucket?.add(country);
+    }
+
+    return result;
   }
 
   @override
-  Widget build(BuildContext context) => ValueListenableBuilder(
-    valueListenable: widget.controller,
-    builder: (context, state, _) {
-      // --- Loading state --- //
-      if (state.isLoading) {
-        return const SliverFillRemaining(
-          child: Center(child: CircularProgressIndicator.adaptive()),
-        );
-      }
+  Widget build(BuildContext context) {
+    final pickerTheme = CountryPickerTheme.resolve(context);
+    return ValueListenableBuilder(
+      valueListenable: widget.controller,
+      builder: (context, state, _) {
+        // --- Loading state --- //
+        if (state.isLoading) {
+          return const SliverFillRemaining(
+            child: Center(child: CircularProgressIndicator.adaptive()),
+          );
+        }
 
-      // --- Grouped countries --- //
-      if (state.showGroup) {
+        // --- Grouped countries --- //
+        if (state.showGroup) {
+          return ValueListenableBuilder(
+            valueListenable: _groups,
+            builder: (_, groups, _) {
+              final slivers = <Widget>[
+                for (final (key, countries) in groups)
+                  SliverMainAxisGroup(
+                    slivers: <Widget>[
+                      SliverPersistentHeader(
+                        key: ValueKey<String>('header_$key'),
+                        floating: true,
+                        pinned: true,
+                        delegate: _SliverHeaderDelegate(
+                          maxHeight: 26,
+                          minHeight: 26,
+                          child: DecoratedBox(
+                            key: ValueKey('header_child_$key'),
+                            decoration: BoxDecoration(
+                              color: pickerTheme.secondaryBackgroundColor,
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: pickerTheme.padding,
+                              ),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  key,
+                                  style: TextStyle(
+                                    height: 1,
+                                    fontSize: 15,
+                                    fontWeight: switch (defaultTargetPlatform) {
+                                      TargetPlatform.iOS => FontWeight.w700,
+                                      _ => FontWeight.w600,
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SliverList.separated(
+                        itemCount: countries.length,
+                        itemBuilder: (_, index) => _CountryListTile(
+                          key: ValueKey<String>(countries[index].e164Key),
+                          onSelect: widget.onSelect,
+                          country: countries[index],
+                        ),
+                        separatorBuilder: (_, _) => Divider(
+                          height: 1,
+                          thickness: 1,
+                          indent: pickerTheme.padding,
+                          endIndent: pickerTheme.padding,
+                          color: pickerTheme.dividerColor,
+                        ),
+                      ),
+                    ],
+                  ),
+              ];
+
+              return SliverMainAxisGroup(slivers: slivers);
+            },
+          );
+        }
+
+        // --- Plain countries list --- //
         return ValueListenableBuilder(
-          valueListenable: _grouped,
-          builder: (_, grouped, _) => SliverMainAxisGroup(slivers: grouped),
+          valueListenable: widget.selected ?? ValueNotifier<Country?>(null),
+          builder: (_, selected, _) => SliverList.builder(
+            itemCount: state.countries.length,
+            itemBuilder: (_, index) {
+              final country = state.countries[index];
+              return _CountryListTile.simple(
+                key: ValueKey<String>(country.e164Key),
+                country: country,
+                onSelect: widget.onSelect,
+                selected: selected == country,
+              );
+            },
+          ),
         );
-      }
-
-      // --- Plain countries list --- //
-      return ValueListenableBuilder(
-        valueListenable: widget.selected ?? ValueNotifier<Country?>(null),
-        builder: (_, selected, _) => SliverList.builder(
-          itemCount: state.countries.length,
-          itemBuilder: (_, index) {
-            final country = state.countries[index];
-            return _CountryListTile.simple(
-              key: ValueKey<String>(country.e164Key),
-              country: country,
-              onSelect: widget.onSelect,
-              selected: selected == country,
-            );
-          },
-        ),
-      );
-    },
-  );
+      },
+    );
+  }
 }
 
 /// _CountryListTile widget.
@@ -728,6 +738,8 @@ class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => maxHeight;
 
   @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
-      true;
+  bool shouldRebuild(covariant _SliverHeaderDelegate oldDelegate) =>
+      oldDelegate.minHeight != minHeight ||
+      oldDelegate.maxHeight != maxHeight ||
+      oldDelegate.child.key != child.key;
 }

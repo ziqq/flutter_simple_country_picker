@@ -32,8 +32,11 @@ class Preview extends StatefulWidget {
 
 /// State for [Preview].
 class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
-  static const _tabs = {0: Text('Preview'), 1: Text('Preview extended')};
-  final _groupValue = ValueNotifier<int>(0);
+  static const _tabs = <int, Text>{
+    0: Text('Preview'),
+    1: Text('Preview extended'),
+  };
+  final ValueNotifier<int> _groupValue = ValueNotifier<int>(0);
 
   @override
   void dispose() {
@@ -51,8 +54,8 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
         CountryPhoneInput(
           key: const ValueKey<String>('country_phone_input'),
           controller: countryPhoneController,
+          favorites: kFavoritesCountries,
           filter: kFilteredCountries,
-          // isScrollControlled: true,
         ),
 
         // --- Password input --- //
@@ -146,13 +149,16 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
                 sizeStyle: .medium,
                 onPressed: () => showCountryPicker(
                   context: context,
+                  onSelect: onSelect,
                   // Can be used to exclude one ore more country
                   // from the countries list. Optional.
-                  exclude: ['KN', 'MF'],
-                  favorite: ['RU'],
+                  exclude: ['AT'],
+                  favorites: kFavoritesCountries,
+                  expand: true,
+                  showGroup: true,
                   // Shows phone code before the country name. Optional.
                   showPhoneCode: true,
-                  onSelect: onSelect,
+                  shouldCloseOnSwipeDown: true,
                 ),
                 child: const Text('Show picker'),
               ),

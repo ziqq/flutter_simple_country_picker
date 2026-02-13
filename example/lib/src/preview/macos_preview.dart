@@ -184,7 +184,7 @@ class CountryPicker$MacOS extends StatefulWidget {
     this.onSelect,
     this.selected,
     this.exclude, // ignore: unused_element
-    this.favorite, // ignore: unused_element
+    this.favorites, // ignore: unused_element
     this.filter, // ignore: unused_element
     this.isScrollControlled = false, // ignore: unused_element
     this.showPhoneCode = false, // ignore: unused_element
@@ -210,8 +210,8 @@ class CountryPicker$MacOS extends StatefulWidget {
   /// List of country codes to exclude.
   final List<String>? exclude;
 
-  /// List of favorite country codes.
-  final List<String>? favorite;
+  /// List of favorites country codes.
+  final List<String>? favorites;
 
   /// List of filtered country codes.
   final List<String>? filter;

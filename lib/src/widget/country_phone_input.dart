@@ -19,7 +19,7 @@ class CountryPhoneInput extends StatefulWidget {
     this.countryController,
     this.onCountryChanged,
     this.exclude,
-    this.favorite,
+    this.favorites,
     this.filter,
     this.placeholder,
     this.autofocus = false,
@@ -30,6 +30,8 @@ class CountryPhoneInput extends StatefulWidget {
     this.useAutofocus = false,
     this.useHaptickFeedback = true,
     this.isScrollControlled = false,
+    this.shouldCloseOnSwipeDown = false,
+    this.showGroup,
     this.showSearch,
     this.initialChildSize,
     this.minChildSize,
@@ -45,7 +47,7 @@ class CountryPhoneInput extends StatefulWidget {
     ValueNotifier<Country>? countryController,
     ValueChanged<Country>? onCountryChanged,
     List<String>? exclude,
-    List<String>? favorite,
+    List<String>? favorites,
     List<String>? filter,
     String? placeholder,
     bool autofocus,
@@ -54,6 +56,8 @@ class CountryPhoneInput extends StatefulWidget {
     bool showPhoneCode,
     bool showWorldWide,
     bool shouldReplace8,
+    bool shouldCloseOnSwipeDown,
+    bool? showGroup,
     bool? showSearch,
     @Deprecated(
       'Use autofocus instead. This will be removed in v1.0.0 releases.',
@@ -75,6 +79,9 @@ class CountryPhoneInput extends StatefulWidget {
   /// Controls the scrolling behavior of the modal window.
   final bool isScrollControlled;
 
+  /// Group countries by their first letter.
+  final bool? showGroup;
+
   /// Show phone code in countires list.
   final bool showPhoneCode;
 
@@ -83,6 +90,9 @@ class CountryPhoneInput extends StatefulWidget {
 
   /// Replace 8 with +7 in the phone number.
   final bool shouldReplace8;
+
+  /// Should close the bottom sheet on swipe down gesture.
+  final bool shouldCloseOnSwipeDown;
 
   /// Show countryies search bar?
   final bool? showSearch;
@@ -103,8 +113,8 @@ class CountryPhoneInput extends StatefulWidget {
   /// List of country codes to exclude.
   final List<String>? exclude;
 
-  /// List of favorite country codes.
-  final List<String>? favorite;
+  /// List of favorites country codes.
+  final List<String>? favorites;
 
   /// List of filtered country codes.
   final List<String>? filter;
@@ -348,12 +358,14 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
               onPressed: () => showCountryPicker(
                 context: context,
                 exclude: widget.exclude,
-                favorite: widget.favorite,
+                favorites: widget.favorites,
                 filter: widget.filter,
                 autofocus: widget.autofocus || widget.useAutofocus,
+                showGroup: widget.showGroup,
                 showSearch: widget.showSearch,
                 showPhoneCode: widget.showPhoneCode,
                 showWorldWide: widget.showWorldWide,
+                shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
                 useHaptickFeedback: widget.useHaptickFeedback,
                 isScrollControlled: widget.isScrollControlled,
                 initialChildSize: widget.initialChildSize,
@@ -448,15 +460,17 @@ class CountryPhoneInput$Extended extends CountryPhoneInput {
     super.countryController,
     super.onCountryChanged,
     super.exclude,
-    super.favorite,
+    super.favorites,
     super.filter,
     super.autofocus,
     super.expand,
     super.isScrollControlled,
     super.placeholder,
     super.shouldReplace8,
+    super.shouldCloseOnSwipeDown,
     super.showPhoneCode,
     super.showWorldWide,
+    super.showGroup,
     super.showSearch,
     super.useAutofocus,
     super.useHaptickFeedback,
@@ -484,7 +498,6 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
     final textStyle = pickerTheme.textStyle;
     final defaultTextStyle = textStyle?.copyWith(
       fontSize: 20,
-
       color: CupertinoDynamicColor.resolve(CupertinoColors.label, context),
     );
     final divider = Divider(
@@ -513,14 +526,18 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
               onPressed: () => showCountryPicker(
                 context: context,
                 exclude: widget.exclude,
-                favorite: widget.favorite,
+                favorites: widget.favorites,
                 filter: widget.filter,
                 autofocus: widget.autofocus || widget.useAutofocus,
+                showGroup: widget.showGroup,
                 showSearch: widget.showSearch,
                 showPhoneCode: widget.showPhoneCode,
                 showWorldWide: widget.showWorldWide,
                 isScrollControlled: widget.isScrollControlled,
                 useHaptickFeedback: widget.useHaptickFeedback,
+                shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
+                initialChildSize: widget.initialChildSize,
+                minChildSize: widget.minChildSize,
                 selected: _countryController,
                 onSelect: _onSelect,
               ),

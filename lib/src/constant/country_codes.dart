@@ -24,7 +24,7 @@ const List<Map<String, Object?>> countries = <Map<String, Object?>>[
     'display_name_no_e164_cc': 'Russia (RU)',
     'e164_key': '7-RU-0',
   },
-  {
+  /* {
     'e164_cc': '7',
     'iso2_cc': 'AB', // GE-AB
     'e164_sc': 0,
@@ -37,6 +37,24 @@ const List<Map<String, Object?>> countries = <Map<String, Object?>>[
     'full_example_with_plus_sign': '+79409123456',
     'display_name_no_e164_cc': 'Abkhazia (AB)',
     'e164_key': '7-AB-0',
+  }, */
+  // In Austria, mobile numbers have variable length
+  // (usually 10-13 digits in international format,
+  // including the country code).
+  // The most common mobile number format after the +43 code is 10 digits.
+  {
+    'e164_cc': '43',
+    'iso2_cc': 'AT',
+    'e164_sc': 0,
+    'geographic': true,
+    'level': 1,
+    'name': 'Austria',
+    'example': '644123456',
+    'display_name': 'Austria (AT) [+43]',
+    'mask': null,
+    'full_example_with_plus_sign': '+43644123456',
+    'display_name_no_e164_cc': 'Austria (AT)',
+    'e164_key': '43-AT-0',
   },
   {
     'e164_cc': '994',
@@ -275,24 +293,6 @@ const List<Map<String, Object?>> countries = <Map<String, Object?>>[
     'full_example_with_plus_sign': '+61123456789',
     'display_name_no_e164_cc': 'Australia (AU)',
     'e164_key': '61-AU-0',
-  },
-  // In Austria, mobile numbers have variable length
-  // (usually 10-13 digits in international format,
-  // including the country code).
-  // The most common mobile number format after the +43 code is 10 digits.
-  {
-    'e164_cc': '43',
-    'iso2_cc': 'AT',
-    'e164_sc': 0,
-    'geographic': true,
-    'level': 1,
-    'name': 'Austria',
-    'example': '644123456',
-    'display_name': 'Austria (AT) [+43]',
-    'mask': null,
-    'full_example_with_plus_sign': '+43644123456',
-    'display_name_no_e164_cc': 'Austria (AT)',
-    'e164_key': '43-AT-0',
   },
   {
     'e164_cc': '1242',

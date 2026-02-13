@@ -57,7 +57,7 @@ MaterialApp(
 * `searchAutofocus` Can be used to initially expand virtual keyboard
 * `showSearch` Can be used to show/hide the search bar.
 * `showWorldWide` An optional argument for showing "World Wide" option at the beginning of the list
-* `favorite` Can be used to show the favorite countries at the top of the list (optional).
+* `favorites` Can be used to show the favorites countries at the top of the list (optional).
 * `countryListTheme`: Can be used to customize the country list's bottom sheet and widgets that lie within it. (optional).
   ```Dart
   showCountryPicker(

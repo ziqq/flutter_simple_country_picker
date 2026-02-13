@@ -184,7 +184,7 @@ class CountryPicker$Web extends StatefulWidget {
     this.onSelect,
     this.selected,
     this.exclude,
-    this.favorite,
+    this.favorites,
     this.filter,
     this.isScrollControlled = false,
     this.showPhoneCode = false,
@@ -210,8 +210,8 @@ class CountryPicker$Web extends StatefulWidget {
   /// List of country codes to exclude.
   final List<String>? exclude;
 
-  /// List of favorite country codes.
-  final List<String>? favorite;
+  /// List of favorites country codes.
+  final List<String>? favorites;
 
   /// List of filtered country codes.
   final List<String>? filter;

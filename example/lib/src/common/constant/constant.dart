@@ -22,3 +22,8 @@ final List<String> kFilteredCountries = List<String>.unmodifiable([
   'US', // United States
   'UZ', // Uzbekistan
 ]);
+
+/// Favorites countries
+final List<String> kFavoritesCountries = List<String>.unmodifiable([
+  'RU', // Russia
+]);

@@ -31,9 +31,9 @@ import 'package:mockito/mockito.dart' as _i1;
 /// See the documentation for Mockito's code generation for more information.
 class MockCountryProvider extends _i1.Mock implements _i2.CountryProvider {
   @override
-  _i3.Future<List<_i4.Country>> getAll() =>
+  _i3.Future<List<_i4.Country>> getCountries() =>
       (super.noSuchMethod(
-            Invocation.method(#getAll, []),
+            Invocation.method(#getCountries, []),
             returnValue: _i3.Future<List<_i4.Country>>.value(<_i4.Country>[]),
             returnValueForMissingStub: _i3.Future<List<_i4.Country>>.value(
               <_i4.Country>[],

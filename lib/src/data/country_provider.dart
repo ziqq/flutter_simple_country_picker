@@ -18,7 +18,7 @@ class CountryProvider {
   final List<Country> _countries;
 
   /// Return list with all countries
-  Future<List<Country>> getAll() async =>
+  Future<List<Country>> getCountries() async =>
       Future<List<Country>>.value(_countries);
 
   /// Returns the first country that mach the given code.
