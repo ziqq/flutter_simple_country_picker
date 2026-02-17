@@ -56,16 +56,14 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
           controller: countryPhoneController,
           favorites: kFavoritesCountries,
           filter: kFilteredCountries,
+          showGroup: true,
         ),
 
         // --- Password input --- //
         DecoratedBox(
           decoration: BoxDecoration(
-            color: CupertinoDynamicColor.resolve(
-              CupertinoColors.secondarySystemBackground,
-              context,
-            ),
             borderRadius: .all(.circular(pickerTheme.radius)),
+            color: pickerTheme.onBackgroundColor,
           ),
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: pickerTheme.inputHeight),
@@ -76,9 +74,8 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
                 decoration: InputDecoration(
                   hintText: ExampleLocalization.of(context).passwordLable,
                   hintStyle: pickerTheme.textStyle?.copyWith(
-                    color: CupertinoDynamicColor.resolve(
-                      CupertinoColors.placeholderText,
-                      context,
+                    color: pickerTheme.searchTextStyle?.color?.withValues(
+                      alpha: .5,
                     ),
                   ),
                   border: .none,
@@ -168,12 +165,14 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
                 sizeStyle: .medium,
                 onPressed: () => showCountryPicker(
                   context: context,
-                  isScrollControlled: false,
+                  favorites: ['RU'],
                   // Can be used to exclude one ore more country
                   // from the countries list. Optional.
                   filter: kFilteredCountries,
+                  isScrollControlled: false,
                   // Shows phone code before the country name. Optional.
                   showPhoneCode: true,
+                  showGroup: true,
                   onSelect: onSelect,
                 ),
                 child: const Text('Show picker (filtered)'),
@@ -185,6 +184,7 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
                 onPressed: () => showCountryPicker(
                   context: context,
                   adaptive: true,
+                  showGroup: true,
                   onSelect: onSelect,
                 ),
                 child: const Text('Show picker (adaptive)'),

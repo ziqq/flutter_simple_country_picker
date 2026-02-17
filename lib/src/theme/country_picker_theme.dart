@@ -34,14 +34,17 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   factory CountryPickerTheme({
     Color? accentColor,
     Color? backgroundColor,
+    Color? onBackgroundColor,
     Color? barrierColor,
     Color? dividerColor,
     Color? secondaryBackgroundColor,
+    Color? onSecondaryBackgroundColor,
     double? flagSize,
     double? padding,
     double? indent,
     double? radius,
     double? inputHeight,
+    @Deprecated('This property will be removed in v1.0.0 releases.')
     InputDecoration? inputDecoration,
     TextStyle? textStyle,
     TextStyle? secondaryTextStyle,
@@ -55,9 +58,11 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     return CountryPickerTheme.raw(
       accentColor: accentColor,
       backgroundColor: backgroundColor,
+      onBackgroundColor: onBackgroundColor ?? secondaryBackgroundColor,
       barrierColor: barrierColor,
       dividerColor: dividerColor,
       secondaryBackgroundColor: secondaryBackgroundColor,
+      onSecondaryBackgroundColor: onSecondaryBackgroundColor ?? backgroundColor,
       inputDecoration: inputDecoration,
       inputHeight: inputHeight,
       secondaryTextStyle: secondaryTextStyle,
@@ -74,9 +79,12 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   const CountryPickerTheme.raw({
     required this.accentColor,
     required this.backgroundColor,
+    required this.onBackgroundColor,
     required this.barrierColor,
     required this.dividerColor,
     required this.secondaryBackgroundColor,
+    required this.onSecondaryBackgroundColor,
+    @Deprecated('This property will be removed in v1.0.0 releases.')
     required this.inputDecoration,
     required this.inputHeight,
     required this.secondaryTextStyle,
@@ -116,6 +124,10 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
           other?.backgroundColor ??
           theme?.backgroundColor ??
           defaults.backgroundColor,
+      onBackgroundColor:
+          other?.onBackgroundColor ??
+          theme?.onBackgroundColor ??
+          defaults.onBackgroundColor,
       barrierColor:
           other?.barrierColor ?? theme?.barrierColor ?? defaults.barrierColor,
       dividerColor:
@@ -124,6 +136,10 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
           other?.secondaryBackgroundColor ??
           theme?.secondaryBackgroundColor ??
           defaults.secondaryBackgroundColor,
+      onSecondaryBackgroundColor:
+          other?.onSecondaryBackgroundColor ??
+          theme?.onSecondaryBackgroundColor ??
+          defaults.onSecondaryBackgroundColor,
       inputDecoration:
           other?.inputDecoration ??
           theme?.inputDecoration ??
@@ -160,8 +176,14 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   /// The background color.
   final Color? backgroundColor;
 
+  /// The background color for elements on top of the background.
+  final Color? onBackgroundColor;
+
   /// The secondary background color.
   final Color? secondaryBackgroundColor;
+
+  /// The background color for elements on top of the secondary background.
+  final Color? onSecondaryBackgroundColor;
 
   /// The barrierColor color.
   final Color? barrierColor;
@@ -178,6 +200,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   /// The style to use for search field text.
   final TextStyle? searchTextStyle;
 
+  @Deprecated('This property will be removed in v1.0.0 releases.')
   /// The decoration used for the inputs.
   final InputDecoration? inputDecoration;
 
@@ -186,22 +209,18 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   final double inputHeight;
 
   /// The flag size.
-  ///
   /// If null, set to `22.0`
   final double? flagSize;
 
   /// The padding around elements.
-  ///
   /// If null, set to `16.0`
   final double padding;
 
   /// The indent of the divider.
-  ///
   /// If null, set to `10.0`
   final double indent;
 
   /// The border radius of elements.
-  ///
   /// If null, set to `12.0`
   final double radius;
 
@@ -209,9 +228,12 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   CountryPickerTheme copyWith({
     Color? accentColor,
     Color? backgroundColor,
+    Color? onBackgroundColor,
     Color? barrierColor,
     Color? dividerColor,
     Color? secondaryBackgroundColor,
+    Color? onSecondaryBackgroundColor,
+    @Deprecated('This property will be removed in v1.0.0 releases.')
     InputDecoration? inputDecoration,
     double? inputHeight,
     double? flagSize,
@@ -224,10 +246,13 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   }) => CountryPickerTheme(
     accentColor: accentColor ?? this.accentColor,
     backgroundColor: backgroundColor ?? this.backgroundColor,
+    onBackgroundColor: onBackgroundColor ?? this.onBackgroundColor,
     barrierColor: barrierColor ?? this.barrierColor,
     dividerColor: dividerColor ?? this.dividerColor,
     secondaryBackgroundColor:
         secondaryBackgroundColor ?? this.secondaryBackgroundColor,
+    onSecondaryBackgroundColor:
+        onSecondaryBackgroundColor ?? this.onSecondaryBackgroundColor,
     inputDecoration: inputDecoration ?? this.inputDecoration,
     inputHeight: inputHeight ?? this.inputHeight,
     flagSize: flagSize ?? this.flagSize,
@@ -249,11 +274,21 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     return CountryPickerTheme(
       accentColor: Color.lerp(accentColor, other.accentColor, t),
       backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t),
+      onBackgroundColor: Color.lerp(
+        onBackgroundColor,
+        other.onBackgroundColor,
+        t,
+      ),
       barrierColor: Color.lerp(barrierColor, other.barrierColor, t),
       dividerColor: Color.lerp(dividerColor, other.dividerColor, t),
       secondaryBackgroundColor: Color.lerp(
         secondaryBackgroundColor,
         other.secondaryBackgroundColor,
+        t,
+      ),
+      onSecondaryBackgroundColor: Color.lerp(
+        onSecondaryBackgroundColor,
+        other.onSecondaryBackgroundColor,
         t,
       ),
       secondaryTextStyle: TextStyle.lerp(
@@ -279,10 +314,12 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   int get hashCode => Object.hashAll([
     accentColor,
     backgroundColor,
+    onBackgroundColor,
     barrierColor,
     dividerColor,
     inputDecoration,
     inputHeight,
+    onSecondaryBackgroundColor,
     secondaryBackgroundColor,
     secondaryTextStyle,
     searchTextStyle,
@@ -300,7 +337,9 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     return other is CountryPickerTheme &&
         other.accentColor == accentColor &&
         other.backgroundColor == backgroundColor &&
+        other.onBackgroundColor == onBackgroundColor &&
         other.dividerColor == dividerColor &&
+        other.onSecondaryBackgroundColor == onSecondaryBackgroundColor &&
         other.secondaryBackgroundColor == secondaryBackgroundColor &&
         other.secondaryTextStyle == secondaryTextStyle &&
         other.searchTextStyle == searchTextStyle &&
@@ -329,6 +368,13 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
           'backgroundColor',
           backgroundColor,
           defaultValue: CupertinoColors.systemBackground,
+        ),
+      )
+      ..add(
+        ColorProperty(
+          'onBackgroundColor',
+          onBackgroundColor,
+          defaultValue: CupertinoColors.secondarySystemBackground,
         ),
       )
       ..add(
@@ -363,7 +409,14 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         ColorProperty(
           'secondaryBackgroundColor',
           secondaryBackgroundColor,
-          defaultValue: CupertinoColors.systemGroupedBackground,
+          defaultValue: CupertinoColors.secondarySystemBackground,
+        ),
+      )
+      ..add(
+        ColorProperty(
+          'onSecondaryBackgroundColor',
+          onSecondaryBackgroundColor,
+          defaultValue: CupertinoColors.systemBackground,
         ),
       )
       ..add(
@@ -471,9 +524,11 @@ final class _CountryPickerTheme$Default extends CountryPickerTheme {
     this.context, {
     Color? accentColor,
     Color? backgroundColor,
+    Color? onBackgroundColor,
     Color? barrierColor,
     Color? dividerColor,
     Color? secondaryBackgroundColor,
+    Color? onSecondaryBackgroundColor,
     InputDecoration? inputDecoration,
     double? inputHeight,
     double? radius,
@@ -493,10 +548,24 @@ final class _CountryPickerTheme$Default extends CountryPickerTheme {
                CupertinoColors.secondarySystemBackground,
                context,
              ),
+         onSecondaryBackgroundColor:
+             onSecondaryBackgroundColor ??
+             backgroundColor ??
+             CupertinoDynamicColor.resolve(
+               CupertinoColors.systemBackground,
+               context,
+             ),
          backgroundColor:
              backgroundColor ??
              CupertinoDynamicColor.resolve(
                CupertinoColors.systemBackground,
+               context,
+             ),
+         onBackgroundColor:
+             onBackgroundColor ??
+             secondaryBackgroundColor ??
+             CupertinoDynamicColor.resolve(
+               CupertinoColors.secondarySystemBackground,
                context,
              ),
          barrierColor: barrierColor ?? kCupertinoModalBarrierColor,
@@ -524,9 +593,9 @@ final class _CountryPickerTheme$Default extends CountryPickerTheme {
          secondaryTextStyle:
              secondaryTextStyle ??
              Theme.of(context).textTheme.bodyLarge?.copyWith(
+               fontWeight: FontWeight.normal,
                fontSize: 12,
                height: 1.2,
-               fontWeight: FontWeight.normal,
              ),
        );
 

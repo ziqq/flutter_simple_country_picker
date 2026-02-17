@@ -334,10 +334,7 @@ class _CountryPicker$DesktopState extends State<CountryPicker$Web> {
             trailingIcon: Icon(
               CupertinoIcons.chevron_down,
               size: 16,
-              color: CupertinoDynamicColor.resolve(
-                CupertinoColors.placeholderText,
-                context,
-              ),
+              color: pickerTheme.searchTextStyle?.color?.withValues(alpha: .5),
             ),
             label: const Text('Country'),
             initialSelection: $selected,
