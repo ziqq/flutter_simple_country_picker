@@ -1,4 +1,11 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart'
+    show
+        CupertinoDynamicColor,
+        CupertinoSearchTextField,
+        CupertinoColors,
+        CupertinoButtonSize,
+        CupertinoButton,
+        CupertinoIcons;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,6 +38,7 @@ class CountryListView extends StatefulWidget {
     this.useAutofocus = false,
     this.showPhoneCode = false,
     this.showWorldWide = false,
+    this.useRootNavigator = true,
     this.useHaptickFeedback = true,
     this.showGroup,
     this.showSearch,
@@ -64,6 +72,9 @@ class CountryListView extends StatefulWidget {
   /// An optional argument for autofocus the search bar.
   @Deprecated('Use autofocus instead. This will be removed in v1.0.0 releases.')
   final bool useAutofocus;
+
+  /// Whether to use root navigator to display the bottom sheet.
+  final bool useRootNavigator;
 
   /// Whether to use haptic feedback on user interactions.
   final bool useHaptickFeedback;
@@ -162,6 +173,11 @@ class _CountriesListViewState extends State<CountryListView> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final pickerTheme = CountryPickerTheme.resolve(context);
     final localization = CountryLocalizations.of(context);
+    void pop() {
+      if (widget.useHaptickFeedback) HapticFeedback.heavyImpact().ignore();
+      Navigator.of(context, rootNavigator: widget.useRootNavigator).pop<void>();
+    }
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -180,13 +196,19 @@ class _CountriesListViewState extends State<CountryListView> {
               spacing: pickerTheme.indent,
               children: <Widget>[
                 // --- Search field --- //
-                Flexible(
+                Expanded(
                   child: CupertinoSearchTextField(
                     autofocus: widget.autofocus || widget.useAutofocus,
                     controller: _controller.search,
                     onSuffixTap: _controller.search?.clear,
                     placeholder: localization.searchPlaceholder,
-                    style: const TextStyle(fontWeight: FontWeight.w400),
+                    style: pickerTheme.textStyle?.copyWith(height: 1.3),
+                    placeholderStyle: pickerTheme.textStyle?.copyWith(
+                      color: pickerTheme.searchTextStyle?.color?.withValues(
+                        alpha: .5,
+                      ),
+                      height: 1.3,
+                    ),
                     borderRadius: BorderRadius.all(
                       Radius.circular(pickerTheme.radius),
                     ),
@@ -208,18 +230,13 @@ class _CountriesListViewState extends State<CountryListView> {
                 CupertinoButton(
                   padding: EdgeInsets.zero,
                   sizeStyle: CupertinoButtonSize.small,
+                  onPressed: pop,
                   child: Text(
                     localization.cancelButton,
                     style: pickerTheme.textStyle?.copyWith(
                       color: pickerTheme.accentColor,
                     ),
                   ),
-                  onPressed: () {
-                    if (widget.useHaptickFeedback) {
-                      HapticFeedback.heavyImpact().ignore();
-                    }
-                    Navigator.of(context, rootNavigator: true).pop<void>();
-                  },
                 ),
               ],
             ),

@@ -5,6 +5,7 @@
 
 import 'dart:math';
 
+import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:flutter/services.dart';
 
 /// Default filter for country input formatter.
@@ -54,7 +55,15 @@ class CountryInputFormatter implements TextInputFormatter {
     String? initialText,
     Map<String, RegExp>? filter,
     CountryInputCompletionType type = CountryInputCompletionType.lazy,
-  }) : _type = type {
+
+    /// Notify UI about overflow (flat mode) state changes.
+    ValueChanged<bool>? onOverflowChanged,
+
+    /// Notifier to bind into UI without callback.
+    ValueNotifier<bool>? overflowNotifier,
+  }) : _type = type,
+       _overflowNotifier = overflowNotifier,
+       _onOverflowChanged = onOverflowChanged {
     updateMask(
       mask: mask,
       filter: filter ?? _kDefaultFilter,
@@ -79,6 +88,108 @@ class CountryInputFormatter implements TextInputFormatter {
          type: CountryInputCompletionType.eager,
        );
 
+  /// Regexp to filter input characters for each mask symbol.
+  static final RegExp _kDigit = RegExp(r'\d');
+
+  /// Notify UI about overflow (flat mode) state changes.
+  final ValueChanged<bool>? _onOverflowChanged;
+
+  /// Notifier to bind into UI without callback.
+  final ValueNotifier<bool>? _overflowNotifier;
+
+  /// Indicates whether the formatter is in flat mode (mask overflow).
+  ///
+  /// Flat mode is enabled when input exceeds mask capacity.
+  /// While in flat mode, formatter outputs digits-only text (no mask characters).
+  bool _isFlatMode = false;
+
+  /// Original mask that we can restore after user deletes characters back
+  /// to mask capacity.
+  ///
+  /// Note: when mask overflow happens we set `_mask = null` to indicate that
+  /// currently mask is not applied, but we keep the original here.
+  String? _savedMask;
+
+  /// Removes all non-digit characters from the input string.
+  static String _digitsOnly(String s) {
+    final b = StringBuffer();
+    for (var i = 0; i < s.length; i++) {
+      final ch = s[i];
+      if (_kDigit.hasMatch(ch)) b.write(ch);
+    }
+    return b.toString();
+  }
+
+  /// Counts the number of digit characters in the string [s]
+  /// before the given [offset].
+  static int _digitsCountBefore(String s, int offset) {
+    final end = offset.clamp(0, s.length);
+    var c = 0;
+    for (var i = 0; i < end; i++) {
+      if (_kDigit.hasMatch(s[i])) c++;
+    }
+    return c;
+  }
+
+  /// Finds cursor offset in masked text by "digits count before cursor".
+  ///
+  /// Example:
+  /// - digitIndex=0 -> 0
+  /// - digitIndex=3 -> position right after 3rd digit in masked string
+  static int _offsetInMaskedForDigitIndex(String masked, int digitIndex) {
+    if (digitIndex <= 0) return 0;
+
+    var seen = 0;
+    for (var i = 0; i < masked.length; i++) {
+      if (_kDigit.hasMatch(masked[i])) {
+        seen++;
+        if (seen == digitIndex) {
+          // caret goes after this digit
+          return i + 1;
+        }
+      }
+    }
+    return masked.length;
+  }
+
+  /// Reformat from scratch in masked mode and then correct cursor position
+  /// based on "digits before caret" in flat input.
+  ///
+  /// This is used when we restore mask after overflow. Without this step
+  /// cursor may "jump" due to mask literals (spaces, brackets, dashes, etc.).
+  TextEditingValue _reformatFromScratchWithCaret({
+    required String flatDigits,
+    required int flatCaretDigits,
+    required TextEditingValue selectionMeta,
+  }) {
+    // Reset internal buffers to avoid mixing states
+    clear();
+
+    // Run formatter as if user typed from empty (stable for restore).
+    final base = formatEditUpdate(
+      TextEditingValue.empty,
+      TextEditingValue(
+        text: flatDigits,
+        selection: TextSelection.collapsed(
+          offset: flatCaretDigits.clamp(0, flatDigits.length),
+        ),
+      ),
+    );
+
+    final correctedOffset = _offsetInMaskedForDigitIndex(
+      base.text,
+      flatCaretDigits,
+    ).clamp(0, base.text.length);
+
+    return base.copyWith(
+      selection: TextSelection.collapsed(
+        offset: correctedOffset,
+        affinity: selectionMeta.selection.affinity,
+      ),
+      composing: TextRange.empty,
+    );
+  }
+
   /// Update the mask and optionally update the [filter] and [type].
   /// Pass a [newValue] to reformat an existing text value.
   TextEditingValue updateMask({
@@ -87,10 +198,17 @@ class CountryInputFormatter implements TextInputFormatter {
     CountryInputCompletionType? type,
     TextEditingValue? newValue,
   }) {
+    // Reset flat mode when mask updates.
+    _setFlatMode(false);
+
+    // Save mask for potential restore after overflow.
+    _savedMask = mask;
     _mask = mask;
+
     if (type != null) _type = type;
     if (filter != null) _updateFilter(filter);
     _calcMaskLength();
+
     var targetValue = newValue;
     if (targetValue == null) {
       final unmaskedText = getUnmaskedText();
@@ -99,6 +217,7 @@ class CountryInputFormatter implements TextInputFormatter {
         selection: TextSelection.collapsed(offset: unmaskedText.length),
       );
     }
+
     clear();
     return formatEditUpdate(TextEditingValue.empty, targetValue);
   }
@@ -109,7 +228,13 @@ class CountryInputFormatter implements TextInputFormatter {
 
   String? _mask;
   int _maskLength = 0;
-  List<String> _maskChars = [];
+
+  /// Mask symbols, e.g. ['#','0','A'] (kept for compatibility / debug)
+  List<String> _maskChars = <String>[];
+
+  /// O(1) membership checks for mask symbols.
+  Set<String> _maskCharSet = const {};
+
   Map<String, RegExp>? _maskFilter;
 
   final _TextMatcher _resultTextArray = _TextMatcher();
@@ -118,10 +243,10 @@ class CountryInputFormatter implements TextInputFormatter {
   /// Get the current mask.
   String? getMask() => _mask;
 
-  /// Get the masked text.
+  /// Get the current masked text.
   String getMaskedText() => _resultTextMasked;
 
-  /// Get the unmasked text.
+  /// Get the current unmasked text.
   String getUnmaskedText() => _resultTextArray.toString();
 
   /// Check if the mask is fully filled.
@@ -149,15 +274,84 @@ class CountryInputFormatter implements TextInputFormatter {
     initialText: text,
   ).getUnmaskedText();
 
+  /// Restore mask if we are in flat mode and user has deleted enough digits
+  /// to fit into the mask again.
+  ///
+  /// This keeps the UX intuitive:
+  /// - overflow -> flat digits-only
+  /// - delete back to <= mask length -> mask is applied again
+  ///
+  /// NOTE:
+  /// Cursor is fixed separately by remapping it using "digit index" when mask
+  /// is restored (see [_reformatFromScratchWithCaret]).
+  void _tryRestoreMaskIfPossible({
+    required TextEditingValue oldValue,
+    required TextEditingValue newValue,
+    required String flatDigits,
+  }) {
+    if (!_isFlatMode) return;
+
+    final savedMask = _savedMask;
+    if (savedMask == null || savedMask.isEmpty) return;
+
+    if (flatDigits.length > _maskLength) return;
+
+    // Restore only when deleting (prevents surprising jumps on paste).
+    final isDeleting = newValue.text.length < oldValue.text.length;
+    if (!isDeleting) return;
+
+    _setFlatMode(false);
+    _mask = savedMask;
+  }
+
   /// Format the text input according to the mask and filter.
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    final mask = _mask;
+    // Flat mode handling:
+    // - We still watch deletions. When digits count becomes <= mask length,
+    //   we restore the mask and re-run formatting for masked output with proper caret.
+    if (_isFlatMode) {
+      final flat = _digitsOnly(newValue.text);
 
-    if (mask == null || mask.isEmpty == true) {
+      // Caret in flat-mode: "how many digits are before cursor"
+      final flatCaretDigits = newValue.selection.isValid
+          ? _digitsCountBefore(newValue.text, newValue.selection.extentOffset)
+          : flat.length;
+
+      _tryRestoreMaskIfPossible(
+        oldValue: oldValue,
+        newValue: newValue,
+        flatDigits: flat,
+      );
+
+      // If still flat -> just return flat digits-only
+      if (_isFlatMode) {
+        _resultTextMasked = flat;
+        _resultTextArray.set(flat);
+
+        return TextEditingValue(
+          text: flat,
+          selection: TextSelection.collapsed(
+            offset: flatCaretDigits.clamp(0, flat.length),
+            affinity: newValue.selection.affinity,
+          ),
+          composing: TextRange.empty,
+        );
+      }
+
+      // Mask was restored: reformat from scratch and map caret by digit index
+      return _reformatFromScratchWithCaret(
+        flatDigits: flat,
+        flatCaretDigits: flatCaretDigits,
+        selectionMeta: newValue,
+      );
+    }
+
+    final mask = _mask;
+    if (mask == null || mask.isEmpty) {
       _resultTextMasked = newValue.text;
       _resultTextArray.set(newValue.text);
       return newValue;
@@ -218,7 +412,7 @@ class CountryInputFormatter implements TextInputFormatter {
       i < min(beforeReplaceStart + beforeReplaceLength, mask.length);
       i++
     ) {
-      if (_maskChars.contains(mask[i]) && currentResultTextLength > 0) {
+      if (_maskCharSet.contains(mask[i]) && currentResultTextLength > 0) {
         currentResultTextLength -= 1;
         if (i < beforeReplaceStart) {
           currentResultSelectionStart += 1;
@@ -233,6 +427,7 @@ class CountryInputFormatter implements TextInputFormatter {
       afterChangeStart,
       afterChangeEnd,
     );
+
     var targetCursorPosition = currentResultSelectionStart;
     if (replacementText.isEmpty) {
       _resultTextArray.removeRange(
@@ -254,7 +449,7 @@ class CountryInputFormatter implements TextInputFormatter {
     if (beforeResultTextLength == 0 && _resultTextArray.length > 1) {
       var prefixLength = 0;
       for (var i = 0; i < mask.length; i++) {
-        if (_maskChars.contains(mask[i])) {
+        if (_maskCharSet.contains(mask[i])) {
           prefixLength = i;
           break;
         }
@@ -285,11 +480,17 @@ class CountryInputFormatter implements TextInputFormatter {
     var maskPos = 0;
     var maskInside = 0;
     var nonMaskedCount = 0;
+
     _resultTextMasked = '';
+
+    // local refs (micro-opt)
+    final maskFilter = _maskFilter;
+    final isLazy = _type == CountryInputCompletionType.lazy;
+    final isEager = _type == CountryInputCompletionType.eager;
 
     while (maskPos < mask.length) {
       final curMaskChar = mask[maskPos];
-      final isMaskChar = _maskChars.contains(curMaskChar);
+      final isMaskChar = _maskCharSet.contains(curMaskChar);
 
       var curTextInRange = curTextPos < _resultTextArray.length;
 
@@ -300,9 +501,10 @@ class CountryInputFormatter implements TextInputFormatter {
           curTextPos -= maskInside;
         }
         maskInside = 0;
+
         while (curTextChar == null && curTextInRange) {
           final potentialTextChar = _resultTextArray[curTextPos];
-          if (_maskFilter?[curMaskChar]?.hasMatch(potentialTextChar) ?? false) {
+          if (maskFilter?[curMaskChar]?.hasMatch(potentialTextChar) ?? false) {
             curTextChar = potentialTextChar;
           } else {
             _resultTextArray.removeAt(curTextPos);
@@ -312,9 +514,7 @@ class CountryInputFormatter implements TextInputFormatter {
             }
           }
         }
-      } else if (!isMaskChar &&
-          !curTextInRange &&
-          type == CountryInputCompletionType.eager) {
+      } else if (!isMaskChar && !curTextInRange && isEager) {
         curTextInRange = true;
       }
 
@@ -336,11 +536,13 @@ class CountryInputFormatter implements TextInputFormatter {
             break;
           }
         } else {
-          _resultTextMasked += mask[maskPos];
+          _resultTextMasked += curMaskChar;
+
           if (!isMaskChar &&
               curTextPos < _resultTextArray.length &&
               curMaskChar == _resultTextArray[curTextPos]) {
-            if (type == CountryInputCompletionType.lazy && lengthAdded <= 1) {
+            if (isLazy && lengthAdded <= 1) {
+              // keep original behavior
             } else {
               maskInside++;
               curTextPos++;
@@ -357,7 +559,7 @@ class CountryInputFormatter implements TextInputFormatter {
           cursorPos = maskPos;
         }
 
-        if (type == CountryInputCompletionType.lazy ||
+        if (isLazy ||
             lengthRemoved > 0 ||
             currentResultSelectionLength > 0 ||
             beforeReplaceLength > 0) {
@@ -376,8 +578,32 @@ class CountryInputFormatter implements TextInputFormatter {
       cursorPos -= nonMaskedCount;
     }
 
+    // overflow => switch to flat (instead of trimming)
     if (_resultTextArray.length > _maskLength) {
-      _resultTextArray.removeRange(_maskLength, _resultTextArray.length);
+      // Enter flat mode and drop the visible mask.
+      _setFlatMode(true);
+
+      // Keep original mask so we can restore it when user deletes extra digits.
+      _savedMask ??= _mask;
+
+      // IMPORTANT:
+      // We DO NOT zero `_maskLength`.
+      // `_maskLength` remains the capacity of the saved mask.
+      _mask = null;
+
+      final flat = _digitsOnly(newValue.text);
+      _resultTextMasked = flat;
+      _resultTextArray.set(flat);
+
+      final caret = newValue.selection.isValid
+          ? _digitsCountBefore(newValue.text, newValue.selection.extentOffset)
+          : flat.length;
+
+      return TextEditingValue(
+        text: flat,
+        selection: TextSelection.collapsed(offset: caret.clamp(0, flat.length)),
+        composing: TextRange.empty,
+      );
     }
 
     final finalCursorPosition = cursorPos < 0
@@ -395,58 +621,88 @@ class CountryInputFormatter implements TextInputFormatter {
     );
   }
 
+  /// Calculate the length of the mask (number of mask characters).
   void _calcMaskLength() {
     _maskLength = 0;
     final mask = _mask;
-    if (mask != null) {
+    if (mask != null && mask.isNotEmpty) {
       for (var i = 0; i < mask.length; i++) {
-        if (_maskChars.contains(mask[i])) {
+        if (_maskCharSet.contains(mask[i])) {
           _maskLength++;
         }
       }
     }
   }
 
+  /// Update the filter and related mask character lists.
   void _updateFilter(Map<String, RegExp> filter) {
     _maskFilter = filter;
-    _maskChars = _maskFilter?.keys.toList(growable: false) ?? [];
+
+    // keep original list for compatibility/debug
+    _maskChars = _maskFilter?.keys.toList(growable: false) ?? const [];
+
+    // set for fast lookup
+    _maskCharSet = _maskChars.isEmpty ? const {} : _maskChars.toSet();
+  }
+
+  /// Set flat mode state and notify UI if needed.
+  void _setFlatMode(bool value) {
+    if (_isFlatMode == value) return;
+    _isFlatMode = value;
+
+    // Notify UI.
+    _onOverflowChanged?.call(value);
+    _overflowNotifier?.value = value;
   }
 }
 
 /// Internal helper class to manage text as a list of symbols.
+///
+/// OPT: caches total length to avoid fold() on each length call.
 class _TextMatcher {
   _TextMatcher() : _symbols = <String>[];
 
-  /// Get the symbol array.
   List<String> get symbols => _symbols;
   final List<String> _symbols;
 
-  /// Get the length of the symbol array.
-  int get length => _symbols.fold(0, (prev, match) => prev + match.length);
+  int _length = 0;
 
-  /// Remove a range of symbols from the array.
-  void removeRange(int start, int end) => _symbols.removeRange(start, end);
+  /// Total character length (O(1)).
+  int get length => _length;
 
-  /// Insert a substring at the specified [start] index.
+  void removeRange(int start, int end) {
+    // Bounds safety is responsibility of caller (same as original).
+    for (var i = start; i < end; i++) {
+      _length -= _symbols[i].length; // usually 1
+    }
+    _symbols.removeRange(start, end);
+  }
+
   void insert(int start, String substring) {
     for (var i = 0; i < substring.length; i++) {
       _symbols.insert(start + i, substring[i]);
+      _length += 1;
     }
   }
 
-  /// Remove a symbol at the specified [index].
-  void removeAt(int index) => _symbols.removeAt(index);
+  void removeAt(int index) {
+    _length -= _symbols[index].length; // usually 1
+    _symbols.removeAt(index);
+  }
 
-  /// Set the symbol array to the characters of the provided [text].
   void set(String text) {
     _symbols.clear();
+    _length = 0;
     for (var i = 0; i < text.length; i++) {
       _symbols.add(text[i]);
+      _length += 1;
     }
   }
 
-  /// Clear the symbol array.
-  void clear() => _symbols.clear();
+  void clear() {
+    _symbols.clear();
+    _length = 0;
+  }
 
   @override
   String toString() => _symbols.join();

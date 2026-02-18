@@ -108,7 +108,7 @@ void showCountryPicker({
   )
   bool useAutofocus = false,
   bool useHaptickFeedback = true,
-  bool useRootNavigator = false,
+  bool useRootNavigator = true,
   bool useSafeArea = true,
   bool? showGroup,
   bool? showSearch,
@@ -143,6 +143,7 @@ void showCountryPicker({
           showSearch: showSearch,
           showPhoneCode: showPhoneCode,
           showWorldWide: showWorldWide,
+          useRootNavigator: useRootNavigator,
           useHaptickFeedback: useHaptickFeedback,
           scrollController: isScrollControlled ? null : scrollController,
         ),

@@ -18,6 +18,8 @@ class CountryPhoneInput extends StatefulWidget {
     this.onChanged,
     this.countryController,
     this.onCountryChanged,
+    this.overflowNotifier,
+    this.onOverflowChanged,
     this.exclude,
     this.favorites,
     this.filter,
@@ -46,6 +48,8 @@ class CountryPhoneInput extends StatefulWidget {
     ValueChanged<String>? onChanged,
     ValueNotifier<Country>? countryController,
     ValueChanged<Country>? onCountryChanged,
+    ValueNotifier<bool>? overflowNotifier,
+    ValueChanged<bool>? onOverflowChanged,
     List<String>? exclude,
     List<String>? favorites,
     List<String>? filter,
@@ -137,6 +141,12 @@ class CountryPhoneInput extends StatefulWidget {
   /// Called when the country is changed.
   final ValueChanged<Country>? onCountryChanged;
 
+  /// Notifier to bind into UI without callback.
+  final ValueNotifier<bool>? overflowNotifier;
+
+  /// Notify UI about overflow (flat mode) state changes.
+  final ValueChanged<bool>? onOverflowChanged;
+
   @override
   State<CountryPhoneInput> createState() => _CountryPhoneInputState();
 }
@@ -163,8 +173,10 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     _countryController.addListener(_onSelectedChanged);
 
     _formater = CountryInputFormatter(
-      mask: _countryController.value.mask,
       filter: {'0': RegExp('[0-9]')},
+      mask: _countryController.value.mask,
+      overflowNotifier: widget.overflowNotifier,
+      onOverflowChanged: widget.onOverflowChanged,
     );
 
     // If the controller has an initial value
@@ -308,22 +320,6 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
   void _onSelect(Country country) {
     if (!mounted) return;
     if (country == _countryController.value) return;
-    /* if (country.mask?.isEmpty ?? true) {
-      ScaffoldMessenger.maybeOf(context)
-        ?..clearSnackBars()
-        ..showSnackBar(
-          SnackBar(
-            backgroundColor: CupertinoDynamicColor.resolve(
-              CupertinoColors.systemRed,
-              context,
-            ),
-            content: const Text(
-              'Phone mask is not defined. Please add issue from github.',
-            ),
-          ),
-        );
-      return;
-    } */
     _formater.clear();
     _phoneController.clear();
     _countryController.value = country;
@@ -354,7 +350,13 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
           ConstrainedBox(
             constraints: constraints,
             child: CupertinoButton(
-              key: const ValueKey<String>('country_picker_button'),
+              key: const ValueKey<String>('country_picker_phone_code'),
+              padding: EdgeInsets.symmetric(horizontal: pickerTheme.padding),
+              color: pickerTheme.onBackgroundColor,
+              borderRadius: BorderRadius.all(
+                Radius.circular(pickerTheme.radius),
+              ),
+              pressedOpacity: .6,
               onPressed: () => showCountryPicker(
                 context: context,
                 exclude: widget.exclude,
@@ -373,12 +375,6 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                 selected: _countryController,
                 onSelect: _onSelect,
               ),
-              padding: EdgeInsets.symmetric(horizontal: pickerTheme.padding),
-              color: pickerTheme.secondaryBackgroundColor,
-              borderRadius: BorderRadius.all(
-                Radius.circular(pickerTheme.radius),
-              ),
-              pressedOpacity: .6,
               child: Center(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -400,11 +396,12 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
             child: ConstrainedBox(
               constraints: constraints,
               child: RepaintBoundary(
+                key: const ValueKey<String>('country_phone_number_background'),
                 child: CustomPaint(
                   painter: _painter,
                   child: Center(
                     child: TextFormField(
-                      key: const ValueKey<String>('country_phone_input'),
+                      key: const ValueKey<String>('country_phone_number'),
                       autofocus: widget.autofocus,
                       controller: _phoneController,
                       inputFormatters: [_formater],
@@ -421,9 +418,8 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                             selected.mask ??
                             localization.phonePlaceholder,
                         hintStyle: textStyle?.copyWith(
-                          color: CupertinoDynamicColor.resolve(
-                            CupertinoColors.placeholderText,
-                            context,
+                          color: pickerTheme.searchTextStyle?.color?.withValues(
+                            alpha: .5,
                           ),
                         ),
                         contentPadding: EdgeInsets.only(
@@ -459,6 +455,8 @@ class CountryPhoneInput$Extended extends CountryPhoneInput {
     super.onChanged,
     super.countryController,
     super.onCountryChanged,
+    super.overflowNotifier,
+    super.onOverflowChanged,
     super.exclude,
     super.favorites,
     super.filter,
@@ -506,7 +504,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
       color: pickerTheme.dividerColor,
     );
     return Material(
-      color: pickerTheme.backgroundColor,
+      color: pickerTheme.onBackgroundColor,
       child: ValueListenableBuilder(
         valueListenable: _countryController,
         builder: (_, selected, _) => Column(
@@ -609,9 +607,8 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                             selected.mask ??
                             localization.phonePlaceholder,
                         hintStyle: defaultTextStyle?.copyWith(
-                          color: CupertinoDynamicColor.resolve(
-                            CupertinoColors.placeholderText,
-                            context,
+                          color: pickerTheme.searchTextStyle?.color?.withValues(
+                            alpha: .5,
                           ),
                           fontWeight: FontWeight.w500,
                         ),
@@ -678,7 +675,7 @@ class _BackgroundPainter extends CustomPainter {
   final ValueNotifier<CountryPickerTheme?> pickerTheme;
 
   /// The color to fill in the background of the rounded rectangle.
-  Color? get color => pickerTheme.value?.secondaryBackgroundColor;
+  Color? get color => pickerTheme.value?.onBackgroundColor;
 
   /// The radius of the rounded corners of the rectangle.
   double? get radius => pickerTheme.value?.radius;

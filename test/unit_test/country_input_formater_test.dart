@@ -11,19 +11,17 @@ void main() => group('CountryInputFormatter -', () {
     expect(formatter.isFill, false);
   });
 
-  test('truncates input longer than mask', () {
+  test('switches to flat mode when input longer than mask', () {
     final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
 
-    // Применим форматирование, введем слишком длинную строку
     final result = formatter.formatEditUpdate(
       TextEditingValue.empty,
       const TextEditingValue(text: '123456789012345'),
     );
 
-    // Ожидаем, что строка будет обрезана до длины маски
-    expect(result.text, '+1 (234) 567-89-01');
-    expect(formatter.getUnmaskedText(), '12345678901');
-    expect(formatter.isFill, true);
+    expect(result.text, '123456789012345'); // flat digits-only
+    expect(formatter.getMask(), isNull); // маска “сброшена”
+    expect(formatter.getUnmaskedText(), '123456789012345');
   });
 
   test('formats input correctly with adjusted mask', () {

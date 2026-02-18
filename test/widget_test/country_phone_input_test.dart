@@ -13,8 +13,8 @@ void main() {
 }
 
 void _$defaultCountryPhoneInputTest() {
-  const buttonKey = ValueKey<String>('country_picker_button');
-  const phoneFieldKey = ValueKey<String>('country_phone_input');
+  const buttonKey = ValueKey<String>('country_picker_phone_code');
+  const phoneFieldKey = ValueKey<String>('country_phone_number');
   group('CountryPhoneInput -', () {
     testWidgets('should use numeric keyboard type', (tester) async {
       await tester.pumpWidget(

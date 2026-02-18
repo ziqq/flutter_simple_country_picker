@@ -1,3 +1,13 @@
+## 0.7.0
+- **BREAKING CHANGES**: `CountryInputFormatter` overflow behavior changed — previously input longer than mask was truncated to mask length; now when input exceeds mask length, mask is reset and the value becomes flat (digits-only)
+- **CHANGED**: `CountryInputFormatter`
+  - Mask symbol lookup from `List.contains()` to `Set.contains()` for `O(1)` checks
+  - `TextMatcher.length` to be cached `(O(1))` instead of calculating via fold() each time
+- **ADDED**: `CountryInputFormatter`
+  - Flat-mode support to `CountryInputFormatter` (digits-only output) when mask length is exceeded
+  - `onOverflowChanged` and `overflowNotifier` to notify when input exceeds mask length
+- **ADDED**: `onBackground` and `onSecodaryBackground` color's to `CountryPickerTheme`
+
 ## 0.6.5
 - **BREAKING CHANGES**: `getAll()` method in `CountryProvider` to `getCountries()`
 - **ADDED**: `mask` field to `CY` - `Cyprus` country
