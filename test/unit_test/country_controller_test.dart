@@ -121,6 +121,59 @@ void _$controllerTest() => group('CountryController -', () {
     final controller = CountryController(provider: provider);
     expect(controller.state.showGroup, isFalse);
   });
+
+  test('getCountries prepends favorites before regular countries', () async {
+    final allCountries = [
+      mockCountry.copyWith(name: 'Russia', countryCode: 'RU'),
+      mockCountry.copyWith(name: 'United States', countryCode: 'US'),
+      mockCountry.copyWith(name: 'Canada', countryCode: 'CA'),
+    ];
+
+    when(
+      provider.getCountries(),
+    ).thenAnswer((_) async => Future.value(allCountries));
+
+    // showPhoneCode: true → no dedup, favorites are prepended before list.
+    controller = CountryController(
+      provider: provider,
+      favorites: ['CA'],
+      showPhoneCode: true,
+    );
+    await controller.getCountries();
+
+    // Canada (favorite) appears first.
+    expect(controller.state.countries.first.countryCode, 'CA');
+    expect(controller.state.countries.length, greaterThanOrEqualTo(3));
+  });
+
+  test(
+    'getCountries deduplicates favorites when showPhoneCode is false',
+    () async {
+      final allCountries = [
+        mockCountry.copyWith(name: 'Russia', countryCode: 'RU'),
+        mockCountry.copyWith(name: 'Canada', countryCode: 'CA'),
+      ];
+
+      when(
+        provider.getCountries(),
+      ).thenAnswer((_) async => Future.value(allCountries));
+
+      // showPhoneCode: false → seenCountryCodes deduplicates
+      controller = CountryController(
+        provider: provider,
+        favorites: ['CA'],
+        showPhoneCode: false,
+      );
+      await controller.getCountries();
+
+      // Canada should appear exactly once (in favorites, deduplicated from main list).
+      final canadaCount = controller.state.countries
+          .where((c) => c.countryCode == 'CA')
+          .length;
+      expect(canadaCount, 1);
+      expect(controller.state.countries.first.countryCode, 'CA');
+    },
+  );
 });
 
 void _$stateTest() => group('CountryState -', () {

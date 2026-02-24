@@ -131,4 +131,181 @@ void main() => group('CountryPickerTheme -', () {
     expect(defaultTheme.textStyle?.fontSize, 17.0);
     expect(defaultTheme.flagSize, 22.0);
   });
+
+  testWidgets('CountryPickerTheme.of falls back to defaults when no ancestor', (
+    tester,
+  ) async {
+    late CountryPickerTheme resolved;
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        builder: (context) {
+          resolved = CountryPickerTheme.of(context);
+          return const Scaffold(body: SizedBox.shrink(key: _key));
+        },
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(resolved.flagSize, 22.0);
+    expect(resolved.padding, isPositive);
+  });
+
+  testWidgets(
+    'CountryPickerTheme.resolve with explicit other overrides theme values',
+    (tester) async {
+      const customAccent = Color(0xFFFF0000);
+      late CountryPickerTheme resolved;
+
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          builder: (context) {
+            final other = CountryPickerTheme(
+              accentColor: customAccent,
+              backgroundColor: Colors.white,
+              barrierColor: Colors.black,
+              dividerColor: Colors.grey,
+              secondaryBackgroundColor: Colors.blueAccent,
+              textStyle: const TextStyle(fontSize: 14),
+              searchTextStyle: const TextStyle(fontSize: 13),
+              flagSize: 28,
+              padding: 12,
+              indent: 8,
+              radius: 16,
+              inputDecoration: const InputDecoration(),
+            );
+            resolved = CountryPickerTheme.resolve(context, other);
+            return const Scaffold(body: SizedBox.shrink(key: _key));
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(resolved.accentColor, customAccent);
+      expect(resolved.flagSize, 28.0);
+      expect(resolved.padding, 12.0);
+    },
+  );
+
+  testWidgets(
+    'InheritedCountryPickerTheme.updateShouldNotify notifies on data change',
+    (tester) async {
+      final theme1 = CountryPickerTheme(
+        accentColor: CupertinoColors.systemBlue,
+        backgroundColor: Colors.white,
+        barrierColor: Colors.black,
+        dividerColor: Colors.grey,
+        secondaryBackgroundColor: Colors.blueAccent,
+        textStyle: const TextStyle(fontSize: 16),
+        searchTextStyle: const TextStyle(fontSize: 14),
+        flagSize: 25,
+        padding: 10,
+        indent: 10,
+        radius: 10,
+        inputDecoration: const InputDecoration(),
+      );
+      final theme2 = theme1.copyWith(flagSize: 30);
+
+      var rebuilds = 0;
+
+      Widget build(CountryPickerTheme themeData) => createWidgetUnderTest(
+        builder: (context) => InheritedCountryPickerTheme(
+          data: themeData,
+          child: Builder(
+            builder: (ctx) {
+              InheritedCountryPickerTheme.maybeOf(ctx); // subscribe
+              rebuilds++;
+              return const Scaffold(body: SizedBox.shrink(key: _key));
+            },
+          ),
+        ),
+      );
+
+      await tester.pumpWidget(build(theme1));
+      await tester.pumpAndSettle();
+      final countAfterFirst = rebuilds;
+
+      await tester.pumpWidget(build(theme2));
+      await tester.pumpAndSettle();
+
+      // The theme changed → updateShouldNotify returned true → child rebuilt.
+      expect(rebuilds, greaterThan(countAfterFirst));
+    },
+  );
+
+  testWidgets('InheritedCountryPickerTheme.wrap produces same-data wrapper', (
+    tester,
+  ) async {
+    final themeData = CountryPickerTheme(
+      accentColor: CupertinoColors.systemRed,
+      backgroundColor: Colors.white,
+      barrierColor: Colors.black,
+      dividerColor: Colors.grey,
+      secondaryBackgroundColor: Colors.blueAccent,
+      textStyle: const TextStyle(fontSize: 16),
+      searchTextStyle: const TextStyle(fontSize: 14),
+      flagSize: 25,
+      padding: 10,
+      indent: 10,
+      radius: 10,
+      inputDecoration: const InputDecoration(),
+    );
+
+    late BuildContext capturedCtx;
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        builder: (context) {
+          capturedCtx = context;
+          return const Scaffold(body: SizedBox.shrink(key: _key));
+        },
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final inherited = InheritedCountryPickerTheme(
+      data: themeData,
+      child: const SizedBox.shrink(),
+    );
+    final wrapped = inherited.wrap(capturedCtx, const Text('hello'));
+
+    expect(wrapped, isA<InheritedCountryPickerTheme>());
+    expect((wrapped as InheritedCountryPickerTheme).data, themeData);
+  });
+
+  testWidgets('CountryPickerTheme.maybeOf reads from ThemeData.extensions', (
+    tester,
+  ) async {
+    final themeExtension = CountryPickerTheme(
+      accentColor: CupertinoColors.systemGreen,
+      backgroundColor: Colors.white,
+      barrierColor: Colors.black,
+      dividerColor: Colors.grey,
+      secondaryBackgroundColor: Colors.blueAccent,
+      textStyle: const TextStyle(fontSize: 16),
+      searchTextStyle: const TextStyle(fontSize: 14),
+      flagSize: 26,
+      padding: 10,
+      indent: 10,
+      radius: 10,
+      inputDecoration: const InputDecoration(),
+    );
+
+    late CountryPickerTheme? resolved;
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        builder: (context) => Theme(
+          data: Theme.of(context).copyWith(extensions: [themeExtension]),
+          child: Builder(
+            builder: (ctx) {
+              resolved = CountryPickerTheme.maybeOf(ctx);
+              return const Scaffold(body: SizedBox.shrink(key: _key));
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(resolved, isNotNull);
+    expect(resolved!.accentColor, CupertinoColors.systemGreen);
+    expect(resolved!.flagSize, 26.0);
+  });
 });

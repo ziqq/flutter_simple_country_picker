@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -145,5 +146,173 @@ void main() => group('CountryPickerTheme -', () {
 
     expect(theme1, equals(theme2));
     expect(theme1.hashCode, equals(theme2.hashCode));
+  });
+
+  test('lerp with identical other returns same instance', () {
+    final theme = CountryPickerTheme(
+      accentColor: CupertinoColors.systemRed,
+      backgroundColor: Colors.red,
+      barrierColor: Colors.blue,
+      dividerColor: Colors.green,
+      secondaryBackgroundColor: Colors.yellow,
+      textStyle: const TextStyle(fontSize: 16),
+      searchTextStyle: const TextStyle(fontSize: 14),
+      flagSize: 25,
+      padding: 10,
+      indent: 10,
+      radius: 10,
+      inputDecoration: const InputDecoration(),
+    );
+    expect(identical(theme.lerp(theme, 0.5), theme), isTrue);
+  });
+
+  test('lerp with non-CountryPickerTheme other returns this', () {
+    final theme = CountryPickerTheme(
+      accentColor: CupertinoColors.systemRed,
+      backgroundColor: Colors.red,
+      barrierColor: Colors.blue,
+      dividerColor: Colors.green,
+      secondaryBackgroundColor: Colors.yellow,
+      textStyle: const TextStyle(fontSize: 16),
+      searchTextStyle: const TextStyle(fontSize: 14),
+      flagSize: 25,
+      padding: 10,
+      indent: 10,
+      radius: 10,
+      inputDecoration: const InputDecoration(),
+    );
+    // lerp(null, t) → other is! CountryPickerTheme → returns this
+    expect(identical(theme.lerp(null, 0.5), theme), isTrue);
+  });
+
+  test('equality returns false for non-CountryPickerTheme object', () {
+    final theme = CountryPickerTheme(
+      accentColor: CupertinoColors.systemRed,
+      backgroundColor: Colors.red,
+      barrierColor: Colors.blue,
+      dividerColor: Colors.green,
+      secondaryBackgroundColor: Colors.yellow,
+      textStyle: const TextStyle(fontSize: 16),
+      searchTextStyle: const TextStyle(fontSize: 14),
+      flagSize: 25,
+      padding: 10,
+      indent: 10,
+      radius: 10,
+      inputDecoration: const InputDecoration(),
+    );
+    // ignore: unrelated_type_equality_checks
+    expect(theme == Object(), isFalse);
+  });
+
+  test('equality returns false when individual fields differ', () {
+    final base = CountryPickerTheme(
+      accentColor: CupertinoColors.systemRed,
+      backgroundColor: Colors.red,
+      onBackgroundColor: Colors.black,
+      barrierColor: Colors.blue,
+      dividerColor: Colors.green,
+      secondaryBackgroundColor: Colors.yellow,
+      onSecondaryBackgroundColor: Colors.purple,
+      textStyle: const TextStyle(fontSize: 16),
+      searchTextStyle: const TextStyle(fontSize: 14),
+      flagSize: 25,
+      padding: 10,
+      indent: 10,
+      radius: 10,
+      inputDecoration: const InputDecoration(),
+    );
+
+    expect(
+      base == base.copyWith(accentColor: CupertinoColors.systemBlue),
+      isFalse,
+    );
+    expect(base == base.copyWith(backgroundColor: Colors.blue), isFalse);
+    expect(base == base.copyWith(onBackgroundColor: Colors.white), isFalse);
+    expect(base == base.copyWith(dividerColor: Colors.purple), isFalse);
+    expect(
+      base == base.copyWith(onSecondaryBackgroundColor: Colors.red),
+      isFalse,
+    );
+    expect(
+      base == base.copyWith(secondaryBackgroundColor: Colors.green),
+      isFalse,
+    );
+    expect(base == base.copyWith(flagSize: 30), isFalse);
+    expect(base == base.copyWith(padding: 20), isFalse);
+    expect(base == base.copyWith(indent: 20), isFalse);
+    expect(base == base.copyWith(radius: 20), isFalse);
+  });
+
+  test('copyWith preserves optional fields (onBackgroundColor etc.)', () {
+    final base = CountryPickerTheme(
+      accentColor: CupertinoColors.systemRed,
+      backgroundColor: Colors.red,
+      onBackgroundColor: Colors.black,
+      barrierColor: Colors.blue,
+      dividerColor: Colors.green,
+      secondaryBackgroundColor: Colors.yellow,
+      onSecondaryBackgroundColor: Colors.purple,
+      textStyle: const TextStyle(fontSize: 16),
+      searchTextStyle: const TextStyle(fontSize: 14),
+      secondaryTextStyle: const TextStyle(fontSize: 12),
+      flagSize: 25,
+      padding: 10,
+      indent: 10,
+      radius: 10,
+      inputDecoration: const InputDecoration(),
+      inputHeight: 56,
+    );
+
+    final updated = base.copyWith(accentColor: CupertinoColors.systemBlue);
+    expect(updated.onBackgroundColor, Colors.black);
+    expect(updated.onSecondaryBackgroundColor, Colors.purple);
+    expect(updated.secondaryTextStyle?.fontSize, 12.0);
+    expect(updated.inputHeight, 56.0);
+  });
+
+  test('debugFillProperties lists all expected property names', () {
+    final theme = CountryPickerTheme(
+      accentColor: CupertinoColors.systemRed,
+      backgroundColor: Colors.red,
+      onBackgroundColor: Colors.black,
+      barrierColor: Colors.blue,
+      dividerColor: Colors.green,
+      secondaryBackgroundColor: Colors.yellow,
+      onSecondaryBackgroundColor: Colors.purple,
+      textStyle: const TextStyle(fontSize: 16),
+      searchTextStyle: const TextStyle(fontSize: 14),
+      secondaryTextStyle: const TextStyle(fontSize: 12),
+      flagSize: 25,
+      padding: 10,
+      indent: 10,
+      radius: 10,
+      inputDecoration: const InputDecoration(),
+    );
+
+    final builder = DiagnosticPropertiesBuilder();
+    theme.debugFillProperties(builder);
+    final names = builder.properties.map((p) => p.name).toList();
+
+    expect(
+      names,
+      containsAll(<String>[
+        'accentColor',
+        'backgroundColor',
+        'onBackgroundColor',
+        'barrierColor',
+        'dividerColor',
+        'inputDecoration',
+        'inputHeight',
+        'secondaryBackgroundColor',
+        'onSecondaryBackgroundColor',
+        'textStyle',
+        'secondaryTextStyle',
+        'searchTextStyle',
+        'flagSize',
+        'padding',
+        'indent',
+        'radius',
+      ]),
+    );
   });
 });

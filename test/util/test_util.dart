@@ -12,6 +12,7 @@ Widget createWidgetUnderTest({
 }) => MaterialApp(
   locale: locale,
   supportedLocales: CountryLocalizations.supportedLocales,
+  theme: ThemeData.light().copyWith(splashFactory: NoSplash.splashFactory),
   localizationsDelegates: const <LocalizationsDelegate<Object?>>[
     CountryLocalizations.delegate,
     GlobalWidgetsLocalizations.delegate,

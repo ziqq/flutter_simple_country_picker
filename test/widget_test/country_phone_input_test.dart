@@ -8,6 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 import '../util/test_util.dart';
 
 void main() {
+  setUpAll(WidgetsFlutterBinding.ensureInitialized);
+
   _$defaultCountryPhoneInputTest();
   _$extendedCountryPhoneInputTest();
 }
@@ -390,6 +392,117 @@ void _$defaultCountryPhoneInputTest() {
         // 3. Pump and verify leading 8 is removed
         expect(find.textContaining('8'), findsNothing);
       });
+    });
+
+    group('countryController -', () {
+      testWidgets(
+        'should respond to external countryController value changes',
+        (tester) async {
+          final ruCountry = getCountryByISO2asJSON('RU');
+          final usCountry = getCountryByISO2asJSON('US');
+          final controller = ValueNotifier<Country>(ruCountry);
+
+          await tester.pumpWidget(
+            createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (_) => Scaffold(
+                body: CountryPhoneInput(countryController: controller),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          expect(find.textContaining('+7'), findsOneWidget);
+
+          // Change the externally managed countryController value.
+          controller.value = usCountry;
+          await tester.pumpAndSettle();
+
+          expect(find.textContaining('+1'), findsOneWidget);
+
+          controller.dispose();
+        },
+      );
+
+      testWidgets(
+        'didUpdateWidget: null → external countryController triggers dispose of previous',
+        (tester) async {
+          final ruCountry = getCountryByISO2asJSON('RU');
+          final usCountry = getCountryByISO2asJSON('US');
+          final externalController = ValueNotifier<Country>(usCountry);
+
+          // First render: no external countryController (null → internal created).
+          await tester.pumpWidget(
+            createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (_) =>
+                  Scaffold(body: CountryPhoneInput(initialCountry: ruCountry)),
+            ),
+          );
+          await tester.pumpAndSettle();
+          expect(find.textContaining('+7'), findsOneWidget);
+
+          // Second render: pass external countryController.
+          // This exercises oldWidget.countryController == null path.
+          await tester.pumpWidget(
+            createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (_) => Scaffold(
+                body: CountryPhoneInput(countryController: externalController),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          // Now shows US (+1).
+          expect(find.textContaining('+1'), findsOneWidget);
+
+          externalController.dispose();
+        },
+      );
+    });
+
+    group('onCountryChanged -', () {
+      testWidgets(
+        'onCountryChanged is called and phone code updates when different country is selected',
+        (tester) async {
+          Country? changed;
+
+          await tester.pumpWidget(
+            createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (_) => Scaffold(
+                body: CountryPhoneInput(
+                  initialCountry: getCountryByISO2asJSON('RU'),
+                  // Limit list to RU + GB so that GB tile is easy to tap.
+                  filter: const ['RU', 'GB'],
+                  onCountryChanged: (c) => changed = c,
+                ),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          expect(find.textContaining('+7'), findsOneWidget);
+
+          // Open the country picker.
+          await tester.tap(find.byType(CupertinoButton));
+          await tester.pumpAndSettle();
+
+          expect(find.byType(BottomSheet), findsOneWidget);
+
+          // Tap on United Kingdom tile (e164Key = '44-GB-0').
+          const gbKey = ValueKey<String>('44-GB-0');
+          expect(find.byKey(gbKey), findsOneWidget);
+          await tester.tap(find.byKey(gbKey));
+          await tester.pumpAndSettle();
+
+          // Phone code should have changed to +44.
+          expect(find.textContaining('+44'), findsOneWidget);
+          expect(changed, isNotNull);
+          expect(changed!.phoneCode, '44');
+        },
+      );
     });
   });
 }
