@@ -3,8 +3,7 @@
 
 [![Dart SDK Version](https://badgen.net/pub/sdk-version/flutter_simple_country_picker)](https://pub.dev/packages/flutter_simple_country_picker)
 [![Pub Version](https://img.shields.io/pub/v/flutter_simple_country_picker)](https://pub.dev/packages/flutter_simple_country_picker)
-[![Actions Status](https://github.com/ziqq/flutter_simple_country_picker/actions/workflows/checkout.yml/badge.svg?branch=master)](https://github.com/ziqq/flutter_simple_country_picker/actions/workflows/checkout.yml)
-[![Tests Passed](https://camo.githubusercontent.com/acf27a132bef86c9cd722078b5c6cd66762ec77873aec8323703da46b55431ce/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f74657374732d3130372532307061737365642d73756363657373)](https://camo.githubusercontent.com/acf27a132bef86c9cd722078b5c6cd66762ec77873aec8323703da46b55431ce/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f74657374732d3130372532307061737365642d73756363657373)
+[![Actions Status](https://github.com/ziqq/flutter_simple_country_picker/actions/workflows/checkout.yml/badge.svg?branch=main)](https://github.com/ziqq/flutter_simple_country_picker/actions/workflows/checkout.yml)
 [![codecov](https://codecov.io/gh/ziqq/flutter_simple_country_picker/graph/badge.svg?token=fpn56ea0L8)](https://codecov.io/gh/ziqq/flutter_simple_country_picker)
 [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 [![Style: flutter lints](https://img.shields.io/badge/style-flutter__lints-blue)](https://pub.dev/packages/flutter_lints)
@@ -12,7 +11,7 @@
 <!-- [![GitHub stars](https://img.shields.io/github/stars/ziqq/flutter_simple_country_picker?style=social)](https://github.com/ziqq/flutter_simple_country_picker/) -->
 
 
-<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_full_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_full_dark.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_adaptive_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_adaptive_dark.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_filtered_light.png" width="385px">  <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_filtered_dark.png" width="385px">
+<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_full_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_full_dark.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_adaptive_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_adaptive_dark.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_filtered_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_filtered_dark.png" width="385px">
 
 <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/macos_preview_light.png" width="770px">
 <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/macos_preview_dark.png" width="770px">
@@ -20,30 +19,31 @@
 <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/web_preview_dark.png" width="770px">
 
 
-##  Description
-The Flutter package that provides an easy-to-use country selection widget. It allows users to select a country from a comprehensive list of countries, making it simple to integrate country picking functionality into your Flutter applications. The package supports Android, iOS, and web platforms, and offers customization options for fonts and styles.
+## Description
+
+An easy-to-use country selection widget for Flutter. Allows users to select a country from a comprehensive list. Supports **Android**, **iOS**, **macOS**, **Web**, **Windows** and **Linux** platforms. Includes a phone-number input widget with automatic mask formatting, adaptive bottom sheet, theme customization, and 35+ locales.
 
 
 ## Getting Started
- Add the package to your pubspec.yaml:
 
- ```yaml
- flutter_simple_country_picker: <version>
- ```
+Add the package to your `pubspec.yaml`:
+
+```yaml
+flutter_simple_country_picker: ^latest
+```
+
+Import the library in your Dart file:
+
+```dart
+import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+```
 
 
-## Installation
- In your dart file, import the library:
+## Setup: Localizations
 
- ```Dart
- import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
- ```
+Add `CountryLocalizations.delegate` to your app's `localizationsDelegates` and list the locales you want to support.
 
-
-## Example
-Add the `CountryLocalizations.delegate` in the list of your app delegates. Set supported locales [Locale('ru'), Locale('en')]. And set your locale `ru` or `en`.
-
-```Dart
+```dart
 MaterialApp(
   locale: const Locale('en'),
   supportedLocales: const <Locale>[
@@ -51,74 +51,215 @@ MaterialApp(
     Locale('ru'),
   ],
   localizationsDelegates: [
-    /// Add [CountryLocalizations] in app [localizationsDelegates]
     CountryLocalizations.delegate,
-
     GlobalWidgetsLocalizations.delegate,
     GlobalMaterialLocalizations.delegate,
     GlobalCupertinoLocalizations.delegate,
   ],
-  home: HomePage(),
+  home: const HomePage(),
 );
 ```
 
-Example usage of the `showCountryPicker` function:
+Supported locales: `ar`, `bg`, `ca`, `zh` (CN/TW), `cs`, `da`, `de`, `en`, `es`, `et`, `fa`, `fr`, `el`, `he`, `hr`, `ht`, `id`, `it`, `ja`, `ko`, `ku`, `lt`, `lv`, `nb`, `nl`, `nn`, `np`, `pl`, `pt`, `ro`, `ru`, `sk`, `tr`, `uk`.
 
-```Dart
+
+## Usage
+
+### showCountryPicker
+
+Opens a bottom sheet with a scrollable/searchable country list.
+
+```dart
 showCountryPicker(
   context: context,
-  exclude: ['RU', 'EN'],
-  onSelect: (country) {
-    print('CountryPicker | select new country: ${country.displayName}');
+  exclude: const ['RU'],
+  favorites: const ['US', 'GB'],
+  onSelect: (Country country) {
+    debugPrint('Selected: ${country.displayName}');
   },
   whenComplete: () {
-    print('CountryPicker | dismissed');
+    debugPrint('Picker dismissed');
   },
 );
 ```
 
-Optional argumets of the `showCountryPicker` function:
+#### Parameters
 
-| Argument            | Description                                                                           |
-|---------------------|---------------------------------------------------------------------------------------|
-| `exclude`           | List of countries to exclude from the list.                                           |
-| `favorites`          | List of countries to show at the top of the list.                                     |
-| `filter`            | List of countries to filter the list.                                                 |
-| `selected`          | Selected country notifier. Used to notify listeners when a country is selected.       |
-| `adaptive`          | Can be used to show iOS style bottom sheet on iOS platform.                           |
-| `autofocus`         | Can be used to initially expand virtual keyboard.                                     |
-| `isDismissible`     | Allows the user to close the modal by swiping it down.                                |
-| `isScrollControlled`| Controls the scrolling behavior of the modal window.                                  |
-| `showSearch`        | Enables or disables the search bar.                                                   |
-| `showPhoneCode`     | Displays the phone code before the country name.                                      |
-| `showWorldWide`     | Shows the "World Wide" option at the beginning of the list.                           |
-| `useHaptickFeedback`| Enables haptic feedback.                                                              |
-| `useSafeArea`       | Enables the safe area for the modal window.                                           |
-| `onSelect`          | Callback when the select a country.                                                   |
-| `whenComplete`      | Callback when the `CountryPicker` is dismissed, whether a country is selected or not. |
+| Parameter              | Type                    | Default | Description                                                                         |
+|------------------------|-------------------------|---------|-------------------------------------------------------------------------------------|
+| `context`              | `BuildContext`          | —       | **Required.** Build context.                                                        |
+| `onSelect`             | `SelectCountryCallback?`| `null`  | Called when a country is selected.                                                  |
+| `whenComplete`         | `VoidCallback?`         | `null`  | Called when the picker is dismissed, regardless of selection.                       |
+| `exclude`              | `List<String>?`         | `null`  | ISO2 codes of countries to exclude.                                                 |
+| `favorites`            | `List<String>?`         | `null`  | ISO2 codes of countries to pin at the top.                                          |
+| `filter`               | `List<String>?`         | `null`  | ISO2 codes to show exclusively. Cannot be combined with `exclude`.                  |
+| `selected`             | `SelectedCountry?`      | `null`  | Notifier holding the pre-selected country.                                          |
+| `expand`               | `bool`                  | `false` | Expand the bottom sheet to full height.                                             |
+| `adaptive`             | `bool`                  | `false` | Uses a Cupertino-style modal on iOS.                                                |
+| `autofocus`            | `bool`                  | `false` | Automatically focuses the search field.                                             |
+| `isDismissible`        | `bool`                  | `true`  | Whether the sheet can be dismissed by tapping the barrier.                          |
+| `isScrollControlled`   | `bool`                  | `true`  | Controls scroll behavior of the modal.                                              |
+| `shouldCloseOnSwipeDown`| `bool`                 | `false` | Closes the sheet on swipe-down gesture.                                             |
+| `showPhoneCode`        | `bool`                  | `false` | Displays the country phone code in the list.                                        |
+| `showWorldWide`        | `bool`                  | `false` | Shows a "World Wide" entry at the top.                                              |
+| `showGroup`            | `bool?`                 | `null`  | Groups countries by their first letter.                                             |
+| `showSearch`           | `bool?`                 | `null`  | Shows or hides the search bar.                                                      |
+| `useHaptickFeedback`   | `bool`                  | `true`  | Enables haptic feedback on selection.                                               |
+| `useRootNavigator`     | `bool`                  | `true`  | Uses the root navigator to display the sheet above all other routes.                |
+| `useSafeArea`          | `bool`                  | `true`  | Wraps the sheet in a `SafeArea`.                                                    |
+| `initialChildSize`     | `double?`               | `null`  | Initial fractional height of the draggable sheet.                                   |
+| `minChildSize`         | `double?`               | `null`  | Minimum fractional height of the draggable sheet.                                   |
 
 
-## All countries list
-To view a complete list of countries, please refer to the [All countries list](https://github.com/ziqq/flutter_simple_country_picker/wiki/All-Countries-list).
+### CountryPhoneInput
+
+A ready-made phone-number text field with an embedded country flag/code selector and automatic mask formatting.
+
+```dart
+CountryPhoneInput(
+  initialCountry: Country.ru(),
+  placeholder: 'Phone number',
+  showPhoneCode: true,
+  onChanged: (String value) {
+    debugPrint('Phone: $value');
+  },
+  onCountryChanged: (Country country) {
+    debugPrint('Country: ${country.displayName}');
+  },
+);
+```
+
+Use `CountryPhoneInput.extended` for additional configuration (overflow notifiers, custom scroll sizes, etc.).
+
+
+### CountryPhoneController
+
+An `extension type` over `ValueNotifier<String>` that manages the phone number state with helpers for extracting the country ISO2 code and raw subscriber number.
+
+```dart
+// Create with an initial value
+final controller = CountryPhoneController.apply('+7 123 456 78 90');
+
+print(controller.phone);       // +71234567890
+print(controller.number);      // 1234567890
+print(controller.countryCode); // RU
+
+// Or start empty
+final emptyController = CountryPhoneController.empty();
+```
+
+Pass the controller to `CountryPhoneInput`:
+
+```dart
+CountryPhoneInput(
+  controller: controller,
+);
+```
+
+
+### CountryInputFormatter
+
+A `TextInputFormatter` that formats input according to a phone mask. Supports `lazy` (default) and `eager` completion modes. When the input exceeds the mask length, the formatter switches to flat mode (digits only) and fires `onOverflowChanged`.
+
+```dart
+CountryInputFormatter(
+  mask: '000 000-00-00',
+  onOverflowChanged: (bool isOverflow) {
+    debugPrint('Overflow: $isOverflow');
+  },
+)
+```
+
+| Symbol | Matches       |
+|--------|---------------|
+| `0`    | digit `[0-9]` |
+| `#`    | digit `[0-9]` |
+| `A`    | digit `[0-9]` |
+
+
+### CountryScope
+
+An `InheritedWidget` that pre-loads and provides the country list to its subtree, avoiding repeated async loading.
+
+```dart
+CountryScope(
+  exclude: const ['RU'],
+  child: MyApp(),
+)
+```
+
+Access from descendants:
+
+```dart
+// Get the controller
+final controller = CountryScope.of(context);
+
+// Get the list of countries
+final countries = CountryScope.countriesOf(context);
+
+// Look up a country by ISO2 code
+final country = CountryScope.getCountryByCode(context, 'US');
+```
+
+
+### CountryPickerTheme
+
+A `ThemeExtension` for full visual customization. Register it in your `MaterialApp` theme:
+
+```dart
+MaterialApp(
+  theme: ThemeData(
+    extensions: [
+      CountryPickerTheme(
+        backgroundColor: Colors.white,
+        onBackgroundColor: Colors.black87,
+        secondaryBackgroundColor: Colors.grey.shade100,
+        onSecondaryBackgroundColor: Colors.black54,
+        accentColor: Colors.blue,
+        barrierColor: Colors.black54,
+        dividerColor: Colors.grey.shade300,
+        textStyle: const TextStyle(fontSize: 16),
+        secondaryTextStyle: const TextStyle(fontSize: 13),
+        searchTextStyle: const TextStyle(fontSize: 14),
+        flagSize: 22,
+        inputHeight: 56,
+        padding: 16,
+        indent: 10,
+        radius: 12,
+      ),
+    ],
+  ),
+);
+```
+
+
+## All Countries List
+
+See the [All Countries List](https://github.com/ziqq/flutter_simple_country_picker/wiki/All-Countries-list) on the wiki.
 
 
 ## Changelog
-Refer to the [Changelog](https://github.com/ziqq/flutter_simple_country_picker/blob/master/CHANGELOG.md) to get all release notes.
+
+See [CHANGELOG.md](https://github.com/ziqq/flutter_simple_country_picker/blob/main/CHANGELOG.md) for all release notes.
 
 
 ## Maintainers
+
 [Anton Ustinoff (ziqq)](https://github.com/ziqq)
 
 
 ## Funding
-If you want to support the development of our library, there are several ways you can do it:
+
+If you want to support the development of this library:
 - [Buy me a coffee](https://www.buymeacoffee.com/ziqq)
 - [Subscribe through Boosty](https://boosty.to/ziqq)
 
 
 ## License
-[MIT](https://github.com/ziqq/flutter_simple_country_picker/blob/master/LICENSE)
+
+[MIT](https://github.com/ziqq/flutter_simple_country_picker/blob/main/LICENSE)
 
 
 ## Coverage
+
 <img src="https://codecov.io/gh/ziqq/flutter_simple_country_picker/graphs/sunburst.svg?token=fpn56ea0L8" width="375" />
