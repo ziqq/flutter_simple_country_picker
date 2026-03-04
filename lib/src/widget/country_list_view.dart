@@ -182,63 +182,66 @@ class _CountriesListViewState extends State<CountryListView> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         // --- Search bar --- //
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: pickerTheme.secondaryBackgroundColor,
+        ConstrainedBox(
+          constraints: const BoxConstraints(
+            minHeight: kToolbarHeight - 1, // Fix on border height
+            maxHeight: kToolbarHeight - 1, // Fix on border height
           ),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: pickerTheme.padding,
-              vertical: pickerTheme.padding / 2,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: pickerTheme.secondaryBackgroundColor,
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              spacing: pickerTheme.indent,
-              children: <Widget>[
-                // --- Search field --- //
-                Expanded(
-                  child: CupertinoSearchTextField(
-                    autofocus: widget.autofocus || widget.useAutofocus,
-                    controller: _controller.search,
-                    onSuffixTap: _controller.search?.clear,
-                    placeholder: localization.searchPlaceholder,
-                    style: pickerTheme.textStyle?.copyWith(height: 1.3),
-                    placeholderStyle: pickerTheme.textStyle?.copyWith(
-                      color: pickerTheme.searchTextStyle?.color?.withValues(
-                        alpha: .5,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: pickerTheme.padding),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: pickerTheme.indent,
+                children: <Widget>[
+                  // --- Search field --- //
+                  Expanded(
+                    child: CupertinoSearchTextField(
+                      autofocus: widget.autofocus || widget.useAutofocus,
+                      controller: _controller.search,
+                      onSuffixTap: _controller.search?.clear,
+                      placeholder: localization.searchPlaceholder,
+                      style: pickerTheme.textStyle?.copyWith(height: 1.3),
+                      placeholderStyle: pickerTheme.textStyle?.copyWith(
+                        color: pickerTheme.searchTextStyle?.color?.withValues(
+                          alpha: .5,
+                        ),
+                        height: 1.3,
                       ),
-                      height: 1.3,
-                    ),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(pickerTheme.radius),
-                    ),
-                    backgroundColor: isDark
-                        ? pickerTheme.backgroundColor?.withValues(
-                            alpha: widget.adaptive ? 1 : .5,
-                          )
-                        : null,
-                    suffixInsets: EdgeInsetsDirectional.only(
-                      end: pickerTheme.indent / 2,
-                    ),
-                    prefixInsets: EdgeInsetsDirectional.only(
-                      start: pickerTheme.padding / 2,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(pickerTheme.radius),
+                      ),
+                      backgroundColor: isDark
+                          ? pickerTheme.backgroundColor?.withValues(
+                              alpha: widget.adaptive ? 1 : .5,
+                            )
+                          : null,
+                      suffixInsets: EdgeInsetsDirectional.only(
+                        end: pickerTheme.indent / 2,
+                      ),
+                      prefixInsets: EdgeInsetsDirectional.only(
+                        start: pickerTheme.padding / 2,
+                      ),
                     ),
                   ),
-                ),
 
-                // --- Cancel button --- //
-                CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  sizeStyle: CupertinoButtonSize.small,
-                  onPressed: pop,
-                  child: Text(
-                    localization.cancelButton,
-                    style: pickerTheme.textStyle?.copyWith(
-                      color: pickerTheme.accentColor,
+                  // --- Cancel button --- //
+                  CupertinoButton(
+                    sizeStyle: CupertinoButtonSize.small,
+                    padding: EdgeInsets.zero,
+                    onPressed: pop,
+                    child: Text(
+                      localization.cancelButton,
+                      style: pickerTheme.textStyle?.copyWith(
+                        color: pickerTheme.accentColor,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

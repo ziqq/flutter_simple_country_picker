@@ -3,6 +3,7 @@
 - **BREAKING CHANGES**: `CountryLocalizations` is now an `abstract class` — previously `final class`; it can now be extended to provide custom or additional translations
 - **BREAKING CHANGES**: `CountryLocalizations()` constructor no longer accepts a `Locale` argument — the `locale` field has been removed; use `Localizations.localeOf(context)` in your own code if the locale is needed
 - **BREAKING CHANGES**: `CountryLocalizations.of()` no longer throws `ArgumentError` when no delegate is found — falls back to English (`CountryLocalizationsEn`)
+- **DEPRECATED**: `CountryLocalizations.countryNameRegExp` — use `getFormatedCountryNameByCode` instead
 - **CHANGED**: `CountryLocalizations` — complete internal rewrite following the Flutter SDK localization pattern:
   - Each supported language is now a concrete `final class CountryLocalizationsXx extends CountryLocalizations`
   - Country name maps moved from shared module-level variables to per-class `const Map<String, String> _names`
@@ -16,7 +17,7 @@
   - `String? getFormatedCountryNameByCode(String countryCode)` concrete method — returns the country name with collapsed whitespace
   - Unit tests covering all 36 locales, delegate behaviour, fallback, and content correctness (`test/unit_test/country_localizations_test.dart`)
   - Widget tests exercising `CountryLocalizations.of()` inside a widget tree for every locale (`test/widget_test/country_localizations_test.dart`)
-- **DEPRECATED**: `CountryLocalizations.countryNameRegExp` — use `getFormatedCountryNameByCode` instead
+  - **FIXED**: The height of the search field in the "CountryListView" to now take into the height of the bottom border of the app bar, which is 1 pixel, so the total height of the search field is now 56 pixels instead of 55 pixels
 
 ## 0.7.0
 - **BREAKING CHANGES**: `CountryInputFormatter` overflow behavior changed — previously input longer than mask was truncated to mask length; now when input exceeds mask length, mask is reset and the value becomes flat (digits-only)
