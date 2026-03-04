@@ -1,8 +1,31 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
+import 'package:meta/meta.dart';
 
-/// Hebrew country names
+/// {@template countryLocalizationsHe}
+/// Hebrew localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> he = {
+final class CountryLocalizationsHe extends CountryLocalizations {
+  /// {@macro countryLocalizationsHe}
+  const CountryLocalizationsHe();
+
+  @override
+  String get cancelButton => 'ביטול';
+
+  @override
+  String get phonePlaceholder => 'מספר טלפון';
+
+  @override
+  String get searchPlaceholder => 'חיפוש';
+
+  @override
+  String get selectCountryLabel => 'בחר מדינה';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': 'אפגניסטאן',
   'AB': 'אבחזיה',
   'AX': 'אולאנד',
@@ -251,8 +274,4 @@ final Map<String, String> he = {
   'YE': 'תימן',
   'ZM': 'זמביה',
   'ZW': 'זימבבואה',
-  'cancelButton': 'ביטול',
-  'phonePlaceholder': 'מספר טלפון',
-  'searchPlaceholder': 'חיפוש',
-  'selectCountryLabel': 'בחר מדינה',
 };

@@ -1,8 +1,31 @@
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:meta/meta.dart';
 
-/// Nepali
+/// {@template countryLocalizationsNp}
+/// Nepali / Hindi localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> np = {
+final class CountryLocalizationsNp extends CountryLocalizations {
+  /// {@macro countryLocalizationsNp}
+  const CountryLocalizationsNp();
+
+  @override
+  String get cancelButton => 'रद्द गर्नुहोस्';
+
+  @override
+  String get phonePlaceholder => 'फोन नम्बर';
+
+  @override
+  String get searchPlaceholder => 'खोज्नुहोस्';
+
+  @override
+  String get selectCountryLabel => 'देश चयन गर्नुहोस्';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': 'अफगानिस्तान',
   'AB': 'अब्खाजिया',
   'AX': 'इल्यान्ड टापु',
@@ -251,8 +274,4 @@ final Map<String, String> np = {
   'YE': 'यमन',
   'ZM': 'जाम्बिया',
   'ZW': 'जिम्बावे',
-  'cancelButton': 'रद्द गर्नुहोस्',
-  'phonePlaceholder': 'फोन नम्बर',
-  'searchPlaceholder': 'खोज्नुहोस्',
-  'selectCountryLabel': 'देश चयन गर्नुहोस्',
 };

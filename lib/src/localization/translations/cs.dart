@@ -1,8 +1,31 @@
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:meta/meta.dart';
 
-/// Czech translations.
+/// {@template countryLocalizationsCs}
+/// Czech localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> cs = {
+final class CountryLocalizationsCs extends CountryLocalizations {
+  /// {@macro countryLocalizationsCs}
+  const CountryLocalizationsCs();
+
+  @override
+  String get cancelButton => 'Zrušit';
+
+  @override
+  String get phonePlaceholder => 'Telefonní číslo';
+
+  @override
+  String get searchPlaceholder => 'Hledat';
+
+  @override
+  String get selectCountryLabel => 'Vyberte zemi';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': 'Afghánistán',
   'AB': 'Abcházie',
   'AX': 'Alandské ostrovy',
@@ -251,8 +274,4 @@ final Map<String, String> cs = {
   'YE': 'Jemen',
   'ZM': 'Zambie',
   'ZW': 'Zimbabwe',
-  'cancelButton': 'Zrušit',
-  'phonePlaceholder': 'Telefonní číslo',
-  'searchPlaceholder': 'Hledat',
-  'selectCountryLabel': 'Vyberte zemi',
 };

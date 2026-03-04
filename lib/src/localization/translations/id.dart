@@ -1,8 +1,31 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
+import 'package:meta/meta.dart';
 
-/// Indonesian translations.
+/// {@template countryLocalizationsId}
+/// Indonesian localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> id = {
+final class CountryLocalizationsId extends CountryLocalizations {
+  /// {@macro countryLocalizationsId}
+  const CountryLocalizationsId();
+
+  @override
+  String get cancelButton => 'Batal';
+
+  @override
+  String get phonePlaceholder => 'Nomor telepon';
+
+  @override
+  String get searchPlaceholder => 'Cari';
+
+  @override
+  String get selectCountryLabel => 'Pilih negara';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': 'Afghanistan',
   'AB': 'Abkhazia',
   'AX': 'Aland',
@@ -251,8 +274,4 @@ final Map<String, String> id = {
   'YE': 'Yaman',
   'ZM': 'Zambia',
   'ZW': 'Zimbabwe',
-  'cancelButton': 'Batal',
-  'phonePlaceholder': 'Nomor telepon',
-  'searchPlaceholder': 'Cari',
-  'selectCountryLabel': 'Pilih negara',
 };

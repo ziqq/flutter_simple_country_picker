@@ -1,8 +1,31 @@
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:meta/meta.dart';
 
-/// Lithuanian
+/// {@template countryLocalizationsLt}
+/// Lithuanian localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> lt = {
+final class CountryLocalizationsLt extends CountryLocalizations {
+  /// {@macro countryLocalizationsLt}
+  const CountryLocalizationsLt();
+
+  @override
+  String get cancelButton => 'Atšaukti';
+
+  @override
+  String get phonePlaceholder => 'Telefono numeris';
+
+  @override
+  String get searchPlaceholder => 'Paieška';
+
+  @override
+  String get selectCountryLabel => 'Pasirinkite šalį';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': 'Afganistanas',
   'AB': 'Abchazija',
   'AX': 'Alandai',
@@ -251,8 +274,4 @@ final Map<String, String> lt = {
   'YE': 'Jemenas',
   'ZM': 'Zambija',
   'ZW': 'Zimbabvė',
-  'cancelButton': 'Atšaukti',
-  'phonePlaceholder': 'Telefono numeris',
-  'searchPlaceholder': 'Paieška',
-  'selectCountryLabel': 'Pasirinkite šalį',
 };

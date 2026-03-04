@@ -1,8 +1,31 @@
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:meta/meta.dart';
 
-/// Estonian
+/// {@template countryLocalizationsEt}
+/// Estonian localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> et = {
+final class CountryLocalizationsEt extends CountryLocalizations {
+  /// {@macro countryLocalizationsEt}
+  const CountryLocalizationsEt();
+
+  @override
+  String get cancelButton => 'Tühista';
+
+  @override
+  String get phonePlaceholder => 'Telefoninumber';
+
+  @override
+  String get searchPlaceholder => 'Otsi';
+
+  @override
+  String get selectCountryLabel => 'Vali riik';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': 'Afganistan',
   'AB': 'Abhaasia',
   'AX': 'Ahvenamaa',
@@ -251,8 +274,4 @@ final Map<String, String> et = {
   'WF': 'Wallis ja Futuna',
   'WW': 'Kogu Maailmas',
   'ZW': 'Zimbabwe',
-  'cancelButton': 'Tühista',
-  'phonePlaceholder': 'Telefoninumber',
-  'searchPlaceholder': 'Otsi',
-  'selectCountryLabel': 'Vali riik',
 };

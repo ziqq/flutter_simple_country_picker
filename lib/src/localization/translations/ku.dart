@@ -1,8 +1,31 @@
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:meta/meta.dart';
 
-/// Kurdish
+/// {@template countryLocalizationsKu}
+/// Kurdish localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> ku = {
+final class CountryLocalizationsKu extends CountryLocalizations {
+  /// {@macro countryLocalizationsKu}
+  const CountryLocalizationsKu();
+
+  @override
+  String get cancelButton => 'هەڵبگرەوە';
+
+  @override
+  String get phonePlaceholder => 'ژمارەی تەلەفۆن';
+
+  @override
+  String get searchPlaceholder => 'گەڕان';
+
+  @override
+  String get selectCountryLabel => 'وڵات هەڵبژێرە';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': 'ئەفغانستان',
   'AB': 'ئابخازیا',
   'AX': 'ئاڵاند',
@@ -250,8 +273,4 @@ final Map<String, String> ku = {
   'YE': 'یەمەن',
   'ZM': 'زامبیا',
   'ZW': 'زیمبابوێ',
-  'cancelButton': 'هەڵبگرەوە',
-  'phonePlaceholder': 'ژمارەی تەلەفۆن',
-  'searchPlaceholder': 'گەڕان',
-  'selectCountryLabel': 'وڵات هەڵبژێرە',
 };

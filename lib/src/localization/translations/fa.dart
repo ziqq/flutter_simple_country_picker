@@ -1,5 +1,31 @@
-/// Localization strings for Persian (Farsi) language.
-final Map<String, String> fa = {
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
+import 'package:meta/meta.dart';
+
+/// {@template countryLocalizationsFa}
+/// Persian localizations for [CountryLocalizations].
+/// {@endtemplate}
+@internal
+final class CountryLocalizationsFa extends CountryLocalizations {
+  /// {@macro countryLocalizationsFa}
+  const CountryLocalizationsFa();
+
+  @override
+  String get cancelButton => 'لغو';
+
+  @override
+  String get phonePlaceholder => 'شماره تلفن';
+
+  @override
+  String get searchPlaceholder => 'جستجو';
+
+  @override
+  String get selectCountryLabel => 'انتخاب کشور';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': 'افغانستان',
   'AB': 'ابخازیا',
   'AX': 'جزایر آلاند',
@@ -248,8 +274,4 @@ final Map<String, String> fa = {
   'YE': 'یمن',
   'ZM': 'زامبیا',
   'ZW': 'زیمبابوه',
-  'cancelButton': 'لغو',
-  'phonePlaceholder': 'شماره تلفن',
-  'searchPlaceholder': 'جستجو',
-  'selectCountryLabel': 'انتخاب کشور',
 };

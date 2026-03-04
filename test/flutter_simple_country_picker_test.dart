@@ -4,6 +4,8 @@ import 'unit_test/country_codes_test.dart' as unit_country_codes_test;
 import 'unit_test/country_controller_test.dart' as unit_country_controller_test;
 import 'unit_test/country_input_formater_test.dart'
     as unit_country_input_formater_test;
+import 'unit_test/country_localizations_test.dart'
+    as unit_country_localizations_test;
 import 'unit_test/country_parser_test.dart' as unit_country_parser_test;
 import 'unit_test/country_phone_controller_test.dart'
     as unit_country_phone_controller_test;
@@ -14,6 +16,8 @@ import 'unit_test/country_test.dart' as unit_country_test;
 import 'unit_test/country_util_test.dart' as unit_country_util_test;
 import 'widget_test/country_input_formater_test.dart'
     as widget_country_input_formater_test;
+import 'widget_test/country_localizations_test.dart'
+    as widget_country_localizations_test;
 import 'widget_test/country_parser_test.dart' as widget_countries_parser_test;
 import 'widget_test/country_phone_input_test.dart'
     as widget_country_phone_input_test;
@@ -38,6 +42,7 @@ void main() {
       unit_country_codes_test.main();
       unit_country_test.main();
       unit_country_picker_theme_test.main();
+      unit_country_localizations_test.main();
     });
     group('widget_test -', () {
       widget_country_input_formater_test.main();
@@ -48,6 +53,7 @@ void main() {
       widget_country_picker_theme_test.main();
       widget_show_country_picker_test.main();
       widget_status_bar_gesture_detector_test.main();
+      widget_country_localizations_test.main();
     });
   });
 }

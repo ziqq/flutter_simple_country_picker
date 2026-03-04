@@ -24,6 +24,37 @@
 An easy-to-use country selection widget for Flutter. Allows users to select a country from a comprehensive list. Supports **Android**, **iOS**, **macOS**, **Web**, **Windows** and **Linux** platforms. Includes a phone-number input widget with automatic mask formatting, adaptive bottom sheet, theme customization, and 35+ locales.
 
 
+## Quick Start
+
+Add the package and register the localization delegate, then open the picker:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+
+MaterialApp(
+  localizationsDelegates: [
+    CountryLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+  ],
+  // Pass the built-in list directly — no need to enumerate locales manually.
+  supportedLocales: CountryLocalizations.supportedLocales,
+  home: const MyHomePage(),
+);
+
+// Inside your widget:
+showCountryPicker(
+  context: context,
+  onSelect: (Country country) {
+    print(country.displayName); // e.g. “Russia (+7)”
+  },
+);
+```
+
+
 ## Getting Started
 
 Add the package to your `pubspec.yaml`:
@@ -60,7 +91,46 @@ MaterialApp(
 );
 ```
 
-Supported locales: `ar`, `bg`, `ca`, `zh` (CN/TW), `cs`, `da`, `de`, `en`, `es`, `et`, `fa`, `fr`, `el`, `he`, `hr`, `ht`, `id`, `it`, `ja`, `ko`, `ku`, `lt`, `lv`, `nb`, `nl`, `nn`, `np`, `pl`, `pt`, `ro`, `ru`, `sk`, `tr`, `uk`.
+> **Tip:** pass `CountryLocalizations.supportedLocales` to `supportedLocales` to
+> enable all 36 built-in locales at once.
+
+Supported locales: `ar`, `bg`, `ca`, `cs`, `da`, `de`, `el`, `en`, `es`, `et`,
+`fa`, `fr`, `he`, `hi`, `hr`, `ht`, `id`, `it`, `ja`, `ko`, `ku`, `lt`, `lv`,
+`nb`, `ne`, `nl`, `nn`, `pl`, `pt`, `ro`, `ru`, `sk`, `tr`, `uk`,
+`zh-Hans` (Simplified Chinese), `zh-Hant` (Traditional Chinese).
+
+### Custom localizations
+
+`CountryLocalizations` is an `abstract class`. You can extend it to add a new language or override existing strings without forking the package:
+
+```dart
+final class CountryLocalizationsMyLang extends CountryLocalizations {
+  const CountryLocalizationsMyLang();
+
+  @override
+  String get cancelButton => 'Cancel';
+
+  @override
+  String get phonePlaceholder => 'Phone number';
+
+  @override
+  String get searchPlaceholder => 'Search country';
+
+  @override
+  String get selectCountryLabel => 'Select country';
+
+  @override
+  String? countryName(String countryCode) => _names[countryCode];
+}
+
+const Map<String, String> _names = {
+  'US': 'United States',
+  'RU': 'Russia',
+  // …
+};
+```
+
+Register it in the delegate by creating your own `LocalizationsDelegate<CountryLocalizations>` that returns your subclass for the desired locale, or contribute it back to the package.
 
 
 ## Usage
@@ -194,11 +264,27 @@ Access from descendants:
 // Get the controller
 final controller = CountryScope.of(context);
 
-// Get the list of countries
+// Get the list of countries (subscribes to changes)
 final countries = CountryScope.countriesOf(context);
 
 // Look up a country by ISO2 code
 final country = CountryScope.getCountryByCode(context, 'US');
+```
+
+Set `lazy: true` to defer the country-list load until you trigger it
+explicitly — useful when the list is only needed behind a navigation gate:
+
+```dart
+CountryScope(
+  lazy: true,
+  child: Builder(
+    builder: (context) {
+      // Loading starts here, not on CountryScope creation.
+      CountryScope.of(context).getCountries();
+      return const MyCountryPage();
+    },
+  ),
+)
 ```
 
 

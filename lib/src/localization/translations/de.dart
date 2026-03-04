@@ -1,8 +1,31 @@
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:meta/meta.dart';
 
-/// German
+/// {@template countryLocalizationsDe}
+/// German localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> de = {
+final class CountryLocalizationsDe extends CountryLocalizations {
+  /// {@macro countryLocalizationsDe}
+  const CountryLocalizationsDe();
+
+  @override
+  String get cancelButton => 'Abbrechen';
+
+  @override
+  String get phonePlaceholder => 'Telefonnummer';
+
+  @override
+  String get searchPlaceholder => 'Suche';
+
+  @override
+  String get selectCountryLabel => 'Land auswählen';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': 'Afghanistan',
   'AB': 'Abchasien',
   'AX': 'Åland',
@@ -251,8 +274,4 @@ final Map<String, String> de = {
   'YE': 'Jemen',
   'ZM': 'Sambia',
   'ZW': 'Simbabwe',
-  'cancelButton': 'Abbrechen',
-  'phonePlaceholder': 'Telefonnummer',
-  'searchPlaceholder': 'Suche',
-  'selectCountryLabel': 'Land auswählen',
 };

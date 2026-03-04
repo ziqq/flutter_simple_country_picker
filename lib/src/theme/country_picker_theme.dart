@@ -25,7 +25,34 @@ const double _kDefaultIndent = 10.0;
 const double _kDefaultRadius = 12.0;
 
 /// {@template country_picker_theme}
-/// Custom country picker theme.
+/// Visual configuration for all `flutter_simple_country_picker` widgets.
+///
+/// Register it as a [ThemeExtension] in your [MaterialApp]:
+///
+/// ```dart
+/// MaterialApp(
+///   theme: ThemeData(
+///     extensions: [
+///       CountryPickerTheme(
+///         backgroundColor: Colors.white,
+///         accentColor: Colors.blue,
+///         radius: 16,
+///         flagSize: 24,
+///         textStyle: const TextStyle(fontSize: 16),
+///       ),
+///     ],
+///   ),
+/// );
+/// ```
+///
+/// Retrieve the active theme from any widget:
+///
+/// ```dart
+/// final theme = CountryPickerTheme.of(context);
+/// ```
+///
+/// All properties are optional — omitted values fall back to the ambient
+/// [Theme]'s color scheme and text styles.
 /// {@endtemplate}
 @immutable
 class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>

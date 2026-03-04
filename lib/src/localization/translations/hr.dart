@@ -1,8 +1,31 @@
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:meta/meta.dart';
 
-/// Croatian
+/// {@template countryLocalizationsHr}
+/// Croatian localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> hr = {
+final class CountryLocalizationsHr extends CountryLocalizations {
+  /// {@macro countryLocalizationsHr}
+  const CountryLocalizationsHr();
+
+  @override
+  String get cancelButton => 'Otkaži';
+
+  @override
+  String get phonePlaceholder => 'Broj telefona';
+
+  @override
+  String get searchPlaceholder => 'Pretraži';
+
+  @override
+  String get selectCountryLabel => 'Odaberite zemlju';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': 'Afganistan',
   'AB': 'Abhazija',
   'AX': 'Ålandski otoci',
@@ -251,8 +274,4 @@ final Map<String, String> hr = {
   'YE': 'Jemen',
   'ZM': 'Zambija',
   'ZW': 'Zimbabve',
-  'cancelButton': 'Otkaži',
-  'phonePlaceholder': 'Broj telefona',
-  'searchPlaceholder': 'Pretraži',
-  'selectCountryLabel': 'Odaberite zemlju',
 };

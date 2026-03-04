@@ -1,3 +1,23 @@
+## 0.8.0
+
+- **BREAKING CHANGES**: `CountryLocalizations` is now an `abstract class` — previously `final class`; it can now be extended to provide custom or additional translations
+- **BREAKING CHANGES**: `CountryLocalizations()` constructor no longer accepts a `Locale` argument — the `locale` field has been removed; use `Localizations.localeOf(context)` in your own code if the locale is needed
+- **BREAKING CHANGES**: `CountryLocalizations.of()` no longer throws `ArgumentError` when no delegate is found — falls back to English (`CountryLocalizationsEn`)
+- **CHANGED**: `CountryLocalizations` — complete internal rewrite following the Flutter SDK localization pattern:
+  - Each supported language is now a concrete `final class CountryLocalizationsXx extends CountryLocalizations`
+  - Country name maps moved from shared module-level variables to per-class `const Map<String, String> _names`
+  - UI strings (`cancelButton`, `phonePlaceholder`, `searchPlaceholder`, `selectCountryLabel`) are now typed abstract getters instead of map entries
+  - Delegate uses `SynchronousFuture` instead of `Future.value`
+  - `isSupported` uses a `Set<String>` O(1) lookup instead of `List.contains` O(n)
+  - `supportedLocales` is now `const List<Locale>`
+  - `country_parser.dart` uses `Localizations.localeOf(context)` and polymorphic `countryName()` calls
+- **ADDED**:
+  - Abstract typed API on `CountryLocalizations`: `String get cancelButton`, `String get phonePlaceholder`, `String get searchPlaceholder`, `String get selectCountryLabel`, `String? countryName(String countryCode)`
+  - `String? getFormatedCountryNameByCode(String countryCode)` concrete method — returns the country name with collapsed whitespace
+  - Unit tests covering all 36 locales, delegate behaviour, fallback, and content correctness (`test/unit_test/country_localizations_test.dart`)
+  - Widget tests exercising `CountryLocalizations.of()` inside a widget tree for every locale (`test/widget_test/country_localizations_test.dart`)
+- **DEPRECATED**: `CountryLocalizations.countryNameRegExp` — use `getFormatedCountryNameByCode` instead
+
 ## 0.7.0
 - **BREAKING CHANGES**: `CountryInputFormatter` overflow behavior changed — previously input longer than mask was truncated to mask length; now when input exceeds mask length, mask is reset and the value becomes flat (digits-only)
 - **CHANGED**: `CountryInputFormatter`

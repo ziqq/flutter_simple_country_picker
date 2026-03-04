@@ -1,8 +1,31 @@
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:meta/meta.dart';
 
-/// Haitian Creole (ht) country names
+/// {@template countryLocalizationsHt}
+/// Haitian Creole localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> ht = {
+final class CountryLocalizationsHt extends CountryLocalizations {
+  /// {@macro countryLocalizationsHt}
+  const CountryLocalizationsHt();
+
+  @override
+  String get cancelButton => 'Anile';
+
+  @override
+  String get phonePlaceholder => 'Nimewo telefòn';
+
+  @override
+  String get searchPlaceholder => 'Rechèch';
+
+  @override
+  String get selectCountryLabel => 'Chwazi peyi';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': 'Afganistan',
   'AB': 'Abkaz',
   'AX': 'Zil Aland',
@@ -251,8 +274,4 @@ final Map<String, String> ht = {
   'YE': 'Yemèn',
   'ZM': 'Zanbi',
   'ZW': 'Zimbabwe',
-  'cancelButton': 'Anile',
-  'phonePlaceholder': 'Nimewo telefòn',
-  'searchPlaceholder': 'Rechèch',
-  'selectCountryLabel': 'Chwazi peyi',
 };

@@ -1,8 +1,31 @@
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:meta/meta.dart';
 
-/// Japanese translations.
+/// {@template countryLocalizationsJa}
+/// Japanese localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> ja = {
+final class CountryLocalizationsJa extends CountryLocalizations {
+  /// {@macro countryLocalizationsJa}
+  const CountryLocalizationsJa();
+
+  @override
+  String get cancelButton => 'キャンセル';
+
+  @override
+  String get phonePlaceholder => '電話番号';
+
+  @override
+  String get searchPlaceholder => '検索';
+
+  @override
+  String get selectCountryLabel => '国を選択';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': 'アフガニスタン',
   'AB': 'アブハジア',
   'AX': 'オーランド諸島',
@@ -251,8 +274,4 @@ final Map<String, String> ja = {
   'YE': 'イエメン',
   'ZM': 'ザンビア',
   'ZW': 'ジンバブエ',
-  'cancelButton': 'キャンセル',
-  'phonePlaceholder': '電話番号',
-  'searchPlaceholder': '検索',
-  'selectCountryLabel': '国を選択',
 };

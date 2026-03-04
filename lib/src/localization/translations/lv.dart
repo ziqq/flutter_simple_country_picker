@@ -1,8 +1,31 @@
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:meta/meta.dart';
 
-/// Latvian
+/// {@template countryLocalizationsLv}
+/// Latvian localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> lv = {
+final class CountryLocalizationsLv extends CountryLocalizations {
+  /// {@macro countryLocalizationsLv}
+  const CountryLocalizationsLv();
+
+  @override
+  String get cancelButton => 'Atcelt';
+
+  @override
+  String get phonePlaceholder => 'Telefona numurs';
+
+  @override
+  String get searchPlaceholder => 'Meklēt';
+
+  @override
+  String get selectCountryLabel => 'Izvēlieties valsti';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': 'Afganistāna',
   'AB': 'Abhāzija',
   'AX': 'Olande',
@@ -251,8 +274,4 @@ final Map<String, String> lv = {
   'YE': 'Jemena',
   'ZM': 'Zambija',
   'ZW': 'Zimbabve',
-  'cancelButton': 'Atcelt',
-  'phonePlaceholder': 'Telefona numurs',
-  'searchPlaceholder': 'Meklēt',
-  'selectCountryLabel': 'Izvēlieties valsti',
 };

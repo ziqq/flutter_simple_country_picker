@@ -1,8 +1,31 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
+import 'package:meta/meta.dart';
 
-/// Romanian country names
+/// {@template countryLocalizationsRo}
+/// Romanian localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-Map<String, String> ro = {
+final class CountryLocalizationsRo extends CountryLocalizations {
+  /// {@macro countryLocalizationsRo}
+  const CountryLocalizationsRo();
+
+  @override
+  String get cancelButton => 'Anulare';
+
+  @override
+  String get phonePlaceholder => 'Număr de telefon';
+
+  @override
+  String get searchPlaceholder => 'Căutare';
+
+  @override
+  String get selectCountryLabel => 'Selectați țara';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': 'Afganistan',
   'AB': 'Abhazia',
   'AX': 'Insulele Åland',
@@ -251,8 +274,4 @@ Map<String, String> ro = {
   'YE': 'Yemen',
   'ZM': 'Zambia',
   'ZW': 'Zimbabwe',
-  'cancelButton': 'Anulare',
-  'phonePlaceholder': 'Număr de telefon',
-  'searchPlaceholder': 'Căutare',
-  'selectCountryLabel': 'Selectați țara',
 };

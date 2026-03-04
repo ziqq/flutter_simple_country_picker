@@ -1,8 +1,31 @@
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:meta/meta.dart';
 
-/// Korean translations for country names.
+/// {@template countryLocalizationsKo}
+/// Korean localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> ko = {
+final class CountryLocalizationsKo extends CountryLocalizations {
+  /// {@macro countryLocalizationsKo}
+  const CountryLocalizationsKo();
+
+  @override
+  String get cancelButton => '취소';
+
+  @override
+  String get phonePlaceholder => '전화번호';
+
+  @override
+  String get searchPlaceholder => '검색';
+
+  @override
+  String get selectCountryLabel => '국가 선택';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': '아프가니스탄',
   'AB': '압하지야',
   'AX': '올란드 제도',
@@ -251,8 +274,4 @@ final Map<String, String> ko = {
   'YE': '예멘',
   'ZM': '잠비아',
   'ZW': '짐바브웨',
-  'cancelButton': '취소',
-  'phonePlaceholder': '전화번호',
-  'searchPlaceholder': '검색',
-  'selectCountryLabel': '국가 선택',
 };

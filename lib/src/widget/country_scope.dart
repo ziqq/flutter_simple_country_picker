@@ -36,7 +36,19 @@ class CountryScope extends StatefulWidget {
     super.key, // ignore: unused_element
   });
 
-  /// Whether the controller should be initialized lazily.
+  /// Whether to defer loading countries until [CountryController.getCountries]
+  /// is called explicitly.
+  ///
+  /// When `false` (the default) [CountryScope] immediately fetches and caches
+  /// the full country list on initialization. Set to `true` when the list
+  /// is only needed conditionally (e.g. behind a navigation gate) to avoid
+  /// the upfront async work.
+  ///
+  /// Trigger loading manually when ready:
+  ///
+  /// ```dart
+  /// CountryScope.of(context).getCountries();
+  /// ```
   final bool lazy;
 
   /// Show phone code in countires list.

@@ -1,8 +1,31 @@
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:meta/meta.dart';
 
-/// Norwegian
+/// {@template countryLocalizationsNn}
+/// Norwegian Nynorsk localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> nn = {
+final class CountryLocalizationsNn extends CountryLocalizations {
+  /// {@macro countryLocalizationsNn}
+  const CountryLocalizationsNn();
+
+  @override
+  String get cancelButton => 'Avbryt';
+
+  @override
+  String get phonePlaceholder => 'Telefonnummer';
+
+  @override
+  String get searchPlaceholder => 'Søk';
+
+  @override
+  String get selectCountryLabel => 'Velg land';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': 'Afghanistan',
   'AB': 'Abkhasia',
   'AX': 'Åland',
@@ -251,8 +274,4 @@ final Map<String, String> nn = {
   'YE': 'Jemen',
   'ZM': 'Zambia',
   'ZW': 'Zimbabwe',
-  'cancelButton': 'Avbryt',
-  'phonePlaceholder': 'Telefonnummer',
-  'searchPlaceholder': 'Søk',
-  'selectCountryLabel': 'Velg land',
 };

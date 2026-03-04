@@ -1,8 +1,31 @@
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:meta/meta.dart';
 
-/// Greek
+/// {@template countryLocalizationsEl}
+/// Greek localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> gr = {
+final class CountryLocalizationsEl extends CountryLocalizations {
+  /// {@macro countryLocalizationsEl}
+  const CountryLocalizationsEl();
+
+  @override
+  String get cancelButton => 'Ακύρωση';
+
+  @override
+  String get phonePlaceholder => 'Αριθμός τηλεφώνου';
+
+  @override
+  String get searchPlaceholder => 'Αναζήτηση';
+
+  @override
+  String get selectCountryLabel => 'Επιλέξτε χώρα';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': 'Αφγανιστάν',
   'AB': 'Αμπχαζία',
   'AX': 'Ώλαντ',
@@ -251,8 +274,4 @@ final Map<String, String> gr = {
   'YE': 'Υεμένη',
   'ZM': 'Ζάμπια',
   'ZW': 'Ζιμπάμπουε',
-  'cancelButton': 'Ακύρωση',
-  'phonePlaceholder': 'Αριθμός τηλεφώνου',
-  'searchPlaceholder': 'Αναζήτηση',
-  'selectCountryLabel': 'Επιλέξτε χώρα',
 };

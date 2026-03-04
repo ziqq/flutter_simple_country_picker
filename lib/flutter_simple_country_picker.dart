@@ -3,6 +3,46 @@
  * Date: 24 June 2024
  */
 
+/// A Flutter package providing country and phone-number selection widgets.
+///
+/// ## Key classes
+///
+/// | Symbol | Description |
+/// |-----|-----|
+/// | [showCountryPicker] | Opens a searchable bottom-sheet country picker. |
+/// | [CountryPhoneInput] | Phone-number input with embedded country selector. |
+/// | [CountryPhoneController] | Holds & parses the phone number value. |
+/// | [CountryInputFormatter] | Masks phone input according to a dial-format. |
+/// | [CountryScope] | Pre-loads the country list into the widget tree. |
+/// | [CountryPickerTheme] | Visual customization via `ThemeExtension`. |
+/// | [CountryLocalizations] | Localization delegate — 36 built-in locales. |
+///
+/// ## Minimal setup
+///
+/// 1. Register the localization delegate in your `MaterialApp`:
+///
+/// ```dart
+/// MaterialApp(
+///   localizationsDelegates: [
+///     CountryLocalizations.delegate,
+///     GlobalWidgetsLocalizations.delegate,
+///     GlobalMaterialLocalizations.delegate,
+///   ],
+///   supportedLocales: CountryLocalizations.supportedLocales,
+///   home: const MyHomePage(),
+/// );
+/// ```
+///
+/// 2. Open the picker from any widget:
+///
+/// ```dart
+/// showCountryPicker(
+///   context: context,
+///   onSelect: (Country country) {
+///     print(country.displayName); // e.g. "Russia (+7)"
+///   },
+/// );
+/// ```
 library;
 
 export 'src/constant/typedef.dart';

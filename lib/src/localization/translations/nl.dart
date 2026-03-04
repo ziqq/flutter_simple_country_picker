@@ -1,8 +1,31 @@
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:meta/meta.dart';
 
-/// Niderland
+/// {@template countryLocalizationsNl}
+/// Dutch localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> nl = {
+final class CountryLocalizationsNl extends CountryLocalizations {
+  /// {@macro countryLocalizationsNl}
+  const CountryLocalizationsNl();
+
+  @override
+  String get cancelButton => 'Annuleren';
+
+  @override
+  String get phonePlaceholder => 'Telefoonnummer';
+
+  @override
+  String get searchPlaceholder => 'Zoeken';
+
+  @override
+  String get selectCountryLabel => 'Selecteer land';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': 'Afghanistan',
   'AB': 'Abchazië',
   'AX': 'Åland',
@@ -251,8 +274,4 @@ final Map<String, String> nl = {
   'YE': 'Jemen',
   'ZM': 'Zambia',
   'ZW': 'Zimbabwe',
-  'cancelButton': 'Annuleren',
-  'phonePlaceholder': 'Telefoonnummer',
-  'searchPlaceholder': 'Zoeken',
-  'selectCountryLabel': 'Selecteer land',
 };

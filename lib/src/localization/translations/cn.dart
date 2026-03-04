@@ -1,8 +1,31 @@
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:meta/meta.dart';
 
-/// Chinese
+/// {@template countryLocalizationsZhHans}
+/// Chinese (Simplified) localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> cn = {
+final class CountryLocalizationsZhHans extends CountryLocalizations {
+  /// {@macro countryLocalizationsZhHans}
+  const CountryLocalizationsZhHans();
+
+  @override
+  String get cancelButton => '取消';
+
+  @override
+  String get phonePlaceholder => '电话号码';
+
+  @override
+  String get searchPlaceholder => '搜索';
+
+  @override
+  String get selectCountryLabel => '选择国家';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': '阿富汗',
   'AB': '阿布哈兹',
   'AX': '奥兰',
@@ -251,8 +274,4 @@ final Map<String, String> cn = {
   'YE': '也门',
   'ZM': '赞比亚',
   'ZW': '津巴布韦',
-  'cancelButton': '取消',
-  'phonePlaceholder': '电话号码',
-  'searchPlaceholder': '搜索',
-  'selectCountryLabel': '选择国家',
 };

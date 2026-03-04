@@ -110,13 +110,9 @@ abstract final class CountryParser {
   }) {
     final countryNameLower = countryName.toLowerCase();
 
-    final localizations = context != null
-        ? CountryLocalizations.of(context)
-        : null;
-
     final languageCode = _anyLocalizedNameToCode(
       countryNameLower,
-      localizations?.locale,
+      context != null ? Localizations.localeOf(context) : null,
       locales,
     );
 
@@ -203,147 +199,63 @@ abstract final class CountryParser {
   ///
   /// Returns null if no match is found.
   static String? _localizedNameToCode(String name, Locale locale) {
-    final translation = _getTranslation(locale);
-
-    String? code;
-
-    translation.forEach((key, value) {
-      if (value.toLowerCase() == name) code = key;
-    });
-
-    return code;
-  }
-
-  // TODO(ziqq): solution to prevent manual update on adding new localizations?
-  /// Returns a translation for the given [locale]. Defaults to english.
-  static Map<String, String> _getTranslation(Locale locale) {
-    switch (locale.languageCode) {
-      case 'zh':
-        switch (locale.scriptCode) {
-          case 'Hant':
-            return tw;
-          case 'Hans':
-          default:
-            return cn;
-        }
-      case 'el':
-        return gr;
-      case 'es':
-        return es;
-      case 'et':
-        return et;
-      case 'he':
-        return he;
-      case 'pt':
-        return pt;
-      case 'nb':
-        return nb;
-      case 'nn':
-        return nn;
-      case 'uk':
-        return uk;
-      case 'pl':
-        return pl;
-      case 'tr':
-        return tr;
-      case 'ro':
-        return ro;
-      case 'ru':
-        return ru;
-      case 'sk':
-        return sk;
-      case 'hi':
-      case 'ne':
-        return np;
-      case 'ar':
-        return ar;
-      case 'bg':
-        return bg;
-      case 'ku':
-        return ku;
-      case 'hr':
-        return hr;
-      case 'ht':
-        return ht;
-      case 'fr':
-        return fr;
-      case 'de':
-        return de;
-      case 'lv':
-        return lv;
-      case 'lt':
-        return lt;
-      case 'nl':
-        return nl;
-      case 'it':
-        return it;
-      case 'ko':
-        return ko;
-      case 'ja':
-        return ja;
-      case 'id':
-        return id;
-      case 'cs':
-        return cs;
-      case 'da':
-        return da;
-      case 'ca':
-        return ca;
-      case 'fa':
-        return fa;
-      case 'en':
-      default:
-        return en;
+    final loc = _getLocalization(locale);
+    for (final entry in countries) {
+      final code = entry['iso2_cc']?.toString();
+      if (code == null) continue;
+      if (loc.countryName(code)?.toLowerCase() == name) return code;
     }
+    return null;
   }
 
   // TODO(ziqq): solution to prevent manual update on adding new localizations?
+  /// Returns a [CountryLocalizations] instance for the given [locale].
+  static CountryLocalizations _getLocalization(Locale locale) =>
+      switch (locale.languageCode) {
+        'ar' => const CountryLocalizationsAr(),
+        'bg' => const CountryLocalizationsBg(),
+        'ca' => const CountryLocalizationsCa(),
+        'cs' => const CountryLocalizationsCs(),
+        'da' => const CountryLocalizationsDa(),
+        'de' => const CountryLocalizationsDe(),
+        'el' => const CountryLocalizationsEl(),
+        'es' => const CountryLocalizationsEs(),
+        'et' => const CountryLocalizationsEt(),
+        'fa' => const CountryLocalizationsFa(),
+        'fr' => const CountryLocalizationsFr(),
+        'he' => const CountryLocalizationsHe(),
+        'hi' || 'ne' => const CountryLocalizationsNp(),
+        'hr' => const CountryLocalizationsHr(),
+        'ht' => const CountryLocalizationsHt(),
+        'id' => const CountryLocalizationsId(),
+        'it' => const CountryLocalizationsIt(),
+        'ja' => const CountryLocalizationsJa(),
+        'ko' => const CountryLocalizationsKo(),
+        'ku' => const CountryLocalizationsKu(),
+        'lt' => const CountryLocalizationsLt(),
+        'lv' => const CountryLocalizationsLv(),
+        'nb' => const CountryLocalizationsNb(),
+        'nl' => const CountryLocalizationsNl(),
+        'nn' => const CountryLocalizationsNn(),
+        'pl' => const CountryLocalizationsPl(),
+        'pt' => const CountryLocalizationsPt(),
+        'ro' => const CountryLocalizationsRo(),
+        'ru' => const CountryLocalizationsRu(),
+        'sk' => const CountryLocalizationsSk(),
+        'tr' => const CountryLocalizationsTr(),
+        'uk' => const CountryLocalizationsUk(),
+        'zh' =>
+          locale.scriptCode == 'Hant'
+              ? const CountryLocalizationsZhHant()
+              : const CountryLocalizationsZhHans(),
+        _ => const CountryLocalizationsEn(),
+      };
+
   /// A list of the supported locales, except those included in the [exclude]
-  /// list.
+  /// list. Derived from [CountryLocalizations.supportedLocales].
   static List<Locale> _supportedLanguages({
     List<Locale> exclude = const <Locale>[],
-  }) => <Locale>[
-    const Locale('en'),
-    const Locale('ar'),
-    const Locale('es'),
-    const Locale('de'),
-    const Locale('fr'),
-    const Locale('el'),
-    const Locale('et'),
-    const Locale('nb'),
-    const Locale('nn'),
-    const Locale('pl'),
-    const Locale('pt'),
-    const Locale('ru'),
-    const Locale('hi'),
-    const Locale('ne'),
-    const Locale('uk'),
-    const Locale('hr'),
-    const Locale('tr'),
-    const Locale('lv'),
-    const Locale('lt'),
-    const Locale('ku'),
-    const Locale('nl'),
-    const Locale('it'),
-    const Locale('ko'),
-    const Locale('ja'),
-    const Locale('id'),
-    const Locale('cs'),
-    const Locale('ht'),
-    const Locale('sk'),
-    const Locale('ro'),
-    const Locale('bg'),
-    const Locale('ca'),
-    const Locale('he'),
-    const Locale('fa'),
-    const Locale('da'),
-    const Locale.fromSubtags(
-      languageCode: 'zh',
-      scriptCode: 'Hans',
-    ), // Generic Simplified Chinese 'zh_Hans'
-    const Locale.fromSubtags(
-      languageCode: 'zh',
-      scriptCode: 'Hant',
-    ), // Generic traditional Chinese 'zh_Hant'
-  ]..removeWhere((l) => exclude.contains(l));
+  }) => CountryLocalizations.supportedLocales
+      .where((l) => !exclude.contains(l))
+      .toList();
 }

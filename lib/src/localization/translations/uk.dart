@@ -1,8 +1,31 @@
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:meta/meta.dart';
 
-/// Ukrainian
+/// {@template countryLocalizationsUk}
+/// Ukrainian localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> uk = {
+final class CountryLocalizationsUk extends CountryLocalizations {
+  /// {@macro countryLocalizationsUk}
+  const CountryLocalizationsUk();
+
+  @override
+  String get cancelButton => 'Відміна';
+
+  @override
+  String get phonePlaceholder => 'Номер телефону';
+
+  @override
+  String get searchPlaceholder => 'Пошук';
+
+  @override
+  String get selectCountryLabel => 'Виберіть країну';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AB': 'Абхазія',
   'AF': 'Афганістан',
   'AX': 'Аландські острови',
@@ -251,8 +274,4 @@ final Map<String, String> uk = {
   'YE': 'Ємен',
   'ZM': 'Замбія',
   'ZW': 'Зімбабве',
-  'cancelButton': 'Відміна',
-  'phonePlaceholder': 'Номер телефону',
-  'searchPlaceholder': 'Пошук',
-  'selectCountryLabel': 'Виберіть країну',
 };

@@ -1,8 +1,31 @@
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:meta/meta.dart';
 
-/// Russian
+/// {@template countryLocalizationsRu}
+/// Russian localizations for [CountryLocalizations].
+/// {@endtemplate}
 @internal
-final Map<String, String> ru = {
+final class CountryLocalizationsRu extends CountryLocalizations {
+  /// {@macro countryLocalizationsRu}
+  const CountryLocalizationsRu();
+
+  @override
+  String get cancelButton => 'Отмена';
+
+  @override
+  String get phonePlaceholder => 'Номер телефона';
+
+  @override
+  String get searchPlaceholder => 'Поиск';
+
+  @override
+  String get selectCountryLabel => 'Выберите страну';
+
+  @override
+  String? countryName(String code) => _names[code];
+}
+
+const Map<String, String> _names = {
   'AF': 'Афганистан',
   'AB': 'Абхазия',
   'AX': 'Аландские острова',
@@ -251,8 +274,4 @@ final Map<String, String> ru = {
   'YE': 'Йемен',
   'ZM': 'Замбия',
   'ZW': 'Зимбабве',
-  'cancelButton': 'Отмена',
-  'phonePlaceholder': 'Номер телефона',
-  'searchPlaceholder': 'Поиск',
-  'selectCountryLabel': 'Выберите страну',
 };

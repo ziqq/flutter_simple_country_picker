@@ -1,4 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show SynchronousFuture;
+import 'package:flutter/material.dart' show Locale;
+import 'package:flutter/widgets.dart'
+    show BuildContext, Localizations, LocalizationsDelegate;
 import 'package:flutter_simple_country_picker/src/localization/translations/ar.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/bg.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/ca.dart';
@@ -36,257 +39,237 @@ import 'package:flutter_simple_country_picker/src/localization/translations/tw.d
 import 'package:flutter_simple_country_picker/src/localization/translations/uk.dart';
 
 /// {@template country_localizations}
-/// CountryLocalizations
+/// Defines all localizable strings used by the flutter_simple_country_picker
+/// widgets.
+///
+/// Use [CountryLocalizations.of] to access the current locale's strings
+/// from any widget:
+///
+/// ```dart
+/// final loc = CountryLocalizations.of(context);
+/// print(loc.searchPlaceholder);
+/// print(loc.countryName('RU'));
+/// ```
+///
+/// Add [CountryLocalizations.delegate] to your app's
+/// `localizationsDelegates` list and include the desired locales in
+/// `supportedLocales` to enable translations:
+///
+/// ```dart
+/// MaterialApp(
+///   localizationsDelegates: [
+///     CountryLocalizations.delegate,
+///     GlobalWidgetsLocalizations.delegate,
+///     GlobalMaterialLocalizations.delegate,
+///   ],
+///   supportedLocales: CountryLocalizations.supportedLocales,
+/// );
+/// ```
+///
+/// To provide a custom translation or override a specific locale, extend this
+/// class and register your delegate:
+///
+/// ```dart
+/// class MyCountryLocalizations extends CountryLocalizations {
+///   const MyCountryLocalizations();
+///
+///   @override String get searchPlaceholder => 'Search...';
+///   @override String? countryName(String code) => _myNames[code];
+/// }
+/// ```
 /// {@endtemplate}
-final class CountryLocalizations {
+abstract class CountryLocalizations {
   /// {@macro country_localizations}
-  CountryLocalizations(this.locale);
+  const CountryLocalizations();
 
-  /// The locale for which the translations are provided.
-  final Locale locale;
+  // ── UI strings ─────────────────────────────────────────────────────────────
 
-  /// The `CountryLocalizations` from the closest [Localizations] instance
-  /// that encloses the given context.
-  ///
-  /// This method is just a convenient shorthand for:
-  /// `Localizations.of<CountryLocalizations>(context, CountryLocalizations)`.
-  ///
-  /// References to the localized resources defined by this class are typically
-  /// written in terms of this method. For example:
-  ///
-  /// ```dart
-  /// CountryLocalizations.of(context).countryName(countryCode: country.countryCode),
-  /// ```
-  // static CountryLocalizations of(BuildContext context) =>
-  //     Localizations.of<CountryLocalizations>(context, CountryLocalizations);
+  /// Label for the "Cancel" button.
+  String get cancelButton;
 
-  /// Get localization instance for the widget structure.
+  /// Placeholder for the phone-number input field.
+  String get phonePlaceholder;
+
+  /// Placeholder for the country search field.
+  String get searchPlaceholder;
+
+  /// Heading label of the country picker sheet.
+  String get selectCountryLabel;
+
+  // ── Country names ───────────────────────────────────────────────────────────
+
+  /// Returns the localized country name for [countryCode] (ISO 3166-1 alpha-2),
+  /// or `null` if the code is not found in this locale's data.
+  String? countryName(String countryCode);
+
+  /// Returns the localized country name for [countryCode].
+  ///
+  /// Equivalent to [countryName], kept for backward compatibility.
+  String? getCountryNameByCode(String countryCode) => countryName(countryCode);
+
+  /// Returns the formatted localized country name for [countryCode],
+  /// collapsing consecutive whitespace to a single space.
+  String? getFormatedCountryNameByCode(String countryCode) {
+    final name = countryName(countryCode);
+    if (name == null) return null;
+    return name.replaceAll(_whitespaceRegExp, ' ');
+  }
+
+  // ── Static members (SDK-style) ──────────────────────────────────────────────
+
+  static final RegExp _whitespaceRegExp = RegExp(r'\s+');
+
+  /// Returns the [CountryLocalizations] from the nearest [Localizations]
+  /// ancestor that matches this type.
+  ///
+  /// Falls back to English if no delegate is found in the widget tree.
   static CountryLocalizations of(BuildContext context) =>
-      switch (Localizations.of<CountryLocalizations>(
-        context,
-        CountryLocalizations,
-      )) {
-        CountryLocalizations localization => localization,
-        _ => throw ArgumentError(
-          'Out of scope, not found inherited widget '
-              'a CountryLocalizations of the exact type',
-          'out_of_scope',
-        ),
-      };
+      Localizations.of<CountryLocalizations>(context, CountryLocalizations) ??
+      const CountryLocalizationsEn();
 
-  /// A [LocalizationsDelegate] that uses [_CountryLocalizationsDelegate.load]
-  /// to create an instance of this class.
+  /// A [LocalizationsDelegate] to register in
+  /// `MaterialApp.localizationsDelegates`.
   static const LocalizationsDelegate<CountryLocalizations> delegate =
       _CountryLocalizationsDelegate();
 
-  /// Regular expression for localyzed country name.
+  /// Regular expression for a localized country name (whitespace normalization).
+  @Deprecated(
+    'Use getFormatedCountryNameByCode instead. '
+    'This field will be removed in v1.0.0 releases.',
+  )
+  // ignore: prefer_final_fields
   static RegExp countryNameRegExp = RegExp(r'\s+');
 
-  /// Supported locales.
-  static List<Locale> supportedLocales = <Locale>[
-    const Locale('en'),
-    const Locale('ar'),
-    const Locale('es'),
-    const Locale('de'),
-    const Locale('fr'),
-    const Locale('el'),
-    const Locale('et'),
-    const Locale('nb'),
-    const Locale('nn'),
-    const Locale('pl'),
-    const Locale('pt'),
-    const Locale('ru'),
-    const Locale('hi'),
-    const Locale('ne'),
-    const Locale('uk'),
-    const Locale('hr'),
-    const Locale('tr'),
-    const Locale('lv'),
-    const Locale('lt'),
-    const Locale('ku'),
-    const Locale('nl'),
-    const Locale('it'),
-    const Locale('ko'),
-    const Locale('ja'),
-    const Locale('id'),
-    const Locale('cs'),
-    const Locale('ht'),
-    const Locale('sk'),
-    const Locale('ro'),
-    const Locale('bg'),
-    const Locale('ca'),
-    const Locale('he'),
-    const Locale('fa'),
-    const Locale('da'),
-    const Locale.fromSubtags(
-      languageCode: 'zh',
-      scriptCode: 'Hans',
-    ), // Generic Simplified Chinese 'zh_Hans'
-    const Locale.fromSubtags(
-      languageCode: 'zh',
-      scriptCode: 'Hant',
-    ), // Generic traditional Chinese 'zh_Hant'
+  /// All locales supported by the built-in translations.
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('en'),
+    Locale('ar'),
+    Locale('bg'),
+    Locale('ca'),
+    Locale('cs'),
+    Locale('da'),
+    Locale('de'),
+    Locale('el'),
+    Locale('es'),
+    Locale('et'),
+    Locale('fa'),
+    Locale('fr'),
+    Locale('he'),
+    Locale('hi'),
+    Locale('hr'),
+    Locale('ht'),
+    Locale('id'),
+    Locale('it'),
+    Locale('ja'),
+    Locale('ko'),
+    Locale('ku'),
+    Locale('lt'),
+    Locale('lv'),
+    Locale('nb'),
+    Locale('ne'),
+    Locale('nl'),
+    Locale('nn'),
+    Locale('pl'),
+    Locale('pt'),
+    Locale('ro'),
+    Locale('ru'),
+    Locale('sk'),
+    Locale('tr'),
+    Locale('uk'),
+    Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
+    Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
   ];
-
-  /// The localized country name for the given country code.
-  String? getCountryNameByCode(String countryCode) =>
-      _toLocalizedString(countryCode);
-
-  /// The formatted localized country name for the given country code.
-  String? getFormatedCountryNameByCode(String countryCode) {
-    final name = getCountryNameByCode(countryCode);
-    if (name == null) return null;
-    return name.replaceAll(CountryLocalizations.countryNameRegExp, ' ');
-  }
-
-  /// The localized string for the given key.
-  String? _toLocalizedString(String key) {
-    switch (locale.languageCode) {
-      case 'zh':
-        switch (locale.scriptCode) {
-          case 'Hant':
-            return tw[key];
-          case 'Hans':
-          default:
-            return cn[key];
-        }
-      case 'el':
-        return gr[key];
-      case 'es':
-        return es[key];
-      case 'et':
-        return et[key];
-      case 'he':
-        return he[key];
-      case 'pt':
-        return pt[key];
-      case 'nb':
-        return nb[key];
-      case 'nn':
-        return nn[key];
-      case 'uk':
-        return uk[key];
-      case 'pl':
-        return pl[key];
-      case 'tr':
-        return tr[key];
-      case 'ro':
-        return ro[key];
-      case 'ru':
-        return ru[key];
-      case 'sk':
-        return sk[key];
-      case 'hi':
-      case 'ne':
-        return np[key];
-      case 'ar':
-        return ar[key];
-      case 'bg':
-        return bg[key];
-      case 'ku':
-        return ku[key];
-      case 'hr':
-        return hr[key];
-      case 'ht':
-        return ht[key];
-      case 'fr':
-        return fr[key];
-      case 'de':
-        return de[key];
-      case 'lv':
-        return lv[key];
-      case 'lt':
-        return lt[key];
-      case 'nl':
-        return nl[key];
-      case 'it':
-        return it[key];
-      case 'ko':
-        return ko[key];
-      case 'ja':
-        return ja[key];
-      case 'id':
-        return id[key];
-      case 'cs':
-        return cs[key];
-      case 'da':
-        return da[key];
-      case 'ca':
-        return ca[key];
-      case 'fa':
-        return fa[key];
-      case 'en':
-      default:
-        return en[key];
-    }
-  }
-
-  /// The localized label for cancel button.
-  String get cancelButton => _toLocalizedString('cancelButton') ?? 'Cancel';
-
-  /// The localized placeholder for phone number input.
-  String get phonePlaceholder =>
-      _toLocalizedString('phonePlaceholder') ?? 'Phone number';
-
-  /// The localized label for select country header.
-  String get selectCountryLabel =>
-      _toLocalizedString('selectCountryLabel') ?? 'Select your country';
-
-  /// The localized placeholder for search field.
-  String get searchPlaceholder =>
-      _toLocalizedString('searchPlaceholder') ?? 'Search';
 }
+
+// ── Delegate ─────────────────────────────────────────────────────────────────
 
 class _CountryLocalizationsDelegate
     extends LocalizationsDelegate<CountryLocalizations> {
   const _CountryLocalizationsDelegate();
 
-  @override
-  bool isSupported(Locale locale) => [
+  static const Set<String> _supported = {
     'en',
     'ar',
     'bg',
-    'ku',
-    'zh',
+    'ca',
+    'cs',
+    'da',
+    'de',
     'el',
     'es',
     'et',
+    'fa',
+    'fr',
     'he',
+    'hi',
+    'hr',
+    'ht',
+    'id',
+    'it',
+    'ja',
+    'ko',
+    'ku',
+    'lt',
+    'lv',
+    'nb',
+    'ne',
+    'nl',
+    'nn',
     'pl',
     'pt',
-    'nb',
-    'nn',
     'ro',
     'ru',
     'sk',
-    'uk',
-    'hi',
-    'ne',
     'tr',
-    'hr',
-    'ht',
-    'fr',
-    'de',
-    'lt',
-    'lv',
-    'nl',
-    'it',
-    'ko',
-    'ja',
-    'id',
-    'cs',
-    'ca',
-    'fa',
-    'da',
-    'ca',
-  ].contains(locale.languageCode);
+    'uk',
+    'zh',
+  };
 
   @override
-  Future<CountryLocalizations> load(Locale locale) {
-    final localizations = CountryLocalizations(locale);
-    return Future.value(localizations);
-  }
+  bool isSupported(Locale locale) => _supported.contains(locale.languageCode);
 
   @override
-  bool shouldReload(_CountryLocalizationsDelegate old) => false;
+  Future<CountryLocalizations> load(Locale locale) =>
+      SynchronousFuture<CountryLocalizations>(switch (locale.languageCode) {
+        'ar' => const CountryLocalizationsAr(),
+        'bg' => const CountryLocalizationsBg(),
+        'ca' => const CountryLocalizationsCa(),
+        'cs' => const CountryLocalizationsCs(),
+        'da' => const CountryLocalizationsDa(),
+        'de' => const CountryLocalizationsDe(),
+        'el' => const CountryLocalizationsEl(),
+        'es' => const CountryLocalizationsEs(),
+        'et' => const CountryLocalizationsEt(),
+        'fa' => const CountryLocalizationsFa(),
+        'fr' => const CountryLocalizationsFr(),
+        'he' => const CountryLocalizationsHe(),
+        'hi' || 'ne' => const CountryLocalizationsNp(),
+        'hr' => const CountryLocalizationsHr(),
+        'ht' => const CountryLocalizationsHt(),
+        'id' => const CountryLocalizationsId(),
+        'it' => const CountryLocalizationsIt(),
+        'ja' => const CountryLocalizationsJa(),
+        'ko' => const CountryLocalizationsKo(),
+        'ku' => const CountryLocalizationsKu(),
+        'lt' => const CountryLocalizationsLt(),
+        'lv' => const CountryLocalizationsLv(),
+        'nb' => const CountryLocalizationsNb(),
+        'nl' => const CountryLocalizationsNl(),
+        'nn' => const CountryLocalizationsNn(),
+        'pl' => const CountryLocalizationsPl(),
+        'pt' => const CountryLocalizationsPt(),
+        'ro' => const CountryLocalizationsRo(),
+        'ru' => const CountryLocalizationsRu(),
+        'sk' => const CountryLocalizationsSk(),
+        'tr' => const CountryLocalizationsTr(),
+        'uk' => const CountryLocalizationsUk(),
+        'zh' =>
+          locale.scriptCode == 'Hant'
+              ? const CountryLocalizationsZhHant()
+              : const CountryLocalizationsZhHans(),
+        _ => const CountryLocalizationsEn(),
+      });
+
+  @override
+  bool shouldReload(covariant _CountryLocalizationsDelegate old) => false;
 }
