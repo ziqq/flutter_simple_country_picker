@@ -91,13 +91,25 @@ jobs:
         timeout-minutes: 1
         run: echo | grep -q Description README.md ; echo $?
 
-      - name: Check example
+      - name: Check suick start
         timeout-minutes: 1
-        run: echo | grep -q Example README.md ; echo $?
+        run: echo | grep -q Quick Start README.md ; echo $?
 
-      - name: Check installation
+      - name: Check getting started
         timeout-minutes: 1
-        run: echo | grep -q Installation README.md ; echo $?
+        run: echo | grep -q Getting Started README.md ; echo $?
+
+      - name: Check setup localizations
+        timeout-minutes: 1
+        run: echo | grep -q Setup Localizations README.md ; echo $?
+
+      - name: Check custom localizations
+        timeout-minutes: 1
+        run: echo | grep -q Custom localizations README.md ; echo $?
+
+      - name: Check usage
+        timeout-minutes: 1
+        run: echo | grep -q Usage README.md ; echo $?
 
       - name: Install flutter
         uses: subosito/flutter-action@v2

@@ -70,7 +70,7 @@ import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart
 ```
 
 
-## Setup: Localizations
+## Setup Localizations
 
 Add `CountryLocalizations.delegate` to your app's `localizationsDelegates` and list the locales you want to support.
 
