@@ -113,6 +113,7 @@ class CountryInputFormatter implements TextInputFormatter {
   /// Regexp to filter input characters for each mask symbol.
   static final RegExp _kDigit = RegExp(r'\d');
 
+  /// Regexp to match non-digit characters for phone normalization.
   static final RegExp _kNonDigits = RegExp(r'\D');
 
   /// Notify UI about overflow (flat mode) state changes.
@@ -277,7 +278,7 @@ class CountryInputFormatter implements TextInputFormatter {
   String? _mask;
   int _maskLength = 0;
 
-  /// Mask symbols, e.g. ['#','0','A'] (kept for compatibility / debug)
+  /// Mask symbols, e.g. `['#','0','A']` (kept for compatibility / debug)
   List<String> _maskChars = <String>[];
 
   /// O(1) membership checks for mask symbols.
@@ -497,22 +498,25 @@ class CountryInputFormatter implements TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    newValue = _normalizePhoneEdit(oldValue, newValue);
+    final normalizedValue = _normalizePhoneEdit(oldValue, newValue);
 
     // Flat mode handling:
     // - We still watch deletions. When digits count becomes <= mask length,
     //   we restore the mask and re-run formatting for masked output with proper caret.
     if (_isFlatMode) {
-      final flat = _digitsOnly(newValue.text);
+      final flat = _digitsOnly(normalizedValue.text);
 
       // Caret in flat-mode: "how many digits are before cursor"
-      final flatCaretDigits = newValue.selection.isValid
-          ? _digitsCountBefore(newValue.text, newValue.selection.extentOffset)
+      final flatCaretDigits = normalizedValue.selection.isValid
+          ? _digitsCountBefore(
+              normalizedValue.text,
+              normalizedValue.selection.extentOffset,
+            )
           : flat.length;
 
       _tryRestoreMaskIfPossible(
         oldValue: oldValue,
-        newValue: newValue,
+        newValue: normalizedValue,
         flatDigits: flat,
       );
 
@@ -525,7 +529,7 @@ class CountryInputFormatter implements TextInputFormatter {
           text: flat,
           selection: TextSelection.collapsed(
             offset: flatCaretDigits.clamp(0, flat.length),
-            affinity: newValue.selection.affinity,
+            affinity: normalizedValue.selection.affinity,
           ),
           composing: TextRange.empty,
         );
@@ -535,15 +539,15 @@ class CountryInputFormatter implements TextInputFormatter {
       return _reformatFromScratchWithCaret(
         flatDigits: flat,
         flatCaretDigits: flatCaretDigits,
-        selectionMeta: newValue,
+        selectionMeta: normalizedValue,
       );
     }
 
     final mask = _mask;
     if (mask == null || mask.isEmpty) {
-      _resultTextMasked = newValue.text;
-      _resultTextArray.set(newValue.text);
-      return newValue;
+      _resultTextMasked = normalizedValue.text;
+      _resultTextArray.set(normalizedValue.text);
+      return normalizedValue;
     }
 
     if (oldValue.text.isEmpty) {
@@ -551,10 +555,10 @@ class CountryInputFormatter implements TextInputFormatter {
     }
 
     final beforeText = oldValue.text;
-    final afterText = newValue.text;
+    final afterText = normalizedValue.text;
 
     final beforeSelection = oldValue.selection;
-    final afterSelection = newValue.selection;
+    final afterSelection = normalizedValue.selection;
 
     var beforeSelectionStart = afterSelection.isValid
         ? beforeSelection.isValid
@@ -780,12 +784,15 @@ class CountryInputFormatter implements TextInputFormatter {
       // `_maskLength` remains the capacity of the saved mask.
       _mask = null;
 
-      final flat = _digitsOnly(newValue.text);
+      final flat = _digitsOnly(normalizedValue.text);
       _resultTextMasked = flat;
       _resultTextArray.set(flat);
 
-      final caret = newValue.selection.isValid
-          ? _digitsCountBefore(newValue.text, newValue.selection.extentOffset)
+      final caret = normalizedValue.selection.isValid
+          ? _digitsCountBefore(
+              normalizedValue.text,
+              normalizedValue.selection.extentOffset,
+            )
           : flat.length;
 
       return TextEditingValue(
@@ -804,8 +811,8 @@ class CountryInputFormatter implements TextInputFormatter {
       selection: TextSelection(
         baseOffset: finalCursorPosition,
         extentOffset: finalCursorPosition,
-        affinity: newValue.selection.affinity,
-        isDirectional: newValue.selection.isDirectional,
+        affinity: normalizedValue.selection.affinity,
+        isDirectional: normalizedValue.selection.isDirectional,
       ),
     );
   }
