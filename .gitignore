@@ -76,6 +76,8 @@ reports/
 integration_test/screenshots
 
 # Temp
+.venv/
+venv/
 .temp/
 temp/
 .tmp/

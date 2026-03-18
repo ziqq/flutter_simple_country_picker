@@ -1,6 +1,8 @@
 # Changelog
 
 ## 0.8.1
+- **ADDED**: phone example to each country, [#11](https://github.com/ziqq/flutter_simple_country_picker/issues/11)
+- **ADDED**: phone mask to each country, [#12](https://github.com/ziqq/flutter_simple_country_picker/issues/12)
 - **ADDED**: optional formatter support for normalizing pasted and preset phone numbers before applying a mask
 - **FIXED**: pasted numbers with full country code or national prefix are now normalized before formatting
 - **FIXED**: formatter no longer strips the selected country code from numbers that belong to another country

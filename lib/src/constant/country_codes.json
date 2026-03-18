@@ -104,10 +104,10 @@
     "geographic": true,
     "level": 3,
     "name": "Åland Islands",
-    "example": "876543214",
+    "example": "4571234567",
     "display_name": "Åland Islands (AX) [+358]",
     "mask": null,
-    "full_example_with_plus_sign": "+358876543214",
+    "full_example_with_plus_sign": "+3584571234567",
     "display_name_no_e164_cc": "Åland Islands (AX)",
     "e164_key": "358-AX-0"
   },
@@ -120,7 +120,7 @@
     "name": "Albania",
     "example": "661234567",
     "display_name": "Albania (AL) [+355]",
-    "mask": null,
+    "mask": "00 000 0000",
     "full_example_with_plus_sign": "+355661234567",
     "display_name_no_e164_cc": "Albania (AL)",
     "e164_key": "355-AL-0"
@@ -134,7 +134,7 @@
     "name": "Algeria",
     "example": "551234567",
     "display_name": "Algeria (DZ) [+213]",
-    "mask": null,
+    "mask": "000 00 00 00",
     "full_example_with_plus_sign": "+213551234567",
     "display_name_no_e164_cc": "Algeria (DZ)",
     "e164_key": "213-DZ-0"
@@ -244,10 +244,10 @@
     "geographic": true,
     "level": 1,
     "name": "Ascension Island",
-    "example": "",
+    "example": "61234",
     "display_name": "Ascension Island (AC) [+247]",
-    "mask": null,
-    "full_example_with_plus_sign": null,
+    "mask": "00000",
+    "full_example_with_plus_sign": "+24761234",
     "display_name_no_e164_cc": "Ascension Island (AC)",
     "e164_key": "247-AC-0"
   },
@@ -316,7 +316,7 @@
     "name": "Barbados",
     "example": "2462501234",
     "display_name": "Barbados (BB) [+1]",
-    "mask": null,
+    "mask": "000 000 0000",
     "full_example_with_plus_sign": "+12462501234",
     "display_name_no_e164_cc": "Barbados (BB)",
     "e164_key": "1-BB-0"
@@ -442,7 +442,7 @@
     "name": "Brazil",
     "example": "1161234567",
     "display_name": "Brazil (BR) [+55]",
-    "mask": "00 00000 0000",
+    "mask": null,
     "full_example_with_plus_sign": "+551161234567",
     "display_name_no_e164_cc": "Brazil (BR)",
     "e164_key": "55-BR-0"
@@ -540,7 +540,7 @@
     "name": "Cambodia",
     "example": "91234567",
     "display_name": "Cambodia (KH) [+855]",
-    "mask": null,
+    "mask": "00 000 000",
     "full_example_with_plus_sign": "+85591234567",
     "display_name_no_e164_cc": "Cambodia (KH)",
     "e164_key": "855-KH-0"
@@ -552,10 +552,10 @@
     "geographic": true,
     "level": 1,
     "name": "Cameroon",
-    "example": "71234567",
+    "example": "671234567",
     "display_name": "Cameroon (CM) [+237]",
-    "mask": null,
-    "full_example_with_plus_sign": "+23771234567",
+    "mask": "0 00 00 00 00",
+    "full_example_with_plus_sign": "+237671234567",
     "display_name_no_e164_cc": "Cameroon (CM)",
     "e164_key": "237-CM-0"
   },
@@ -568,7 +568,7 @@
     "name": "Canada",
     "example": "2042345678",
     "display_name": "Canada (CA) [+1]",
-    "mask": null,
+    "mask": "000 000 0000",
     "full_example_with_plus_sign": "+12042345678",
     "display_name_no_e164_cc": "Canada (CA)",
     "e164_key": "1-CA-0"
@@ -579,12 +579,12 @@
     "e164_sc": 0,
     "geographic": true,
     "level": 1,
-    "name": "Cabo Verde",
+    "name": "Cabo Verde",
     "example": "9911234",
-    "display_name": "Cabo Verde (CV) [+238]",
-    "mask": null,
+    "display_name": "Cabo Verde (CV) [+238]",
+    "mask": "000 00 00",
     "full_example_with_plus_sign": "+2389911234",
-    "display_name_no_e164_cc": "Cabo Verde (CV)",
+    "display_name_no_e164_cc": "Cabo Verde (CV)",
     "e164_key": "238-CV-0"
   },
   {
@@ -596,7 +596,7 @@
     "name": "Caribbean Netherlands",
     "example": "3181234",
     "display_name": "Caribbean Netherlands (BQ) [+599]",
-    "mask": null,
+    "mask": "000 0000",
     "full_example_with_plus_sign": "+5993181234",
     "display_name_no_e164_cc": "Caribbean Netherlands (BQ)",
     "e164_key": "599-BQ-0"
@@ -610,7 +610,7 @@
     "name": "Cayman Islands",
     "example": "3453231234",
     "display_name": "Cayman Islands (KY) [+1]",
-    "mask": null,
+    "mask": "000 000 0000",
     "full_example_with_plus_sign": "+13453231234",
     "display_name_no_e164_cc": "Cayman Islands (KY)",
     "e164_key": "1-KY-0"
@@ -624,7 +624,7 @@
     "name": "Central African Republic",
     "example": "70012345",
     "display_name": "Central African Republic (CF) [+236]",
-    "mask": null,
+    "mask": "00 00 00 00",
     "full_example_with_plus_sign": "+23670012345",
     "display_name_no_e164_cc": "Central African Republic (CF)",
     "e164_key": "236-CF-0"
@@ -638,7 +638,7 @@
     "name": "Chad",
     "example": "63012345",
     "display_name": "Chad (TD) [+235]",
-    "mask": null,
+    "mask": "00 00 00 00",
     "full_example_with_plus_sign": "+23563012345",
     "display_name_no_e164_cc": "Chad (TD)",
     "e164_key": "235-TD-0"
@@ -652,7 +652,7 @@
     "name": "Chile",
     "example": "961234567",
     "display_name": "Chile (CL) [+56]",
-    "mask": null,
+    "mask": "0 0000 0000",
     "full_example_with_plus_sign": "+56961234567",
     "display_name_no_e164_cc": "Chile (CL)",
     "e164_key": "56-CL-0"
@@ -666,7 +666,7 @@
     "name": "China",
     "example": "13123456789",
     "display_name": "China (CN) [+86]",
-    "mask": null,
+    "mask": "000 0000 0000",
     "full_example_with_plus_sign": "+8613123456789",
     "display_name_no_e164_cc": "China (CN)",
     "e164_key": "86-CN-0"
@@ -678,10 +678,10 @@
     "geographic": true,
     "level": 3,
     "name": "Christmas Island",
-    "example": "987654321",
+    "example": "412345678",
     "display_name": "Christmas Island (CX) [+61]",
-    "mask": null,
-    "full_example_with_plus_sign": "+61987654321",
+    "mask": "000 000 000",
+    "full_example_with_plus_sign": "+61412345678",
     "display_name_no_e164_cc": "Christmas Island (CX)",
     "e164_key": "61-CX-0"
   },
@@ -692,10 +692,10 @@
     "geographic": true,
     "level": 3,
     "name": "Cocos [Keeling] Islands",
-    "example": "135792468",
+    "example": "412345678",
     "display_name": "Cocos [Keeling] Islands (CC) [+61]",
-    "mask": null,
-    "full_example_with_plus_sign": "+61135792468",
+    "mask": "000 000 000",
+    "full_example_with_plus_sign": "+61412345678",
     "display_name_no_e164_cc": "Cocos [Keeling] Islands (CC)",
     "e164_key": "61-CC-0"
   },
@@ -708,7 +708,7 @@
     "name": "Colombia",
     "example": "3211234567",
     "display_name": "Colombia (CO) [+57]",
-    "mask": null,
+    "mask": "000 000 0000",
     "full_example_with_plus_sign": "+573211234567",
     "display_name_no_e164_cc": "Colombia (CO)",
     "e164_key": "57-CO-0"
@@ -722,7 +722,7 @@
     "name": "Comoros",
     "example": "3212345",
     "display_name": "Comoros (KM) [+269]",
-    "mask": null,
+    "mask": "000 00 00",
     "full_example_with_plus_sign": "+2693212345",
     "display_name_no_e164_cc": "Comoros (KM)",
     "e164_key": "269-KM-0"
@@ -736,7 +736,7 @@
     "name": "Democratic Republic Congo",
     "example": "991234567",
     "display_name": "Democratic Republic Congo (CD) [+243]",
-    "mask": null,
+    "mask": "000 000 000",
     "full_example_with_plus_sign": "+243991234567",
     "display_name_no_e164_cc": "Democratic Republic Congo (CD)",
     "e164_key": "243-CD-0"
@@ -750,7 +750,7 @@
     "name": "Republic of Congo",
     "example": "061234567",
     "display_name": "Republic of Congo (CG) [+242]",
-    "mask": null,
+    "mask": "00 000 0000",
     "full_example_with_plus_sign": "+242061234567",
     "display_name_no_e164_cc": "Republic of Congo (CG)",
     "e164_key": "242-CG-0"
@@ -764,7 +764,7 @@
     "name": "Cook Islands",
     "example": "71234",
     "display_name": "Cook Islands (CK) [+682]",
-    "mask": null,
+    "mask": "00 000",
     "full_example_with_plus_sign": "+68271234",
     "display_name_no_e164_cc": "Cook Islands (CK)",
     "e164_key": "682-CK-0"
@@ -778,7 +778,7 @@
     "name": "Costa Rica",
     "example": "83123456",
     "display_name": "Costa Rica (CR) [+506]",
-    "mask": null,
+    "mask": "0000 0000",
     "full_example_with_plus_sign": "+50683123456",
     "display_name_no_e164_cc": "Costa Rica (CR)",
     "e164_key": "506-CR-0"
@@ -790,10 +790,10 @@
     "geographic": true,
     "level": 1,
     "name": "Côte d'Ivoire",
-    "example": "01234567",
+    "example": "0701234567",
     "display_name": "Côte d'Ivoire (CI) [+225]",
-    "mask": null,
-    "full_example_with_plus_sign": "+22501234567",
+    "mask": "00 00 00 00 00",
+    "full_example_with_plus_sign": "+2250701234567",
     "display_name_no_e164_cc": "Côte d'Ivoire (CI)",
     "e164_key": "225-CI-0"
   },
@@ -806,7 +806,7 @@
     "name": "Croatia",
     "example": "912345678",
     "display_name": "Croatia (HR) [+385]",
-    "mask": null,
+    "mask": "00 000 0000",
     "full_example_with_plus_sign": "+385912345678",
     "display_name_no_e164_cc": "Croatia (HR)",
     "e164_key": "385-HR-0"
@@ -820,7 +820,7 @@
     "name": "Cuba",
     "example": "51234567",
     "display_name": "Cuba (CU) [+53]",
-    "mask": null,
+    "mask": "0 000 0000",
     "full_example_with_plus_sign": "+5351234567",
     "display_name_no_e164_cc": "Cuba (CU)",
     "e164_key": "53-CU-0"
@@ -834,7 +834,7 @@
     "name": "Curaçao",
     "example": "95181234",
     "display_name": "Curaçao (CW) [+599]",
-    "mask": null,
+    "mask": "0 000 0000",
     "full_example_with_plus_sign": "+59995181234",
     "display_name_no_e164_cc": "Curaçao (CW)",
     "e164_key": "599-CW-0"
@@ -862,7 +862,7 @@
     "name": "Czechia",
     "example": "601123456",
     "display_name": "Czechia (CZ) [+420]",
-    "mask": null,
+    "mask": "000 000 000",
     "full_example_with_plus_sign": "+420601123456",
     "display_name_no_e164_cc": "Czechia (CZ)",
     "e164_key": "420-CZ-0"
@@ -876,7 +876,7 @@
     "name": "Denmark",
     "example": "20123456",
     "display_name": "Denmark (DK) [+45]",
-    "mask": null,
+    "mask": "00 00 00 00",
     "full_example_with_plus_sign": "+4520123456",
     "display_name_no_e164_cc": "Denmark (DK)",
     "e164_key": "45-DK-0"
@@ -890,7 +890,7 @@
     "name": "Djibouti",
     "example": "77831001",
     "display_name": "Djibouti (DJ) [+253]",
-    "mask": null,
+    "mask": "00 00 00 00",
     "full_example_with_plus_sign": "+25377831001",
     "display_name_no_e164_cc": "Djibouti (DJ)",
     "e164_key": "253-DJ-0"
@@ -904,7 +904,7 @@
     "name": "Dominica",
     "example": "7672251234",
     "display_name": "Dominica (DM) [+1]",
-    "mask": null,
+    "mask": "000 000 0000",
     "full_example_with_plus_sign": "+17672251234",
     "display_name_no_e164_cc": "Dominica (DM)",
     "e164_key": "1-DM-0"
@@ -918,7 +918,7 @@
     "name": "Dominican Republic",
     "example": "8092345678",
     "display_name": "Dominican Republic (DO) [+1]",
-    "mask": null,
+    "mask": "000 000 0000",
     "full_example_with_plus_sign": "+18092345678",
     "display_name_no_e164_cc": "Dominican Republic (DO)",
     "e164_key": "1-DO-0"
@@ -932,7 +932,7 @@
     "name": "Timor‑Leste",
     "example": "77212345",
     "display_name": "Timor‑Leste (TL) [+670]",
-    "mask": null,
+    "mask": "0000 0000",
     "full_example_with_plus_sign": "+67077212345",
     "display_name_no_e164_cc": "Timor‑Leste (TL)",
     "e164_key": "670-TL-0"
@@ -944,10 +944,10 @@
     "geographic": true,
     "level": 1,
     "name": "Ecuador",
-    "example": "99123456",
+    "example": "991234567",
     "display_name": "Ecuador (EC) [+593]",
-    "mask": null,
-    "full_example_with_plus_sign": "+59399123456",
+    "mask": "0 0000 0000",
+    "full_example_with_plus_sign": "+593991234567",
     "display_name_no_e164_cc": "Ecuador (EC)",
     "e164_key": "593-EC-0"
   },
@@ -960,7 +960,7 @@
     "name": "Egypt",
     "example": "1001234567",
     "display_name": "Egypt (EG) [+20]",
-    "mask": null,
+    "mask": "00 0000 0000",
     "full_example_with_plus_sign": "+201001234567",
     "display_name_no_e164_cc": "Egypt (EG)",
     "e164_key": "20-EG-0"
@@ -974,7 +974,7 @@
     "name": "El Salvador",
     "example": "70123456",
     "display_name": "El Salvador (SV) [+503]",
-    "mask": null,
+    "mask": "0000 0000",
     "full_example_with_plus_sign": "+50370123456",
     "display_name_no_e164_cc": "El Salvador (SV)",
     "e164_key": "503-SV-0"
@@ -988,7 +988,7 @@
     "name": "Equatorial Guinea",
     "example": "222123456",
     "display_name": "Equatorial Guinea (GQ) [+240]",
-    "mask": null,
+    "mask": "000 000 000",
     "full_example_with_plus_sign": "+240222123456",
     "display_name_no_e164_cc": "Equatorial Guinea (GQ)",
     "e164_key": "240-GQ-0"
@@ -1002,7 +1002,7 @@
     "name": "Eritrea",
     "example": "7123456",
     "display_name": "Eritrea (ER) [+291]",
-    "mask": null,
+    "mask": "0 000 000",
     "full_example_with_plus_sign": "+2917123456",
     "display_name_no_e164_cc": "Eritrea (ER)",
     "e164_key": "291-ER-0"
@@ -1016,7 +1016,7 @@
     "name": "Estonia",
     "example": "51234567",
     "display_name": "Estonia (EE) [+372]",
-    "mask": null,
+    "mask": "0000 0000",
     "full_example_with_plus_sign": "+37251234567",
     "display_name_no_e164_cc": "Estonia (EE)",
     "e164_key": "372-EE-0"
@@ -1030,7 +1030,7 @@
     "name": "Eswatini",
     "example": "76123456",
     "display_name": "Eswatini (SZ) [+268]",
-    "mask": null,
+    "mask": "0000 0000",
     "full_example_with_plus_sign": "+26876123456",
     "display_name_no_e164_cc": "Eswatini (SZ)",
     "e164_key": "268-SZ-0"
@@ -1044,7 +1044,7 @@
     "name": "Ethiopia",
     "example": "911234567",
     "display_name": "Ethiopia (ET) [+251]",
-    "mask": null,
+    "mask": "00 000 0000",
     "full_example_with_plus_sign": "+251911234567",
     "display_name_no_e164_cc": "Ethiopia (ET)",
     "e164_key": "251-ET-0"
@@ -1058,7 +1058,7 @@
     "name": "Falkland Islands [Islas Malvinas]",
     "example": "51234",
     "display_name": "Falkland Islands [Islas Malvinas] (FK) [+500]",
-    "mask": null,
+    "mask": "00000",
     "full_example_with_plus_sign": "+50051234",
     "display_name_no_e164_cc": "Falkland Islands [Islas Malvinas] (FK)",
     "e164_key": "500-FK-0"
@@ -1072,7 +1072,7 @@
     "name": "Faroe Islands",
     "example": "211234",
     "display_name": "Faroe Islands (FO) [+298]",
-    "mask": null,
+    "mask": "000000",
     "full_example_with_plus_sign": "+298211234",
     "display_name_no_e164_cc": "Faroe Islands (FO)",
     "e164_key": "298-FO-0"
@@ -1086,7 +1086,7 @@
     "name": "Fiji",
     "example": "7012345",
     "display_name": "Fiji (FJ) [+679]",
-    "mask": null,
+    "mask": "000 0000",
     "full_example_with_plus_sign": "+6797012345",
     "display_name_no_e164_cc": "Fiji (FJ)",
     "e164_key": "679-FJ-0"
@@ -1114,7 +1114,7 @@
     "name": "France",
     "example": "612345678",
     "display_name": "France (FR) [+33]",
-    "mask": null,
+    "mask": "0 00 00 00 00",
     "full_example_with_plus_sign": "+33612345678",
     "display_name_no_e164_cc": "France (FR)",
     "e164_key": "33-FR-0"
@@ -1128,7 +1128,7 @@
     "name": "French Guiana",
     "example": "694201234",
     "display_name": "French Guiana (GF) [+594]",
-    "mask": null,
+    "mask": "000 00 00 00",
     "full_example_with_plus_sign": "+594694201234",
     "display_name_no_e164_cc": "French Guiana (GF)",
     "e164_key": "594-GF-0"
@@ -1140,10 +1140,10 @@
     "geographic": true,
     "level": 1,
     "name": "French Polynesia",
-    "example": "212345",
+    "example": "87123456",
     "display_name": "French Polynesia (PF) [+689]",
-    "mask": null,
-    "full_example_with_plus_sign": "+689212345",
+    "mask": "00 00 00 00",
+    "full_example_with_plus_sign": "+68987123456",
     "display_name_no_e164_cc": "French Polynesia (PF)",
     "e164_key": "689-PF-0"
   },
@@ -1310,7 +1310,7 @@
     "name": "Guernsey",
     "example": "7781123456",
     "display_name": "Guernsey (GG) [+44]",
-    "mask": null,
+    "mask": "0000 000000",
     "full_example_with_plus_sign": "+447781123456",
     "display_name_no_e164_cc": "Guernsey (GG)",
     "e164_key": "44-GG-0"
@@ -1352,7 +1352,7 @@
     "name": "Guyana",
     "example": "6091234",
     "display_name": "Guyana (GY) [+592]",
-    "mask": null,
+    "mask": "000 0000",
     "full_example_with_plus_sign": "+5926091234",
     "display_name_no_e164_cc": "Guyana (GY)",
     "e164_key": "592-GY-0"
@@ -1450,7 +1450,7 @@
     "name": "India",
     "example": "9123456789",
     "display_name": "India (IN) [+91]",
-    "mask": null,
+    "mask": "00000 00000",
     "full_example_with_plus_sign": "+919123456789",
     "display_name_no_e164_cc": "India (IN)",
     "e164_key": "91-IN-0"
@@ -1492,7 +1492,7 @@
     "name": "Iraq",
     "example": "7912345678",
     "display_name": "Iraq (IQ) [+964]",
-    "mask": null,
+    "mask": "000 000 0000",
     "full_example_with_plus_sign": "+9647912345678",
     "display_name_no_e164_cc": "Iraq (IQ)",
     "e164_key": "964-IQ-0"
@@ -1506,7 +1506,7 @@
     "name": "Ireland",
     "example": "850123456",
     "display_name": "Ireland (IE) [+353]",
-    "mask": null,
+    "mask": "00 000 0000",
     "full_example_with_plus_sign": "+353850123456",
     "display_name_no_e164_cc": "Ireland (IE)",
     "e164_key": "353-IE-0"
@@ -1520,7 +1520,7 @@
     "name": "Isle of Man",
     "example": "7924123456",
     "display_name": "Isle of Man (IM) [+44]",
-    "mask": null,
+    "mask": "0000 000000",
     "full_example_with_plus_sign": "+447924123456",
     "display_name_no_e164_cc": "Isle of Man (IM)",
     "e164_key": "44-IM-0"
@@ -1548,7 +1548,7 @@
     "name": "Italy",
     "example": "3123456789",
     "display_name": "Italy (IT) [+39]",
-    "mask": null,
+    "mask": "000 000 0000",
     "full_example_with_plus_sign": "+393123456789",
     "display_name_no_e164_cc": "Italy (IT)",
     "e164_key": "39-IT-0"
@@ -1562,7 +1562,7 @@
     "name": "Jamaica",
     "example": "8762101234",
     "display_name": "Jamaica (JM) [+1]",
-    "mask": null,
+    "mask": "000 000 0000",
     "full_example_with_plus_sign": "+18762101234",
     "display_name_no_e164_cc": "Jamaica (JM)",
     "e164_key": "1-JM-0"
@@ -1576,7 +1576,7 @@
     "name": "Japan",
     "example": "7012345678",
     "display_name": "Japan (JP) [+81]",
-    "mask": null,
+    "mask": "00 0000 0000",
     "full_example_with_plus_sign": "+817012345678",
     "display_name_no_e164_cc": "Japan (JP)",
     "e164_key": "81-JP-0"
@@ -1590,7 +1590,7 @@
     "name": "Jersey",
     "example": "7797123456",
     "display_name": "Jersey (JE) [+44]",
-    "mask": null,
+    "mask": "0000 000000",
     "full_example_with_plus_sign": "+447797123456",
     "display_name_no_e164_cc": "Jersey (JE)",
     "e164_key": "44-JE-0"
@@ -1604,7 +1604,7 @@
     "name": "Jordan",
     "example": "790123456",
     "display_name": "Jordan (JO) [+962]",
-    "mask": null,
+    "mask": "0 0000 0000",
     "full_example_with_plus_sign": "+962790123456",
     "display_name_no_e164_cc": "Jordan (JO)",
     "e164_key": "962-JO-0"
@@ -1646,7 +1646,7 @@
     "name": "Kenya",
     "example": "712123456",
     "display_name": "Kenya (KE) [+254]",
-    "mask": null,
+    "mask": "000 000 000",
     "full_example_with_plus_sign": "+254712123456",
     "display_name_no_e164_cc": "Kenya (KE)",
     "e164_key": "254-KE-0"
@@ -1660,7 +1660,7 @@
     "name": "Kiribati",
     "example": "61234",
     "display_name": "Kiribati (KI) [+686]",
-    "mask": null,
+    "mask": "00000",
     "full_example_with_plus_sign": "+68661234",
     "display_name_no_e164_cc": "Kiribati (KI)",
     "e164_key": "686-KI-0"
@@ -1672,10 +1672,10 @@
     "geographic": true,
     "level": 2,
     "name": "Kosovo",
-    "example": "",
+    "example": "44123456",
     "display_name": "Kosovo (XK) [+383]",
-    "mask": null,
-    "full_example_with_plus_sign": null,
+    "mask": "00 000 000",
+    "full_example_with_plus_sign": "+38344123456",
     "display_name_no_e164_cc": "Kosovo (XK)",
     "e164_key": "383-XK-0"
   },
@@ -1688,7 +1688,7 @@
     "name": "Kuwait",
     "example": "50012345",
     "display_name": "Kuwait (KW) [+965]",
-    "mask": null,
+    "mask": "0000 0000",
     "full_example_with_plus_sign": "+96550012345",
     "display_name_no_e164_cc": "Kuwait (KW)",
     "e164_key": "965-KW-0"
@@ -1702,7 +1702,7 @@
     "name": "Laos",
     "example": "2023123456",
     "display_name": "Laos (LA) [+856]",
-    "mask": null,
+    "mask": "00 00 000 000",
     "full_example_with_plus_sign": "+8562023123456",
     "display_name_no_e164_cc": "Laos (LA)",
     "e164_key": "856-LA-0"
@@ -1716,7 +1716,7 @@
     "name": "Latvia",
     "example": "21234567",
     "display_name": "Latvia (LV) [+371]",
-    "mask": null,
+    "mask": "00 000 000",
     "full_example_with_plus_sign": "+37121234567",
     "display_name_no_e164_cc": "Latvia (LV)",
     "e164_key": "371-LV-0"
@@ -1730,7 +1730,7 @@
     "name": "Lebanon",
     "example": "71123456",
     "display_name": "Lebanon (LB) [+961]",
-    "mask": null,
+    "mask": "00 000 000",
     "full_example_with_plus_sign": "+96171123456",
     "display_name_no_e164_cc": "Lebanon (LB)",
     "e164_key": "961-LB-0"
@@ -1744,7 +1744,7 @@
     "name": "Lesotho",
     "example": "50123456",
     "display_name": "Lesotho (LS) [+266]",
-    "mask": null,
+    "mask": "0000 0000",
     "full_example_with_plus_sign": "+26650123456",
     "display_name_no_e164_cc": "Lesotho (LS)",
     "e164_key": "266-LS-0"
@@ -1758,7 +1758,7 @@
     "name": "Liberia",
     "example": "4612345",
     "display_name": "Liberia (LR) [+231]",
-    "mask": null,
+    "mask": "0 000 000",
     "full_example_with_plus_sign": "+2314612345",
     "display_name_no_e164_cc": "Liberia (LR)",
     "e164_key": "231-LR-0"
@@ -1772,7 +1772,7 @@
     "name": "Libya",
     "example": "912345678",
     "display_name": "Libya (LY) [+218]",
-    "mask": null,
+    "mask": "00 000 0000",
     "full_example_with_plus_sign": "+218912345678",
     "display_name_no_e164_cc": "Libya (LY)",
     "e164_key": "218-LY-0"
@@ -1786,7 +1786,7 @@
     "name": "Liechtenstein",
     "example": "661234567",
     "display_name": "Liechtenstein (LI) [+423]",
-    "mask": null,
+    "mask": "000 000 000",
     "full_example_with_plus_sign": "+423661234567",
     "display_name_no_e164_cc": "Liechtenstein (LI)",
     "e164_key": "423-LI-0"
@@ -1800,7 +1800,7 @@
     "name": "Lithuania",
     "example": "61234567",
     "display_name": "Lithuania (LT) [+370]",
-    "mask": null,
+    "mask": "000 00000",
     "full_example_with_plus_sign": "+37061234567",
     "display_name_no_e164_cc": "Lithuania (LT)",
     "e164_key": "370-LT-0"
@@ -1814,7 +1814,7 @@
     "name": "Luxembourg",
     "example": "628123456",
     "display_name": "Luxembourg (LU) [+352]",
-    "mask": null,
+    "mask": "000 000 000",
     "full_example_with_plus_sign": "+352628123456",
     "display_name_no_e164_cc": "Luxembourg (LU)",
     "e164_key": "352-LU-0"
@@ -1828,7 +1828,7 @@
     "name": "Macau",
     "example": "66123456",
     "display_name": "Macau (MO) [+853]",
-    "mask": null,
+    "mask": "0000 0000",
     "full_example_with_plus_sign": "+85366123456",
     "display_name_no_e164_cc": "Macau (MO)",
     "e164_key": "853-MO-0"
@@ -1842,7 +1842,7 @@
     "name": "Macedonia",
     "example": "72345678",
     "display_name": "Macedonia (MK) [+389]",
-    "mask": null,
+    "mask": "00 000 000",
     "full_example_with_plus_sign": "+38972345678",
     "display_name_no_e164_cc": "Macedonia (MK)",
     "e164_key": "389-MK-0"
@@ -1856,7 +1856,7 @@
     "name": "Madagascar",
     "example": "301234567",
     "display_name": "Madagascar (MG) [+261]",
-    "mask": null,
+    "mask": "00 00 000 00",
     "full_example_with_plus_sign": "+261301234567",
     "display_name_no_e164_cc": "Madagascar (MG)",
     "e164_key": "261-MG-0"
@@ -1870,7 +1870,7 @@
     "name": "Malawi",
     "example": "991234567",
     "display_name": "Malawi (MW) [+265]",
-    "mask": null,
+    "mask": "00 000 0000",
     "full_example_with_plus_sign": "+265991234567",
     "display_name_no_e164_cc": "Malawi (MW)",
     "e164_key": "265-MW-0"
@@ -1884,7 +1884,7 @@
     "name": "Malaysia",
     "example": "123456789",
     "display_name": "Malaysia (MY) [+60]",
-    "mask": null,
+    "mask": "00-000 0000",
     "full_example_with_plus_sign": "+60123456789",
     "display_name_no_e164_cc": "Malaysia (MY)",
     "e164_key": "60-MY-0"
@@ -1898,7 +1898,7 @@
     "name": "Maldives",
     "example": "7712345",
     "display_name": "Maldives (MV) [+960]",
-    "mask": null,
+    "mask": "000 0000",
     "full_example_with_plus_sign": "+9607712345",
     "display_name_no_e164_cc": "Maldives (MV)",
     "e164_key": "960-MV-0"
@@ -1926,7 +1926,7 @@
     "name": "Mali",
     "example": "65012345",
     "display_name": "Mali (ML) [+223]",
-    "mask": null,
+    "mask": "00 00 00 00",
     "full_example_with_plus_sign": "+22365012345",
     "display_name_no_e164_cc": "Mali (ML)",
     "e164_key": "223-ML-0"
@@ -1940,7 +1940,7 @@
     "name": "Malta",
     "example": "96961234",
     "display_name": "Malta (MT) [+356]",
-    "mask": null,
+    "mask": "0000 0000",
     "full_example_with_plus_sign": "+35696961234",
     "display_name_no_e164_cc": "Malta (MT)",
     "e164_key": "356-MT-0"
@@ -1954,7 +1954,7 @@
     "name": "Marshall Islands",
     "example": "2351234",
     "display_name": "Marshall Islands (MH) [+692]",
-    "mask": null,
+    "mask": "000 0000",
     "full_example_with_plus_sign": "+6922351234",
     "display_name_no_e164_cc": "Marshall Islands (MH)",
     "e164_key": "692-MH-0"
@@ -1968,7 +1968,7 @@
     "name": "Martinique",
     "example": "696201234",
     "display_name": "Martinique (MQ) [+596]",
-    "mask": null,
+    "mask": "000 00 00 00",
     "full_example_with_plus_sign": "+596696201234",
     "display_name_no_e164_cc": "Martinique (MQ)",
     "e164_key": "596-MQ-0"
@@ -1982,7 +1982,7 @@
     "name": "Mauritania",
     "example": "22123456",
     "display_name": "Mauritania (MR) [+222]",
-    "mask": null,
+    "mask": "00 00 00 00",
     "full_example_with_plus_sign": "+22222123456",
     "display_name_no_e164_cc": "Mauritania (MR)",
     "e164_key": "222-MR-0"
@@ -1994,10 +1994,10 @@
     "geographic": true,
     "level": 1,
     "name": "Mauritius",
-    "example": "2512345",
+    "example": "52512345",
     "display_name": "Mauritius (MU) [+230]",
-    "mask": null,
-    "full_example_with_plus_sign": "+2302512345",
+    "mask": "0000 0000",
+    "full_example_with_plus_sign": "+23052512345",
     "display_name_no_e164_cc": "Mauritius (MU)",
     "e164_key": "230-MU-0"
   },
@@ -2010,7 +2010,7 @@
     "name": "Mayotte",
     "example": "639123456",
     "display_name": "Mayotte (YT) [+262]",
-    "mask": null,
+    "mask": "000 00 00 00",
     "full_example_with_plus_sign": "+262639123456",
     "display_name_no_e164_cc": "Mayotte (YT)",
     "e164_key": "262-YT-0"
@@ -2038,7 +2038,7 @@
     "name": "Micronesia",
     "example": "3501234",
     "display_name": "Micronesia (FM) [+691]",
-    "mask": null,
+    "mask": "000 0000",
     "full_example_with_plus_sign": "+6913501234",
     "display_name_no_e164_cc": "Micronesia (FM)",
     "e164_key": "691-FM-0"
@@ -2052,7 +2052,7 @@
     "name": "Monaco",
     "example": "612345678",
     "display_name": "Monaco (MC) [+377]",
-    "mask": null,
+    "mask": "0 00 00 00 00",
     "full_example_with_plus_sign": "+377612345678",
     "display_name_no_e164_cc": "Monaco (MC)",
     "e164_key": "377-MC-0"
@@ -2066,7 +2066,7 @@
     "name": "Mongolia",
     "example": "88123456",
     "display_name": "Mongolia (MN) [+976]",
-    "mask": null,
+    "mask": "0000 0000",
     "full_example_with_plus_sign": "+97688123456",
     "display_name_no_e164_cc": "Mongolia (MN)",
     "e164_key": "976-MN-0"
@@ -2080,7 +2080,7 @@
     "name": "Montenegro",
     "example": "67622901",
     "display_name": "Montenegro (ME) [+382]",
-    "mask": null,
+    "mask": "00 000 000",
     "full_example_with_plus_sign": "+38267622901",
     "display_name_no_e164_cc": "Montenegro (ME)",
     "e164_key": "382-ME-0"
@@ -2094,7 +2094,7 @@
     "name": "Montserrat",
     "example": "6644923456",
     "display_name": "Montserrat (MS) [+1]",
-    "mask": null,
+    "mask": "000 000 0000",
     "full_example_with_plus_sign": "+16644923456",
     "display_name_no_e164_cc": "Montserrat (MS)",
     "e164_key": "1-MS-0"
@@ -2108,7 +2108,7 @@
     "name": "Morocco",
     "example": "650123456",
     "display_name": "Morocco (MA) [+212]",
-    "mask": null,
+    "mask": "0 00 00 00 00",
     "full_example_with_plus_sign": "+212650123456",
     "display_name_no_e164_cc": "Morocco (MA)",
     "e164_key": "212-MA-0"
@@ -2122,7 +2122,7 @@
     "name": "Mozambique",
     "example": "821234567",
     "display_name": "Mozambique (MZ) [+258]",
-    "mask": null,
+    "mask": "00 000 0000",
     "full_example_with_plus_sign": "+258821234567",
     "display_name_no_e164_cc": "Mozambique (MZ)",
     "e164_key": "258-MZ-0"
@@ -2136,7 +2136,7 @@
     "name": "Myanmar [Burma]",
     "example": "92123456",
     "display_name": "Myanmar [Burma] (MM) [+95]",
-    "mask": null,
+    "mask": "0 000 0000",
     "full_example_with_plus_sign": "+9592123456",
     "display_name_no_e164_cc": "Myanmar [Burma] (MM)",
     "e164_key": "95-MM-0"
@@ -2150,7 +2150,7 @@
     "name": "Namibia",
     "example": "811234567",
     "display_name": "Namibia (NA) [+264]",
-    "mask": null,
+    "mask": "00 000 0000",
     "full_example_with_plus_sign": "+264811234567",
     "display_name_no_e164_cc": "Namibia (NA)",
     "e164_key": "264-NA-0"
@@ -2164,7 +2164,7 @@
     "name": "Nauru",
     "example": "5551234",
     "display_name": "Nauru (NR) [+674]",
-    "mask": null,
+    "mask": "000 0000",
     "full_example_with_plus_sign": "+6745551234",
     "display_name_no_e164_cc": "Nauru (NR)",
     "e164_key": "674-NR-0"
@@ -2178,7 +2178,7 @@
     "name": "Nepal",
     "example": "9841234567",
     "display_name": "Nepal (NP) [+977]",
-    "mask": null,
+    "mask": "000 0000000",
     "full_example_with_plus_sign": "+9779841234567",
     "display_name_no_e164_cc": "Nepal (NP)",
     "e164_key": "977-NP-0"
@@ -2192,7 +2192,7 @@
     "name": "Netherlands",
     "example": "612345678",
     "display_name": "Netherlands (NL) [+31]",
-    "mask": null,
+    "mask": "0 0000 0000",
     "full_example_with_plus_sign": "+31612345678",
     "display_name_no_e164_cc": "Netherlands (NL)",
     "e164_key": "31-NL-0"
@@ -2206,7 +2206,7 @@
     "name": "New Caledonia",
     "example": "751234",
     "display_name": "New Caledonia (NC) [+687]",
-    "mask": null,
+    "mask": "00.00.00",
     "full_example_with_plus_sign": "+687751234",
     "display_name_no_e164_cc": "New Caledonia (NC)",
     "e164_key": "687-NC-0"
@@ -2220,7 +2220,7 @@
     "name": "New Zealand",
     "example": "211234567",
     "display_name": "New Zealand (NZ) [+64]",
-    "mask": null,
+    "mask": "00 000 0000",
     "full_example_with_plus_sign": "+64211234567",
     "display_name_no_e164_cc": "New Zealand (NZ)",
     "e164_key": "64-NZ-0"
@@ -2234,7 +2234,7 @@
     "name": "Nicaragua",
     "example": "81234567",
     "display_name": "Nicaragua (NI) [+505]",
-    "mask": null,
+    "mask": "0000 0000",
     "full_example_with_plus_sign": "+50581234567",
     "display_name_no_e164_cc": "Nicaragua (NI)",
     "e164_key": "505-NI-0"
@@ -2246,10 +2246,10 @@
     "geographic": true,
     "level": 1,
     "name": "Niger",
-    "example": "93123456",
+    "example": "91234567",
     "display_name": "Niger (NE) [+227]",
-    "mask": null,
-    "full_example_with_plus_sign": "+22793123456",
+    "mask": "00 00 00 00",
+    "full_example_with_plus_sign": "+22791234567",
     "display_name_no_e164_cc": "Niger (NE)",
     "e164_key": "227-NE-0"
   },
@@ -2262,7 +2262,7 @@
     "name": "Nigeria",
     "example": "8021234567",
     "display_name": "Nigeria (NG) [+234]",
-    "mask": null,
+    "mask": "000 000 0000",
     "full_example_with_plus_sign": "+2348021234567",
     "display_name_no_e164_cc": "Nigeria (NG)",
     "e164_key": "234-NG-0"
@@ -2274,10 +2274,10 @@
     "geographic": true,
     "level": 1,
     "name": "Niue",
-    "example": "1234",
+    "example": "4123",
     "display_name": "Niue (NU) [+683]",
-    "mask": null,
-    "full_example_with_plus_sign": "+6831234",
+    "mask": "0000",
+    "full_example_with_plus_sign": "+6834123",
     "display_name_no_e164_cc": "Niue (NU)",
     "e164_key": "683-NU-0"
   },
@@ -2290,7 +2290,7 @@
     "name": "Norfolk Island",
     "example": "381234",
     "display_name": "Norfolk Island (NF) [+672]",
-    "mask": null,
+    "mask": "000000",
     "full_example_with_plus_sign": "+672381234",
     "display_name_no_e164_cc": "Norfolk Island (NF)",
     "e164_key": "672-NF-0"
@@ -2304,7 +2304,7 @@
     "name": "North Korea",
     "example": "1921234567",
     "display_name": "North Korea (KP) [+850]",
-    "mask": null,
+    "mask": "000 000 0000",
     "full_example_with_plus_sign": "+8501921234567",
     "display_name_no_e164_cc": "North Korea (KP)",
     "e164_key": "850-KP-0"
@@ -2318,7 +2318,7 @@
     "name": "Northern Mariana Islands",
     "example": "6702345678",
     "display_name": "Northern Mariana Islands (MP) [+1]",
-    "mask": null,
+    "mask": "000 000 0000",
     "full_example_with_plus_sign": "+16702345678",
     "display_name_no_e164_cc": "Northern Mariana Islands (MP)",
     "e164_key": "1-MP-0"
@@ -2346,7 +2346,7 @@
     "name": "Oman",
     "example": "92123456",
     "display_name": "Oman (OM) [+968]",
-    "mask": null,
+    "mask": "0000 0000",
     "full_example_with_plus_sign": "+96892123456",
     "display_name_no_e164_cc": "Oman (OM)",
     "e164_key": "968-OM-0"
@@ -2360,7 +2360,7 @@
     "name": "Pakistan",
     "example": "3012345678",
     "display_name": "Pakistan (PK) [+92]",
-    "mask": null,
+    "mask": "000 0000000",
     "full_example_with_plus_sign": "+923012345678",
     "display_name_no_e164_cc": "Pakistan (PK)",
     "e164_key": "92-PK-0"
@@ -2374,7 +2374,7 @@
     "name": "Palau",
     "example": "6201234",
     "display_name": "Palau (PW) [+680]",
-    "mask": null,
+    "mask": "000 0000",
     "full_example_with_plus_sign": "+6806201234",
     "display_name_no_e164_cc": "Palau (PW)",
     "e164_key": "680-PW-0"
@@ -2388,7 +2388,7 @@
     "name": "Palestinian Territories",
     "example": "599123456",
     "display_name": "Palestinian Territories (PS) [+970]",
-    "mask": null,
+    "mask": "00 000 0000",
     "full_example_with_plus_sign": "+970599123456",
     "display_name_no_e164_cc": "Palestinian Territories (PS)",
     "e164_key": "970-PS-0"
@@ -2402,7 +2402,7 @@
     "name": "Panama",
     "example": "60012345",
     "display_name": "Panama (PA) [+507]",
-    "mask": null,
+    "mask": "0000-0000",
     "full_example_with_plus_sign": "+50760012345",
     "display_name_no_e164_cc": "Panama (PA)",
     "e164_key": "507-PA-0"
@@ -2416,7 +2416,7 @@
     "name": "Papua New Guinea",
     "example": "6812345",
     "display_name": "Papua New Guinea (PG) [+675]",
-    "mask": null,
+    "mask": "000 0000",
     "full_example_with_plus_sign": "+6756812345",
     "display_name_no_e164_cc": "Papua New Guinea (PG)",
     "e164_key": "675-PG-0"
@@ -2430,7 +2430,7 @@
     "name": "Paraguay",
     "example": "961456789",
     "display_name": "Paraguay (PY) [+595]",
-    "mask": null,
+    "mask": "000 000000",
     "full_example_with_plus_sign": "+595961456789",
     "display_name_no_e164_cc": "Paraguay (PY)",
     "e164_key": "595-PY-0"
@@ -2444,7 +2444,7 @@
     "name": "Peru",
     "example": "912345678",
     "display_name": "Peru (PE) [+51]",
-    "mask": null,
+    "mask": "000 000 000",
     "full_example_with_plus_sign": "+51912345678",
     "display_name_no_e164_cc": "Peru (PE)",
     "e164_key": "51-PE-0"
@@ -2458,7 +2458,7 @@
     "name": "Philippines",
     "example": "9051234567",
     "display_name": "Philippines (PH) [+63]",
-    "mask": null,
+    "mask": "000 000 0000",
     "full_example_with_plus_sign": "+639051234567",
     "display_name_no_e164_cc": "Philippines (PH)",
     "e164_key": "63-PH-0"
@@ -2472,7 +2472,7 @@
     "name": "Poland",
     "example": "512345678",
     "display_name": "Poland (PL) [+48]",
-    "mask": null,
+    "mask": "000 000 000",
     "full_example_with_plus_sign": "+48512345678",
     "display_name_no_e164_cc": "Poland (PL)",
     "e164_key": "48-PL-0"
@@ -2486,7 +2486,7 @@
     "name": "Portugal",
     "example": "912345678",
     "display_name": "Portugal (PT) [+351]",
-    "mask": null,
+    "mask": "000 000 000",
     "full_example_with_plus_sign": "+351912345678",
     "display_name_no_e164_cc": "Portugal (PT)",
     "e164_key": "351-PT-0"
@@ -2500,7 +2500,7 @@
     "name": "Puerto Rico",
     "example": "7872345678",
     "display_name": "Puerto Rico (PR) [+1]",
-    "mask": null,
+    "mask": "000 000 0000",
     "full_example_with_plus_sign": "+17872345678",
     "display_name_no_e164_cc": "Puerto Rico (PR)",
     "e164_key": "1-PR-0"
@@ -2514,7 +2514,7 @@
     "name": "Qatar",
     "example": "33123456",
     "display_name": "Qatar (QA) [+974]",
-    "mask": null,
+    "mask": "0000 0000",
     "full_example_with_plus_sign": "+97433123456",
     "display_name_no_e164_cc": "Qatar (QA)",
     "e164_key": "974-QA-0"
@@ -2528,7 +2528,7 @@
     "name": "Réunion",
     "example": "692123456",
     "display_name": "Réunion (RE) [+262]",
-    "mask": null,
+    "mask": "000 00 00 00",
     "full_example_with_plus_sign": "+262692123456",
     "display_name_no_e164_cc": "Réunion (RE)",
     "e164_key": "262-RE-0"
@@ -2542,7 +2542,7 @@
     "name": "Romania",
     "example": "712345678",
     "display_name": "Romania (RO) [+40]",
-    "mask": null,
+    "mask": "000 000 000",
     "full_example_with_plus_sign": "+40712345678",
     "display_name_no_e164_cc": "Romania (RO)",
     "e164_key": "40-RO-0"
@@ -2556,7 +2556,7 @@
     "name": "Rwanda",
     "example": "720123456",
     "display_name": "Rwanda (RW) [+250]",
-    "mask": null,
+    "mask": "000 000 000",
     "full_example_with_plus_sign": "+250720123456",
     "display_name_no_e164_cc": "Rwanda (RW)",
     "e164_key": "250-RW-0"
@@ -2582,10 +2582,10 @@
     "geographic": true,
     "level": 1,
     "name": "Saint Helena",
-    "example": "",
+    "example": "22456",
     "display_name": "Saint Helena (SH) [+290]",
-    "mask": null,
-    "full_example_with_plus_sign": null,
+    "mask": "00000",
+    "full_example_with_plus_sign": "+29022456",
     "display_name_no_e164_cc": "Saint Helena (SH)",
     "e164_key": "290-SH-0"
   },
@@ -2598,7 +2598,7 @@
     "name": "St. Kitts",
     "example": "8695561234",
     "display_name": "St. Kitts (KN) [+1]",
-    "mask": null,
+    "mask": "000 000 0000",
     "full_example_with_plus_sign": "+18695561234",
     "display_name_no_e164_cc": "St. Kitts (KN)",
     "e164_key": "1-KN-0"
@@ -2612,7 +2612,7 @@
     "name": "St. Lucia",
     "example": "7582845678",
     "display_name": "St. Lucia (LC) [+1]",
-    "mask": null,
+    "mask": "000 000 0000",
     "full_example_with_plus_sign": "+17582845678",
     "display_name_no_e164_cc": "St. Lucia (LC)",
     "e164_key": "1-LC-0"
@@ -2640,7 +2640,7 @@
     "name": "Saint Pierre and Miquelon",
     "example": "551234",
     "display_name": "Saint Pierre and Miquelon (PM) [+508]",
-    "mask": null,
+    "mask": "00 00 00",
     "full_example_with_plus_sign": "+508551234",
     "display_name_no_e164_cc": "Saint Pierre and Miquelon (PM)",
     "e164_key": "508-PM-0"
@@ -2654,7 +2654,7 @@
     "name": "St. Vincent",
     "example": "7844301234",
     "display_name": "St. Vincent (VC) [+1]",
-    "mask": null,
+    "mask": "000 000 0000",
     "full_example_with_plus_sign": "+17844301234",
     "display_name_no_e164_cc": "St. Vincent (VC)",
     "e164_key": "1-VC-0"
@@ -2666,10 +2666,10 @@
     "geographic": true,
     "level": 1,
     "name": "Samoa",
-    "example": "601234",
+    "example": "6012345",
     "display_name": "Samoa (WS) [+685]",
-    "mask": null,
-    "full_example_with_plus_sign": "+685601234",
+    "mask": "00 00000",
+    "full_example_with_plus_sign": "+6856012345",
     "display_name_no_e164_cc": "Samoa (WS)",
     "e164_key": "685-WS-0"
   },
@@ -2696,7 +2696,7 @@
     "name": "São Tomé and Príncipe",
     "example": "9812345",
     "display_name": "São Tomé and Príncipe (ST) [+239]",
-    "mask": null,
+    "mask": "00 00000",
     "full_example_with_plus_sign": "+2399812345",
     "display_name_no_e164_cc": "São Tomé and Príncipe (ST)",
     "e164_key": "239-ST-0"
@@ -2710,7 +2710,7 @@
     "name": "Saudi Arabia",
     "example": "512345678",
     "display_name": "Saudi Arabia (SA) [+966]",
-    "mask": null,
+    "mask": "0 0000 0000",
     "full_example_with_plus_sign": "+966512345678",
     "display_name_no_e164_cc": "Saudi Arabia (SA)",
     "e164_key": "966-SA-0"
@@ -3326,7 +3326,7 @@
     "name": "Vanuatu",
     "example": "5912345",
     "display_name": "Vanuatu (VU) [+678]",
-    "mask": null,
+    "mask": "00 00000",
     "full_example_with_plus_sign": "+6785912345",
     "display_name_no_e164_cc": "Vanuatu (VU)",
     "e164_key": "678-VU-0"
@@ -3338,10 +3338,10 @@
     "geographic": true,
     "level": 1,
     "name": "Vatican City",
-    "example": "",
+    "example": "0669812345",
     "display_name": "Vatican City (VA) [+379]",
-    "mask": null,
-    "full_example_with_plus_sign": null,
+    "mask": "00 0000 0000",
+    "full_example_with_plus_sign": "+3790669812345",
     "display_name_no_e164_cc": "Vatican City (VA)",
     "e164_key": "379-VA-0"
   },
@@ -3368,7 +3368,7 @@
     "name": "Vietnam",
     "example": "912345678",
     "display_name": "Vietnam (VN) [+84]",
-    "mask": null,
+    "mask": "000 000 000",
     "full_example_with_plus_sign": "+84912345678",
     "display_name_no_e164_cc": "Vietnam (VN)",
     "e164_key": "84-VN-0"
@@ -3394,10 +3394,10 @@
     "geographic": true,
     "level": 3,
     "name": "Western Sahara",
-    "example": "",
+    "example": "650123456",
     "display_name": "Western Sahara (EH) [+212]",
-    "mask": null,
-    "full_example_with_plus_sign": null,
+    "mask": "0 00 00 00 00",
+    "full_example_with_plus_sign": "+212650123456",
     "display_name_no_e164_cc": "Western Sahara (EH)",
     "e164_key": "212-EH-0"
   },
