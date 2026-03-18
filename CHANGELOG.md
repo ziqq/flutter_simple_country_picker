@@ -1,5 +1,11 @@
-## 0.8.0
+# Changelog
 
+## 0.8.1
+- **ADDED**: optional formatter support for normalizing pasted and preset phone numbers before applying a mask
+- **FIXED**: pasted numbers with full country code or national prefix are now normalized before formatting
+- **FIXED**: formatter no longer strips the selected country code from numbers that belong to another country
+
+## 0.8.0
 - **BREAKING CHANGES**: `CountryLocalizations` is now an `abstract class` — previously `final class`; it can now be extended to provide custom or additional translations
 - **BREAKING CHANGES**: `CountryLocalizations()` constructor no longer accepts a `Locale` argument — the `locale` field has been removed; use `Localizations.localeOf(context)` in your own code if the locale is needed
 - **BREAKING CHANGES**: `CountryLocalizations.of()` no longer throws `ArgumentError` when no delegate is found — falls back to English (`CountryLocalizationsEn`)

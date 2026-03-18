@@ -506,9 +506,71 @@ void main() => group('CountryInputFormatter -', () {
       expect(formatter.maskText('71234567890'), '+7 (123) 456-78-90');
     });
 
+    test('maskText can normalize a full phone before masking', () {
+      final formatter = CountryInputFormatter(
+        mask: '0000 000000',
+        phoneCode: '44',
+        example: '7400123456',
+        shouldTryStripPhoneCode: true,
+        shouldTryStripLeadingPrefix: true,
+      );
+
+      expect(
+        formatter.maskText(
+          '447400123456',
+          normalize: true,
+          allowImplicitPhoneCodeStrip: true,
+          allowLeadingPrefixStrip: true,
+        ),
+        '7400 123456',
+      );
+    });
+
     test('unmaskText extracts digits from masked text', () {
       final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
       expect(formatter.unmaskText('+7 (123) 456-78-90'), '71234567890');
+    });
+  });
+
+  group('phone normalization -', () {
+    test('formatEditUpdate normalizes pasted phone text when configured', () {
+      final formatter = CountryInputFormatter(
+        mask: '000 000 0000',
+        phoneCode: '7',
+        example: '9123456789',
+        shouldTryStripPhoneCode: true,
+        shouldTryStripLeadingPrefix: true,
+      );
+
+      final result = formatter.formatEditUpdate(
+        TextEditingValue.empty,
+        const TextEditingValue(
+          text: '+7 999 123 45 67',
+          selection: TextSelection.collapsed(offset: 16),
+        ),
+      );
+
+      expect(result.text, '999 123 4567');
+    });
+
+    test('formatEditUpdate does not strip another country phone code', () {
+      final formatter = CountryInputFormatter(
+        mask: '00 000 0000',
+        phoneCode: '994',
+        example: '401234567',
+        shouldTryStripPhoneCode: true,
+        shouldTryStripLeadingPrefix: true,
+      );
+
+      final result = formatter.formatEditUpdate(
+        TextEditingValue.empty,
+        const TextEditingValue(
+          text: '+79378032888',
+          selection: TextSelection.collapsed(offset: 12),
+        ),
+      );
+
+      expect(result.text, '79378032888');
     });
   });
 });

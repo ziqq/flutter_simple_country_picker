@@ -92,7 +92,12 @@ class CountryPhoneInput extends StatefulWidget {
   /// Show "World Wide" in countires list.
   final bool showWorldWide;
 
-  /// Replace 8 with +7 in the phone number.
+  /// Normalize a leading national prefix for pasted or preset numbers.
+  ///
+  /// Historically this flag handled Russian numbers that start with `8` before
+  /// `+7`. It now applies a generic normalization rule: when the inserted
+  /// number is longer than the selected country's local example by one digit,
+  /// the leading national prefix is removed before the mask is applied.
   final bool shouldReplace8;
 
   /// Should close the bottom sheet on swipe down gesture.
@@ -154,55 +159,44 @@ class CountryPhoneInput extends StatefulWidget {
 /// Mixin for state [CountryPhoneInput].
 mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
   final ValueNotifier<CountryPickerTheme?> _pickerTheme = ValueNotifier(null);
+  late final _painter = _BackgroundPainter(pickerTheme: _pickerTheme);
   late final TextEditingController _phoneController;
   late final CountryInputFormatter _formater;
   late CountryPhoneController _controller;
   late ValueNotifier<Country> _countryController;
 
+  /// Get current initial country or default to `Russia` if not provided.
+  Country get _initialCountry => widget.initialCountry ?? Country.ru();
+
   @override
   void initState() {
     super.initState();
-    final initialCountry = widget.initialCountry ?? Country.ru();
     _phoneController = TextEditingController()..addListener(_onPhoneChanged);
     _controller =
         widget.controller ??
-        CountryPhoneController.apply(initialCountry.countryCode);
+        CountryPhoneController.apply(_initialCountry.countryCode);
 
     _countryController =
-        widget.countryController ?? ValueNotifier<Country>(initialCountry);
-    _countryController.addListener(_onSelectedChanged);
+        widget.countryController ?? ValueNotifier<Country>(_initialCountry);
+    _countryController.addListener(_onCountryChanged);
 
     _formater = CountryInputFormatter(
       filter: {'0': RegExp('[0-9]')},
       mask: _countryController.value.mask,
+      phoneCode: _countryController.value.phoneCode,
+      example: _countryController.value.example,
+      shouldTryStripPhoneCode: true,
+      shouldTryStripLeadingPrefix: widget.shouldReplace8,
       overflowNotifier: widget.overflowNotifier,
       onOverflowChanged: widget.onOverflowChanged,
     );
 
     // If the controller has an initial value
     if (_controller.value.isNotEmpty) {
-      final oldValue = _phoneController.value;
-      var text = _controller.value;
-
-      // Check if the phone code is not removed from the text
-      final phoneCode = _countryController.value.phoneCode;
-      if (phoneCode.isNotEmpty) {
-        text = text.replaceFirst(RegExp(r'^\+?' + phoneCode + r'\s?'), '');
-      }
-
-      // Check if the phone number starts with 8
-      if (widget.shouldReplace8 && text.startsWith('8')) {
-        text = text.substring(1);
-      }
-
-      _phoneController.text = _formater.maskText(text);
-
-      // Apply formatting to the new value
-      _formater.formatEditUpdate(oldValue, _phoneController.value);
-
-      // Update the cursor position
-      _phoneController.selection = TextSelection.collapsed(
-        offset: _phoneController.text.length,
+      _applyPhoneText(
+        _controller.value,
+        allowImplicitCountryCodeStrip: true,
+        allowLeadingPrefixStrip: widget.shouldReplace8,
       );
     }
   }
@@ -218,38 +212,22 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     super.didUpdateWidget(oldWidget);
 
     // Check if the initial country has changed
-    final initialCountry = widget.initialCountry;
-    if (widget.initialCountry != oldWidget.initialCountry &&
-        initialCountry != null) {
-      _countryController.value = initialCountry;
-      _formater.updateMask(mask: initialCountry.mask);
+    if (widget.initialCountry != oldWidget.initialCountry) {
+      _countryController.value = _initialCountry;
+      _updateFormatter();
     }
 
     // Check if the controller has changed
     if (!identical(oldWidget.controller, widget.controller)) {
       final current = _controller;
       if (oldWidget.controller == null) scheduleMicrotask(current.dispose);
-      final initialCountry = widget.initialCountry ?? Country.ru();
       _controller =
           widget.controller ??
-          CountryPhoneController.apply(initialCountry.countryCode);
-
-      final oldValue = _phoneController.value;
-      var text = _controller.value;
-
-      final phoneCode = _countryController.value.phoneCode;
-      if (phoneCode.isNotEmpty) {
-        text = text.replaceFirst(RegExp(r'^\+?' + phoneCode + r'\s?'), '');
-      }
-
-      if (widget.shouldReplace8 && text.startsWith('8')) {
-        text = text.substring(1);
-      }
-
-      _phoneController.text = _formater.maskText(text);
-      _formater.formatEditUpdate(oldValue, _phoneController.value);
-      _phoneController.selection = TextSelection.collapsed(
-        offset: _phoneController.text.length,
+          CountryPhoneController.apply(_initialCountry.countryCode);
+      _applyPhoneText(
+        _controller.value,
+        allowImplicitCountryCodeStrip: true,
+        allowLeadingPrefixStrip: widget.shouldReplace8,
       );
     }
 
@@ -257,30 +235,65 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     if (!identical(oldWidget.countryController, widget.countryController)) {
       final current = _countryController;
       if (oldWidget.countryController == null) {
-        current.removeListener(_onSelectedChanged);
+        current.removeListener(_onCountryChanged);
         scheduleMicrotask(current.dispose);
       }
       _countryController =
-          widget.countryController ??
-          ValueNotifier<Country>(initialCountry ?? Country.ru());
-      _countryController.addListener(_onSelectedChanged);
+          widget.countryController ?? ValueNotifier<Country>(_initialCountry);
+      _countryController.addListener(_onCountryChanged);
+      _updateFormatter();
     }
 
     // Check if the shouldReplace8 has changed
     if (widget.shouldReplace8 != oldWidget.shouldReplace8) {
-      final oldValue = _phoneController.value;
-      var text = _phoneController.text;
-
-      if (widget.shouldReplace8 && text.startsWith('8')) {
-        text = text.substring(1);
-      }
-
-      _phoneController.text = _formater.maskText(text);
-      _formater.formatEditUpdate(oldValue, _phoneController.value);
-      _phoneController.selection = TextSelection.collapsed(
-        offset: _phoneController.text.length,
+      _updateFormatter();
+      _applyPhoneText(
+        _phoneController.text,
+        allowLeadingPrefixStrip: widget.shouldReplace8,
       );
     }
+  }
+
+  void _updateFormatter() {
+    final country = _countryController.value;
+    _formater.updateMask(
+      mask: country.mask,
+      example: country.example,
+      phoneCode: country.phoneCode,
+      shouldTryStripPhoneCode: true,
+      shouldTryStripLeadingPrefix: widget.shouldReplace8,
+    );
+  }
+
+  void _applyPhoneText(
+    String rawText, {
+    bool allowImplicitCountryCodeStrip = false,
+    bool allowLeadingPrefixStrip = false,
+  }) {
+    final normalized = _formater.normalizePhoneText(
+      rawText,
+      allowImplicitPhoneCodeStrip: allowImplicitCountryCodeStrip,
+      allowLeadingPrefixStrip: allowLeadingPrefixStrip,
+    );
+
+    _formater.clear();
+    if (normalized.isEmpty) {
+      _phoneController.clear();
+      return;
+    }
+
+    final formattedValue = _formater.formatEditUpdate(
+      TextEditingValue.empty,
+      TextEditingValue(
+        text: normalized,
+        selection: TextSelection.collapsed(offset: normalized.length),
+      ),
+    );
+
+    _phoneController.value = formattedValue.copyWith(
+      selection: TextSelection.collapsed(offset: formattedValue.text.length),
+      composing: TextRange.empty,
+    );
   }
 
   @override
@@ -289,7 +302,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     _phoneController
       ..removeListener(_onPhoneChanged)
       ..dispose();
-    _countryController.removeListener(_onSelectedChanged);
+    _countryController.removeListener(_onCountryChanged);
     if (widget.controller == null) _controller.dispose();
     if (widget.countryController == null) _countryController.dispose();
     super.dispose();
@@ -301,20 +314,14 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
         '+${_countryController.value.phoneCode} ${_phoneController.text}';
   }
 
-  void _onSelectedChanged() {
+  void _onCountryChanged() {
     if (!mounted) return;
 
-    // Check if the mask is present
-    final mask = _countryController.value.mask;
-    /* if (mask == null || mask.isEmpty) return; */
-
     // Update the formatter mask
-    _formater.updateMask(mask: mask);
+    _updateFormatter();
 
     // Format the current text in the controller after changing the mask
-    final oldValue = _phoneController.value;
-    _phoneController.text = _formater.maskText(_phoneController.text);
-    _formater.formatEditUpdate(oldValue, _phoneController.value);
+    _applyPhoneText(_phoneController.text);
   }
 
   void _onSelect(Country country) {
@@ -330,8 +337,6 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
 /// State for widget [CountryPhoneInput].
 class _CountryPhoneInputState extends State<CountryPhoneInput>
     with _CountryPhoneInputStateMixin {
-  late final _painter = _BackgroundPainter(pickerTheme: _pickerTheme);
-
   @override
   Widget build(BuildContext context) {
     final pickerTheme = CountryPickerTheme.resolve(context);
@@ -441,7 +446,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
           ),
         ],
       ),
-    );
+    ); // +79378032888
   }
 }
 

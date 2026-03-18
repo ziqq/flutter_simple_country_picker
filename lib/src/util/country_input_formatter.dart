@@ -15,6 +15,8 @@ final _kDefaultFilter = <String, RegExp>{
   'A': RegExp('[0-9]'),
 };
 
+const _kDefaultLeadingPhonePrefixes = <String>{'0', '8'};
+
 /// Country input completion type.
 enum CountryInputCompletionType {
   /// Lazy completion type where unfiltered characters are completed
@@ -55,6 +57,11 @@ class CountryInputFormatter implements TextInputFormatter {
     String? initialText,
     Map<String, RegExp>? filter,
     CountryInputCompletionType type = CountryInputCompletionType.lazy,
+    String? phoneCode,
+    String? example,
+    bool shouldTryStripPhoneCode = false,
+    bool shouldTryStripLeadingPrefix = false,
+    Set<String> leadingPrefixes = _kDefaultLeadingPhonePrefixes,
 
     /// Notify UI about overflow (flat mode) state changes.
     ValueChanged<bool>? onOverflowChanged,
@@ -67,6 +74,11 @@ class CountryInputFormatter implements TextInputFormatter {
     updateMask(
       mask: mask,
       filter: filter ?? _kDefaultFilter,
+      phoneCode: phoneCode,
+      example: example,
+      shouldTryStripPhoneCode: shouldTryStripPhoneCode,
+      shouldTryStripLeadingPrefix: shouldTryStripLeadingPrefix,
+      leadingPrefixes: leadingPrefixes,
       newValue: initialText == null
           ? null
           : TextEditingValue(
@@ -81,15 +93,27 @@ class CountryInputFormatter implements TextInputFormatter {
     String? mask,
     Map<String, RegExp>? filter,
     String? initialText,
+    String? phoneCode,
+    String? example,
+    bool shouldTryStripPhoneCode = false,
+    bool shouldTryStripLeadingPrefix = false,
+    Set<String> leadingPrefixes = _kDefaultLeadingPhonePrefixes,
   }) : this(
          mask: mask,
          filter: filter,
          initialText: initialText,
+         phoneCode: phoneCode,
+         example: example,
+         shouldTryStripPhoneCode: shouldTryStripPhoneCode,
+         shouldTryStripLeadingPrefix: shouldTryStripLeadingPrefix,
+         leadingPrefixes: leadingPrefixes,
          type: CountryInputCompletionType.eager,
        );
 
   /// Regexp to filter input characters for each mask symbol.
   static final RegExp _kDigit = RegExp(r'\d');
+
+  static final RegExp _kNonDigits = RegExp(r'\D');
 
   /// Notify UI about overflow (flat mode) state changes.
   final ValueChanged<bool>? _onOverflowChanged;
@@ -196,6 +220,11 @@ class CountryInputFormatter implements TextInputFormatter {
     String? mask,
     Map<String, RegExp>? filter,
     CountryInputCompletionType? type,
+    String? phoneCode,
+    String? example,
+    bool? shouldTryStripPhoneCode,
+    bool? shouldTryStripLeadingPrefix,
+    Set<String>? leadingPrefixes,
     TextEditingValue? newValue,
   }) {
     // Reset flat mode when mask updates.
@@ -207,6 +236,19 @@ class CountryInputFormatter implements TextInputFormatter {
 
     if (type != null) _type = type;
     if (filter != null) _updateFilter(filter);
+    if (phoneCode != null) _phoneCode = phoneCode;
+    if (example != null) _example = example;
+    if (shouldTryStripPhoneCode != null) {
+      _shouldTryStripPhoneCode = shouldTryStripPhoneCode;
+    }
+    if (shouldTryStripLeadingPrefix != null) {
+      _shouldTryStripLeadingPrefix = shouldTryStripLeadingPrefix;
+    }
+    if (leadingPrefixes != null) {
+      _leadingPrefixes = leadingPrefixes.isEmpty
+          ? _kDefaultLeadingPhonePrefixes
+          : leadingPrefixes;
+    }
     _calcMaskLength();
 
     var targetValue = newValue;
@@ -225,6 +267,12 @@ class CountryInputFormatter implements TextInputFormatter {
   /// Get the current completion type.
   CountryInputCompletionType get type => _type;
   CountryInputCompletionType _type;
+
+  String _phoneCode = '';
+  String _example = '';
+  bool _shouldTryStripPhoneCode = false;
+  bool _shouldTryStripLeadingPrefix = false;
+  Set<String> _leadingPrefixes = _kDefaultLeadingPhonePrefixes;
 
   String? _mask;
   int _maskLength = 0;
@@ -260,19 +308,158 @@ class CountryInputFormatter implements TextInputFormatter {
     _resultTextArray.clear();
   }
 
+  /// Normalize a raw phone string using the formatter phone settings.
+  ///
+  /// This is optional and only affects the text when the formatter was
+  /// configured with [phoneCode], [example], or leading-prefix rules.
+  String normalizePhoneText(
+    String text, {
+    bool allowImplicitPhoneCodeStrip = false,
+    bool allowLeadingPrefixStrip = false,
+  }) {
+    var digits = text.replaceAll(_kNonDigits, '');
+    if (digits.isEmpty) return '';
+
+    final trimmed = text.trimLeft();
+    if (trimmed.startsWith('00') && digits.startsWith('00')) {
+      digits = digits.substring(2);
+    }
+
+    final expectedPhoneLength = _expectedPhoneLength();
+    final hasExplicitPhoneCode = trimmed.startsWith('+');
+    final hasImplicitPhoneCode =
+        allowImplicitPhoneCodeStrip &&
+        _shouldTryStripPhoneCode &&
+        _phoneCode.isNotEmpty &&
+        expectedPhoneLength > 0 &&
+        digits.length >= expectedPhoneLength + _phoneCode.length &&
+        digits.startsWith(_phoneCode);
+
+    if (_shouldTryStripPhoneCode &&
+        _phoneCode.isNotEmpty &&
+        digits.length > _phoneCode.length &&
+        digits.startsWith(_phoneCode) &&
+        (hasExplicitPhoneCode || hasImplicitPhoneCode)) {
+      digits = digits.substring(_phoneCode.length);
+    }
+
+    final shouldStripLeadingPrefix =
+        allowLeadingPrefixStrip &&
+        _shouldTryStripLeadingPrefix &&
+        expectedPhoneLength > 0 &&
+        digits.length == expectedPhoneLength + 1 &&
+        _leadingPrefixes.any(digits.startsWith);
+
+    if (shouldStripLeadingPrefix) {
+      digits = digits.substring(1);
+    }
+
+    return digits;
+  }
+
+  /// Format arbitrary text using the current mask.
+  ///
+  /// When [normalize] is enabled, the formatter first applies its optional
+  /// phone normalization rules and only then applies the mask.
+  TextEditingValue formatText(
+    String text, {
+    bool normalize = false,
+    bool allowImplicitPhoneCodeStrip = false,
+    bool allowLeadingPrefixStrip = false,
+  }) {
+    final formatter = _copy();
+    final preparedText = normalize
+        ? formatter.normalizePhoneText(
+            text,
+            allowImplicitPhoneCodeStrip: allowImplicitPhoneCodeStrip,
+            allowLeadingPrefixStrip: allowLeadingPrefixStrip,
+          )
+        : text;
+
+    return formatter.formatEditUpdate(
+      TextEditingValue.empty,
+      TextEditingValue(
+        text: preparedText,
+        selection: TextSelection.collapsed(offset: preparedText.length),
+      ),
+    );
+  }
+
   /// Mask the provided [text] with the current mask.
-  String maskText(String text) => CountryInputFormatter(
-    mask: _mask,
-    filter: _maskFilter,
-    initialText: text,
-  ).getMaskedText();
+  String maskText(
+    String text, {
+    bool normalize = false,
+    bool allowImplicitPhoneCodeStrip = false,
+    bool allowLeadingPrefixStrip = false,
+  }) => formatText(
+    text,
+    normalize: normalize,
+    allowImplicitPhoneCodeStrip: allowImplicitPhoneCodeStrip,
+    allowLeadingPrefixStrip: allowLeadingPrefixStrip,
+  ).text;
 
   /// Unmask the provided [text].
-  String unmaskText(String text) => CountryInputFormatter(
-    mask: _mask,
+  String unmaskText(String text) => _copy(initialText: text).getUnmaskedText();
+
+  CountryInputFormatter _copy({String? initialText}) => CountryInputFormatter(
+    mask: _savedMask ?? _mask,
+    initialText: initialText,
     filter: _maskFilter,
-    initialText: text,
-  ).getUnmaskedText();
+    type: _type,
+    phoneCode: _phoneCode,
+    example: _example,
+    shouldTryStripPhoneCode: _shouldTryStripPhoneCode,
+    shouldTryStripLeadingPrefix: _shouldTryStripLeadingPrefix,
+    leadingPrefixes: _leadingPrefixes,
+    onOverflowChanged: _onOverflowChanged,
+    overflowNotifier: _overflowNotifier,
+  );
+
+  int _expectedPhoneLength() {
+    final exampleLength = _example.replaceAll(_kNonDigits, '').length;
+    if (exampleLength == 0) return _maskLength;
+    if (_maskLength == 0) return exampleLength;
+    return exampleLength > _maskLength ? exampleLength : _maskLength;
+  }
+
+  bool _looksLikePaste(TextEditingValue oldValue, TextEditingValue newValue) {
+    final trimmed = newValue.text.trimLeft();
+    if (trimmed.startsWith('+') || trimmed.startsWith('00')) return true;
+
+    final replacedLength = oldValue.selection.isValid
+        ? oldValue.selection.end - oldValue.selection.start
+        : 0;
+    final insertedLength =
+        newValue.text.length - oldValue.text.length + replacedLength;
+
+    return insertedLength > 1;
+  }
+
+  TextEditingValue _normalizePhoneEdit(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final shouldNormalize =
+        (_shouldTryStripPhoneCode || _shouldTryStripLeadingPrefix) &&
+        _looksLikePaste(oldValue, newValue);
+    if (!shouldNormalize || newValue.text.isEmpty) return newValue;
+
+    final normalized = normalizePhoneText(
+      newValue.text,
+      allowImplicitPhoneCodeStrip: true,
+      allowLeadingPrefixStrip: true,
+    );
+    if (normalized == newValue.text) return newValue;
+
+    return TextEditingValue(
+      text: normalized,
+      selection: TextSelection.collapsed(
+        offset: normalized.length,
+        affinity: newValue.selection.affinity,
+      ),
+      composing: TextRange.empty,
+    );
+  }
 
   /// Restore mask if we are in flat mode and user has deleted enough digits
   /// to fit into the mask again.
@@ -310,6 +497,8 @@ class CountryInputFormatter implements TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
+    newValue = _normalizePhoneEdit(oldValue, newValue);
+
     // Flat mode handling:
     // - We still watch deletions. When digits count becomes <= mask length,
     //   we restore the mask and re-run formatting for masked output with proper caret.

@@ -253,6 +253,96 @@ void _$defaultCountryPhoneInputTest() {
         // Verify text captured; detailed formatting is covered by formatter tests.
         expect(input.controller?.text, '12345678');
       });
+
+      testWidgets('should normalize pasted phone number with country code', (
+        tester,
+      ) async {
+        final initialCountry = Country.ru();
+        final controller = CountryPhoneController.empty();
+        final expectedText = CountryInputFormatter(
+          mask: initialCountry.mask,
+          filter: {'0': RegExp('[0-9]')},
+        ).maskText('9991234567');
+
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            locale: const Locale('en'),
+            builder: (_) => Scaffold(
+              body: CountryPhoneInput(
+                initialCountry: initialCountry,
+                controller: controller,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final phoneInputField = find.byKey(phoneFieldKey);
+        expect(phoneInputField, findsOneWidget);
+
+        await tester.tap(phoneInputField);
+        await tester.pump();
+        await tester.showKeyboard(phoneInputField);
+
+        tester.testTextInput.updateEditingValue(
+          const TextEditingValue(
+            text: '+7 999 123 45 67',
+            selection: TextSelection.collapsed(offset: 16),
+          ),
+        );
+        await tester.pump();
+
+        final input = tester.widget<TextFormField>(phoneInputField);
+        expect(input.controller?.text, expectedText);
+        expect(controller.value, '+7 $expectedText');
+
+        controller.dispose();
+      });
+
+      testWidgets('should normalize pasted phone number with national prefix', (
+        tester,
+      ) async {
+        final initialCountry = getCountryByISO2asJSON('GB');
+        final controller = CountryPhoneController.empty();
+        final expectedText = CountryInputFormatter(
+          mask: initialCountry.mask,
+          filter: {'0': RegExp('[0-9]')},
+        ).maskText('7400123456');
+
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            locale: const Locale('en'),
+            builder: (_) => Scaffold(
+              body: CountryPhoneInput(
+                initialCountry: initialCountry,
+                controller: controller,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final phoneInputField = find.byKey(phoneFieldKey);
+        expect(phoneInputField, findsOneWidget);
+
+        await tester.tap(phoneInputField);
+        await tester.pump();
+        await tester.showKeyboard(phoneInputField);
+
+        tester.testTextInput.updateEditingValue(
+          const TextEditingValue(
+            text: '07400123456',
+            selection: TextSelection.collapsed(offset: 11),
+          ),
+        );
+        await tester.pump();
+
+        final input = tester.widget<TextFormField>(phoneInputField);
+        expect(input.controller?.text, expectedText);
+        expect(controller.value, '+44 $expectedText');
+
+        controller.dispose();
+      });
     });
 
     group('didUpdateWidget -', () {
@@ -356,7 +446,7 @@ void _$defaultCountryPhoneInputTest() {
         tester,
       ) async {
         // 1. Pump with shouldReplace8=false, and see no leading removal
-        final controller = CountryPhoneController.apply('+7 8 1234567');
+        final controller = CountryPhoneController.apply('+7 8 9991234567');
 
         await tester.pumpWidget(
           createWidgetUnderTest(
@@ -613,6 +703,51 @@ void _$extendedCountryPhoneInputTest() {
       final input = tester.widget<TextFormField>(field);
       // In widget tests, input formatters may not apply on enterText.
       expect(input.controller?.text, '1234567890');
+    });
+
+    testWidgets('formatting: normalizes pasted full phone number', (
+      tester,
+    ) async {
+      final initialCountry = getCountryByISO2asJSON('GB');
+      final controller = CountryPhoneController.empty();
+      final expectedText = CountryInputFormatter(
+        mask: initialCountry.mask,
+        filter: {'0': RegExp('[0-9]')},
+      ).maskText('7911123456');
+
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => Scaffold(
+            body: CountryPhoneInput.extended(
+              initialCountry: initialCountry,
+              controller: controller,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final field = find.byKey(phoneFieldKey);
+      expect(field, findsOneWidget);
+
+      await tester.tap(field);
+      await tester.pump();
+      await tester.showKeyboard(field);
+
+      tester.testTextInput.updateEditingValue(
+        const TextEditingValue(
+          text: '447911123456',
+          selection: TextSelection.collapsed(offset: 12),
+        ),
+      );
+      await tester.pump();
+
+      final input = tester.widget<TextFormField>(field);
+      expect(input.controller?.text, expectedText);
+      expect(controller.value, '+44 $expectedText');
+
+      controller.dispose();
     });
 
     testWidgets('onChanged: emits full value with code', (tester) async {

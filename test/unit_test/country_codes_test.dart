@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
+import 'package:flutter_simple_country_picker/src/util/country_input_formatter.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() => group('country_codes_test -', () {
@@ -63,6 +64,56 @@ void main() => group('country_codes_test -', () {
           reason: 'Geographic should be a boolean value',
         );
         expect(geographic, isNotNull, reason: 'Geographic should not be null');
+      });
+    }
+  });
+
+  group('phone formatter dataset coverage -', () {
+    for (final country in countries) {
+      final name = country['name']?.toString();
+      final mask = country['mask']?.toString();
+      final e164Key = country['e164_key']?.toString();
+      final phoneCode = country['e164_cc']?.toString();
+      final example = country['example']?.toString();
+      final fullExample = country['full_example_with_plus_sign']?.toString();
+
+      if ((fullExample == null || fullExample.isEmpty) ||
+          (phoneCode == null || phoneCode.isEmpty) ||
+          (example == null || example.isEmpty) ||
+          (e164Key == null || e164Key.isEmpty) ||
+          (name == null || name.isEmpty)) {
+        continue;
+      }
+
+      final formatter = CountryInputFormatter(
+        mask: mask,
+        example: example,
+        phoneCode: phoneCode,
+        shouldTryStripPhoneCode: true,
+        shouldTryStripLeadingPrefix: true,
+      );
+
+      test('normalizes full example for $name ($e164Key)', () {
+        expect(
+          formatter.normalizePhoneText(
+            fullExample,
+            allowImplicitPhoneCodeStrip: true,
+            allowLeadingPrefixStrip: true,
+          ),
+          example,
+        );
+      });
+
+      test('formats normalized full example for $name ($e164Key)', () {
+        expect(
+          formatter.maskText(
+            fullExample,
+            normalize: true,
+            allowImplicitPhoneCodeStrip: true,
+            allowLeadingPrefixStrip: true,
+          ),
+          formatter.maskText(example),
+        );
       });
     }
   });
