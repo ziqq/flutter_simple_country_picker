@@ -27,33 +27,30 @@ import 'widget_test/country_scope_test.dart' as widget_countries_scope_test;
 import 'widget_test/country_test.dart' as widget_country_test;
 import 'widget_test/show_country_picker_test.dart'
     as widget_show_country_picker_test;
-import 'widget_test/status_bar_gesture_detector_test.dart'
-    as widget_status_bar_gesture_detector_test;
 
 void main() {
   group('flutter_simple_country_picker -', () {
     group('unit_test -', () {
-      unit_country_phone_controller_test.main();
-      unit_country_input_formater_test.main();
-      unit_country_controller_test.main();
-      unit_country_parser_test.main();
-      unit_country_provider_test.main();
-      unit_country_util_test.main();
       unit_country_codes_test.main();
-      unit_country_test.main();
-      unit_country_picker_theme_test.main();
+      unit_country_controller_test.main();
+      unit_country_input_formater_test.main();
       unit_country_localizations_test.main();
+      unit_country_parser_test.main();
+      unit_country_phone_controller_test.main();
+      unit_country_picker_theme_test.main();
+      unit_country_provider_test.main();
+      unit_country_test.main();
+      unit_country_util_test.main();
     });
     group('widget_test -', () {
       widget_country_input_formater_test.main();
-      widget_country_phone_input_test.main();
+      widget_country_localizations_test.main();
       widget_countries_parser_test.main();
+      widget_country_phone_input_test.main();
+      widget_country_picker_theme_test.main();
       widget_countries_scope_test.main();
       widget_country_test.main();
-      widget_country_picker_theme_test.main();
       widget_show_country_picker_test.main();
-      widget_status_bar_gesture_detector_test.main();
-      widget_country_localizations_test.main();
     });
   });
 }

@@ -227,6 +227,26 @@ void _$defaultCountryPhoneInputTest() {
         expect(find.byKey(phoneFieldKey), findsOneWidget);
         expect(find.text(customPlaceholder), findsOneWidget);
       });
+
+      testWidgets(
+        'should fall back to localized placeholder when country mask is missing',
+        (tester) async {
+          final initialCountry = getCountryByISO2asJSON('AT');
+
+          await tester.pumpWidget(
+            createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (_) => Scaffold(
+                body: CountryPhoneInput(initialCountry: initialCountry),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          final input = tester.widget<TextField>(find.byType(TextField).first);
+          expect(input.decoration?.hintText, 'Phone Number');
+        },
+      );
     });
 
     group('formatting -', () {
@@ -440,9 +460,53 @@ void _$defaultCountryPhoneInputTest() {
         expect(find.textContaining('123 456 7890'), findsOneWidget);
       });
 
+      testWidgets(
+        'should recreate internal controller when external controller is removed',
+        (tester) async {
+          final externalController = CountryPhoneController.apply(
+            '+447911123456',
+          );
+          final initialCountry = getCountryByISO2asJSON('GB');
+
+          await tester.pumpWidget(
+            createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (_) => Scaffold(
+                body: CountryPhoneInput(
+                  initialCountry: initialCountry,
+                  controller: externalController,
+                ),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          expect(find.textContaining('+44'), findsOneWidget);
+          expect(find.textContaining('7911 123456'), findsOneWidget);
+
+          await tester.pumpWidget(
+            createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (_) => Scaffold(
+                body: CountryPhoneInput(initialCountry: initialCountry),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          expect(find.textContaining('+44'), findsOneWidget);
+          final input = tester.widget<TextFormField>(find.byKey(phoneFieldKey));
+          expect(input.controller?.text, isEmpty);
+
+          externalController.dispose();
+        },
+      );
+
       testWidgets('should remove leading 8 if shouldReplace8 changes', (
         tester,
       ) async {
+        const subjectKey = ValueKey<String>('country_phone_input_subject');
+
         // 1. Pump with shouldReplace8=false, and see no leading removal
         final controller = CountryPhoneController.apply('+7 8 9991234567');
 
@@ -451,6 +515,7 @@ void _$defaultCountryPhoneInputTest() {
             locale: const Locale('en'),
             builder: (_) => Scaffold(
               body: CountryPhoneInput(
+                key: subjectKey,
                 controller: controller,
                 shouldReplace8: false,
               ),
@@ -467,8 +532,8 @@ void _$defaultCountryPhoneInputTest() {
           createWidgetUnderTest(
             locale: const Locale('en'),
             builder: (_) => Scaffold(
-              key: phoneFieldKey,
               body: CountryPhoneInput(
+                key: subjectKey,
                 controller: controller,
                 shouldReplace8: true,
               ),
@@ -544,6 +609,44 @@ void _$defaultCountryPhoneInputTest() {
 
           // Now shows US (+1).
           expect(find.textContaining('+1'), findsOneWidget);
+
+          externalController.dispose();
+        },
+      );
+
+      testWidgets(
+        'didUpdateWidget: external countryController → null falls back to initialCountry',
+        (tester) async {
+          final ruCountry = getCountryByISO2asJSON('RU');
+          final usCountry = getCountryByISO2asJSON('US');
+          final externalController = ValueNotifier<Country>(usCountry);
+
+          await tester.pumpWidget(
+            createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (_) => Scaffold(
+                body: CountryPhoneInput(
+                  initialCountry: ruCountry,
+                  countryController: externalController,
+                ),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          expect(find.textContaining('+1'), findsOneWidget);
+
+          await tester.pumpWidget(
+            createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (_) =>
+                  Scaffold(body: CountryPhoneInput(initialCountry: ruCountry)),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          expect(find.textContaining('+7'), findsOneWidget);
+          expect(find.textContaining('+1'), findsNothing);
 
           externalController.dispose();
         },
@@ -635,6 +738,26 @@ void _$extendedCountryPhoneInputTest() {
       // Cehck that hintText matches expected mask for default country (RU)
       expect(textField.decoration?.hintText, Country.ru().mask);
     });
+
+    testWidgets(
+      'uses localized placeholder when selected country has no mask',
+      (tester) async {
+        final initialCountry = getCountryByISO2asJSON('AT');
+
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            locale: const Locale('en'),
+            builder: (_) => Scaffold(
+              body: CountryPhoneInput.extended(initialCountry: initialCountry),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final input = tester.widget<TextField>(find.byType(TextField).first);
+        expect(input.decoration?.hintText, 'Phone Number');
+      },
+    );
 
     testWidgets('initialization: shows country name, flag and phone code', (
       tester,

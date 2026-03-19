@@ -13,7 +13,6 @@ import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart
 import 'package:flutter_simple_country_picker/src/controller/country_controller.dart';
 import 'package:flutter_simple_country_picker/src/data/country_provider.dart';
 import 'package:flutter_simple_country_picker/src/util/country_util.dart';
-import 'package:flutter_simple_country_picker/src/widget/status_bar_gesture_detector.dart';
 
 /// {@template country_list_view}
 /// CountryListView widget.
@@ -107,13 +106,15 @@ class CountryListView extends StatefulWidget {
 }
 
 /// State for [CountryListView].
-class _CountriesListViewState extends State<CountryListView> {
+class _CountriesListViewState extends State<CountryListView>
+    with WidgetsBindingObserver {
   late final ScrollController _scrollController;
   late final CountryController _controller;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _scrollController = widget.scrollController ?? ScrollController();
     _controller = CountryController(
       provider: CountryProvider(),
@@ -132,7 +133,17 @@ class _CountriesListViewState extends State<CountryListView> {
   }
 
   @override
+  void handleStatusBarTap() {
+    _scrollController.animateTo(
+      .0,
+      curve: Curves.easeOutCirc,
+      duration: const Duration(milliseconds: 1000),
+    );
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     if (widget.scrollController == null) _scrollController.dispose();
     _controller.dispose();
     super.dispose();
@@ -282,54 +293,51 @@ class _CountriesListViewState extends State<CountryListView> {
       ),
       body: GestureDetector(
         onTap: _unfocus,
-        child: StatusBarGestureDetector(
-          onTap: (_) => StatusBarGestureDetector.scrollToTop(_scrollController),
-          child: CustomScrollView(
-            controller: _scrollController,
-            slivers: <Widget>[
-              // --- Title --- //
-              ValueListenableBuilder(
-                valueListenable: _controller,
-                builder: (context, state, _) {
-                  if (state.showGroup) {
-                    return const SliverToBoxAdapter(child: SizedBox.shrink());
-                  }
-                  return SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: pickerTheme.padding,
-                        vertical: pickerTheme.padding / 2,
-                      ),
-                      child: Text(
-                        localization.selectCountryLabel,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+        child: CustomScrollView(
+          controller: _scrollController,
+          slivers: <Widget>[
+            // --- Title --- //
+            ValueListenableBuilder(
+              valueListenable: _controller,
+              builder: (context, state, _) {
+                if (state.showGroup) {
+                  return const SliverToBoxAdapter(child: SizedBox.shrink());
+                }
+                return SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: pickerTheme.padding,
+                      vertical: pickerTheme.padding / 2,
+                    ),
+                    child: Text(
+                      localization.selectCountryLabel,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
+            ),
 
-              // --- Countries list --- //
-              _CountriesList(
-                controller: _controller,
-                selected: widget.selected,
-                onSelect: widget.onSelect,
-              ),
+            // --- Countries list --- //
+            _CountriesList(
+              controller: _controller,
+              selected: widget.selected,
+              onSelect: widget.onSelect,
+            ),
 
-              // --- Bottom spacer --- //
-              SliverToBoxAdapter(
-                child: SizedBox(
-                  height: viewPadding.bottom > 0
-                      ? viewPadding.bottom
-                      : gestureInsets.bottom > 0
-                      ? gestureInsets.bottom
-                      : pickerTheme.padding,
-                ),
+            // --- Bottom spacer --- //
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: viewPadding.bottom > 0
+                    ? viewPadding.bottom
+                    : gestureInsets.bottom > 0
+                    ? gestureInsets.bottom
+                    : pickerTheme.padding,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

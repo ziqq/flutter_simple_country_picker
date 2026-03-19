@@ -533,6 +533,76 @@ void main() => group('CountryInputFormatter -', () {
   });
 
   group('phone normalization -', () {
+    test('normalizePhoneText strips 00 prefix before stripping phone code', () {
+      final formatter = CountryInputFormatter(
+        mask: '0000 000000',
+        phoneCode: '44',
+        example: '7400123456',
+        shouldTryStripPhoneCode: true,
+      );
+
+      expect(
+        formatter.normalizePhoneText(
+          '00447400123456',
+          allowImplicitPhoneCodeStrip: true,
+        ),
+        '7400123456',
+      );
+    });
+
+    test('normalizePhoneText keeps implicit phone code when stripping is disabled', () {
+      final formatter = CountryInputFormatter(
+        mask: '0000 000000',
+        phoneCode: '44',
+        example: '7400123456',
+        shouldTryStripPhoneCode: true,
+      );
+
+      expect(
+        formatter.normalizePhoneText(
+          '447400123456',
+          allowImplicitPhoneCodeStrip: false,
+        ),
+        '447400123456',
+      );
+    });
+
+    test('normalizePhoneText strips configured leading prefix', () {
+      final formatter = CountryInputFormatter(
+        mask: '000 000 0000',
+        example: '9123456789',
+        shouldTryStripLeadingPrefix: true,
+        leadingPrefixes: const {'8'},
+      );
+
+      expect(
+        formatter.normalizePhoneText(
+          '89123456789',
+          allowLeadingPrefixStrip: true,
+        ),
+        '9123456789',
+      );
+    });
+
+    test('updateMask resets empty leadingPrefixes back to defaults', () {
+      final formatter = CountryInputFormatter(
+        mask: '000 000 0000',
+        example: '9123456789',
+        shouldTryStripLeadingPrefix: true,
+        leadingPrefixes: const {'9'},
+      );
+
+      formatter.updateMask(leadingPrefixes: const <String>{});
+
+      expect(
+        formatter.normalizePhoneText(
+          '89123456789',
+          allowLeadingPrefixStrip: true,
+        ),
+        '9123456789',
+      );
+    });
+
     test('formatEditUpdate normalizes pasted phone text when configured', () {
       final formatter = CountryInputFormatter(
         mask: '000 000 0000',

@@ -39,6 +39,58 @@ void main() => group('CountryPhoneController -', () {
   });
 
   group('resolution behavior -', () {
+    test('returns unresolved resolution for empty input', () {
+      final controller = CountryPhoneController.empty();
+
+      expect(controller.phone, '');
+      expect(controller.phoneCode, '');
+      expect(controller.number, '');
+      expect(controller.resolution.status, CountryPhoneResolutionStatus.unresolved);
+      expect(controller.resolution.primaryCountryCode, isNull);
+      expect(controller.resolution.countryCodes, isEmpty);
+      expect(controller.resolution.isResolved, isFalse);
+      expect(controller.resolution.isExact, isFalse);
+      expect(controller.resolution.isAmbiguous, isFalse);
+    });
+
+    test('returns unresolved resolution for unknown calling code', () {
+      final controller = CountryPhoneController.apply('+999123456');
+
+      expect(controller.phoneCode, '');
+      expect(controller.number, '999123456');
+      expect(controller.resolution.phone, '+999123456');
+      expect(controller.resolution.phoneCode, '');
+      expect(controller.resolution.nationalNumber, '');
+      expect(controller.resolution.status, CountryPhoneResolutionStatus.unresolved);
+      expect(controller.resolution.isResolved, isFalse);
+    });
+
+    test('returns unresolved resolution for calling code without national digits', () {
+      final controller = CountryPhoneController.apply('+44');
+
+      expect(controller.phoneCode, '');
+      expect(controller.number, '44');
+      expect(controller.resolution.phone, '+44');
+      expect(controller.resolution.status, CountryPhoneResolutionStatus.unresolved);
+      expect(controller.resolution.countryCodes, isEmpty);
+    });
+
+    test('resolves shared +44 prefix as ambiguous when number is too short', () {
+      final controller = CountryPhoneController.apply('+447');
+
+      expect(controller.phoneCode, '44');
+      expect(controller.number, '7');
+      expect(controller.resolution.status, CountryPhoneResolutionStatus.ambiguous);
+      expect(controller.resolution.primaryCountryCode, 'GB');
+      expect(
+        controller.resolution.countryCodes,
+        <String>['GB', 'GG', 'IM', 'JE'],
+      );
+      expect(controller.resolution.isResolved, isTrue);
+      expect(controller.resolution.isExact, isFalse);
+      expect(controller.resolution.isAmbiguous, isTrue);
+    });
+
     test('resolves shared +7 calling code exactly when examples diverge', () {
       final russia = CountryPhoneController.apply('+79123456789');
       final kazakhstan = CountryPhoneController.apply('+77710009998');
