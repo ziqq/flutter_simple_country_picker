@@ -5,8 +5,9 @@
 
 import 'dart:math';
 
-import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:flutter/services.dart';
+import 'package:flutter_simple_country_picker/src/controller/country_phone_controller.dart'
+    show CountryPhoneValueStatus;
 
 /// Default filter for country input formatter.
 final _kDefaultFilter = <String, RegExp>{
@@ -62,23 +63,7 @@ class CountryInputFormatter implements TextInputFormatter {
     bool shouldTryStripPhoneCode = false,
     bool shouldTryStripLeadingPrefix = false,
     Set<String> leadingPrefixes = _kDefaultLeadingPhonePrefixes,
-
-    /// Notify UI about overflow (flat mode) state changes.
-    ValueChanged<bool>? onOverflowChanged,
-
-    /// Notifier to bind into UI without callback.
-    ValueNotifier<bool>? overflowNotifier,
-
-    /// Notify UI when the phone input is shorter than the expected length.
-    ValueChanged<bool>? onIncompleteChanged,
-
-    /// Notifier to bind incomplete state into UI without callback.
-    ValueNotifier<bool>? incompleteNotifier,
-  }) : _type = type,
-       _overflowNotifier = overflowNotifier,
-       _onOverflowChanged = onOverflowChanged,
-       _incompleteNotifier = incompleteNotifier,
-       _onIncompleteChanged = onIncompleteChanged {
+  }) : _type = type {
     updateMask(
       mask: mask,
       filter: filter ?? _kDefaultFilter,
@@ -123,18 +108,6 @@ class CountryInputFormatter implements TextInputFormatter {
 
   /// Regexp to match non-digit characters for phone normalization.
   static final RegExp _kNonDigits = RegExp(r'\D');
-
-  /// Notify UI about overflow (flat mode) state changes.
-  final ValueChanged<bool>? _onOverflowChanged;
-
-  /// Notifier to bind into UI without callback.
-  final ValueNotifier<bool>? _overflowNotifier;
-
-  /// Notify UI when the phone input is shorter than the expected length.
-  final ValueChanged<bool>? _onIncompleteChanged;
-
-  /// Notifier to bind incomplete state into UI without callback.
-  final ValueNotifier<bool>? _incompleteNotifier;
 
   /// Indicates whether the formatter is in flat mode (mask overflow).
   ///
@@ -321,6 +294,13 @@ class CountryInputFormatter implements TextInputFormatter {
   /// Check if the phone input is shorter than the expected length.
   bool get isIncomplete => _isIncomplete;
 
+  /// Current value status for the formatted phone input.
+  CountryPhoneValueStatus get valueStatus => CountryPhoneValueStatus(
+    currentLength: _resultTextArray.length,
+    expectedLength: _expectedPhoneLength(),
+    isOverflow: _isFlatMode,
+  );
+
   /// Clear the masked text.
   /// Note: Manually call this if you clear the TextField text, as it won't
   /// trigger the formatter on an empty value.
@@ -435,10 +415,6 @@ class CountryInputFormatter implements TextInputFormatter {
     shouldTryStripPhoneCode: _shouldTryStripPhoneCode,
     shouldTryStripLeadingPrefix: _shouldTryStripLeadingPrefix,
     leadingPrefixes: _leadingPrefixes,
-    onOverflowChanged: _onOverflowChanged,
-    overflowNotifier: _overflowNotifier,
-    onIncompleteChanged: _onIncompleteChanged,
-    incompleteNotifier: _incompleteNotifier,
   );
 
   int _expectedPhoneLength() {
@@ -448,14 +424,11 @@ class CountryInputFormatter implements TextInputFormatter {
     return exampleLength > _maskLength ? exampleLength : _maskLength;
   }
 
-  bool _computeIncompleteValue(int inputLength) {
-    if (_isFlatMode || inputLength <= 0) return false;
-
-    final expectedLength = _expectedPhoneLength();
-    if (expectedLength <= 0) return false;
-
-    return inputLength < expectedLength;
-  }
+  bool _computeIncompleteValue(int inputLength) => CountryPhoneValueStatus(
+    currentLength: inputLength,
+    expectedLength: _expectedPhoneLength(),
+    isOverflow: _isFlatMode,
+  ).isIncomplete;
 
   void _syncIncompleteState(int inputLength) {
     _setIncomplete(_computeIncompleteValue(inputLength));
@@ -888,19 +861,12 @@ class CountryInputFormatter implements TextInputFormatter {
   void _setFlatMode(bool value) {
     if (_isFlatMode == value) return;
     _isFlatMode = value;
-
-    // Notify UI.
-    _onOverflowChanged?.call(value);
-    _overflowNotifier?.value = value;
   }
 
   /// Set incomplete state and notify UI if needed.
   void _setIncomplete(bool value) {
     if (_isIncomplete == value) return;
     _isIncomplete = value;
-
-    _onIncompleteChanged?.call(value);
-    _incompleteNotifier?.value = value;
   }
 }
 

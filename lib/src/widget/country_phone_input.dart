@@ -19,10 +19,6 @@ class CountryPhoneInput extends StatefulWidget {
     this.onChanged,
     this.countryController,
     this.onCountryChanged,
-    this.overflowNotifier,
-    this.onOverflowChanged,
-    this.incompleteNotifier,
-    this.onIncompleteChanged,
     this.exclude,
     this.favorites,
     this.filter,
@@ -51,10 +47,6 @@ class CountryPhoneInput extends StatefulWidget {
     ValueChanged<String>? onChanged,
     ValueNotifier<Country>? countryController,
     ValueChanged<Country>? onCountryChanged,
-    ValueNotifier<bool>? overflowNotifier,
-    ValueChanged<bool>? onOverflowChanged,
-    ValueNotifier<bool>? incompleteNotifier,
-    ValueChanged<bool>? onIncompleteChanged,
     List<String>? exclude,
     List<String>? favorites,
     List<String>? filter,
@@ -152,18 +144,6 @@ class CountryPhoneInput extends StatefulWidget {
   /// Called when the country is changed.
   final ValueChanged<Country>? onCountryChanged;
 
-  /// Notifier to bind into UI without callback.
-  final ValueNotifier<bool>? overflowNotifier;
-
-  /// Notify UI about overflow (flat mode) state changes.
-  final ValueChanged<bool>? onOverflowChanged;
-
-  /// Notifier to bind incomplete phone state into UI without callback.
-  final ValueNotifier<bool>? incompleteNotifier;
-
-  /// Notify UI when the phone input is shorter than the expected length.
-  final ValueChanged<bool>? onIncompleteChanged;
-
   @override
   State<CountryPhoneInput> createState() => _CountryPhoneInputState();
 }
@@ -199,16 +179,14 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       example: _countryController.value.example,
       shouldTryStripPhoneCode: true,
       shouldTryStripLeadingPrefix: widget.shouldReplace8,
-      overflowNotifier: widget.overflowNotifier,
-      onOverflowChanged: widget.onOverflowChanged,
-      incompleteNotifier: widget.incompleteNotifier,
-      onIncompleteChanged: widget.onIncompleteChanged,
     );
 
+    _syncControllerValue(text: _controller.text);
+
     // If the controller has an initial value
-    if (_controller.value.isNotEmpty) {
+    if (_controller.text.isNotEmpty) {
       _applyPhoneText(
-        _controller.value,
+        _controller.text,
         allowImplicitCountryCodeStrip: true,
         allowLeadingPrefixStrip: widget.shouldReplace8,
       );
@@ -239,7 +217,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
           widget.controller ??
           CountryPhoneController.apply(_initialCountry.countryCode);
       _applyPhoneText(
-        _controller.value,
+        _controller.text,
         allowImplicitCountryCodeStrip: true,
         allowLeadingPrefixStrip: widget.shouldReplace8,
       );
@@ -276,6 +254,17 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       phoneCode: country.phoneCode,
       shouldTryStripPhoneCode: true,
       shouldTryStripLeadingPrefix: widget.shouldReplace8,
+    );
+    _syncControllerValue();
+  }
+
+  void _syncControllerValue({String? text}) {
+    final resolvedText =
+        text ??
+        '+${_countryController.value.phoneCode} ${_phoneController.text}';
+    _controller.value = _controller.value.copyWith(
+      text: resolvedText,
+      valueStatus: _formater.valueStatus,
     );
   }
 
@@ -324,8 +313,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
 
   void _onPhoneChanged() {
     if (!mounted) return;
-    _controller.value =
-        '+${_countryController.value.phoneCode} ${_phoneController.text}';
+    _syncControllerValue();
   }
 
   void _onCountryChanged() {
@@ -426,7 +414,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                       inputFormatters: [_formater],
                       keyboardType: TextInputType.number,
                       onChanged: (_) {
-                        widget.onChanged?.call(_controller.value);
+                        widget.onChanged?.call(_controller.text);
                       },
                       cursorHeight: textStyle?.fontSize,
                       cursorColor: textStyle?.color,
@@ -475,10 +463,6 @@ class CountryPhoneInput$Extended extends CountryPhoneInput {
     super.onChanged,
     super.countryController,
     super.onCountryChanged,
-    super.overflowNotifier,
-    super.onOverflowChanged,
-    super.incompleteNotifier,
-    super.onIncompleteChanged,
     super.exclude,
     super.favorites,
     super.filter,
@@ -620,7 +604,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                       cursorColor: defaultTextStyle?.color,
                       cursorHeight: defaultTextStyle?.fontSize,
                       onChanged: (_) {
-                        widget.onChanged?.call(_controller.value);
+                        widget.onChanged?.call(_controller.text);
                       },
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(

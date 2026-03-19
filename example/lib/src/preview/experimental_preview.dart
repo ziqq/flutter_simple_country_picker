@@ -1,7 +1,3 @@
-// ignore_for_file: unused_field
-
-import 'dart:developer';
-
 import 'package:example/src/common/widget/common_app_bar.dart';
 import 'package:example/src/common/widget/common_padding.dart';
 import 'package:flutter/material.dart';
@@ -22,22 +18,6 @@ class ExperimentalPreview extends StatefulWidget {
 
 /// State for widget ExperimentalPreview.
 class _ExperimentalPreviewState extends State<ExperimentalPreview> {
-  final TextEditingController _controller = TextEditingController();
-
-  String _country = '🇷🇺 Россия';
-  String _countryCode = '7';
-  String? _mask = '000 000 0000';
-
-  // ignore: unused_element
-  void _onSelect(Country country) {
-    log('Selected country $country');
-    setState(() {
-      _country = '${country.flagEmoji} ${country.nameLocalized}';
-      _countryCode = country.phoneCode;
-      _mask = country.mask;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final pickerTheme = CountryPickerTheme.of(context);
@@ -51,23 +31,7 @@ class _ExperimentalPreviewState extends State<ExperimentalPreview> {
               sliver: SliverList.list(
                 children: [
                   SizedBox(height: pickerTheme.padding * 2),
-                  const CountryPhoneInput.extended(
-                    autofocus: false,
-                    // controller: _controller,
-                    // mask: _mask,
-                    // country: _country,
-                    // countryCode: _countryCode,
-                    // onTap: () {
-                    //   showCountryPicker(
-                    //     context: context,
-                    //     favorites: ['RU'],
-                    //     exclude: ['KN', 'MF'],
-                    //     showPhoneCode: true,
-                    //     onSelect: _onSelect,
-                    //     onDone: () => log('onDone callded...'),
-                    //   );
-                    // },
-                  ),
+                  const CountryPhoneInput.extended(autofocus: false),
                   if (MediaQuery.of(context).viewPadding.bottom == 0) ...[
                     SizedBox(height: pickerTheme.padding),
                   ],

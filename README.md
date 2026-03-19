@@ -135,18 +135,12 @@ Register it in the delegate by creating your own `LocalizationsDelegate<CountryL
 
 ## Usage
 
-## Migration To 0.9.0
+## Migration
 
-`CountryPhoneController` now uses `resolution` as the source of truth.
+Upgrade notes are documented in [MIGRATION.md](MIGRATION.md).
 
-- Removed: `countryCode`
-- Removed: `matchingCountryCodes`
-- Removed: `isCountryCodeAmbiguous`
-- Removed: `isCountryCodeExact`
-- Use `resolution.primaryCountryCode` when you need the primary ISO2 result.
-- Use `resolution.countryCodes` when you need all ordered candidates.
-- Use `resolution.status` when you need to distinguish exact, ambiguous, and
-  unresolved states.
+- `0.10.0`: [Migrate to 0.10.0](MIGRATION.md#to-0100)
+- `0.9.0`: [Migrate to 0.9.0](MIGRATION.md#to-090)
 
 ### showCountryPicker
 
@@ -212,28 +206,55 @@ CountryPhoneInput(
 );
 ```
 
-Use `CountryPhoneInput.extended` for additional configuration (overflow notifiers, custom scroll sizes, etc.).
-
+Use `CountryPhoneInput.extended` for additional layout and presentation configuration such as custom scroll sizes.
 
 ### CountryPhoneController
 
-An `extension type` over `ValueNotifier<String>` that manages phone input state
-and exposes the normalized phone, calling code, national number, and
-dataset-based resolution result.
+A concrete `ValueNotifier<CountryPhoneEditingValue>` that manages phone input
+state and exposes the raw text, normalized phone, calling code, national
+number, dataset-based resolution, and input-length status.
 
 ```dart
 // Create with an initial value
 final controller = CountryPhoneController.apply('+7 123 456 78 90');
 
+print(controller.text);        // +7 123 456 78 90
 print(controller.phone);       // +71234567890
 print(controller.number);      // 1234567890
 print(controller.resolution.status); // CountryPhoneResolutionStatus.exact
 print(controller.resolution.primaryCountryCode); // RU
 print(controller.resolution.countryCodes); // [RU]
 print(controller.resolution.isAmbiguous); // false
+print(controller.valueStatus.currentLength); // 10
+print(controller.valueStatus.isIncomplete); // false
+print(controller.value.phone); // +71234567890
 
 // Or start empty
 final emptyController = CountryPhoneController.empty();
+
+// Or seed the full editing value explicitly
+final seededController = CountryPhoneController.fromValue(
+  CountryPhoneEditingValue(
+    text: '+44 7911 123456',
+    valueStatus: const CountryPhoneValueStatus(
+      currentLength: 10,
+      expectedLength: 10,
+      isOverflow: false,
+    ),
+  ),
+);
+```
+
+Dispose controllers you create yourself:
+
+```dart
+final controller = CountryPhoneController.empty();
+
+@override
+void dispose() {
+  controller.dispose();
+  super.dispose();
+}
 ```
 
 Resolution is dataset-based. The controller compares the parsed national number
@@ -248,11 +269,37 @@ There is no direct ISO2 getter anymore. Read the primary candidate from
 `resolution.primaryCountryCode` and inspect `resolution.status` before assuming
 the result is exact.
 
-Pass the controller to `CountryPhoneInput`:
+Pass the controller to `CountryPhoneInput` and observe the whole value:
 
 ```dart
-CountryPhoneInput(
-  controller: controller,
+ValueListenableBuilder<CountryPhoneEditingValue>(
+  valueListenable: controller,
+  builder: (context, value, _) {
+    final status = value.valueStatus;
+
+    return Column(
+      children: [
+        CountryPhoneInput(controller: controller),
+        Text(
+          'digits: ${status.currentLength}/${status.expectedLength}, '
+          'complete: ${status.isComplete}, overflow: ${status.isOverflow}, '
+          'phone: ${value.phone}',
+        ),
+      ],
+    );
+  },
+)
+```
+
+External updates should go through the immutable value API:
+
+```dart
+controller.value = controller.value.copyWith(
+  text: '+44 7911 12345',
+);
+
+controller.value = controller.value.copyWith(
+  valueStatus: controller.valueStatus.copyWith(expectedLength: 10),
 );
 ```
 
@@ -281,15 +328,14 @@ CountryPhoneInput(
 
 ### CountryInputFormatter
 
-A `TextInputFormatter` that formats input according to a phone mask. Supports `lazy` (default) and `eager` completion modes. When the input exceeds the mask length, the formatter switches to flat mode (digits only) and fires `onOverflowChanged`.
+A `TextInputFormatter` that formats input according to a phone mask. Supports `lazy` (default) and `eager` completion modes. When the input exceeds the mask length, the formatter switches to flat mode (digits only). Read `valueStatus` when you need the current formatted-length state.
 
 ```dart
-CountryInputFormatter(
+final formatter = CountryInputFormatter(
   mask: '000 000-00-00',
-  onOverflowChanged: (bool isOverflow) {
-    debugPrint('Overflow: $isOverflow');
-  },
-)
+);
+
+debugPrint('${formatter.valueStatus.currentLength}/${formatter.valueStatus.expectedLength}');
 ```
 
 | Symbol | Matches       |

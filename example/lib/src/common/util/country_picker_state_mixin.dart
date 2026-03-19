@@ -148,7 +148,7 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
             context,
           ),
           content: Text(
-            'PHONE: ${phone ?? countryPhoneController.value}',
+            'PHONE: ${phone ?? countryPhoneController.text}',
             style: Theme.of(
               context,
             ).textTheme.bodyMedium?.copyWith(color: CupertinoColors.white),

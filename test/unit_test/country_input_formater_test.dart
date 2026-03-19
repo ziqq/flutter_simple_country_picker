@@ -9,6 +9,9 @@ void main() => group('CountryInputFormatter -', () {
     expect(formatter.getMaskedText(), '');
     expect(formatter.getUnmaskedText(), '');
     expect(formatter.isFill, false);
+    expect(formatter.valueStatus.currentLength, 0);
+    expect(formatter.valueStatus.expectedLength, 11);
+    expect(formatter.valueStatus.isEmpty, isTrue);
   });
 
   test('switches to flat mode when input longer than mask', () {
@@ -50,6 +53,9 @@ void main() => group('CountryInputFormatter -', () {
     expect(formatter.getUnmaskedText(), '12345');
     expect(formatter.isFill, false);
     expect(formatter.isIncomplete, true);
+    expect(formatter.valueStatus.currentLength, 5);
+    expect(formatter.valueStatus.expectedLength, 11);
+    expect(formatter.valueStatus.isIncomplete, isTrue);
   });
 
   test('respects the filter for non-digit characters', () {
@@ -380,173 +386,37 @@ void main() => group('CountryInputFormatter -', () {
     );
   });
 
-  group('overflow callbacks -', () {
-    test('onOverflowChanged is called with true on overflow', () {
-      var received = <bool>[];
-      CountryInputFormatter(
-        mask: '+# (###) ###-##-##',
-        onOverflowChanged: received.add,
-      ).formatEditUpdate(
-        TextEditingValue.empty,
-        const TextEditingValue(text: '123456789012'),
-      );
-
-      expect(received, [true]);
-    });
-
-    test('onOverflowChanged is called with false when mask restored', () {
-      final received = <bool>[];
-      CountryInputFormatter(
-          mask: '+# (###) ###-##-##',
-          onOverflowChanged: received.add,
-        )
-        // enter overflow
+  group('valueStatus -', () {
+    test('valueStatus reports overflow for longer input', () {
+      final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##')
         ..formatEditUpdate(
           TextEditingValue.empty,
           const TextEditingValue(
             text: '123456789012',
             selection: TextSelection.collapsed(offset: 12),
           ),
-        )
-        // restore (delete back to mask capacity)
+        );
+
+      expect(formatter.valueStatus.currentLength, 12);
+      expect(formatter.valueStatus.expectedLength, 11);
+      expect(formatter.valueStatus.isOverflow, isTrue);
+      expect(formatter.valueStatus.isComplete, isFalse);
+    });
+
+    test('valueStatus becomes complete for exact-length input', () {
+      final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##')
         ..formatEditUpdate(
-          const TextEditingValue(
-            text: '123456789012',
-            selection: TextSelection.collapsed(offset: 12),
-          ),
+          TextEditingValue.empty,
           const TextEditingValue(
             text: '12345678901',
             selection: TextSelection.collapsed(offset: 11),
           ),
         );
 
-      expect(received, [true, false]);
-    });
-
-    test('overflowNotifier value is updated on overflow', () {
-      final notifier = ValueNotifier<bool>(false);
-      CountryInputFormatter(
-        mask: '+# (###) ###-##-##',
-        overflowNotifier: notifier,
-      ).formatEditUpdate(
-        TextEditingValue.empty,
-        const TextEditingValue(text: '123456789012'),
-      );
-
-      expect(notifier.value, isTrue);
-      notifier.dispose();
-    });
-
-    test('overflowNotifier reverts to false when mask is restored', () {
-      final notifier = ValueNotifier<bool>(false);
-      final formatter =
-          CountryInputFormatter(
-            mask: '+# (###) ###-##-##',
-            overflowNotifier: notifier,
-          )..formatEditUpdate(
-            TextEditingValue.empty,
-            const TextEditingValue(
-              text: '123456789012',
-              selection: TextSelection.collapsed(offset: 12),
-            ),
-          );
-      expect(notifier.value, isTrue);
-
-      formatter.formatEditUpdate(
-        const TextEditingValue(
-          text: '123456789012',
-          selection: TextSelection.collapsed(offset: 12),
-        ),
-        const TextEditingValue(
-          text: '12345678901',
-          selection: TextSelection.collapsed(offset: 11),
-        ),
-      );
-      expect(notifier.value, isFalse);
-      notifier.dispose();
-    });
-  });
-
-  group('incomplete callbacks -', () {
-    test('onIncompleteChanged tracks partial and complete input', () {
-      final received = <bool>[];
-      CountryInputFormatter(
-          mask: '+# (###) ###-##-##',
-          onIncompleteChanged: received.add,
-        )
-        ..formatEditUpdate(
-          TextEditingValue.empty,
-          const TextEditingValue(
-            text: '12345',
-            selection: TextSelection.collapsed(offset: 5),
-          ),
-        )
-        ..formatEditUpdate(
-          const TextEditingValue(
-            text: '+1 (234) 5',
-            selection: TextSelection.collapsed(offset: 10),
-          ),
-          const TextEditingValue(
-            text: '+1 (234) 567-89-00',
-            selection: TextSelection.collapsed(offset: 18),
-          ),
-        );
-
-      expect(received, [true, false]);
-    });
-
-    test('incompleteNotifier is true only for partial non-empty input', () {
-      final notifier = ValueNotifier<bool>(false);
-      final formatter = CountryInputFormatter(
-        mask: '+# (###) ###-##-##',
-        incompleteNotifier: notifier,
-      );
-
-      expect(notifier.value, isFalse);
-
-      formatter.formatEditUpdate(
-        TextEditingValue.empty,
-        const TextEditingValue(
-          text: '12345',
-          selection: TextSelection.collapsed(offset: 5),
-        ),
-      );
-      expect(notifier.value, isTrue);
-
-      formatter.clear();
-      expect(notifier.value, isFalse);
-
-      notifier.dispose();
-    });
-
-    test('incompleteNotifier becomes false when input overflows', () {
-      final notifier = ValueNotifier<bool>(false);
-      final formatter =
-          CountryInputFormatter(
-            mask: '+# (###) ###-##-##',
-            incompleteNotifier: notifier,
-          )..formatEditUpdate(
-            TextEditingValue.empty,
-            const TextEditingValue(
-              text: '12345',
-              selection: TextSelection.collapsed(offset: 5),
-            ),
-          );
-      expect(notifier.value, isTrue);
-
-      formatter.formatEditUpdate(
-        const TextEditingValue(
-          text: '+1 (234) 5',
-          selection: TextSelection.collapsed(offset: 10),
-        ),
-        const TextEditingValue(
-          text: '123456789012',
-          selection: TextSelection.collapsed(offset: 12),
-        ),
-      );
-
-      expect(notifier.value, isFalse);
-      notifier.dispose();
+      expect(formatter.valueStatus.currentLength, 11);
+      expect(formatter.valueStatus.expectedLength, 11);
+      expect(formatter.valueStatus.isComplete, isTrue);
+      expect(formatter.valueStatus.isIncomplete, isFalse);
     });
   });
 

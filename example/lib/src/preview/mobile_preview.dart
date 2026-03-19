@@ -107,6 +107,66 @@ class _MobilePreviewState extends State<MobilePreview>
                 // isScrollControlled: true,
               ),
 
+              ValueListenableBuilder<CountryPhoneEditingValue>(
+                valueListenable: _countryPhoneController,
+                builder: (context, value, _) {
+                  final status = value.valueStatus;
+                  final label = switch ((
+                    status.isEmpty,
+                    status.isOverflow,
+                    status.isComplete,
+                    status.isIncomplete,
+                  )) {
+                    (true, _, _, _) => 'empty',
+                    (_, true, _, _) => 'overflow',
+                    (_, _, true, _) => 'complete',
+                    (_, _, _, true) => 'incomplete',
+                    _ => 'idle',
+                  };
+
+                  return DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: CupertinoDynamicColor.resolve(
+                        CupertinoColors.secondarySystemBackground,
+                        context,
+                      ),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(pickerTheme.radius),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: .all(pickerTheme.padding),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 6,
+                        children: <Widget>[
+                          Text(
+                            'Phone status',
+                            style: theme.textTheme.titleMedium,
+                          ),
+                          Text(
+                            'state: $label',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                          Text(
+                            'digits: ${status.currentLength}/${status.expectedLength}',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                          Text(
+                            'phone: ${value.phone}',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                          Text(
+                            'resolved: ${value.resolution.status.name}',
+                            style: theme.textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+
               // --- Password input --- //
               DecoratedBox(
                 decoration: BoxDecoration(

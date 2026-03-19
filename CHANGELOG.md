@@ -1,16 +1,21 @@
 # Changelog
 
-## 0.9.1
-- **ADDED**: `incompleteNotifier` and `onIncompleteChanged` to observe a non-empty phone input that is still shorter than the expected length
+## 0.10.0
+- **BREAKING CHANGES**: `CountryPhoneController` is now a concrete `ValueNotifier<CountryPhoneEditingValue>` controller instead of an `extension type`
+- **BREAKING CHANGES**: removed `overflowNotifier`, `onOverflowChanged`, `incompleteNotifier`, and `onIncompleteChanged` from `CountryPhoneInput`; observe `CountryPhoneController` itself or `CountryPhoneController.valueStatus` instead
+- **BREAKING CHANGES**: removed `onOverflowChanged`, `overflowNotifier`, `onIncompleteChanged`, and `incompleteNotifier` from `CountryInputFormatter`; read `valueStatus` instead
+- **ADDED**: `CountryPhoneEditingValue` to keep raw text, normalized phone, resolution, and `CountryPhoneValueStatus` inside one controller value
+- **ADDED**: `CountryPhoneController.fromValue(...)` for SDK-style initialization from a complete `CountryPhoneEditingValue`
 - **CHANGED**: hidden the internal `CountryPhoneInput$Extended` implementation from the package root export; use `CountryPhoneInput.extended(...)` as the public entry point
 - **CHANGED**: marked `CountryPhoneInput$Extended` as internal to make the intended public API explicit
+- **DOCUMENTED**: immutable `CountryPhoneEditingValue.copyWith(...)` update flow and controller disposal guidance in the README
 
 ## 0.9.0
+- **BREAKING CHANGES**: removed `CountryPhoneController.countryCode`, `matchingCountryCodes`, `isCountryCodeAmbiguous`, and `isCountryCodeExact`; use `resolution` as the source of truth
 - **ADDED**: phone example to each country, [#11](https://github.com/ziqq/flutter_simple_country_picker/issues/11)
 - **ADDED**: phone mask to each country, [#12](https://github.com/ziqq/flutter_simple_country_picker/issues/12)
 - **ADDED**: optional formatter support for normalizing pasted and preset phone numbers before applying a mask
 - **ADDED**: `CountryPhoneController.resolution` with explicit `status` and ordered candidate country codes
-- **BREAKING CHANGES**: removed `CountryPhoneController.countryCode`, `matchingCountryCodes`, `isCountryCodeAmbiguous`, and `isCountryCodeExact`; use `resolution` as the source of truth
 - **FIXED**: pasted numbers with full country code or national prefix are now normalized before formatting
 - **FIXED**: formatter no longer strips the selected country code from numbers that belong to another country
 - **FIXED**: `CC` and `CX` reference examples in the bundled country dataset so shared `+61` plans resolve to the correct territory

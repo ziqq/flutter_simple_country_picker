@@ -102,30 +102,39 @@ void _$defaultCountryPhoneInputTest() {
     });
 
     group('interaction -', () {
-      testWidgets('should update incompleteNotifier for partial phone input', (
+      testWidgets('should sync controller value with phone input', (
         tester,
       ) async {
-        final notifier = ValueNotifier<bool>(false);
+        final controller = CountryPhoneController.empty();
 
         await tester.pumpWidget(
           createWidgetUnderTest(
             locale: const Locale('en'),
             builder: (_) =>
-                Scaffold(body: CountryPhoneInput(incompleteNotifier: notifier)),
+                Scaffold(body: CountryPhoneInput(controller: controller)),
           ),
         );
         await tester.pumpAndSettle();
 
+        expect(controller.value.valueStatus.expectedLength, greaterThan(0));
+        expect(controller.value.valueStatus.isEmpty, isTrue);
+        expect(controller.valueStatus.expectedLength, greaterThan(0));
+        expect(controller.valueStatus.isEmpty, isTrue);
+
         await tester.enterText(find.byKey(phoneFieldKey), '12345');
         await tester.pumpAndSettle();
 
-        expect(notifier.value, isTrue);
+        expect(controller.value.text, '+7 123 45');
+        expect(controller.valueStatus.currentLength, 5);
+        expect(controller.valueStatus.isIncomplete, isTrue);
 
-        await tester.enterText(find.byKey(phoneFieldKey), '12345678900');
+        await tester.enterText(find.byKey(phoneFieldKey), '1234567890');
         await tester.pumpAndSettle();
 
-        expect(notifier.value, isFalse);
-        notifier.dispose();
+        expect(controller.value.phone, '+71234567890');
+        expect(controller.valueStatus.currentLength, 10);
+        expect(controller.valueStatus.isComplete, isTrue);
+        expect(controller.valueStatus.isOverflow, isFalse);
       });
 
       testWidgets(
@@ -339,7 +348,7 @@ void _$defaultCountryPhoneInputTest() {
 
         final input = tester.widget<TextFormField>(phoneInputField);
         expect(input.controller?.text, expectedText);
-        expect(controller.value, '+7 $expectedText');
+        expect(controller.text, '+7 $expectedText');
 
         controller.dispose();
       });
@@ -384,7 +393,7 @@ void _$defaultCountryPhoneInputTest() {
 
         final input = tester.widget<TextFormField>(phoneInputField);
         expect(input.controller?.text, expectedText);
-        expect(controller.value, '+44 $expectedText');
+        expect(controller.text, '+44 $expectedText');
 
         controller.dispose();
       });
@@ -893,7 +902,7 @@ void _$extendedCountryPhoneInputTest() {
 
       final input = tester.widget<TextFormField>(field);
       expect(input.controller?.text, expectedText);
-      expect(controller.value, '+44 $expectedText');
+      expect(controller.text, '+44 $expectedText');
 
       controller.dispose();
     });

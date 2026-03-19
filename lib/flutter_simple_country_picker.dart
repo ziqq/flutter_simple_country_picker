@@ -11,7 +11,8 @@
 /// |-----|-----|
 /// | [showCountryPicker] | Opens a searchable bottom-sheet country picker. |
 /// | [CountryPhoneInput] | Phone-number input with embedded country selector. |
-/// | [CountryPhoneController] | Holds & parses the phone number value. |
+/// | [CountryPhoneController] | ValueNotifier-based controller for phone value and status. |
+/// | [CountryPhoneEditingValue] | Immutable controller value with text, resolution, and status. |
 /// | [CountryInputFormatter] | Masks phone input according to a dial-format. |
 /// | [CountryScope] | Pre-loads the country list into the widget tree. |
 /// | [CountryPickerTheme] | Visual customization via `ThemeExtension`. |

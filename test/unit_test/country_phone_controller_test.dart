@@ -36,6 +36,144 @@ void main() => group('CountryPhoneController -', () {
       expect(controller.phone, phone);
       expect(controller.number, phoneWithoutCode);
     });
+
+    test('exposes an empty value status by default', () {
+      final controller = CountryPhoneController.empty();
+
+      expect(controller.valueStatus, const CountryPhoneValueStatus.empty());
+      expect(controller.value, const CountryPhoneEditingValue.empty());
+    });
+
+    test('stores text and status inside a single editing value', () {
+      final controller = CountryPhoneController.apply('+712345');
+
+      controller.value = controller.value.copyWith(
+        valueStatus: const CountryPhoneValueStatus(
+          currentLength: 5,
+          expectedLength: 10,
+          isOverflow: false,
+        ),
+      );
+      expect(controller.text, '+712345');
+      expect(controller.value.phone, '+712345');
+      expect(controller.valueStatus.isIncomplete, isTrue);
+
+      controller.text = '+7123456789012';
+
+      expect(controller.value.text, '+7123456789012');
+      expect(controller.value.phone, '+7123456789012');
+      expect(controller.valueStatus.currentLength, 12);
+      expect(controller.valueStatus.expectedLength, 10);
+      expect(controller.valueStatus.isOverflow, isTrue);
+    });
+
+    test('fromValue seeds controller with a complete editing value', () {
+      final controller = CountryPhoneController.fromValue(
+        CountryPhoneEditingValue(
+          text: '+44 7911 123456',
+          valueStatus: const CountryPhoneValueStatus(
+            currentLength: 10,
+            expectedLength: 10,
+            isOverflow: false,
+          ),
+        ),
+      );
+
+      expect(controller.text, '+44 7911 123456');
+      expect(controller.phone, '+447911123456');
+      expect(controller.phoneCode, '44');
+      expect(controller.valueStatus.isComplete, isTrue);
+      expect(controller.resolution.isResolved, isTrue);
+    });
+
+    test(
+      'external value assignment normalizes text and keeps expected length',
+      () {
+        final controller = CountryPhoneController.fromValue(
+          CountryPhoneEditingValue(
+            text: '+44 7911 123456',
+            valueStatus: const CountryPhoneValueStatus(
+              currentLength: 10,
+              expectedLength: 10,
+              isOverflow: false,
+            ),
+          ),
+        );
+
+        controller.value = controller.value.copyWith(text: '+44 7911 12345');
+
+        expect(controller.text, '+44 7911 12345');
+        expect(controller.phone, '+44791112345');
+        expect(controller.valueStatus.currentLength, 9);
+        expect(controller.valueStatus.expectedLength, 10);
+        expect(controller.valueStatus.isIncomplete, isTrue);
+        expect(controller.resolution.phone, '+44791112345');
+      },
+    );
+
+    test('notifies listeners when value changes meaningfully', () {
+      final controller = CountryPhoneController.fromValue(
+        CountryPhoneEditingValue(
+          text: '+44 7911 123456',
+          valueStatus: const CountryPhoneValueStatus(
+            currentLength: 10,
+            expectedLength: 10,
+            isOverflow: false,
+          ),
+        ),
+      );
+      var notifications = 0;
+
+      controller.addListener(() => notifications++);
+      controller.text = '+44 7911 12345';
+
+      expect(notifications, 1);
+      expect(controller.valueStatus.isIncomplete, isTrue);
+    });
+
+    test('does not notify listeners for equivalent value assignment', () {
+      final controller = CountryPhoneController.fromValue(
+        CountryPhoneEditingValue(
+          text: '+44 7911 123456',
+          valueStatus: const CountryPhoneValueStatus(
+            currentLength: 10,
+            expectedLength: 10,
+            isOverflow: false,
+          ),
+        ),
+      );
+      var notifications = 0;
+
+      controller.addListener(() => notifications++);
+      controller.value = CountryPhoneEditingValue(
+        text: '+44 7911 123456',
+        valueStatus: const CountryPhoneValueStatus(
+          currentLength: 10,
+          expectedLength: 10,
+          isOverflow: false,
+        ),
+      );
+
+      expect(notifications, 0);
+    });
+
+    test('clear resets text and preserves known expected length', () {
+      final controller = CountryPhoneController.apply('+712345');
+
+      controller.value = controller.value.copyWith(
+        valueStatus: const CountryPhoneValueStatus(
+          currentLength: 5,
+          expectedLength: 10,
+          isOverflow: false,
+        ),
+      );
+      controller.clear();
+
+      expect(controller.text, '');
+      expect(controller.valueStatus.currentLength, 0);
+      expect(controller.valueStatus.expectedLength, 10);
+      expect(controller.valueStatus.isOverflow, isFalse);
+    });
   });
 
   group('resolution behavior -', () {
@@ -45,7 +183,10 @@ void main() => group('CountryPhoneController -', () {
       expect(controller.phone, '');
       expect(controller.phoneCode, '');
       expect(controller.number, '');
-      expect(controller.resolution.status, CountryPhoneResolutionStatus.unresolved);
+      expect(
+        controller.resolution.status,
+        CountryPhoneResolutionStatus.unresolved,
+      );
       expect(controller.resolution.primaryCountryCode, isNull);
       expect(controller.resolution.countryCodes, isEmpty);
       expect(controller.resolution.isResolved, isFalse);
@@ -61,35 +202,52 @@ void main() => group('CountryPhoneController -', () {
       expect(controller.resolution.phone, '+999123456');
       expect(controller.resolution.phoneCode, '');
       expect(controller.resolution.nationalNumber, '');
-      expect(controller.resolution.status, CountryPhoneResolutionStatus.unresolved);
+      expect(
+        controller.resolution.status,
+        CountryPhoneResolutionStatus.unresolved,
+      );
       expect(controller.resolution.isResolved, isFalse);
     });
 
-    test('returns unresolved resolution for calling code without national digits', () {
-      final controller = CountryPhoneController.apply('+44');
+    test(
+      'returns unresolved resolution for calling code without national digits',
+      () {
+        final controller = CountryPhoneController.apply('+44');
 
-      expect(controller.phoneCode, '');
-      expect(controller.number, '44');
-      expect(controller.resolution.phone, '+44');
-      expect(controller.resolution.status, CountryPhoneResolutionStatus.unresolved);
-      expect(controller.resolution.countryCodes, isEmpty);
-    });
+        expect(controller.phoneCode, '');
+        expect(controller.number, '44');
+        expect(controller.resolution.phone, '+44');
+        expect(
+          controller.resolution.status,
+          CountryPhoneResolutionStatus.unresolved,
+        );
+        expect(controller.resolution.countryCodes, isEmpty);
+      },
+    );
 
-    test('resolves shared +44 prefix as ambiguous when number is too short', () {
-      final controller = CountryPhoneController.apply('+447');
+    test(
+      'resolves shared +44 prefix as ambiguous when number is too short',
+      () {
+        final controller = CountryPhoneController.apply('+447');
 
-      expect(controller.phoneCode, '44');
-      expect(controller.number, '7');
-      expect(controller.resolution.status, CountryPhoneResolutionStatus.ambiguous);
-      expect(controller.resolution.primaryCountryCode, 'GB');
-      expect(
-        controller.resolution.countryCodes,
-        <String>['GB', 'GG', 'IM', 'JE'],
-      );
-      expect(controller.resolution.isResolved, isTrue);
-      expect(controller.resolution.isExact, isFalse);
-      expect(controller.resolution.isAmbiguous, isTrue);
-    });
+        expect(controller.phoneCode, '44');
+        expect(controller.number, '7');
+        expect(
+          controller.resolution.status,
+          CountryPhoneResolutionStatus.ambiguous,
+        );
+        expect(controller.resolution.primaryCountryCode, 'GB');
+        expect(controller.resolution.countryCodes, <String>[
+          'GB',
+          'GG',
+          'IM',
+          'JE',
+        ]);
+        expect(controller.resolution.isResolved, isTrue);
+        expect(controller.resolution.isExact, isFalse);
+        expect(controller.resolution.isAmbiguous, isTrue);
+      },
+    );
 
     test('resolves shared +7 calling code exactly when examples diverge', () {
       final russia = CountryPhoneController.apply('+79123456789');
