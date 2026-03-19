@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.2
+- **CHANGED**: `CountryPhoneInput.extended` now applies a single resolved picker text style consistently to the country label, country code, input text, cursor, and hint text
+
 ## 0.10.1
 - **ADDED**: `enableOpenPicker` to `CountryPhoneInput` and `CountryPhoneInput.extended` so the country-prefix button can stay visible while the picker opening is disabled
 

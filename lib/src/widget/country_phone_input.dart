@@ -507,8 +507,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
       horizontal: pickerTheme.padding / 2,
       vertical: pickerTheme.indent,
     );
-    final textStyle = pickerTheme.textStyle;
-    final defaultTextStyle = textStyle?.copyWith(
+    final textStyle = pickerTheme.textStyle?.copyWith(
       fontSize: 20,
       color: CupertinoDynamicColor.resolve(CupertinoColors.label, context),
     );
@@ -559,7 +558,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                 width: double.infinity,
                 child: Text(
                   '${selected.flagEmoji} ${localization.getFormatedCountryNameByCode(selected.countryCode)}',
-                  style: defaultTextStyle,
+                  style: textStyle?.copyWith(fontWeight: FontWeight.w500),
                 ),
               ),
             ),
@@ -581,9 +580,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                   padding: padding,
                   child: Text(
                     '+${selected.phoneCode}',
-                    style: defaultTextStyle?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: textStyle,
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -610,9 +607,9 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                       autofocus: widget.autofocus,
                       controller: _phoneController,
                       inputFormatters: [_formater],
-                      style: defaultTextStyle,
-                      cursorColor: defaultTextStyle?.color,
-                      cursorHeight: defaultTextStyle?.fontSize,
+                      style: textStyle,
+                      cursorColor: textStyle?.color,
+                      cursorHeight: textStyle?.fontSize,
                       onChanged: (_) {
                         widget.onChanged?.call(_controller.text);
                       },
@@ -622,11 +619,10 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                             widget.placeholder ??
                             selected.mask ??
                             localization.phonePlaceholder,
-                        hintStyle: defaultTextStyle?.copyWith(
+                        hintStyle: textStyle?.copyWith(
                           color: pickerTheme.searchTextStyle?.color?.withValues(
                             alpha: .5,
                           ),
-                          fontWeight: FontWeight.w500,
                         ),
                         border: InputBorder.none,
                         errorBorder: InputBorder.none,

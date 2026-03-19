@@ -206,7 +206,7 @@ CountryPhoneInput(
 );
 ```
 
-Use `CountryPhoneInput.extended` for additional layout and presentation configuration such as custom scroll sizes.
+Use `CountryPhoneInput.extended` for additional layout and presentation configuration such as custom scroll sizes. The extended variant also uses a single resolved picker text style consistently across the country label, code, input, cursor, and hint text.
 
 Set `enableOpenPicker: false` when the selected country should stay visible in
 the prefix button but the picker must not open on tap:
