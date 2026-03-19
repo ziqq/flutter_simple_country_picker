@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.1
+- **ADDED**: `incompleteNotifier` and `onIncompleteChanged` to observe a non-empty phone input that is still shorter than the expected length
+- **CHANGED**: hidden the internal `CountryPhoneInput$Extended` implementation from the package root export; use `CountryPhoneInput.extended(...)` as the public entry point
+- **CHANGED**: marked `CountryPhoneInput$Extended` as internal to make the intended public API explicit
+
 ## 0.9.0
 - **ADDED**: phone example to each country, [#11](https://github.com/ziqq/flutter_simple_country_picker/issues/11)
 - **ADDED**: phone mask to each country, [#12](https://github.com/ziqq/flutter_simple_country_picker/issues/12)

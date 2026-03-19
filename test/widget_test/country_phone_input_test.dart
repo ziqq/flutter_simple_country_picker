@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart';
+import 'package:flutter_simple_country_picker/src/widget/country_phone_input.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../util/test_util.dart';
@@ -101,6 +102,32 @@ void _$defaultCountryPhoneInputTest() {
     });
 
     group('interaction -', () {
+      testWidgets('should update incompleteNotifier for partial phone input', (
+        tester,
+      ) async {
+        final notifier = ValueNotifier<bool>(false);
+
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            locale: const Locale('en'),
+            builder: (_) =>
+                Scaffold(body: CountryPhoneInput(incompleteNotifier: notifier)),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.enterText(find.byKey(phoneFieldKey), '12345');
+        await tester.pumpAndSettle();
+
+        expect(notifier.value, isTrue);
+
+        await tester.enterText(find.byKey(phoneFieldKey), '12345678900');
+        await tester.pumpAndSettle();
+
+        expect(notifier.value, isFalse);
+        notifier.dispose();
+      });
+
       testWidgets(
         'should open country picker when country code area is tapped',
         (tester) async {

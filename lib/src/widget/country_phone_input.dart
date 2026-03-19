@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:meta/meta.dart';
 
 /// {@template country_phone_input}
 /// CountryPhoneInput widget.
@@ -20,6 +21,8 @@ class CountryPhoneInput extends StatefulWidget {
     this.onCountryChanged,
     this.overflowNotifier,
     this.onOverflowChanged,
+    this.incompleteNotifier,
+    this.onIncompleteChanged,
     this.exclude,
     this.favorites,
     this.filter,
@@ -50,6 +53,8 @@ class CountryPhoneInput extends StatefulWidget {
     ValueChanged<Country>? onCountryChanged,
     ValueNotifier<bool>? overflowNotifier,
     ValueChanged<bool>? onOverflowChanged,
+    ValueNotifier<bool>? incompleteNotifier,
+    ValueChanged<bool>? onIncompleteChanged,
     List<String>? exclude,
     List<String>? favorites,
     List<String>? filter,
@@ -70,6 +75,7 @@ class CountryPhoneInput extends StatefulWidget {
     bool useHaptickFeedback,
     double? initialChildSize,
     double? minChildSize,
+    Key? key,
   }) = CountryPhoneInput$Extended;
 
   /// Use autofocus for the search countryies input field.
@@ -152,6 +158,12 @@ class CountryPhoneInput extends StatefulWidget {
   /// Notify UI about overflow (flat mode) state changes.
   final ValueChanged<bool>? onOverflowChanged;
 
+  /// Notifier to bind incomplete phone state into UI without callback.
+  final ValueNotifier<bool>? incompleteNotifier;
+
+  /// Notify UI when the phone input is shorter than the expected length.
+  final ValueChanged<bool>? onIncompleteChanged;
+
   @override
   State<CountryPhoneInput> createState() => _CountryPhoneInputState();
 }
@@ -189,6 +201,8 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       shouldTryStripLeadingPrefix: widget.shouldReplace8,
       overflowNotifier: widget.overflowNotifier,
       onOverflowChanged: widget.onOverflowChanged,
+      incompleteNotifier: widget.incompleteNotifier,
+      onIncompleteChanged: widget.onIncompleteChanged,
     );
 
     // If the controller has an initial value
@@ -452,6 +466,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
 
 /// CountryPhoneInput$Extended widget.
 /// {@macro country_phone_input}
+@internal
 class CountryPhoneInput$Extended extends CountryPhoneInput {
   /// {@macro country_phone_input}
   const CountryPhoneInput$Extended({
@@ -462,6 +477,8 @@ class CountryPhoneInput$Extended extends CountryPhoneInput {
     super.onCountryChanged,
     super.overflowNotifier,
     super.onOverflowChanged,
+    super.incompleteNotifier,
+    super.onIncompleteChanged,
     super.exclude,
     super.favorites,
     super.filter,

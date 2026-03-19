@@ -49,6 +49,7 @@ void main() => group('CountryInputFormatter -', () {
     expect(formatter.getMaskedText(), '+1 (234) 5');
     expect(formatter.getUnmaskedText(), '12345');
     expect(formatter.isFill, false);
+    expect(formatter.isIncomplete, true);
   });
 
   test('respects the filter for non-digit characters', () {
@@ -466,6 +467,89 @@ void main() => group('CountryInputFormatter -', () {
     });
   });
 
+  group('incomplete callbacks -', () {
+    test('onIncompleteChanged tracks partial and complete input', () {
+      final received = <bool>[];
+      CountryInputFormatter(
+          mask: '+# (###) ###-##-##',
+          onIncompleteChanged: received.add,
+        )
+        ..formatEditUpdate(
+          TextEditingValue.empty,
+          const TextEditingValue(
+            text: '12345',
+            selection: TextSelection.collapsed(offset: 5),
+          ),
+        )
+        ..formatEditUpdate(
+          const TextEditingValue(
+            text: '+1 (234) 5',
+            selection: TextSelection.collapsed(offset: 10),
+          ),
+          const TextEditingValue(
+            text: '+1 (234) 567-89-00',
+            selection: TextSelection.collapsed(offset: 18),
+          ),
+        );
+
+      expect(received, [true, false]);
+    });
+
+    test('incompleteNotifier is true only for partial non-empty input', () {
+      final notifier = ValueNotifier<bool>(false);
+      final formatter = CountryInputFormatter(
+        mask: '+# (###) ###-##-##',
+        incompleteNotifier: notifier,
+      );
+
+      expect(notifier.value, isFalse);
+
+      formatter.formatEditUpdate(
+        TextEditingValue.empty,
+        const TextEditingValue(
+          text: '12345',
+          selection: TextSelection.collapsed(offset: 5),
+        ),
+      );
+      expect(notifier.value, isTrue);
+
+      formatter.clear();
+      expect(notifier.value, isFalse);
+
+      notifier.dispose();
+    });
+
+    test('incompleteNotifier becomes false when input overflows', () {
+      final notifier = ValueNotifier<bool>(false);
+      final formatter =
+          CountryInputFormatter(
+            mask: '+# (###) ###-##-##',
+            incompleteNotifier: notifier,
+          )..formatEditUpdate(
+            TextEditingValue.empty,
+            const TextEditingValue(
+              text: '12345',
+              selection: TextSelection.collapsed(offset: 5),
+            ),
+          );
+      expect(notifier.value, isTrue);
+
+      formatter.formatEditUpdate(
+        const TextEditingValue(
+          text: '+1 (234) 5',
+          selection: TextSelection.collapsed(offset: 10),
+        ),
+        const TextEditingValue(
+          text: '123456789012',
+          selection: TextSelection.collapsed(offset: 12),
+        ),
+      );
+
+      expect(notifier.value, isFalse);
+      notifier.dispose();
+    });
+  });
+
   group('updateMask with type -', () {
     test('can change completion type via updateMask', () {
       final formatter = CountryInputFormatter(mask: '#-#-#');
@@ -550,22 +634,25 @@ void main() => group('CountryInputFormatter -', () {
       );
     });
 
-    test('normalizePhoneText keeps implicit phone code when stripping is disabled', () {
-      final formatter = CountryInputFormatter(
-        mask: '0000 000000',
-        phoneCode: '44',
-        example: '7400123456',
-        shouldTryStripPhoneCode: true,
-      );
+    test(
+      'normalizePhoneText keeps implicit phone code when stripping is disabled',
+      () {
+        final formatter = CountryInputFormatter(
+          mask: '0000 000000',
+          phoneCode: '44',
+          example: '7400123456',
+          shouldTryStripPhoneCode: true,
+        );
 
-      expect(
-        formatter.normalizePhoneText(
+        expect(
+          formatter.normalizePhoneText(
+            '447400123456',
+            allowImplicitPhoneCodeStrip: false,
+          ),
           '447400123456',
-          allowImplicitPhoneCodeStrip: false,
-        ),
-        '447400123456',
-      );
-    });
+        );
+      },
+    );
 
     test('normalizePhoneText strips configured leading prefix', () {
       final formatter = CountryInputFormatter(
@@ -590,9 +677,7 @@ void main() => group('CountryInputFormatter -', () {
         example: '9123456789',
         shouldTryStripLeadingPrefix: true,
         leadingPrefixes: const {'9'},
-      );
-
-      formatter.updateMask(leadingPrefixes: const <String>{});
+      )..updateMask(leadingPrefixes: const <String>{});
 
       expect(
         formatter.normalizePhoneText(

@@ -68,9 +68,17 @@ class CountryInputFormatter implements TextInputFormatter {
 
     /// Notifier to bind into UI without callback.
     ValueNotifier<bool>? overflowNotifier,
+
+    /// Notify UI when the phone input is shorter than the expected length.
+    ValueChanged<bool>? onIncompleteChanged,
+
+    /// Notifier to bind incomplete state into UI without callback.
+    ValueNotifier<bool>? incompleteNotifier,
   }) : _type = type,
        _overflowNotifier = overflowNotifier,
-       _onOverflowChanged = onOverflowChanged {
+       _onOverflowChanged = onOverflowChanged,
+       _incompleteNotifier = incompleteNotifier,
+       _onIncompleteChanged = onIncompleteChanged {
     updateMask(
       mask: mask,
       filter: filter ?? _kDefaultFilter,
@@ -122,11 +130,20 @@ class CountryInputFormatter implements TextInputFormatter {
   /// Notifier to bind into UI without callback.
   final ValueNotifier<bool>? _overflowNotifier;
 
+  /// Notify UI when the phone input is shorter than the expected length.
+  final ValueChanged<bool>? _onIncompleteChanged;
+
+  /// Notifier to bind incomplete state into UI without callback.
+  final ValueNotifier<bool>? _incompleteNotifier;
+
   /// Indicates whether the formatter is in flat mode (mask overflow).
   ///
   /// Flat mode is enabled when input exceeds mask capacity.
   /// While in flat mode, formatter outputs digits-only text (no mask characters).
   bool _isFlatMode = false;
+
+  /// Indicates whether the phone input is shorter than the expected length.
+  bool _isIncomplete = false;
 
   /// Original mask that we can restore after user deletes characters back
   /// to mask capacity.
@@ -301,12 +318,18 @@ class CountryInputFormatter implements TextInputFormatter {
   /// Check if the mask is fully filled.
   bool get isFill => _resultTextArray.length == _maskLength;
 
+  /// Check if the phone input is shorter than the expected length.
+  bool get isIncomplete => _isIncomplete;
+
   /// Clear the masked text.
   /// Note: Manually call this if you clear the TextField text, as it won't
   /// trigger the formatter on an empty value.
   void clear() {
+    _mask = _savedMask ?? _mask;
+    _setFlatMode(false);
     _resultTextMasked = '';
     _resultTextArray.clear();
+    _setIncomplete(false);
   }
 
   /// Normalize a raw phone string using the formatter phone settings.
@@ -414,6 +437,8 @@ class CountryInputFormatter implements TextInputFormatter {
     leadingPrefixes: _leadingPrefixes,
     onOverflowChanged: _onOverflowChanged,
     overflowNotifier: _overflowNotifier,
+    onIncompleteChanged: _onIncompleteChanged,
+    incompleteNotifier: _incompleteNotifier,
   );
 
   int _expectedPhoneLength() {
@@ -421,6 +446,19 @@ class CountryInputFormatter implements TextInputFormatter {
     if (exampleLength == 0) return _maskLength;
     if (_maskLength == 0) return exampleLength;
     return exampleLength > _maskLength ? exampleLength : _maskLength;
+  }
+
+  bool _computeIncompleteValue(int inputLength) {
+    if (_isFlatMode || inputLength <= 0) return false;
+
+    final expectedLength = _expectedPhoneLength();
+    if (expectedLength <= 0) return false;
+
+    return inputLength < expectedLength;
+  }
+
+  void _syncIncompleteState(int inputLength) {
+    _setIncomplete(_computeIncompleteValue(inputLength));
   }
 
   bool _looksLikePaste(TextEditingValue oldValue, TextEditingValue newValue) {
@@ -524,6 +562,7 @@ class CountryInputFormatter implements TextInputFormatter {
       if (_isFlatMode) {
         _resultTextMasked = flat;
         _resultTextArray.set(flat);
+        _syncIncompleteState(flat.length);
 
         return TextEditingValue(
           text: flat,
@@ -547,6 +586,7 @@ class CountryInputFormatter implements TextInputFormatter {
     if (mask == null || mask.isEmpty) {
       _resultTextMasked = normalizedValue.text;
       _resultTextArray.set(normalizedValue.text);
+      _syncIncompleteState(_resultTextArray.length);
       return normalizedValue;
     }
 
@@ -787,6 +827,7 @@ class CountryInputFormatter implements TextInputFormatter {
       final flat = _digitsOnly(normalizedValue.text);
       _resultTextMasked = flat;
       _resultTextArray.set(flat);
+      _syncIncompleteState(flat.length);
 
       final caret = normalizedValue.selection.isValid
           ? _digitsCountBefore(
@@ -805,6 +846,8 @@ class CountryInputFormatter implements TextInputFormatter {
     final finalCursorPosition = cursorPos < 0
         ? _resultTextMasked.length
         : cursorPos;
+
+    _syncIncompleteState(_resultTextArray.length);
 
     return TextEditingValue(
       text: _resultTextMasked,
@@ -849,6 +892,15 @@ class CountryInputFormatter implements TextInputFormatter {
     // Notify UI.
     _onOverflowChanged?.call(value);
     _overflowNotifier?.value = value;
+  }
+
+  /// Set incomplete state and notify UI if needed.
+  void _setIncomplete(bool value) {
+    if (_isIncomplete == value) return;
+    _isIncomplete = value;
+
+    _onIncompleteChanged?.call(value);
+    _incompleteNotifier?.value = value;
   }
 }
 
