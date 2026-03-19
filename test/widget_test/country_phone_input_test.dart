@@ -249,9 +249,7 @@ void _$defaultCountryPhoneInputTest() {
         await tester.pump();
 
         final input = tester.widget<TextFormField>(phoneInputField);
-        // In widget tests, input formatters may not apply on enterText.
-        // Verify text captured; detailed formatting is covered by formatter tests.
-        expect(input.controller?.text, '12345678');
+        expect(input.controller?.text, '1 23 45 67 8');
       });
 
       testWidgets('should normalize pasted phone number with country code', (

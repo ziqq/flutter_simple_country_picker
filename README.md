@@ -135,6 +135,19 @@ Register it in the delegate by creating your own `LocalizationsDelegate<CountryL
 
 ## Usage
 
+## Migration To 0.9.0
+
+`CountryPhoneController` now uses `resolution` as the source of truth.
+
+- Removed: `countryCode`
+- Removed: `matchingCountryCodes`
+- Removed: `isCountryCodeAmbiguous`
+- Removed: `isCountryCodeExact`
+- Use `resolution.primaryCountryCode` when you need the primary ISO2 result.
+- Use `resolution.countryCodes` when you need all ordered candidates.
+- Use `resolution.status` when you need to distinguish exact, ambiguous, and
+  unresolved states.
+
 ### showCountryPicker
 
 Opens a bottom sheet with a scrollable/searchable country list.
@@ -204,7 +217,9 @@ Use `CountryPhoneInput.extended` for additional configuration (overflow notifier
 
 ### CountryPhoneController
 
-An `extension type` over `ValueNotifier<String>` that manages the phone number state with helpers for extracting the country ISO2 code and raw subscriber number.
+An `extension type` over `ValueNotifier<String>` that manages phone input state
+and exposes the normalized phone, calling code, national number, and
+dataset-based resolution result.
 
 ```dart
 // Create with an initial value
@@ -212,17 +227,54 @@ final controller = CountryPhoneController.apply('+7 123 456 78 90');
 
 print(controller.phone);       // +71234567890
 print(controller.number);      // 1234567890
-print(controller.countryCode); // RU
+print(controller.resolution.status); // CountryPhoneResolutionStatus.exact
+print(controller.resolution.primaryCountryCode); // RU
+print(controller.resolution.countryCodes); // [RU]
+print(controller.resolution.isAmbiguous); // false
 
 // Or start empty
 final emptyController = CountryPhoneController.empty();
 ```
+
+Resolution is dataset-based. The controller compares the parsed national number
+with bundled example numbers and then uses dataset priority to keep ordering
+stable when multiple candidates remain.
+
+This is not a full metadata validator like `libphonenumber`. If you need strict
+carrier- or region-level validation, treat `resolution` as a lightweight
+bundled heuristic and validate the final number separately.
+
+There is no direct ISO2 getter anymore. Read the primary candidate from
+`resolution.primaryCountryCode` and inspect `resolution.status` before assuming
+the result is exact.
 
 Pass the controller to `CountryPhoneInput`:
 
 ```dart
 CountryPhoneInput(
   controller: controller,
+);
+```
+
+End-to-end example:
+
+```dart
+final controller = CountryPhoneController.empty();
+
+CountryPhoneInput(
+  controller: controller,
+  initialCountry: Country.us(),
+  showPhoneCode: true,
+  onChanged: (_) {
+    switch (controller.resolution.status) {
+      case CountryPhoneResolutionStatus.exact:
+        debugPrint('ISO2: ${controller.resolution.primaryCountryCode}');
+      case CountryPhoneResolutionStatus.ambiguous:
+        debugPrint('Candidates: ${controller.resolution.countryCodes}');
+      case CountryPhoneResolutionStatus.unresolved:
+        debugPrint('No bundled match for ${controller.phone}');
+    }
+  },
 );
 ```
 
@@ -245,6 +297,19 @@ CountryInputFormatter(
 | `0`    | digit `[0-9]` |
 | `#`    | digit `[0-9]` |
 | `A`    | digit `[0-9]` |
+
+
+## Gotchas
+
+- `CountryPhoneController.resolution` is dataset-based, not full phone-number
+  validation.
+- `resolution.primaryCountryCode` can be `null` when the input is unresolved.
+- Shared calling codes such as `+1`, `+7`, and `+44` can legitimately produce
+  multiple candidates.
+- `filter` and `exclude` should not be used together in `showCountryPicker`.
+- `CountryInputFormatter` switches to flat mode when input exceeds the mask.
+- `mask` describes the national number only. It should not include the calling
+  code.
 
 
 ### CountryScope
@@ -322,6 +387,12 @@ MaterialApp(
 ## All Countries List
 
 See the [All Countries List](https://github.com/ziqq/flutter_simple_country_picker/wiki/All-Countries-list) on the wiki.
+
+
+## Maintainer Notes
+
+For bundled dataset maintenance, shared calling-code caveats, and a copy-paste
+template for new entries, see [docs/country_codes.md](docs/country_codes.md).
 
 
 ## Changelog

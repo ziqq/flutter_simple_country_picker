@@ -9,6 +9,17 @@ import 'package:flutter_simple_country_picker/src/constant/country_codes.dart'
 import 'package:flutter_test/flutter_test.dart';
 
 void main() => group('CountryPhoneController -', () {
+  final countryCodesByPhone = <String, Set<String>>{};
+  for (final entry in countries) {
+    final phoneFull = entry['full_example_with_plus_sign']?.toString();
+    final countryCode = entry['iso2_cc']?.toString();
+    if (phoneFull == null || phoneFull.isEmpty) continue;
+    if (countryCode == null || countryCode.isEmpty) continue;
+    countryCodesByPhone
+        .putIfAbsent(phoneFull, () => <String>{})
+        .add(countryCode);
+  }
+
   group('simple tests -', () {
     const phone = '+71234567890';
     const phoneSpaced = '+7 123 456 78 90';
@@ -26,6 +37,49 @@ void main() => group('CountryPhoneController -', () {
       expect(controller.number, phoneWithoutCode);
     });
   });
+
+  group('resolution behavior -', () {
+    test('resolves shared +7 calling code exactly when examples diverge', () {
+      final russia = CountryPhoneController.apply('+79123456789');
+      final kazakhstan = CountryPhoneController.apply('+77710009998');
+
+      expect(russia.resolution.status, CountryPhoneResolutionStatus.exact);
+      expect(russia.resolution.primaryCountryCode, 'RU');
+      expect(russia.resolution.countryCodes, <String>['RU']);
+
+      expect(kazakhstan.resolution.status, CountryPhoneResolutionStatus.exact);
+      expect(kazakhstan.resolution.primaryCountryCode, 'KZ');
+      expect(kazakhstan.resolution.countryCodes, <String>['KZ']);
+    });
+
+    test('resolves +61 to Australia exactly', () {
+      final controller = CountryPhoneController.apply('+61123456789');
+
+      expect(controller.resolution.status, CountryPhoneResolutionStatus.exact);
+      expect(controller.resolution.primaryCountryCode, 'AU');
+      expect(controller.resolution.countryCodes, <String>['AU']);
+      expect(controller.resolution.isAmbiguous, isFalse);
+    });
+
+    test('resolves +212 to Morocco exactly', () {
+      final controller = CountryPhoneController.apply('+212650123456');
+
+      expect(controller.resolution.status, CountryPhoneResolutionStatus.exact);
+      expect(controller.resolution.primaryCountryCode, 'MA');
+      expect(controller.resolution.countryCodes, <String>['MA']);
+      expect(controller.resolution.isAmbiguous, isFalse);
+    });
+
+    test('resolves +590 to Guadeloupe exactly', () {
+      final controller = CountryPhoneController.apply('+590690301234');
+
+      expect(controller.resolution.status, CountryPhoneResolutionStatus.exact);
+      expect(controller.resolution.primaryCountryCode, 'GP');
+      expect(controller.resolution.countryCodes, <String>['GP']);
+      expect(controller.resolution.isAmbiguous, isFalse);
+    });
+  });
+
   for (final entry in countries) {
     final countryCode = entry['iso2_cc']?.toString();
     final phoneCode = entry['e164_cc']?.toString();
@@ -101,10 +155,19 @@ void main() => group('CountryPhoneController -', () {
 
     group('countryCode -', () {
       test(
-        'for phone number $phoneFull should return country ISO2 ($countryCode)',
+        'for phone number $phoneFull should include country ISO2 ($countryCode)',
         () {
           final controller = CountryPhoneController.apply(phoneFull);
-          expect(controller.countryCode, countryCode);
+          expect(controller.resolution.countryCodes, contains(countryCode));
+
+          final duplicates = countryCodesByPhone[phoneFull] ?? const <String>{};
+          if (duplicates.length == 1) {
+            expect(controller.resolution.primaryCountryCode, countryCode);
+            expect(controller.resolution.isResolved, isTrue);
+            expect(controller.resolution.isAmbiguous, isFalse);
+          } else {
+            expect(controller.resolution.isAmbiguous, isTrue);
+          }
         },
       );
     });

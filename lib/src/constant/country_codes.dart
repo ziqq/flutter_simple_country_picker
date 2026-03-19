@@ -5,9 +5,11 @@
 
 import 'package:meta/meta.dart';
 
-// TODO(ziqq): Add phone mask to each country, https://github.com/ziqq/flutter_simple_country_picker/issues/11
-// Anton Ustinoff <a.a.ustinoff@gmail.com>, 26 January 2026
-/// List of country codes and related information.
+/// Source-of-truth bundled country dataset.
+///
+/// Keep [countries] and `country_codes.json` in sync. After editing this file,
+/// regenerate the JSON mirror with `fvm dart --disable-analytics run
+/// tool/generate_json.dart`.
 @internal
 const List<Map<String, Object?>> countries = <Map<String, Object?>>[
   {
@@ -699,34 +701,6 @@ const List<Map<String, Object?>> countries = <Map<String, Object?>>[
     'full_example_with_plus_sign': '+8613123456789',
     'display_name_no_e164_cc': 'China (CN)',
     'e164_key': '86-CN-0',
-  },
-  {
-    'e164_cc': '61',
-    'iso2_cc': 'CX',
-    'e164_sc': 0,
-    'geographic': true,
-    'level': 3,
-    'name': 'Christmas Island',
-    'example': '412345678',
-    'display_name': 'Christmas Island (CX) [+61]',
-    'mask': '000 000 000',
-    'full_example_with_plus_sign': '+61412345678',
-    'display_name_no_e164_cc': 'Christmas Island (CX)',
-    'e164_key': '61-CX-0',
-  },
-  {
-    'e164_cc': '61',
-    'iso2_cc': 'CC',
-    'e164_sc': 0,
-    'geographic': true,
-    'level': 3,
-    'name': 'Cocos [Keeling] Islands',
-    'example': '412345678',
-    'display_name': 'Cocos [Keeling] Islands (CC) [+61]',
-    'mask': '000 000 000',
-    'full_example_with_plus_sign': '+61412345678',
-    'display_name_no_e164_cc': 'Cocos [Keeling] Islands (CC)',
-    'e164_key': '61-CC-0',
   },
   {
     'e164_cc': '57',
@@ -2137,7 +2111,7 @@ const List<Map<String, Object?>> countries = <Map<String, Object?>>[
     'name': 'Morocco',
     'example': '650123456',
     'display_name': 'Morocco (MA) [+212]',
-    'mask': '0 00 00 00 00',
+    'mask': '00 000 0000',
     'full_example_with_plus_sign': '+212650123456',
     'display_name_no_e164_cc': 'Morocco (MA)',
     'e164_key': '212-MA-0',
@@ -2591,20 +2565,6 @@ const List<Map<String, Object?>> countries = <Map<String, Object?>>[
     'e164_key': '250-RW-0',
   },
   {
-    'e164_cc': '590',
-    'iso2_cc': 'BL',
-    'e164_sc': 0,
-    'geographic': true,
-    'level': 2,
-    'name': 'Saint Barthélemy',
-    'example': '690123456',
-    'display_name': 'Saint Barthélemy (BL) [+590]',
-    'mask': '000 00 00 00',
-    'full_example_with_plus_sign': '+590690123456',
-    'display_name_no_e164_cc': 'Saint Barthélemy (BL)',
-    'e164_key': '590-BL-0',
-  },
-  {
     'e164_cc': '290',
     'iso2_cc': 'SH',
     'e164_sc': 0,
@@ -2645,20 +2605,6 @@ const List<Map<String, Object?>> countries = <Map<String, Object?>>[
     'full_example_with_plus_sign': '+17582845678',
     'display_name_no_e164_cc': 'St. Lucia (LC)',
     'e164_key': '1-LC-0',
-  },
-  {
-    'e164_cc': '590',
-    'iso2_cc': 'MF',
-    'e164_sc': 0,
-    'geographic': true,
-    'level': 2,
-    'name': 'Saint Martin',
-    'example': '690654321',
-    'display_name': 'Saint Martin (MF) [+590]',
-    'mask': '000 00 00 00',
-    'full_example_with_plus_sign': '+590690654321',
-    'display_name_no_e164_cc': 'Saint Martin (MF)',
-    'e164_key': '590-MF-0',
   },
   {
     'e164_cc': '508',
@@ -3416,20 +3362,6 @@ const List<Map<String, Object?>> countries = <Map<String, Object?>>[
     'full_example_with_plus_sign': '+681501234',
     'display_name_no_e164_cc': 'Wallis and Futuna (WF)',
     'e164_key': '681-WF-0',
-  },
-  {
-    'e164_cc': '212',
-    'iso2_cc': 'EH',
-    'e164_sc': 0,
-    'geographic': true,
-    'level': 3,
-    'name': 'Western Sahara',
-    'example': '650123456',
-    'display_name': 'Western Sahara (EH) [+212]',
-    'mask': '0 00 00 00 00',
-    'full_example_with_plus_sign': '+212650123456',
-    'display_name_no_e164_cc': 'Western Sahara (EH)',
-    'e164_key': '212-EH-0',
   },
   {
     'e164_cc': '967',

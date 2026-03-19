@@ -1,11 +1,19 @@
 # Changelog
 
-## 0.8.1
+## 0.9.0
 - **ADDED**: phone example to each country, [#11](https://github.com/ziqq/flutter_simple_country_picker/issues/11)
 - **ADDED**: phone mask to each country, [#12](https://github.com/ziqq/flutter_simple_country_picker/issues/12)
 - **ADDED**: optional formatter support for normalizing pasted and preset phone numbers before applying a mask
+- **ADDED**: `CountryPhoneController.resolution` with explicit `status` and ordered candidate country codes
+- **BREAKING CHANGES**: removed `CountryPhoneController.countryCode`, `matchingCountryCodes`, `isCountryCodeAmbiguous`, and `isCountryCodeExact`; use `resolution` as the source of truth
 - **FIXED**: pasted numbers with full country code or national prefix are now normalized before formatting
 - **FIXED**: formatter no longer strips the selected country code from numbers that belong to another country
+- **FIXED**: `CC` and `CX` reference examples in the bundled country dataset so shared `+61` plans resolve to the correct territory
+- **CHANGED**: `CountryPhoneController` resolution now relies only on the bundled dataset because shared country groups for `+61`, `+212`, and `+590` were removed from the source dataset
+- **DOCUMENTED**: the simplified dataset-based `CountryPhoneController` resolution flow in the README
+- **DOCUMENTED**: contributor workflow and invariants for maintaining `country_codes.dart` and the generated `country_codes.json`
+- **DOCUMENTED**: a dedicated maintainer guide for `country_codes` with concrete good and bad examples for shared calling-code groups
+- **DOCUMENTED**: README migration notes for `CountryPhoneController`, runtime gotchas, and maintainer policies for choosing sources, `level`, and stable dataset diffs
 
 ## 0.8.0
 - **BREAKING CHANGES**: `CountryLocalizations` is now an `abstract class` — previously `final class`; it can now be extended to provide custom or additional translations
