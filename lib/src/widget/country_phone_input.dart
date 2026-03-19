@@ -25,6 +25,7 @@ class CountryPhoneInput extends StatefulWidget {
     this.placeholder,
     this.autofocus = false,
     this.expand = false,
+    this.enableOpenPicker = true,
     this.showPhoneCode = false,
     this.showWorldWide = false,
     this.shouldReplace8 = true,
@@ -53,6 +54,7 @@ class CountryPhoneInput extends StatefulWidget {
     String? placeholder,
     bool autofocus,
     bool expand,
+    bool enableOpenPicker,
     bool isScrollControlled,
     bool showPhoneCode,
     bool showWorldWide,
@@ -77,6 +79,9 @@ class CountryPhoneInput extends StatefulWidget {
   /// to expand the bottom sheet to full height.
   /// Default is `false`.
   final bool expand;
+
+  /// Whether tapping the country-code button opens the country picker.
+  final bool enableOpenPicker;
 
   /// Controls the scrolling behavior of the modal window.
   final bool isScrollControlled;
@@ -364,24 +369,26 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                 Radius.circular(pickerTheme.radius),
               ),
               pressedOpacity: .6,
-              onPressed: () => showCountryPicker(
-                context: context,
-                exclude: widget.exclude,
-                favorites: widget.favorites,
-                filter: widget.filter,
-                autofocus: widget.autofocus || widget.useAutofocus,
-                showGroup: widget.showGroup,
-                showSearch: widget.showSearch,
-                showPhoneCode: widget.showPhoneCode,
-                showWorldWide: widget.showWorldWide,
-                shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
-                useHaptickFeedback: widget.useHaptickFeedback,
-                isScrollControlled: widget.isScrollControlled,
-                initialChildSize: widget.initialChildSize,
-                minChildSize: widget.minChildSize,
-                selected: _countryController,
-                onSelect: _onSelect,
-              ),
+              onPressed: () => widget.enableOpenPicker
+                  ? showCountryPicker(
+                      context: context,
+                      exclude: widget.exclude,
+                      favorites: widget.favorites,
+                      filter: widget.filter,
+                      autofocus: widget.autofocus || widget.useAutofocus,
+                      showGroup: widget.showGroup,
+                      showSearch: widget.showSearch,
+                      showPhoneCode: widget.showPhoneCode,
+                      showWorldWide: widget.showWorldWide,
+                      shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
+                      useHaptickFeedback: widget.useHaptickFeedback,
+                      isScrollControlled: widget.isScrollControlled,
+                      initialChildSize: widget.initialChildSize,
+                      minChildSize: widget.minChildSize,
+                      selected: _countryController,
+                      onSelect: _onSelect,
+                    )
+                  : null,
               child: Center(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -468,6 +475,7 @@ class CountryPhoneInput$Extended extends CountryPhoneInput {
     super.filter,
     super.autofocus,
     super.expand,
+    super.enableOpenPicker,
     super.isScrollControlled,
     super.placeholder,
     super.shouldReplace8,
@@ -527,24 +535,26 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                 bottom: pickerTheme.indent,
                 right: pickerTheme.padding / 2,
               ),
-              onPressed: () => showCountryPicker(
-                context: context,
-                exclude: widget.exclude,
-                favorites: widget.favorites,
-                filter: widget.filter,
-                autofocus: widget.autofocus || widget.useAutofocus,
-                showGroup: widget.showGroup,
-                showSearch: widget.showSearch,
-                showPhoneCode: widget.showPhoneCode,
-                showWorldWide: widget.showWorldWide,
-                isScrollControlled: widget.isScrollControlled,
-                useHaptickFeedback: widget.useHaptickFeedback,
-                shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
-                initialChildSize: widget.initialChildSize,
-                minChildSize: widget.minChildSize,
-                selected: _countryController,
-                onSelect: _onSelect,
-              ),
+              onPressed: widget.enableOpenPicker
+                  ? () => showCountryPicker(
+                      context: context,
+                      exclude: widget.exclude,
+                      favorites: widget.favorites,
+                      filter: widget.filter,
+                      autofocus: widget.autofocus || widget.useAutofocus,
+                      showGroup: widget.showGroup,
+                      showSearch: widget.showSearch,
+                      showPhoneCode: widget.showPhoneCode,
+                      showWorldWide: widget.showWorldWide,
+                      isScrollControlled: widget.isScrollControlled,
+                      useHaptickFeedback: widget.useHaptickFeedback,
+                      shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
+                      initialChildSize: widget.initialChildSize,
+                      minChildSize: widget.minChildSize,
+                      selected: _countryController,
+                      onSelect: _onSelect,
+                    )
+                  : null,
               child: SizedBox(
                 width: double.infinity,
                 child: Text(

@@ -208,6 +208,17 @@ CountryPhoneInput(
 
 Use `CountryPhoneInput.extended` for additional layout and presentation configuration such as custom scroll sizes.
 
+Set `enableOpenPicker: false` when the selected country should stay visible in
+the prefix button but the picker must not open on tap:
+
+```dart
+CountryPhoneInput(
+  initialCountry: Country.us(),
+  enableOpenPicker: false,
+  showPhoneCode: true,
+)
+```
+
 ### CountryPhoneController
 
 A concrete `ValueNotifier<CountryPhoneEditingValue>` that manages phone input

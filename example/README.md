@@ -74,6 +74,7 @@ ValueListenableBuilder<CountryPhoneEditingValue>(
         CountryPhoneInput(
           controller: controller,
           initialCountry: Country.us(),
+          enableOpenPicker: false,
           showPhoneCode: true,
         ),
         Text('phone: ${value.phone}'),
@@ -88,6 +89,9 @@ ValueListenableBuilder<CountryPhoneEditingValue>(
 ```
 
 For seeded state, use `CountryPhoneController.fromValue(...)`.
+
+Use `enableOpenPicker: false` when the country must stay fixed and tapping the
+prefix button should not open the picker.
 
 ## Theme And Localization
 

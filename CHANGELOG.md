@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.1
+- **ADDED**: `enableOpenPicker` to `CountryPhoneInput` and `CountryPhoneInput.extended` so the country-prefix button can stay visible while the picker opening is disabled
+
 ## 0.10.0
 - **BREAKING CHANGES**: `CountryPhoneController` is now a concrete `ValueNotifier<CountryPhoneEditingValue>` controller instead of an `extension type`
 - **BREAKING CHANGES**: removed `overflowNotifier`, `onOverflowChanged`, `incompleteNotifier`, and `onIncompleteChanged` from `CountryPhoneInput`; observe `CountryPhoneController` itself or `CountryPhoneController.valueStatus` instead
@@ -8,7 +11,6 @@
 - **ADDED**: `CountryPhoneController.fromValue(...)` for SDK-style initialization from a complete `CountryPhoneEditingValue`
 - **CHANGED**: hidden the internal `CountryPhoneInput$Extended` implementation from the package root export; use `CountryPhoneInput.extended(...)` as the public entry point
 - **CHANGED**: marked `CountryPhoneInput$Extended` as internal to make the intended public API explicit
-- **DOCUMENTED**: immutable `CountryPhoneEditingValue.copyWith(...)` update flow and controller disposal guidance in the README
 
 ## 0.9.0
 - **BREAKING CHANGES**: removed `CountryPhoneController.countryCode`, `matchingCountryCodes`, `isCountryCodeAmbiguous`, and `isCountryCodeExact`; use `resolution` as the source of truth
@@ -16,14 +18,14 @@
 - **ADDED**: phone mask to each country, [#12](https://github.com/ziqq/flutter_simple_country_picker/issues/12)
 - **ADDED**: optional formatter support for normalizing pasted and preset phone numbers before applying a mask
 - **ADDED**: `CountryPhoneController.resolution` with explicit `status` and ordered candidate country codes
+- **ADDED**: the simplified dataset-based `CountryPhoneController` resolution flow in the README
+- **ADDED**: contributor workflow and invariants for maintaining `country_codes.dart` and the generated `country_codes.json`
+- **ADDED**: a dedicated maintainer guide for `country_codes` with concrete good and bad examples for shared calling-code groups
+- **ADDED**: README migration notes for `CountryPhoneController`, runtime gotchas, and maintainer policies for choosing sources, `level`, and stable dataset diffs
 - **FIXED**: pasted numbers with full country code or national prefix are now normalized before formatting
 - **FIXED**: formatter no longer strips the selected country code from numbers that belong to another country
 - **FIXED**: `CC` and `CX` reference examples in the bundled country dataset so shared `+61` plans resolve to the correct territory
 - **CHANGED**: `CountryPhoneController` resolution now relies only on the bundled dataset because shared country groups for `+61`, `+212`, and `+590` were removed from the source dataset
-- **DOCUMENTED**: the simplified dataset-based `CountryPhoneController` resolution flow in the README
-- **DOCUMENTED**: contributor workflow and invariants for maintaining `country_codes.dart` and the generated `country_codes.json`
-- **DOCUMENTED**: a dedicated maintainer guide for `country_codes` with concrete good and bad examples for shared calling-code groups
-- **DOCUMENTED**: README migration notes for `CountryPhoneController`, runtime gotchas, and maintainer policies for choosing sources, `level`, and stable dataset diffs
 
 ## 0.8.0
 - **BREAKING CHANGES**: `CountryLocalizations` is now an `abstract class` — previously `final class`; it can now be extended to provide custom or additional translations
