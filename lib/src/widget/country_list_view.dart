@@ -528,8 +528,11 @@ class _CountriesListState extends State<_CountriesList> {
               return _CountryListTile.simple(
                 key: ValueKey<String>(country.e164Key),
                 country: country,
-                onSelect: widget.onSelect,
                 selected: selected == country,
+                onSelect: (country) {
+                  widget.selected?.value = country;
+                  widget.onSelect?.call(country);
+                },
               );
             },
           ),

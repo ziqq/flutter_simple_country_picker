@@ -124,8 +124,9 @@ void main() => group('CountryPhoneController -', () {
       );
       var notifications = 0;
 
-      controller.addListener(() => notifications++);
-      controller.text = '+44 7911 12345';
+      controller
+        ..addListener(() => notifications++)
+        ..text = '+44 7911 12345';
 
       expect(notifications, 1);
       expect(controller.valueStatus.isIncomplete, isTrue);
@@ -144,15 +145,16 @@ void main() => group('CountryPhoneController -', () {
       );
       var notifications = 0;
 
-      controller.addListener(() => notifications++);
-      controller.value = CountryPhoneEditingValue(
-        text: '+44 7911 123456',
-        valueStatus: const CountryPhoneValueStatus(
-          currentLength: 10,
-          expectedLength: 10,
-          isOverflow: false,
-        ),
-      );
+      controller
+        ..addListener(() => notifications++)
+        ..value = CountryPhoneEditingValue(
+          text: '+44 7911 123456',
+          valueStatus: const CountryPhoneValueStatus(
+            currentLength: 10,
+            expectedLength: 10,
+            isOverflow: false,
+          ),
+        );
 
       expect(notifications, 0);
     });
@@ -160,14 +162,15 @@ void main() => group('CountryPhoneController -', () {
     test('clear resets text and preserves known expected length', () {
       final controller = CountryPhoneController.apply('+712345');
 
-      controller.value = controller.value.copyWith(
-        valueStatus: const CountryPhoneValueStatus(
-          currentLength: 5,
-          expectedLength: 10,
-          isOverflow: false,
-        ),
-      );
-      controller.clear();
+      controller
+        ..value = controller.value.copyWith(
+          valueStatus: const CountryPhoneValueStatus(
+            currentLength: 5,
+            expectedLength: 10,
+            isOverflow: false,
+          ),
+        )
+        ..clear();
 
       expect(controller.text, '');
       expect(controller.valueStatus.currentLength, 0);

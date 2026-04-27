@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.3
+- **CHANGED**: Updating [SelectedCountry] when country is selected from the list of countries
+
 ## 0.10.2
 - **CHANGED**: `CountryPhoneInput.extended` now applies a single resolved picker text style consistently to the country label, country code, input text, cursor, and hint text
 
