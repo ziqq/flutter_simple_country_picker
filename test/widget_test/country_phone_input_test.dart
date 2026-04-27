@@ -730,6 +730,162 @@ void _$defaultCountryPhoneInputTest() {
           expect(changed!.phoneCode, '44');
         },
       );
+
+      testWidgets(
+        'onCountryChanged is NOT called when the same country is tapped again',
+        (tester) async {
+          var callCount = 0;
+
+          await tester.pumpWidget(
+            createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (_) => Scaffold(
+                body: CountryPhoneInput(
+                  initialCountry: getCountryByISO2asJSON('RU'),
+                  filter: const ['RU', 'GB'],
+                  onCountryChanged: (_) => callCount++,
+                ),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          // Open picker and tap the already-selected RU tile.
+          await tester.tap(find.byType(CupertinoButton));
+          await tester.pumpAndSettle();
+          const ruKey = ValueKey<String>('7-RU-0');
+          expect(find.byKey(ruKey), findsOneWidget);
+          await tester.tap(find.byKey(ruKey));
+          await tester.pumpAndSettle();
+
+          expect(callCount, 0);
+          // Selection remains unchanged.
+          expect(find.textContaining('+7'), findsOneWidget);
+        },
+      );
+
+      testWidgets('onCountryChanged is invoked exactly once per selection', (
+        tester,
+      ) async {
+        var callCount = 0;
+
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            locale: const Locale('en'),
+            builder: (_) => Scaffold(
+              body: CountryPhoneInput(
+                initialCountry: getCountryByISO2asJSON('RU'),
+                filter: const ['RU', 'GB'],
+                onCountryChanged: (_) => callCount++,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byType(CupertinoButton));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const ValueKey<String>('44-GB-0')));
+        await tester.pumpAndSettle();
+
+        expect(callCount, 1);
+      });
+
+      testWidgets('onCountryChanged receives country with localized name', (
+        tester,
+      ) async {
+        Country? changed;
+
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            locale: const Locale('en'),
+            builder: (_) => Scaffold(
+              body: CountryPhoneInput(
+                initialCountry: getCountryByISO2asJSON('RU'),
+                filter: const ['RU', 'GB'],
+                onCountryChanged: (c) => changed = c,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byType(CupertinoButton));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const ValueKey<String>('44-GB-0')));
+        await tester.pumpAndSettle();
+
+        expect(changed, isNotNull);
+        expect(changed!.countryCode, 'GB');
+        expect(changed!.nameLocalized, isNotNull);
+        expect(changed!.nameLocalized, isNotEmpty);
+      });
+
+      testWidgets(
+        'selecting a different country clears phone text in the input',
+        (tester) async {
+          await tester.pumpWidget(
+            createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (_) => Scaffold(
+                body: CountryPhoneInput(
+                  initialCountry: getCountryByISO2asJSON('RU'),
+                  filter: const ['RU', 'GB'],
+                ),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          await tester.enterText(find.byKey(phoneFieldKey), '9991234567');
+          await tester.pumpAndSettle();
+
+          final beforeInput = tester.widget<TextField>(
+            find.byType(TextField).first,
+          );
+          expect(beforeInput.controller?.text.isNotEmpty, isTrue);
+
+          await tester.tap(find.byType(CupertinoButton));
+          await tester.pumpAndSettle();
+          await tester.tap(find.byKey(const ValueKey<String>('44-GB-0')));
+          await tester.pumpAndSettle();
+
+          final afterInput = tester.widget<TextField>(
+            find.byType(TextField).first,
+          );
+          expect(afterInput.controller?.text, isEmpty);
+          expect(find.textContaining('+44'), findsOneWidget);
+        },
+      );
+
+      testWidgets(
+        'external SelectedCountry notifier is updated after a selection',
+        (tester) async {
+          final selected = ValueNotifier<Country>(getCountryByISO2asJSON('RU'));
+          addTearDown(selected.dispose);
+
+          await tester.pumpWidget(
+            createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (_) => Scaffold(
+                body: CountryPhoneInput(
+                  countryController: selected,
+                  filter: const ['RU', 'GB'],
+                ),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          await tester.tap(find.byType(CupertinoButton));
+          await tester.pumpAndSettle();
+          await tester.tap(find.byKey(const ValueKey<String>('44-GB-0')));
+          await tester.pumpAndSettle();
+
+          expect(selected.value.countryCode, 'GB');
+          expect(selected.value.phoneCode, '44');
+        },
+      );
     });
   });
 }

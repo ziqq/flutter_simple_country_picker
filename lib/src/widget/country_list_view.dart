@@ -311,9 +311,9 @@ class _CountriesListViewState extends State<CountryListView>
                     ),
                     child: Text(
                       localization.selectCountryLabel,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleLarge?.copyWith(fontWeight: .w700),
                     ),
                   ),
                 );
@@ -484,8 +484,8 @@ class _CountriesListState extends State<_CountriesList> {
                                     height: 1,
                                     fontSize: 15,
                                     fontWeight: switch (defaultTargetPlatform) {
-                                      TargetPlatform.iOS => FontWeight.w700,
-                                      _ => FontWeight.w600,
+                                      .iOS => .w700,
+                                      _ => .w600,
                                     },
                                   ),
                                 ),
@@ -496,11 +496,20 @@ class _CountriesListState extends State<_CountriesList> {
                       ),
                       SliverList.separated(
                         itemCount: countries.length,
-                        itemBuilder: (_, index) => _CountryListTile(
-                          key: ValueKey<String>(countries[index].e164Key),
-                          onSelect: widget.onSelect,
-                          country: countries[index],
-                        ),
+                        itemBuilder: (_, index) {
+                          final country = countries[index];
+                          return _CountryListTile(
+                            key: ValueKey<String>(country.e164Key),
+                            onSelect: (country) {
+                              // Notify external listeners first so they can
+                              // compare against the previous SelectedCountry
+                              // value, then update the notifier itself.
+                              widget.onSelect?.call(country);
+                              widget.selected?.value = country;
+                            },
+                            country: country,
+                          );
+                        },
                         separatorBuilder: (_, _) => Divider(
                           height: 1,
                           thickness: 1,
@@ -530,8 +539,11 @@ class _CountriesListState extends State<_CountriesList> {
                 country: country,
                 selected: selected == country,
                 onSelect: (country) {
-                  widget.selected?.value = country;
+                  // Notify external listeners first so they can
+                  // compare against the previous SelectedCountry
+                  // value, then update the notifier itself.
                   widget.onSelect?.call(country);
+                  widget.selected?.value = country;
                 },
               );
             },
