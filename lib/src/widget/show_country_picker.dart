@@ -37,7 +37,7 @@ import 'package:meta/meta.dart';
 /// called when the country is selected.
 ///
 /// An optional [whenComplete] callback which is called
-/// when [CountryPicker] is dismissed, whether a country is selected or not.
+/// when country picker is dismissed, whether a country is selected or not.
 ///
 /// The [expand] argument can be used
 /// to expand the bottom sheet to full height.
@@ -116,40 +116,47 @@ void showCountryPicker({
   double? minChildSize,
 }) {
   final isiOS = defaultTargetPlatform == TargetPlatform.iOS;
+  final effectiveExpand = expand || (adaptive && isiOS);
+
   final pickerTheme = CountryPickerTheme.resolve(context);
   final radius = Radius.circular(pickerTheme.radius);
   final borderRadius = BorderRadius.only(topLeft: radius, topRight: radius);
-  final child = DraggableScrollableSheet(
-    expand: expand,
-    initialChildSize: initialChildSize ?? (expand ? 1.0 : .65),
-    minChildSize:
-        minChildSize ?? (expand ? (shouldCloseOnSwipeDown ? .99 : 1.0) : .65),
-    builder: (context, scrollController) => ClipRRect(
-      borderRadius: borderRadius,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
+
+  Widget builder(BuildContext context, [ScrollController? scrollController]) =>
+      DraggableScrollableSheet(
+        expand: effectiveExpand,
+        initialChildSize: initialChildSize ?? (effectiveExpand ? 1.0 : .65),
+        minChildSize:
+            minChildSize ??
+            (effectiveExpand ? (shouldCloseOnSwipeDown ? .99 : 1.0) : .65),
+        builder: (context, sheetScrollController) => ClipRRect(
           borderRadius: borderRadius,
-          color: pickerTheme.backgroundColor,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: borderRadius,
+              color: pickerTheme.backgroundColor,
+            ),
+            child: CountryListView(
+              exclude: exclude,
+              favorites: favorites,
+              filter: filter,
+              selected: selected,
+              onSelect: onSelect,
+              adaptive: adaptive,
+              autofocus: autofocus || useAutofocus,
+              showGroup: showGroup,
+              showSearch: showSearch,
+              showPhoneCode: showPhoneCode,
+              showWorldWide: showWorldWide,
+              useRootNavigator: useRootNavigator,
+              useHaptickFeedback: useHaptickFeedback,
+              scrollController: isScrollControlled
+                  ? null
+                  : scrollController ?? sheetScrollController,
+            ),
+          ),
         ),
-        child: CountryListView(
-          exclude: exclude,
-          favorites: favorites,
-          filter: filter,
-          selected: selected,
-          onSelect: onSelect,
-          adaptive: adaptive,
-          autofocus: autofocus || useAutofocus,
-          showGroup: showGroup,
-          showSearch: showSearch,
-          showPhoneCode: showPhoneCode,
-          showWorldWide: showWorldWide,
-          useRootNavigator: useRootNavigator,
-          useHaptickFeedback: useHaptickFeedback,
-          scrollController: isScrollControlled ? null : scrollController,
-        ),
-      ),
-    ),
-  );
+      );
 
   /// Provide haptic feedback on opening the picker, if enabled.
   if (useHaptickFeedback) HapticFeedback.heavyImpact().ignore();
@@ -158,7 +165,7 @@ void showCountryPicker({
   if (adaptive && isiOS) {
     showCupertinoSheet<void>(
       context: context,
-      builder: (context) => child,
+      scrollableBuilder: builder,
     ).whenComplete(() => (whenComplete ?? onDone)?.call()).ignore();
 
     /// Show material bottom sheet for other platforms.
@@ -171,13 +178,13 @@ void showCountryPicker({
       isScrollControlled: true,
       useRootNavigator: useRootNavigator,
       useSafeArea: useSafeArea,
-      builder: (context) => child,
+      builder: builder,
     ).whenComplete(() => (whenComplete ?? onDone)?.call()).ignore();
   }
 }
 
 /// {@template country_picker_options}
-/// [CountryPicker] options.
+/// Country picker options.
 /// {@endtemplate}
 @immutable
 @experimental
