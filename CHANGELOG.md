@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.0-pre.1
+- **ADDED**: `CountryResolver` public API for resolving bundled countries from `Locale` values and region codes
+- **ADDED**: static `Country.fromLocale`, `Country.tryFromLocale`, `Country.fromCountryCode`, `Country.tryFromCountryCode`, and `Country.normalizeRegionCode` helpers
+- **ADDED**: bundled region alias normalization for non-standard territory codes such as `AC`, `IC`, and `TA`
+- **CHANGED**: package root export and README now document the locale-to-country resolution flow
+
 ## 0.10.3
 - **CHANGED**: Updating [SelectedCountry] when country is selected from the list of countries
 

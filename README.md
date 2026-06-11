@@ -69,6 +69,25 @@ Import the library in your Dart file:
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 ```
 
+### Resolve Country From Locale
+
+Use `CountryResolver` or the static helpers on `Country` when you need a
+bundled country from a `Locale` or region code.
+
+```dart
+final us = CountryResolver.fromLocale(const Locale('en', 'US'));
+print(us.displayName); // United States (US) [+1]
+
+final sh = Country.tryFromLocale(const Locale('en', 'AC'));
+print(sh?.countryCode); // SH
+
+final es = Country.fromCountryCode('IC');
+print(es.countryCode); // ES
+```
+
+Alias normalization is built in. Region codes such as `AC`, `IC`, and `TA`
+resolve to the ISO2 codes present in the bundled dataset.
+
 
 ## Setup Localizations
 

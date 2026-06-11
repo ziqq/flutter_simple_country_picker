@@ -3,11 +3,15 @@
  * Date: 24 June 2024
  */
 
-import 'package:flutter/widgets.dart' show BuildContext;
+import 'package:flutter/widgets.dart' show BuildContext, Locale;
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
+import 'package:flutter_simple_country_picker/src/constant/country_codes.dart'
+    show countries;
+import 'package:flutter_simple_country_picker/src/constant/country_region_aliases.dart'
+    show countryRegionAliases;
 import 'package:flutter_simple_country_picker/src/data/country_parser.dart';
-import 'package:flutter_simple_country_picker/src/util/country_util.dart';
+import 'package:flutter_simple_country_picker/src/util/country_util.dart'
+    show CountryUtil;
 import 'package:meta/meta.dart';
 
 /// {@template country}
@@ -205,6 +209,78 @@ class Country {
     } else {
       return CountryParser.tryParse(country);
     }
+  }
+
+  /// Resolves a country from [locale], or returns `null` when it has no region
+  /// code or the normalized region is not present in the bundled dataset.
+  @useResult
+  static Country? tryFromLocale(Locale locale) {
+    final countryCode = locale.countryCode;
+    if (countryCode == null || countryCode.trim().isEmpty) {
+      return null;
+    }
+    return tryFromCountryCode(countryCode);
+  }
+
+  /// Resolves a country from [locale].
+  ///
+  /// Throws an [ArgumentError] when [locale] has no region code or when the
+  /// normalized region is not present in the bundled dataset.
+  @useResult
+  static Country fromLocale(Locale locale) {
+    final countryCode = locale.countryCode;
+    if (countryCode == null || countryCode.trim().isEmpty) {
+      throw ArgumentError.value(
+        locale,
+        'locale',
+        'Locale.countryCode cannot be null or empty.',
+      );
+    }
+    return fromCountryCode(countryCode);
+  }
+
+  /// Resolves a country from [countryCode], applying bundled region aliases.
+  @useResult
+  static Country? tryFromCountryCode(String countryCode) {
+    final normalized = normalizeRegionCode(countryCode);
+    if (normalized.isEmpty) return null;
+    if (normalized == worldWide.countryCode) return worldWide;
+    return CountryParser.tryParseCountryCode(normalized);
+  }
+
+  /// Resolves a country from [countryCode], applying bundled region aliases.
+  ///
+  /// Throws an [ArgumentError] when the normalized code is not present in the
+  /// bundled dataset.
+  @useResult
+  static Country fromCountryCode(String countryCode) {
+    final normalized = normalizeRegionCode(countryCode);
+    if (normalized.isEmpty) {
+      throw ArgumentError.value(
+        countryCode,
+        'countryCode',
+        'countryCode cannot be empty.',
+      );
+    }
+    if (normalized == worldWide.countryCode) return worldWide;
+
+    final country = CountryParser.tryParseCountryCode(normalized);
+    if (country != null) return country;
+
+    throw ArgumentError.value(
+      countryCode,
+      'countryCode',
+      'No bundled country found for the normalized region code $normalized.',
+    );
+  }
+
+  /// Normalizes [countryCode] to the ISO2 region code used by the bundled
+  /// dataset.
+  @useResult
+  static String normalizeRegionCode(String countryCode) {
+    final normalized = countryCode.trim().toUpperCase();
+    if (normalized.isEmpty) return normalized;
+    return countryRegionAliases[normalized] ?? normalized;
   }
 
   /// Convert the country to a JSON object
