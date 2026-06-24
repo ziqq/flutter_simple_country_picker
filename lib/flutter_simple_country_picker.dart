@@ -14,7 +14,6 @@
 /// | [CountryPhoneController] | ValueNotifier-based controller for phone value and status. |
 /// | [CountryPhoneEditingValue] | Immutable controller value with text, resolution, and status. |
 /// | [CountryInputFormatter] | Masks phone input according to a dial-format. |
-/// | [CountryResolver] | Resolves bundled countries from locale and region codes. |
 /// | [CountryScope] | Pre-loads the country list into the widget tree. |
 /// | [CountryPickerTheme] | Visual customization via `ThemeExtension`. |
 /// | [CountryLocalizations] | Localization delegate — 36 built-in locales. |
@@ -50,7 +49,6 @@ library;
 export 'src/constant/typedef.dart';
 export 'src/controller/country_controller.dart' show CountryState;
 export 'src/controller/country_phone_controller.dart';
-export 'src/data/country_resolver.dart' show CountryResolver;
 export 'src/localization/country_localizations.dart' show CountryLocalizations;
 export 'src/model/country.dart';
 export 'src/theme/country_picker_theme.dart';

@@ -69,16 +69,16 @@ Import the library in your Dart file:
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 ```
 
-### Resolve Country From Locale
+### Resolve Country from Locale
 
-Use `CountryResolver` or the static helpers on `Country` when you need a
+Use `fromLocale` or `fromLocaleOrNull` when you need a
 bundled country from a `Locale` or region code.
 
 ```dart
-final us = CountryResolver.fromLocale(const Locale('en', 'US'));
+final us = Country.fromLocale(const Locale('en', 'US'));
 print(us.displayName); // United States (US) [+1]
 
-final sh = Country.tryFromLocale(const Locale('en', 'AC'));
+final sh = Country.fromLocaleOrNull(const Locale('en', 'AC'));
 print(sh?.countryCode); // SH
 
 final es = Country.fromCountryCode('IC');

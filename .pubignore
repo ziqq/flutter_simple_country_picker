@@ -3,6 +3,7 @@ pubspec.lock
 coverage/
 reports/
 build/
+doc/api/
 
 # Keep example sources for pub.dev
 # (Do NOT ignore the whole example/ directory)

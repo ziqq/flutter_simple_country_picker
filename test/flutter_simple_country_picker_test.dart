@@ -12,7 +12,6 @@ import 'unit_test/country_phone_controller_test.dart'
 import 'unit_test/country_picker_theme_test.dart'
     as unit_country_picker_theme_test;
 import 'unit_test/country_provider_test.dart' as unit_country_provider_test;
-import 'unit_test/country_resolver_test.dart' as unit_country_resolver_test;
 import 'unit_test/country_test.dart' as unit_country_test;
 import 'unit_test/country_util_test.dart' as unit_country_util_test;
 import 'widget_test/country_input_formater_test.dart'
@@ -40,7 +39,6 @@ void main() {
       unit_country_phone_controller_test.main();
       unit_country_picker_theme_test.main();
       unit_country_provider_test.main();
-      unit_country_resolver_test.main();
       unit_country_test.main();
       unit_country_util_test.main();
     });

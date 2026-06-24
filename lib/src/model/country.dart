@@ -38,14 +38,17 @@ class Country {
   });
 
   /// Create a `RU` country.
+  /// {@macro country}
   factory Country.ru() =>
       Country.fromJson(countries.firstWhere((c) => c['e164_key'] == '7-RU-0'));
 
   /// Create a `United States` country.
+  /// {@macro country}
   factory Country.us() =>
       Country.fromJson(countries.firstWhere((c) => c['e164_key'] == '1-US-0'));
 
   /// Create a country from a JSON object
+  /// {@macro country}
   Country.fromJson(Map<String, Object?> json)
     : e164Key = json['e164_key'].toString(),
       phoneCode = json['e164_cc'].toString(),
@@ -77,6 +80,7 @@ class Country {
       displayNameNoCountryCode = json['display_name_no_e164_cc'].toString();
 
   /// The world wide country
+  /// {@macro country}
   static const Country worldWide = Country(
     phoneCode: '',
     countryCode: 'WW',
@@ -129,7 +133,7 @@ class Country {
   /// The country e164 key
   final String e164Key;
 
-  /// Зrovides country flag as emoji.
+  /// Provides country flag as emoji.
   /// Can be displayed using:
   ///```dart
   /// Text(country.flagEmoji)
@@ -140,8 +144,15 @@ class Country {
   bool get iswWorldWide => countryCode == Country.worldWide.countryCode;
 
   /// Get the localized country name
-  String? getTranslatedName(BuildContext context) =>
+  String? toLocalizedString(BuildContext context) =>
       CountryLocalizations.of(context).getCountryNameByCode(countryCode);
+
+  /// Get the localized country name
+  @Deprecated(
+    'Use [toLocalizedString] instead. '
+    'This method will be removed in next releases.',
+  )
+  String? getTranslatedName(BuildContext context) => toLocalizedString(context);
 
   /// Check if the country starts with a query
   bool startsWith(String query, CountryLocalizations? localization) {
@@ -214,12 +225,12 @@ class Country {
   /// Resolves a country from [locale], or returns `null` when it has no region
   /// code or the normalized region is not present in the bundled dataset.
   @useResult
-  static Country? tryFromLocale(Locale locale) {
+  static Country? fromLocaleOrNull(Locale locale) {
     final countryCode = locale.countryCode;
     if (countryCode == null || countryCode.trim().isEmpty) {
       return null;
     }
-    return tryFromCountryCode(countryCode);
+    return fromCountryCodeOrNull(countryCode);
   }
 
   /// Resolves a country from [locale].
@@ -241,7 +252,7 @@ class Country {
 
   /// Resolves a country from [countryCode], applying bundled region aliases.
   @useResult
-  static Country? tryFromCountryCode(String countryCode) {
+  static Country? fromCountryCodeOrNull(String countryCode) {
     final normalized = normalizeRegionCode(countryCode);
     if (normalized.isEmpty) return null;
     if (normalized == worldWide.countryCode) return worldWide;
