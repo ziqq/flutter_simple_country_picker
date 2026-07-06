@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.11.0-pre.1
+## 0.11.0
 - **ADDED**: static `Country.fromLocale`, `Country.fromLocaleOrNull`, `Country.fromCountryCode`, `Country.fromCountryCodeOrNull`, and `Country.normalizeRegionCode` helpers
 - **ADDED**: bundled region alias normalization for non-standard territory codes such as `AC`, `IC`, and `TA`
 - **CHANGED**: package root export and README now document the locale-to-country resolution flow
