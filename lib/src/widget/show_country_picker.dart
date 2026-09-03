@@ -62,7 +62,7 @@ import 'package:meta/meta.dart';
 /// The [showWorldWide] argument argument can be used
 /// to show "World Wide" option.
 ///
-/// The [useHaptickFeedback] argument can be used
+/// The [useHapticFeedback] argument can be used
 /// to enable/disable haptic feedback.
 ///
 /// The [useRootNavigator] argument ensures that the root navigator is used to
@@ -107,7 +107,12 @@ void showCountryPicker({
     'Use autofocus instead. This propery will be removed in v1.0.0 releases.',
   )
   bool useAutofocus = false,
+  @Deprecated(
+    'Use useHapticFeedback instead. This parameter will be removed in '
+    'v1.0.0 releases.',
+  )
   bool useHaptickFeedback = true,
+  bool? useHapticFeedback,
   bool useRootNavigator = true,
   bool useSafeArea = true,
   bool? showGroup,
@@ -117,6 +122,7 @@ void showCountryPicker({
 }) {
   final isiOS = defaultTargetPlatform == TargetPlatform.iOS;
   final effectiveExpand = expand || (adaptive && isiOS);
+  final effectiveUseHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
 
   final pickerTheme = CountryPickerTheme.resolve(context);
   final radius = Radius.circular(pickerTheme.radius);
@@ -149,7 +155,7 @@ void showCountryPicker({
               showPhoneCode: showPhoneCode,
               showWorldWide: showWorldWide,
               useRootNavigator: useRootNavigator,
-              useHaptickFeedback: useHaptickFeedback,
+              useHapticFeedback: effectiveUseHapticFeedback,
               scrollController: isScrollControlled
                   ? null
                   : scrollController ?? sheetScrollController,
@@ -159,7 +165,7 @@ void showCountryPicker({
       );
 
   /// Provide haptic feedback on opening the picker, if enabled.
-  if (useHaptickFeedback) HapticFeedback.heavyImpact().ignore();
+  if (effectiveUseHapticFeedback) HapticFeedback.heavyImpact().ignore();
 
   /// Show adaptive bottom sheet for `iOS` platform, if [adaptive] is `true`.
   if (adaptive && isiOS) {
@@ -209,7 +215,12 @@ class CountryPickerOptions {
     this.shouldCloseOnSwipeDown = false,
     this.showPhoneCode = false,
     this.showWorldWide = false,
-    this.useHaptickFeedback = true,
+    @Deprecated(
+      'Use useHapticFeedback instead. This parameter will be removed in '
+      'v1.0.0 releases.',
+    )
+    bool useHaptickFeedback = true,
+    bool? useHapticFeedback,
     this.useRootNavigator = false,
     @Deprecated(
       'Use autofocus instead. This propery will be removed in v1.0.0 releases.',
@@ -220,7 +231,8 @@ class CountryPickerOptions {
     this.showSearch,
     this.initialChildSize,
     this.minChildSize,
-  });
+  }) : useHaptickFeedback = useHapticFeedback ?? useHaptickFeedback,
+       useHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
 
   /// List of country codes to exclude.
   final List<String>? exclude;
@@ -275,8 +287,15 @@ class CountryPickerOptions {
   /// Initially expand virtual keyboard.
   final bool useAutofocus;
 
-  /// Use haptic feedback?
+  /// Whether to use haptic feedback.
+  @Deprecated(
+    'Use useHapticFeedback instead. This property will be removed in '
+    'v1.0.0 releases.',
+  )
   final bool useHaptickFeedback;
+
+  /// Whether to use haptic feedback.
+  final bool useHapticFeedback;
 
   /// Use root navigator?
   final bool useRootNavigator;

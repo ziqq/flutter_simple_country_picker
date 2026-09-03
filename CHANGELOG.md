@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.1
+- **DEPRECATED**: `useHaptickFeedback`; use `useHapticFeedback` instead. When both are provided, `useHapticFeedback` takes precedence
+- **ADDED**: `useHapticFeedback` to `showCountryPicker`, `CountryPickerOptions`, `CountryPhoneInput`, and `CountryPhoneInput.extended`
+- **CHANGED**: the publish workflow now listens to the repository's `vX.Y.Z` release tags
+
 ## 0.11.0
 - **ADDED**: static `Country.fromLocale`, `Country.fromLocaleOrNull`, `Country.fromCountryCode`, `Country.fromCountryCodeOrNull`, and `Country.normalizeRegionCode` helpers
 - **ADDED**: bundled region alias normalization for non-standard territory codes such as `AC`, `IC`, and `TA`

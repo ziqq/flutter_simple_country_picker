@@ -190,7 +190,7 @@ class CountryPicker$Web extends StatefulWidget {
     this.showPhoneCode = false,
     this.showWorldWide = false,
     this.useAutofocus = false,
-    this.useHaptickFeedback = true,
+    this.useHapticFeedback = true,
     this.showSearch,
     super.key,
   });
@@ -232,7 +232,7 @@ class CountryPicker$Web extends StatefulWidget {
   final bool useAutofocus;
 
   /// Use haptic feedback?
-  final bool useHaptickFeedback;
+  final bool useHapticFeedback;
 
   @override
   State<CountryPicker$Web> createState() => _CountryPicker$DesktopState();

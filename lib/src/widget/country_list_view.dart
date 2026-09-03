@@ -38,7 +38,7 @@ class CountryListView extends StatefulWidget {
     this.showPhoneCode = false,
     this.showWorldWide = false,
     this.useRootNavigator = true,
-    this.useHaptickFeedback = true,
+    this.useHapticFeedback = true,
     this.showGroup,
     this.showSearch,
     super.key,
@@ -76,7 +76,7 @@ class CountryListView extends StatefulWidget {
   final bool useRootNavigator;
 
   /// Whether to use haptic feedback on user interactions.
-  final bool useHaptickFeedback;
+  final bool useHapticFeedback;
 
   /// Scroll controller.
   final ScrollController? scrollController;
@@ -185,7 +185,7 @@ class _CountriesListViewState extends State<CountryListView>
     final pickerTheme = CountryPickerTheme.resolve(context);
     final localization = CountryLocalizations.of(context);
     void pop() {
-      if (widget.useHaptickFeedback) HapticFeedback.heavyImpact().ignore();
+      if (widget.useHapticFeedback) HapticFeedback.heavyImpact().ignore();
       Navigator.of(context, rootNavigator: widget.useRootNavigator).pop<void>();
     }
 
@@ -662,12 +662,12 @@ class _CountryListTile extends StatelessWidget {
         ),
         child: InkWell(
           onTap: () {
-            final useHaptickFeedback = context
+            final useHapticFeedback = context
                 .findAncestorStateOfType<_CountriesListViewState>()
                 ?.widget
-                .useHaptickFeedback;
+                .useHapticFeedback;
 
-            if (useHaptickFeedback ?? true) {
+            if (useHapticFeedback ?? true) {
               HapticFeedback.heavyImpact().ignore();
             }
             onSelect?.call(country.copyWith(nameLocalized: nameLocalized));

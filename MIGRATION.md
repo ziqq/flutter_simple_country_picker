@@ -5,8 +5,36 @@ behavior-changing API updates.
 
 ## Contents
 
+- [To 0.11.1](#to-0111)
 - [To 0.10.0](#to-0100)
 - [To 0.9.0](#to-090)
+
+## To 0.11.1
+
+`useHaptickFeedback` is deprecated because of its spelling. Replace it with
+`useHapticFeedback` in `showCountryPicker`, `CountryPhoneInput`, and
+`CountryPhoneInput.extended`.
+
+Before 0.11.1:
+
+```dart
+showCountryPicker(
+  context: context,
+  useHaptickFeedback: false,
+);
+```
+
+After 0.11.1:
+
+```dart
+showCountryPicker(
+  context: context,
+  useHapticFeedback: false,
+);
+```
+
+The deprecated parameter continues to work until v1.0.0. If both parameters
+are supplied, `useHapticFeedback` takes precedence.
 
 ## To 0.10.0
 
