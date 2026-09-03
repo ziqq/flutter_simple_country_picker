@@ -30,7 +30,12 @@ class CountryPhoneInput extends StatefulWidget {
     this.showWorldWide = false,
     this.shouldReplace8 = true,
     this.useAutofocus = false,
-    this.useHaptickFeedback = true,
+    @Deprecated(
+      'Use useHapticFeedback instead. This parameter will be removed in '
+      'v1.0.0 releases.',
+    )
+    bool useHaptickFeedback = true,
+    bool? useHapticFeedback,
     this.isScrollControlled = false,
     this.shouldCloseOnSwipeDown = false,
     this.showGroup,
@@ -38,7 +43,8 @@ class CountryPhoneInput extends StatefulWidget {
     this.initialChildSize,
     this.minChildSize,
     super.key,
-  });
+  }) : useHaptickFeedback = useHapticFeedback ?? useHaptickFeedback,
+       useHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
 
   /// This constructor creates an extended version of [CountryPhoneInput].
   /// {@macro country_phone_input}
@@ -66,7 +72,12 @@ class CountryPhoneInput extends StatefulWidget {
       'Use autofocus instead. This will be removed in v1.0.0 releases.',
     )
     bool useAutofocus,
+    @Deprecated(
+      'Use useHapticFeedback instead. This parameter will be removed in '
+      'v1.0.0 releases.',
+    )
     bool useHaptickFeedback,
+    bool? useHapticFeedback,
     double? initialChildSize,
     double? minChildSize,
     Key? key,
@@ -113,8 +124,15 @@ class CountryPhoneInput extends StatefulWidget {
   @Deprecated('Use autofocus instead. This will be removed in v1.0.0 releases.')
   final bool useAutofocus;
 
-  /// Use haptic feedback?
+  /// Whether to use haptic feedback.
+  @Deprecated(
+    'Use useHapticFeedback instead. This property will be removed in '
+    'v1.0.0 releases.',
+  )
   final bool useHaptickFeedback;
+
+  /// Whether to use haptic feedback.
+  final bool useHapticFeedback;
 
   /// Initial child size for the modal bottom sheet.
   final double? initialChildSize;
@@ -381,7 +399,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                       showPhoneCode: widget.showPhoneCode,
                       showWorldWide: widget.showWorldWide,
                       shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
-                      useHaptickFeedback: widget.useHaptickFeedback,
+                      useHapticFeedback: widget.useHapticFeedback,
                       isScrollControlled: widget.isScrollControlled,
                       initialChildSize: widget.initialChildSize,
                       minChildSize: widget.minChildSize,
@@ -486,6 +504,7 @@ class CountryPhoneInput$Extended extends CountryPhoneInput {
     super.showSearch,
     super.useAutofocus,
     super.useHaptickFeedback,
+    super.useHapticFeedback,
     super.initialChildSize,
     super.minChildSize,
     super.key,
@@ -546,7 +565,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                       showPhoneCode: widget.showPhoneCode,
                       showWorldWide: widget.showWorldWide,
                       isScrollControlled: widget.isScrollControlled,
-                      useHaptickFeedback: widget.useHaptickFeedback,
+                      useHapticFeedback: widget.useHapticFeedback,
                       shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
                       initialChildSize: widget.initialChildSize,
                       minChildSize: widget.minChildSize,

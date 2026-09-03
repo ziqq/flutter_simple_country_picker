@@ -190,7 +190,7 @@ class CountryPicker$Linux extends StatefulWidget {
     this.showPhoneCode = false, // ignore: unused_element
     this.showWorldWide = false, // ignore: unused_element
     this.useAutofocus = false, // ignore: unused_element
-    this.useHaptickFeedback = true, // ignore: unused_element
+    this.useHapticFeedback = true, // ignore: unused_element
     this.showSearch, // ignore: unused_element
     super.key, // ignore: unused_element
   });
@@ -232,7 +232,7 @@ class CountryPicker$Linux extends StatefulWidget {
   final bool useAutofocus;
 
   /// Use haptic feedback?
-  final bool useHaptickFeedback;
+  final bool useHapticFeedback;
 
   @override
   State<CountryPicker$Linux> createState() => _CountryPicker$LinuxState();

@@ -159,6 +159,32 @@ void _$defaultCountryPhoneInputTest() {
         },
       );
 
+      testWidgets('forwards the correctly spelled haptic feedback parameter', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            locale: const Locale('en'),
+            builder: (_) => const Scaffold(
+              body: CountryPhoneInput(
+                // ignore: deprecated_member_use
+                useHaptickFeedback: true,
+                useHapticFeedback: false,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(buttonKey));
+        await tester.pumpAndSettle();
+
+        final listView = tester.widget<CountryListView>(
+          find.byType(CountryListView),
+        );
+        expect(listView.useHapticFeedback, isFalse);
+      });
+
       testWidgets('should update the displayed phone code '
           'when a new country is selected', (tester) async {
         final initialCountry = getCountryByISO2asJSON('US');
@@ -1224,6 +1250,29 @@ void _$extendedCountryPhoneInputTest() {
         );
         expect(listView.showPhoneCode, isTrue);
       });
+
+      testWidgets(
+        'useHapticFeedback: argument is propagated to CountryListView',
+        (tester) async {
+          await tester.pumpWidget(
+            createWidgetUnderTest(
+              locale: const Locale('en'),
+              builder: (_) => const Scaffold(
+                body: CountryPhoneInput.extended(useHapticFeedback: false),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          await tester.tap(find.byKey(buttonKey));
+          await tester.pumpAndSettle();
+
+          final listView = tester.widget<CountryListView>(
+            find.byType(CountryListView),
+          );
+          expect(listView.useHapticFeedback, isFalse);
+        },
+      );
     });
   });
 }

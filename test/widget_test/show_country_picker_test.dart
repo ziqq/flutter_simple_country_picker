@@ -204,7 +204,7 @@ void main() => group('showCountryPicker -', () {
                 showCountryPicker(
                   context: context,
                   onSelect: (_) {},
-                  useHaptickFeedback: true,
+                  useHapticFeedback: true,
                 );
               },
               child: const Text('Show Picker'),
@@ -226,6 +226,176 @@ void main() => group('showCountryPicker -', () {
       SystemChannels.platform,
       null,
     );
+  });
+
+  testWidgets(
+    'applies haptic feedback when picker is dismissed from search bar',
+    (tester) async {
+      final binding = TestWidgetsFlutterBinding.ensureInitialized();
+      var hapticFeedbackTriggered = false;
+
+      binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (methodCall) async {
+          if (methodCall.method == 'HapticFeedback.vibrate') {
+            hapticFeedbackTriggered = true;
+          }
+          return null;
+        },
+      );
+      addTearDown(
+        () => binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ),
+      );
+
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          builder: (context) => Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () {
+                  showCountryPicker(
+                    context: context,
+                    onSelect: (_) {},
+                    showSearch: true,
+                    useHapticFeedback: true,
+                  );
+                },
+                child: const Text('Show Picker'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Show Picker'));
+      await tester.pumpAndSettle();
+      hapticFeedbackTriggered = false;
+
+      final cancelButton = CountryLocalizations.of(
+        tester.element(find.byType(CountryListView)),
+      ).cancelButton;
+      await tester.tap(find.text(cancelButton));
+      await tester.pumpAndSettle();
+
+      expect(hapticFeedbackTriggered, isTrue);
+    },
+  );
+
+  testWidgets('does not apply haptic feedback when disabled', (tester) async {
+    final binding = TestWidgetsFlutterBinding.ensureInitialized();
+    var hapticFeedbackTriggered = false;
+
+    binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (methodCall) async {
+        if (methodCall.method == 'HapticFeedback.vibrate') {
+          hapticFeedbackTriggered = true;
+        }
+        return null;
+      },
+    );
+
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        builder: (context) => Scaffold(
+          body: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () {
+                showCountryPicker(
+                  context: context,
+                  filter: const ['RU'],
+                  onSelect: (_) {},
+                  useHapticFeedback: false,
+                );
+              },
+              child: const Text('Show Picker'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Show Picker'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey<String>('7-RU-0')));
+    await tester.pumpAndSettle();
+
+    expect(hapticFeedbackTriggered, isFalse);
+
+    binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      null,
+    );
+  });
+
+  testWidgets('deprecated parameter remains supported', (tester) async {
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        builder: (context) => Scaffold(
+          body: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () {
+                showCountryPicker(
+                  context: context,
+                  onSelect: (_) {},
+                  // ignore: deprecated_member_use
+                  useHaptickFeedback: false,
+                );
+              },
+              child: const Text('Show Picker'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Show Picker'));
+    await tester.pumpAndSettle();
+
+    final listView = tester.widget<CountryListView>(
+      find.byType(CountryListView),
+    );
+    expect(listView.useHapticFeedback, isFalse);
+  });
+
+  testWidgets('new parameter takes precedence over deprecated parameter', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        builder: (context) => Scaffold(
+          body: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () {
+                showCountryPicker(
+                  context: context,
+                  onSelect: (_) {},
+                  // ignore: deprecated_member_use
+                  useHaptickFeedback: true,
+                  useHapticFeedback: false,
+                );
+              },
+              child: const Text('Show Picker'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Show Picker'));
+    await tester.pumpAndSettle();
+
+    final listView = tester.widget<CountryListView>(
+      find.byType(CountryListView),
+    );
+    expect(listView.useHapticFeedback, isFalse);
   });
 
   // ignore: deprecated_member_use
@@ -276,7 +446,7 @@ void main() => group('showCountryPicker -', () {
     expect(options.isScrollControlled, isTrue);
     expect(options.showPhoneCode, isFalse);
     expect(options.showWorldWide, isFalse);
-    expect(options.useHaptickFeedback, isTrue);
+    expect(options.useHapticFeedback, isTrue);
     expect(options.useRootNavigator, isFalse);
     expect(options.useSafeArea, isTrue);
     expect(options.exclude, isNull);
@@ -313,5 +483,15 @@ void main() => group('showCountryPicker -', () {
     expect(options.isDismissible, isFalse);
     expect(options.initialChildSize, 0.8);
     expect(options.minChildSize, 0.4);
+  });
+
+  test('CountryPickerOptions prefers the correctly spelled parameter', () {
+    const options = CountryPickerOptions(
+      // ignore: deprecated_member_use
+      useHaptickFeedback: true,
+      useHapticFeedback: false,
+    );
+
+    expect(options.useHapticFeedback, isFalse);
   });
 });

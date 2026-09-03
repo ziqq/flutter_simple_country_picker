@@ -158,6 +158,7 @@ Register it in the delegate by creating your own `LocalizationsDelegate<CountryL
 
 Upgrade notes are documented in [MIGRATION.md](MIGRATION.md).
 
+- `0.11.1`: [Migrate to 0.11.1](MIGRATION.md#to-0111)
 - `0.10.0`: [Migrate to 0.10.0](MIGRATION.md#to-0100)
 - `0.9.0`: [Migrate to 0.9.0](MIGRATION.md#to-090)
 
@@ -200,7 +201,7 @@ showCountryPicker(
 | `showWorldWide`        | `bool`                  | `false` | Shows a "World Wide" entry at the top.                                              |
 | `showGroup`            | `bool?`                 | `null`  | Groups countries by their first letter.                                             |
 | `showSearch`           | `bool?`                 | `null`  | Shows or hides the search bar.                                                      |
-| `useHaptickFeedback`   | `bool`                  | `true`  | Enables haptic feedback on selection.                                               |
+| `useHapticFeedback`    | `bool`                  | `true`  | Enables haptic feedback on opening and selection.                                   |
 | `useRootNavigator`     | `bool`                  | `true`  | Uses the root navigator to display the sheet above all other routes.                |
 | `useSafeArea`          | `bool`                  | `true`  | Wraps the sheet in a `SafeArea`.                                                    |
 | `initialChildSize`     | `double?`               | `null`  | Initial fractional height of the draggable sheet.                                   |
