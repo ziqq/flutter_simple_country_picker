@@ -255,7 +255,7 @@ jobs:
           template-path: .github/notify/ci.md.tmpl
           variables: |
             {
-              "package_url": "https://pub.dev/packages/flutter_simple_country_picker",
+              "pub_dev_url": "https://pub.dev/packages/flutter_simple_country_picker",
               "status_label": ${{ toJSON(needs.checkout.result == 'success' && 'success' || needs.checkout.result == 'cancelled' && 'cancelled' || 'failure') }}
             }
           failure-policy: best-effort
