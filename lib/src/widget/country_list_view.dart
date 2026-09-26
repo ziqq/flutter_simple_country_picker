@@ -300,15 +300,13 @@ class _CountriesListViewState extends State<CountryListView>
       context,
     );
     final iconSize = IconTheme.of(context).size;
-    final decoration = BoxDecoration(
-      color: pickerTheme.secondaryBackgroundColor,
-      border: Border.all(
-        color:
-            pickerTheme.dividerColor?.withValues(alpha: .5) ??
-            CupertinoDynamicColor.resolve(CupertinoColors.separator, context),
-        width: .5,
-      ),
+    final side = BorderSide(
+      color:
+          pickerTheme.dividerColor?.withValues(alpha: .5) ??
+          CupertinoDynamicColor.resolve(CupertinoColors.separator, context),
+      width: .5,
     );
+    final color = pickerTheme.secondaryBackgroundColor;
     void pop() {
       if (widget.useHapticFeedback) HapticFeedback.heavyImpact().ignore();
       Navigator.of(context, rootNavigator: widget.useRootNavigator).pop<void>();
@@ -328,36 +326,41 @@ class _CountriesListViewState extends State<CountryListView>
           children: <Widget>[
             // --- Search field --- //
             Expanded(
-              child: CupertinoSearchTextField(
-                autofocus: widget.autofocus || widget.useAutofocus,
-                controller: _controller.search,
-                onSuffixTap: _controller.search?.clear,
-                placeholder: localization.searchPlaceholder,
-                style: pickerTheme.textStyle?.copyWith(height: 1.3),
-                placeholderStyle: pickerTheme.textStyle?.copyWith(
-                  color:
-                      pickerTheme.searchTextStyle?.color?.withValues(
-                        alpha: .5,
-                      ) ??
-                      CupertinoDynamicColor.resolve(
-                        CupertinoColors.secondaryLabel,
-                        context,
-                      ),
-                  height: 1.3,
+              child: _Surface(
+                type: CountryPickerSurfaceType.searchField,
+                shape: const StadiumBorder(),
+                decoration: ShapeDecoration(
+                  color: color,
+                  shape: StadiumBorder(side: side),
                 ),
-                decoration: decoration.copyWith(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(_kIOS26ControlHeight / 2),
+                child: CupertinoSearchTextField(
+                  autofocus: widget.autofocus || widget.useAutofocus,
+                  controller: _controller.search,
+                  onSuffixTap: _controller.search?.clear,
+                  placeholder: localization.searchPlaceholder,
+                  style: pickerTheme.textStyle?.copyWith(height: 1.3),
+                  placeholderStyle: pickerTheme.textStyle?.copyWith(
+                    color:
+                        pickerTheme.searchTextStyle?.color?.withValues(
+                          alpha: .5,
+                        ) ??
+                        CupertinoDynamicColor.resolve(
+                          CupertinoColors.secondaryLabel,
+                          context,
+                        ),
+                    height: 1.3,
                   ),
-                ),
-                itemColor: labelColor,
-                itemSize: iconSize ?? 22,
-                padding: const EdgeInsetsDirectional.fromSTEB(8, 11, 8, 11),
-                prefixInsets: EdgeInsetsDirectional.only(
-                  start: pickerTheme.padding * .75,
-                ),
-                suffixInsets: EdgeInsetsDirectional.only(
-                  end: pickerTheme.indent,
+                  // The background is painted by the surface.
+                  decoration: const BoxDecoration(),
+                  itemColor: labelColor,
+                  itemSize: iconSize ?? 22,
+                  padding: const EdgeInsetsDirectional.fromSTEB(8, 11, 8, 11),
+                  prefixInsets: EdgeInsetsDirectional.only(
+                    start: pickerTheme.padding * .75,
+                  ),
+                  suffixInsets: EdgeInsetsDirectional.only(
+                    end: pickerTheme.indent,
+                  ),
                 ),
               ),
             ),
@@ -365,18 +368,21 @@ class _CountriesListViewState extends State<CountryListView>
             // --- Close button --- //
             SizedBox.square(
               dimension: _kIOS26ControlHeight,
-              child: DecoratedBox(
-                decoration: decoration.copyWith(shape: BoxShape.circle),
-                child: CupertinoButton(
-                  key: const ValueKey<String>('country_picker_close_button'),
-                  padding: EdgeInsets.zero,
-                  minimumSize: const Size.square(_kIOS26ControlHeight),
-                  onPressed: pop,
+              child: _Surface(
+                key: const ValueKey<String>('country_picker_close_button'),
+                type: CountryPickerSurfaceType.closeButton,
+                shape: const CircleBorder(),
+                decoration: ShapeDecoration(
+                  color: color,
+                  shape: CircleBorder(side: side),
+                ),
+                onPressed: pop,
+                semanticsLabel: localization.cancelButton,
+                child: Center(
                   child: Icon(
                     CupertinoIcons.xmark,
                     size: iconSize,
                     color: labelColor,
-                    semanticLabel: localization.cancelButton,
                   ),
                 ),
               ),
@@ -1232,6 +1238,92 @@ class _Flag$IOS26 extends StatelessWidget {
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+/// A control surface of the iOS 26 style.
+///
+/// Delegates painting to [CountryPickerTheme.surfaceBuilder] and handles
+/// taps, the pressed state and accessibility itself, so a custom builder
+/// only has to draw the surface.
+class _Surface extends StatefulWidget {
+  const _Surface({
+    required this.type,
+    required this.shape,
+    required this.decoration,
+    required this.child,
+    this.onPressed,
+    this.semanticsLabel,
+    super.key,
+  });
+
+  final CountryPickerSurfaceType type;
+  final ShapeBorder shape;
+  final ShapeDecoration decoration;
+  final VoidCallback? onPressed;
+  final String? semanticsLabel;
+  final Widget child;
+
+  @override
+  State<_Surface> createState() => _SurfaceState();
+}
+
+class _SurfaceState extends State<_Surface> {
+  final ValueNotifier<bool> _pressed = ValueNotifier<bool>(false);
+
+  @override
+  void dispose() {
+    _pressed.dispose();
+    super.dispose();
+  }
+
+  /// Paints [CountryPickerSurface.decoration] and dims the content on press.
+  static Widget _defaultBuilder(
+    BuildContext context,
+    CountryPickerSurface surface,
+    Widget child,
+  ) => DecoratedBox(
+    decoration: surface.decoration,
+    child: !surface.isInteractive
+        ? child
+        : ValueListenableBuilder<bool>(
+            valueListenable: surface.pressed,
+            builder: (_, pressed, child) => AnimatedOpacity(
+              opacity: pressed ? .4 : 1,
+              duration: const Duration(milliseconds: 100),
+              child: child,
+            ),
+            child: child,
+          ),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final builder =
+        CountryPickerTheme.resolve(context).surfaceBuilder ?? _defaultBuilder;
+    final surface = CountryPickerSurface(
+      type: widget.type,
+      shape: widget.shape,
+      decoration: widget.decoration,
+      pressed: _pressed,
+      onPressed: widget.onPressed,
+    );
+    final result = builder(context, surface, widget.child);
+    final onPressed = widget.onPressed;
+    if (onPressed == null) return result;
+    return Semantics(
+      container: true,
+      button: true,
+      label: widget.semanticsLabel,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: (_) => _pressed.value = true,
+        onTapUp: (_) => _pressed.value = false,
+        onTapCancel: () => _pressed.value = false,
+        onTap: onPressed,
+        child: ExcludeSemantics(child: result),
       ),
     );
   }

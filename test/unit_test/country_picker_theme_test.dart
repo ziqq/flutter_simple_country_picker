@@ -317,6 +317,55 @@ void main() => group('CountryPickerTheme -', () {
     );
   });
 
+  group('surfaceBuilder -', () {
+    test('defaults to null and is set via constructor and copyWith', () {
+      expect(CountryPickerTheme().surfaceBuilder, isNull);
+      expect(
+        CountryPickerTheme(surfaceBuilder: _surface).surfaceBuilder,
+        same(_surface),
+      );
+      expect(
+        CountryPickerTheme().copyWith(surfaceBuilder: _surface).surfaceBuilder,
+        same(_surface),
+      );
+      expect(
+        CountryPickerTheme(surfaceBuilder: _surface).copyWith().surfaceBuilder,
+        same(_surface),
+      );
+    });
+
+    test('participates in equality by identity', () {
+      expect(
+        CountryPickerTheme(surfaceBuilder: _surface),
+        CountryPickerTheme(surfaceBuilder: _surface),
+      );
+      expect(
+        CountryPickerTheme(surfaceBuilder: _surface) ==
+            CountryPickerTheme(surfaceBuilder: _otherSurface),
+        isFalse,
+      );
+    });
+
+    test('lerp switches builder at the midpoint', () {
+      final a = CountryPickerTheme(surfaceBuilder: _surface);
+      final b = CountryPickerTheme(surfaceBuilder: _otherSurface);
+      expect(
+        (a.lerp(b, .4) as CountryPickerTheme).surfaceBuilder,
+        same(_surface),
+      );
+      expect(
+        (a.lerp(b, .6) as CountryPickerTheme).surfaceBuilder,
+        same(_otherSurface),
+      );
+    });
+
+    test('debugFillProperties reports presence', () {
+      final builder = DiagnosticPropertiesBuilder();
+      CountryPickerTheme(surfaceBuilder: _surface).debugFillProperties(builder);
+      expect(builder.properties.map((p) => p.name), contains('surfaceBuilder'));
+    });
+  });
+
   group('useIOS26 -', () {
     test('defaults to false', () {
       expect(CountryPickerTheme().useIOS26, isFalse);
@@ -359,3 +408,15 @@ void main() => group('CountryPickerTheme -', () {
     });
   });
 });
+
+Widget _surface(
+  BuildContext context,
+  CountryPickerSurface surface,
+  Widget child,
+) => child;
+
+Widget _otherSurface(
+  BuildContext context,
+  CountryPickerSurface surface,
+  Widget child,
+) => child;

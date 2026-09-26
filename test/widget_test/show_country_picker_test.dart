@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart' show kPressTimeout;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
@@ -592,6 +593,124 @@ void main() => group('showCountryPicker -', () {
       expect(find.byKey(closeButton), findsNothing);
       expect(find.text('Отмена'), findsOneWidget);
       expect(find.byKey(selectedBadge), findsNothing);
+    });
+  });
+
+  group('surfaceBuilder -', () {
+    Future<void> pumpPicker(
+      WidgetTester tester,
+      CountryPickerSurfaceBuilder builder,
+    ) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          builder: (context) => Scaffold(
+            body: InheritedCountryPickerTheme(
+              data: CountryPickerTheme(useIOS26: true, surfaceBuilder: builder),
+              child: Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () => showCountryPicker(
+                    context: context,
+                    filter: const ['RU'],
+                    showSearch: true,
+                  ),
+                  child: const Text('Show Picker'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Show Picker'));
+      await tester.pumpAndSettle();
+    }
+
+    const closeButton = ValueKey<String>('country_picker_close_button');
+
+    testWidgets('builds search field and close button surfaces', (
+      tester,
+    ) async {
+      final surfaces = <CountryPickerSurface>[];
+      await pumpPicker(tester, (context, surface, child) {
+        surfaces.add(surface);
+        return KeyedSubtree(
+          key: ValueKey<String>('custom_${surface.type.name}'),
+          child: child,
+        );
+      });
+
+      final search = surfaces.lastWhere(
+        (s) => s.type == CountryPickerSurfaceType.searchField,
+      );
+      final close = surfaces.lastWhere(
+        (s) => s.type == CountryPickerSurfaceType.closeButton,
+      );
+      expect(search.shape, isA<StadiumBorder>());
+      expect(search.isInteractive, isFalse);
+      expect(close.shape, isA<CircleBorder>());
+      expect(close.isInteractive, isTrue);
+      expect(close.decoration.shape, isA<CircleBorder>());
+
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey<String>('custom_searchField')),
+          matching: find.byType(CupertinoSearchTextField),
+        ),
+        findsOneWidget,
+      );
+      // The custom builder replaces the default background.
+      expect(
+        find.descendant(
+          of: find.byKey(closeButton),
+          matching: find.byType(DecoratedBox),
+        ),
+        findsNothing,
+      );
+    });
+
+    testWidgets('exposes pressed state and still closes the picker', (
+      tester,
+    ) async {
+      final pressedValues = <bool>[];
+      await pumpPicker(tester, (context, surface, child) {
+        if (surface.type == CountryPickerSurfaceType.closeButton) {
+          return ValueListenableBuilder<bool>(
+            valueListenable: surface.pressed,
+            builder: (_, pressed, child) {
+              pressedValues.add(pressed);
+              return child!;
+            },
+            child: child,
+          );
+        }
+        return child;
+      });
+
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byKey(closeButton)),
+      );
+      // Tap down is reported after the press timeout
+      // while the sheet's drag recognizer is still in the arena.
+      await tester.pump(kPressTimeout);
+      expect(pressedValues.last, isTrue);
+
+      await gesture.up();
+      await tester.pumpAndSettle();
+      expect(find.byType(CountryListView), findsNothing);
+    });
+
+    testWidgets('builder with its own tap handler can call onPressed', (
+      tester,
+    ) async {
+      await pumpPicker(
+        tester,
+        (context, surface, child) =>
+            GestureDetector(onTap: surface.onPressed, child: child),
+      );
+
+      await tester.tap(find.byKey(closeButton));
+      await tester.pumpAndSettle();
+      expect(find.byType(CountryListView), findsNothing);
     });
   });
 
