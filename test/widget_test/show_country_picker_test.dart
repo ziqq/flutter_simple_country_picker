@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
@@ -592,6 +593,191 @@ void main() => group('showCountryPicker -', () {
       expect(find.text('Отмена'), findsOneWidget);
       expect(find.byKey(selectedBadge), findsNothing);
     });
+  });
+
+  group('semantics -', () {
+    Future<void> pumpPicker(
+      WidgetTester tester, {
+      bool useIOS26 = false,
+      bool? showGroup,
+      bool? showSearch,
+      bool showPhoneCode = false,
+      SelectedCountry? selected,
+    }) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          builder: (context) => Scaffold(
+            body: InheritedCountryPickerTheme(
+              data: CountryPickerTheme(useIOS26: useIOS26),
+              child: Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () => showCountryPicker(
+                    context: context,
+                    filter: const ['RU', 'US'],
+                    showGroup: showGroup,
+                    showSearch: showSearch,
+                    showPhoneCode: showPhoneCode,
+                    selected: selected,
+                  ),
+                  child: const Text('Show Picker'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Show Picker'));
+      await tester.pumpAndSettle();
+    }
+
+    for (final useIOS26 in <bool>[false, true]) {
+      testWidgets('tile is one button labelled with name and phone code '
+          '(useIOS26: $useIOS26)', (tester) async {
+        final handle = tester.ensureSemantics();
+        await pumpPicker(tester, useIOS26: useIOS26, showGroup: true);
+
+        expect(
+          tester.getSemantics(find.bySemanticsLabel('Россия, +7')),
+          isSemantics(label: 'Россия, +7', isButton: true, hasTapAction: true),
+        );
+        // The emoji flag and the separate texts are not announced.
+        expect(find.bySemanticsLabel('🇷🇺'), findsNothing);
+        expect(find.bySemanticsLabel('Russia'), findsNothing);
+        handle.dispose();
+      });
+
+      testWidgets('group letters are headers (useIOS26: $useIOS26)', (
+        tester,
+      ) async {
+        final handle = tester.ensureSemantics();
+        await pumpPicker(tester, useIOS26: useIOS26, showGroup: true);
+
+        expect(
+          tester.getSemantics(find.bySemanticsLabel('Р')),
+          isSemantics(label: 'Р', isHeader: true),
+        );
+        handle.dispose();
+      });
+    }
+
+    testWidgets('simple tile exposes selected state', (tester) async {
+      final handle = tester.ensureSemantics();
+      final selected = ValueNotifier<Country?>(Country.ru());
+      addTearDown(selected.dispose);
+      await pumpPicker(tester, selected: selected);
+
+      expect(
+        tester.getSemantics(find.bySemanticsLabel('Россия, +7')),
+        isSemantics(isSelected: true),
+      );
+      expect(
+        tester.getSemantics(find.bySemanticsLabel('Соединенные Штаты, +1')),
+        isSemantics(isSelected: false),
+      );
+      handle.dispose();
+    });
+
+    testWidgets('iOS 26 tile exposes selected state', (tester) async {
+      final handle = tester.ensureSemantics();
+      final selected = ValueNotifier<Country?>(Country.ru());
+      addTearDown(selected.dispose);
+      await pumpPicker(
+        tester,
+        useIOS26: true,
+        showSearch: true,
+        selected: selected,
+      );
+
+      expect(
+        tester.getSemantics(find.bySemanticsLabel('Россия, +7')),
+        isSemantics(isSelected: true, isButton: true),
+      );
+      handle.dispose();
+    });
+
+    testWidgets('iOS 26 close button is labelled', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpPicker(tester, useIOS26: true, showSearch: true);
+
+      expect(
+        tester.getSemantics(find.bySemanticsLabel('Отмена')),
+        isSemantics(isButton: true, hasTapAction: true),
+      );
+      handle.dispose();
+    });
+
+    testWidgets('drag handle is excluded from semantics', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpPicker(tester, showSearch: false);
+
+      // Title and tiles are still reachable, nothing else is added.
+      expect(find.bySemanticsLabel('Выберите страну'), findsOneWidget);
+      handle.dispose();
+    });
+  });
+
+  group('iOS 26 flag rendering -', () {
+    const regionalRU = '\u{1F1F7}\u{1F1FA}';
+
+    Future<void> pumpPicker(WidgetTester tester) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          builder: (context) => Scaffold(
+            body: InheritedCountryPickerTheme(
+              data: CountryPickerTheme(useIOS26: true),
+              child: Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () => showCountryPicker(
+                    context: context,
+                    filter: const ['RU'],
+                    showSearch: true,
+                  ),
+                  child: const Text('Show Picker'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Show Picker'));
+      await tester.pumpAndSettle();
+    }
+
+    double fontSizeOf(WidgetTester tester, String text) =>
+        tester.widget<Text>(find.text(text)).style!.fontSize!;
+
+    testWidgets(
+      'renders emoji flag clipped to a circle with a platform scale',
+      (tester) async {
+        await pumpPicker(tester);
+
+        final expectedScale = switch (defaultTargetPlatform) {
+          TargetPlatform.iOS || TargetPlatform.macOS => 2.0,
+          _ => 1.6,
+        };
+
+        if (defaultTargetPlatform == TargetPlatform.windows) {
+          // Segoe UI Emoji has no flags: ISO code fallback in a circle.
+          expect(find.text(regionalRU), findsNothing);
+          expect(
+            find.ancestor(of: find.text('RU'), matching: find.byType(ClipOval)),
+            findsOneWidget,
+          );
+        } else {
+          expect(
+            find.ancestor(
+              of: find.text(regionalRU),
+              matching: find.byType(ClipOval),
+            ),
+            findsOneWidget,
+          );
+          expect(fontSizeOf(tester, regionalRU), 40 * expectedScale);
+        }
+      },
+      variant: TargetPlatformVariant.all(),
+    );
   });
 
   test('CountryPickerOptions accepts all optional fields', () {

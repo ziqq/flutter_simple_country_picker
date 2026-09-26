@@ -133,41 +133,43 @@ void showCountryPicker({
   );
   final borderRadius = BorderRadius.only(topLeft: radius, topRight: radius);
 
-  Widget sheet(BuildContext context, [ScrollController? scrollController]) =>
-      DraggableScrollableSheet(
-        expand: effectiveExpand,
-        initialChildSize: initialChildSize ?? (effectiveExpand ? 1.0 : .65),
-        minChildSize:
-            minChildSize ??
-            (effectiveExpand ? (shouldCloseOnSwipeDown ? .99 : 1.0) : .65),
-        builder: (context, sheetScrollController) => ClipRRect(
+  Widget buildSheet(
+    BuildContext context, [
+    ScrollController? scrollController,
+  ]) => DraggableScrollableSheet(
+    expand: effectiveExpand,
+    initialChildSize: initialChildSize ?? (effectiveExpand ? 1.0 : .65),
+    minChildSize:
+        minChildSize ??
+        (effectiveExpand ? (shouldCloseOnSwipeDown ? .99 : 1.0) : .65),
+    builder: (context, sheetScrollController) => ClipRRect(
+      borderRadius: borderRadius,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
           borderRadius: borderRadius,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: borderRadius,
-              color: CountryPickerTheme.resolve(context).backgroundColor,
-            ),
-            child: CountryListView(
-              exclude: exclude,
-              favorites: favorites,
-              filter: filter,
-              selected: selected,
-              onSelect: onSelect,
-              adaptive: adaptive,
-              autofocus: autofocus || useAutofocus,
-              showGroup: showGroup,
-              showSearch: showSearch,
-              showPhoneCode: showPhoneCode,
-              showWorldWide: showWorldWide,
-              useRootNavigator: useRootNavigator,
-              useHapticFeedback: effectiveUseHapticFeedback,
-              scrollController: isScrollControlled
-                  ? null
-                  : scrollController ?? sheetScrollController,
-            ),
-          ),
+          color: CountryPickerTheme.resolve(context).backgroundColor,
         ),
-      );
+        child: CountryListView(
+          exclude: exclude,
+          favorites: favorites,
+          filter: filter,
+          selected: selected,
+          onSelect: onSelect,
+          adaptive: adaptive,
+          autofocus: autofocus || useAutofocus,
+          showGroup: showGroup,
+          showSearch: showSearch,
+          showPhoneCode: showPhoneCode,
+          showWorldWide: showWorldWide,
+          useRootNavigator: useRootNavigator,
+          useHapticFeedback: effectiveUseHapticFeedback,
+          scrollController: isScrollControlled
+              ? null
+              : scrollController ?? sheetScrollController,
+        ),
+      ),
+    ),
+  );
 
   /// In the iOS 26 style the sheet is presented as an elevated surface,
   /// so dynamic Cupertino colors resolve to their elevated variants.
@@ -176,10 +178,10 @@ void showCountryPicker({
       ? CupertinoUserInterfaceLevel(
           data: CupertinoUserInterfaceLevelData.elevated,
           child: Builder(
-            builder: (context) => sheet(context, scrollController),
+            builder: (context) => buildSheet(context, scrollController),
           ),
         )
-      : sheet(context, scrollController);
+      : buildSheet(context, scrollController);
 
   /// Provide haptic feedback on opening the picker, if enabled.
   if (effectiveUseHapticFeedback) HapticFeedback.heavyImpact().ignore();

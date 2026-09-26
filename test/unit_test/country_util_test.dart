@@ -1,3 +1,5 @@
+import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -18,6 +20,23 @@ void main() {
         expect(CountryUtil.countryCodeToEmoji('de'), '🇩🇪');
         expect(CountryUtil.countryCodeToEmoji('fr'), '🇫🇷');
         expect(CountryUtil.countryCodeToEmoji('jp'), '🇯🇵');
+      });
+
+      test('produces a regional indicator pair for every bundled country', () {
+        const regionalIndicatorA = 0x1F1E6;
+        for (final json in countries) {
+          final country = Country.fromJson(json);
+          final code = country.countryCode.toUpperCase();
+          final runes = country.flagEmoji.runes.toList();
+
+          expect(runes, hasLength(2), reason: code);
+          expect(runes, <int>[
+            regionalIndicatorA + code.codeUnitAt(0) - 0x41,
+            regionalIndicatorA + code.codeUnitAt(1) - 0x41,
+          ], reason: code);
+          // Two supplementary-plane code points => four UTF-16 code units.
+          expect(country.flagEmoji.length, 4, reason: code);
+        }
       });
 
       test('should handle mixed case country codes', () {
