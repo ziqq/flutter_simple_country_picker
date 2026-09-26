@@ -76,6 +76,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     TextStyle? textStyle,
     TextStyle? secondaryTextStyle,
     TextStyle? searchTextStyle,
+    bool? useIOS26,
   }) {
     inputHeight ??= _kDefaultInputHeight;
     flagSize ??= _kDefaultFlagSize;
@@ -99,6 +100,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       padding: padding,
       indent: indent,
       radius: radius,
+      useIOS26: useIOS26 ?? false,
     );
   }
 
@@ -121,6 +123,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     required this.padding,
     required this.indent,
     required this.radius,
+    this.useIOS26 = false,
   });
 
   /// The state from the closest instance of this class
@@ -186,6 +189,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       padding: other?.padding ?? theme?.padding ?? defaults.padding,
       indent: other?.indent ?? theme?.indent ?? defaults.indent,
       radius: other?.radius ?? theme?.radius ?? defaults.radius,
+      useIOS26: other?.useIOS26 ?? theme?.useIOS26 ?? defaults.useIOS26,
     );
   }
 
@@ -251,6 +255,16 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   /// If null, set to `12.0`
   final double radius;
 
+  /// Whether to render the country picker in the iOS 26 style.
+  ///
+  /// When `true`, the picker uses a pill-shaped search field with a round
+  /// close button, an inset rounded list section, circular flags, the phone
+  /// code shown before the country name and a checkmark badge on the
+  /// selected flag.
+  ///
+  /// Default is `false`.
+  final bool useIOS26;
+
   @override
   CountryPickerTheme copyWith({
     Color? accentColor,
@@ -270,6 +284,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     TextStyle? secondaryTextStyle,
     TextStyle? searchTextStyle,
     TextStyle? textStyle,
+    bool? useIOS26,
   }) => CountryPickerTheme(
     accentColor: accentColor ?? this.accentColor,
     backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -289,6 +304,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     secondaryTextStyle: secondaryTextStyle ?? this.secondaryTextStyle,
     searchTextStyle: searchTextStyle ?? this.searchTextStyle,
     textStyle: textStyle ?? this.textStyle,
+    useIOS26: useIOS26 ?? this.useIOS26,
   );
 
   /// Controls how the properties change on theme changes
@@ -334,6 +350,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       padding: ui.lerpDouble(padding, other.padding, t),
       indent: ui.lerpDouble(indent, other.indent, t),
       radius: ui.lerpDouble(radius, other.radius, t),
+      useIOS26: t < .5 ? useIOS26 : other.useIOS26,
     );
   }
 
@@ -355,6 +372,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     padding,
     indent,
     radius,
+    useIOS26,
   ]);
 
   @override
@@ -376,7 +394,8 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         other.flagSize == flagSize &&
         other.padding == padding &&
         other.indent == indent &&
-        other.radius == radius;
+        other.radius == radius &&
+        other.useIOS26 == useIOS26;
   }
 
   @override
@@ -493,6 +512,14 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
           'radius',
           radius,
           defaultValue: _kDefaultRadius,
+        ),
+      )
+      ..add(
+        FlagProperty(
+          'useIOS26',
+          value: useIOS26,
+          ifTrue: 'iOS 26 style',
+          defaultValue: false,
         ),
       );
   }

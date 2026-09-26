@@ -455,6 +455,145 @@ void main() => group('showCountryPicker -', () {
     expect(options.whenComplete, isNull);
   });
 
+  group('useIOS26 -', () {
+    Future<void> pumpPicker(
+      WidgetTester tester, {
+      bool useIOS26 = true,
+      bool? showGroup,
+      bool? showSearch,
+      SelectedCountry? selected,
+      SelectCountryCallback? onSelect,
+    }) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          builder: (context) => Scaffold(
+            body: InheritedCountryPickerTheme(
+              data: CountryPickerTheme(useIOS26: useIOS26),
+              child: Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () => showCountryPicker(
+                    context: context,
+                    filter: const ['RU', 'US', 'GB'],
+                    showGroup: showGroup,
+                    showSearch: showSearch,
+                    selected: selected,
+                    onSelect: onSelect,
+                  ),
+                  child: const Text('Show Picker'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Show Picker'));
+      await tester.pumpAndSettle();
+    }
+
+    const closeButton = ValueKey<String>('country_picker_close_button');
+    const selectedBadge = ValueKey<String>('country_picker_selected_badge');
+
+    testWidgets('shows round close button instead of cancel text', (
+      tester,
+    ) async {
+      await pumpPicker(tester, showSearch: true);
+
+      expect(find.byType(CupertinoSearchTextField), findsOneWidget);
+      expect(find.byKey(closeButton), findsOneWidget);
+      expect(find.text('Отмена'), findsNothing);
+    });
+
+    testWidgets('close button dismisses the picker', (tester) async {
+      await pumpPicker(tester, showSearch: true);
+
+      await tester.tap(find.byKey(closeButton));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CountryListView), findsNothing);
+    });
+
+    testWidgets('hides title when search is shown', (tester) async {
+      await pumpPicker(tester, showSearch: true);
+      expect(find.text('Выберите страну'), findsNothing);
+    });
+
+    testWidgets('keeps title and drag handle when search is hidden', (
+      tester,
+    ) async {
+      await pumpPicker(tester, showSearch: false);
+      expect(find.text('Выберите страну'), findsOneWidget);
+      expect(find.byKey(closeButton), findsNothing);
+    });
+
+    testWidgets('shows phone code and localized name in plain list', (
+      tester,
+    ) async {
+      await pumpPicker(tester, showSearch: true);
+
+      expect(find.text('+7'), findsOneWidget);
+      expect(find.text('+1'), findsOneWidget);
+      expect(find.text('+44'), findsOneWidget);
+      expect(find.text('Россия'), findsOneWidget);
+    });
+
+    testWidgets('marks selected country with a badge', (tester) async {
+      final selected = ValueNotifier<Country?>(Country.ru());
+      addTearDown(selected.dispose);
+
+      await pumpPicker(tester, showSearch: true, selected: selected);
+
+      expect(find.byKey(selectedBadge), findsOneWidget);
+    });
+
+    testWidgets('shows no badge without selection', (tester) async {
+      await pumpPicker(tester, showSearch: true);
+      expect(find.byKey(selectedBadge), findsNothing);
+    });
+
+    testWidgets('selecting a country calls onSelect and closes picker', (
+      tester,
+    ) async {
+      Country? result;
+      final selected = ValueNotifier<Country?>(null);
+      addTearDown(selected.dispose);
+
+      await pumpPicker(
+        tester,
+        showSearch: true,
+        selected: selected,
+        onSelect: (country) => result = country,
+      );
+
+      await tester.tap(find.text('Россия'));
+      await tester.pumpAndSettle();
+
+      expect(result?.countryCode, 'RU');
+      expect(selected.value?.countryCode, 'RU');
+      expect(find.byType(CountryListView), findsNothing);
+    });
+
+    testWidgets('renders grouped list with section headers', (tester) async {
+      final selected = ValueNotifier<Country?>(Country.ru());
+      addTearDown(selected.dispose);
+
+      await pumpPicker(tester, showGroup: true, selected: selected);
+
+      expect(find.byType(CupertinoSearchTextField), findsOneWidget);
+      expect(find.text('Р'), findsOneWidget);
+      expect(find.text('Россия'), findsOneWidget);
+      expect(find.byKey(selectedBadge), findsOneWidget);
+    });
+
+    testWidgets('default style keeps cancel text button', (tester) async {
+      await pumpPicker(tester, useIOS26: false, showSearch: true);
+
+      expect(find.byKey(closeButton), findsNothing);
+      expect(find.text('Отмена'), findsOneWidget);
+      expect(find.byKey(selectedBadge), findsNothing);
+    });
+  });
+
   test('CountryPickerOptions accepts all optional fields', () {
     final options = CountryPickerOptions(
       exclude: const ['RU'],

@@ -18,6 +18,9 @@ import 'package:flutter_simple_country_picker/src/theme/country_picker_theme.dar
 import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart';
 import 'package:meta/meta.dart';
 
+/// Top corner radius of the bottom sheet in the iOS 26 style.
+const double _kIOS26SheetRadius = 38.0;
+
 /// {@template show_country_picker}
 /// Shows a bottom sheet containing a list of countries to select one.
 ///
@@ -125,10 +128,12 @@ void showCountryPicker({
   final effectiveUseHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
 
   final pickerTheme = CountryPickerTheme.resolve(context);
-  final radius = Radius.circular(pickerTheme.radius);
+  final radius = Radius.circular(
+    pickerTheme.useIOS26 ? _kIOS26SheetRadius : pickerTheme.radius,
+  );
   final borderRadius = BorderRadius.only(topLeft: radius, topRight: radius);
 
-  Widget builder(BuildContext context, [ScrollController? scrollController]) =>
+  Widget sheet(BuildContext context, [ScrollController? scrollController]) =>
       DraggableScrollableSheet(
         expand: effectiveExpand,
         initialChildSize: initialChildSize ?? (effectiveExpand ? 1.0 : .65),
@@ -140,7 +145,7 @@ void showCountryPicker({
           child: DecoratedBox(
             decoration: BoxDecoration(
               borderRadius: borderRadius,
-              color: pickerTheme.backgroundColor,
+              color: CountryPickerTheme.resolve(context).backgroundColor,
             ),
             child: CountryListView(
               exclude: exclude,
@@ -163,6 +168,18 @@ void showCountryPicker({
           ),
         ),
       );
+
+  /// In the iOS 26 style the sheet is presented as an elevated surface,
+  /// so dynamic Cupertino colors resolve to their elevated variants.
+  Widget builder(BuildContext context, [ScrollController? scrollController]) =>
+      pickerTheme.useIOS26
+      ? CupertinoUserInterfaceLevel(
+          data: CupertinoUserInterfaceLevelData.elevated,
+          child: Builder(
+            builder: (context) => sheet(context, scrollController),
+          ),
+        )
+      : sheet(context, scrollController);
 
   /// Provide haptic feedback on opening the picker, if enabled.
   if (effectiveUseHapticFeedback) HapticFeedback.heavyImpact().ignore();

@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- **ADDED**: `CountryPickerTheme.useIOS26` to render the country picker in the iOS 26 style: pill-shaped search field with a round close button, inset rounded list section, circular flags, phone code before the country name, and a checkmark badge on the selected flag, [#15](https://github.com/ziqq/flutter_simple_country_picker/issues/15)
+
 ## 0.11.1
 - **DEPRECATED**: `useHaptickFeedback`; use `useHapticFeedback` instead. When both are provided, `useHapticFeedback` takes precedence
 - **ADDED**: `useHapticFeedback` to `showCountryPicker`, `CountryPickerOptions`, `CountryPhoneInput`, and `CountryPhoneInput.extended`
