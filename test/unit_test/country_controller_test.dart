@@ -48,6 +48,43 @@ void _$controllerTest() => group('CountryController -', () {
     },
   );
 
+  group('showWorldWide -', () {
+    test('puts the World Wide option before favorites', () async {
+      final ca = mockCountry.copyWith(name: 'Canada', countryCode: 'CA');
+      final us = mockCountry.copyWith(name: 'United States', countryCode: 'US');
+      when(provider.getCountries()).thenAnswer((_) async => [ca, us]);
+
+      controller = CountryController(
+        provider: provider,
+        showWorldWide: true,
+        favorites: const ['US'],
+      );
+      await controller.getCountries();
+
+      expect(controller.state.countries.map((c) => c.countryCode), <String>[
+        'WW',
+        'US',
+        'CA',
+        'US',
+      ]);
+    });
+
+    test('is hidden by default and when excluded', () async {
+      when(provider.getCountries()).thenAnswer((_) async => [mockCountry]);
+
+      await controller.getCountries();
+      expect(controller.state.countries.any((c) => c.iswWorldWide), isFalse);
+
+      controller = CountryController(
+        provider: provider,
+        showWorldWide: true,
+        exclude: const ['ww'],
+      );
+      await controller.getCountries();
+      expect(controller.state.countries.any((c) => c.iswWorldWide), isFalse);
+    });
+  });
+
   test('getCountries excludes countries based on the exclude list', () async {
     final countries = [mockCountry.copyWith(name: 'Canada', countryCode: 'CA')];
 

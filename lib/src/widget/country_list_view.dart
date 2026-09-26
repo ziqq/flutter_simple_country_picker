@@ -135,6 +135,7 @@ class _CountriesListViewState extends State<CountryListView>
       filter: widget.filter,
       showGroup: widget.showGroup,
       showPhoneCode: widget.showPhoneCode,
+      showWorldWide: widget.showWorldWide,
     )..getCountries();
   }
 
@@ -456,6 +457,7 @@ class _CountriesListViewState extends State<CountryListView>
             // --- Countries list --- //
             _CountriesList(
               controller: _controller,
+              favorites: widget.favorites,
               selected: widget.selected,
               onSelect: widget.onSelect,
             ),
@@ -483,6 +485,7 @@ class _CountriesList extends StatefulWidget {
   /// {@macro countries_list_view}
   const _CountriesList({
     required this.controller,
+    this.favorites,
     this.selected,
     this.onSelect,
     super.key, // ignore: unused_element_parameter
@@ -490,6 +493,9 @@ class _CountriesList extends StatefulWidget {
 
   /// Countries controller.
   final CountryController controller;
+
+  /// Favorite country codes (iso2) shown in a section above the letters.
+  final List<String>? favorites;
 
   /// {@macro select_country_notifier}
   final SelectedCountry? selected;
@@ -546,7 +552,9 @@ class _CountriesListState extends State<_CountriesList> {
   void _groupByName() {
     if (!mounted) return;
     final state = widget.controller.state;
-    if (!state.showGroup || !state.isIdle || state.countries.isEmpty) return;
+    // An empty list is grouped too, so a search without results
+    // does not keep showing the previous groups.
+    if (!state.showGroup || !state.isIdle) return;
 
     if (_showGroup == state.showGroup &&
         identical(_countries, state.countries)) {
@@ -560,25 +568,43 @@ class _CountriesListState extends State<_CountriesList> {
   }
 
   /// Build groups of countries.
+  ///
+  /// The leading "World Wide" option and favorites form a section with an
+  /// empty key, which is rendered without a letter header. The rest is
+  /// grouped by the first letter of the localized name. Equal letters are
+  /// merged even when not adjacent, so a letter header never repeats.
   List<(String, List<Country>)> _buildGroups(List<Country> countries) {
-    final result = <(String, List<Country>)>[];
-    List<Country>? bucket;
-    String? currentKey;
+    final favorites =
+        widget.favorites?.map((code) => code.trim().toUpperCase()).toSet() ??
+        const <String>{};
 
-    for (final country in countries) {
-      final name = country.nameLocalized;
-      if (name == null || name.isEmpty) continue;
-
-      final key = name.characters.first.toUpperCase();
-      if (key != currentKey) {
-        currentKey = key;
-        bucket = <Country>[];
-        result.add((key, bucket));
-      }
-      bucket?.add(country);
+    // The controller puts the pinned countries first. The block ends at the
+    // first country that is not pinned or is repeated, because favorites
+    // are listed again among all countries when phone codes are shown.
+    final pinned = <Country>[];
+    final seen = <String>{};
+    var index = 0;
+    for (; index < countries.length; index++) {
+      final country = countries[index];
+      final isPinned =
+          country.iswWorldWide ||
+          favorites.contains(country.countryCode.toUpperCase());
+      if (!isPinned || !seen.add(country.e164Key)) break;
+      pinned.add(country);
     }
 
-    return result;
+    final letters = <String, List<Country>>{};
+    for (final country in countries.skip(index)) {
+      final name = country.nameLocalized ?? country.name;
+      if (name.isEmpty) continue;
+      final key = name.characters.first.toUpperCase();
+      (letters[key] ??= <Country>[]).add(country);
+    }
+
+    return <(String, List<Country>)>[
+      if (pinned.isNotEmpty) ('', pinned),
+      for (final MapEntry(:key, :value) in letters.entries) (key, value),
+    ];
   }
 
   /// Notifies [_CountriesList.onSelect] and updates
@@ -648,35 +674,37 @@ class _CountriesListState extends State<_CountriesList> {
                   for (final (key, countries) in groups)
                     SliverMainAxisGroup(
                       slivers: <Widget>[
-                        SliverPersistentHeader(
-                          key: ValueKey<String>('header_$key'),
-                          floating: true,
-                          pinned: true,
-                          delegate: _SliverHeaderDelegate(
-                            maxHeight: 36,
-                            minHeight: 36,
-                            child: ColoredBox(
-                              key: ValueKey('header_child_$key'),
-                              color:
-                                  pickerTheme.backgroundColor ??
-                                  Colors.transparent,
-                              child: Padding(
-                                padding: EdgeInsetsDirectional.only(
-                                  start: pickerTheme.padding * 2,
-                                  end: pickerTheme.padding * 2,
-                                  top: pickerTheme.padding / 2,
-                                ),
-                                child: Align(
-                                  alignment: AlignmentDirectional.centerStart,
-                                  child: Text(
-                                    key,
-                                    style: TextStyle(
-                                      height: 1,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      color: CupertinoDynamicColor.resolve(
-                                        CupertinoColors.secondaryLabel,
-                                        context,
+                        if (key.isNotEmpty)
+                          SliverPersistentHeader(
+                            key: ValueKey<String>('header_$key'),
+                            floating: true,
+                            pinned: true,
+                            delegate: _SliverHeaderDelegate(
+                              maxHeight: 36,
+                              minHeight: 36,
+                              child: ColoredBox(
+                                key: ValueKey('header_child_$key'),
+                                color:
+                                    pickerTheme.backgroundColor ??
+                                    Colors.transparent,
+                                child: Padding(
+                                  padding: EdgeInsetsDirectional.only(
+                                    start: pickerTheme.padding * 2,
+                                    end: pickerTheme.padding * 2,
+                                    top: pickerTheme.padding / 2,
+                                  ),
+                                  child: Align(
+                                    alignment: AlignmentDirectional.centerStart,
+                                    child: Text(
+                                      key,
+                                      style: TextStyle(
+                                        height: 1,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
+                                        color: CupertinoDynamicColor.resolve(
+                                          CupertinoColors.secondaryLabel,
+                                          context,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -684,7 +712,6 @@ class _CountriesListState extends State<_CountriesList> {
                               ),
                             ),
                           ),
-                        ),
                         _buildIOS26Section(countries, selected),
                       ],
                     ),
@@ -703,40 +730,42 @@ class _CountriesListState extends State<_CountriesList> {
                 for (final (key, countries) in groups)
                   SliverMainAxisGroup(
                     slivers: <Widget>[
-                      SliverPersistentHeader(
-                        key: ValueKey<String>('header_$key'),
-                        floating: true,
-                        pinned: true,
-                        delegate: _SliverHeaderDelegate(
-                          maxHeight: 26,
-                          minHeight: 26,
-                          child: DecoratedBox(
-                            key: ValueKey('header_child_$key'),
-                            decoration: BoxDecoration(
-                              color: pickerTheme.secondaryBackgroundColor,
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: pickerTheme.padding,
+                      if (key.isNotEmpty)
+                        SliverPersistentHeader(
+                          key: ValueKey<String>('header_$key'),
+                          floating: true,
+                          pinned: true,
+                          delegate: _SliverHeaderDelegate(
+                            maxHeight: 26,
+                            minHeight: 26,
+                            child: DecoratedBox(
+                              key: ValueKey('header_child_$key'),
+                              decoration: BoxDecoration(
+                                color: pickerTheme.secondaryBackgroundColor,
                               ),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  key,
-                                  style: TextStyle(
-                                    height: 1,
-                                    fontSize: 15,
-                                    fontWeight: switch (defaultTargetPlatform) {
-                                      .iOS => .w700,
-                                      _ => .w600,
-                                    },
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: pickerTheme.padding,
+                                ),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    key,
+                                    style: TextStyle(
+                                      height: 1,
+                                      fontSize: 15,
+                                      fontWeight:
+                                          switch (defaultTargetPlatform) {
+                                            .iOS => .w700,
+                                            _ => .w600,
+                                          },
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
                       SliverList.separated(
                         itemCount: countries.length,
                         itemBuilder: (_, index) {
@@ -873,7 +902,9 @@ class _CountryListTile extends StatelessWidget {
     container: true,
     button: true,
     selected: semanticsSelected,
-    label: '${nameLocalized ?? country.name}, +${country.phoneCode}',
+    label: country.phoneCode.isEmpty
+        ? nameLocalized ?? country.name
+        : '${nameLocalized ?? country.name}, +${country.phoneCode}',
     child: Material(
       // Add Material Widget with transparent color
       // so the ripple effect of InkWell will show on tap
@@ -929,10 +960,11 @@ class _CountryListTile extends StatelessWidget {
           _Flag(country),
           SizedBox(width: pickerTheme.padding / 4),
           Flexible(child: title),
-          Text(
-            ' (${isRtl ? '' : '+'}${country.phoneCode}${isRtl ? '+' : ''})',
-            style: effectiveTextStyle,
-          ),
+          if (country.phoneCode.isNotEmpty)
+            Text(
+              ' (${isRtl ? '' : '+'}${country.phoneCode}${isRtl ? '+' : ''})',
+              style: effectiveTextStyle,
+            ),
         ],
       ),
     };
@@ -943,6 +975,7 @@ class _CountryListTile extends StatelessWidget {
         color: pickerTheme.accentColor,
       ),
       (true, false) => null,
+      (false, _) when country.phoneCode.isEmpty => null,
       (false, _) => Padding(
         padding: EdgeInsets.only(top: pickerTheme.padding / 5),
         child: Text(
@@ -1042,8 +1075,10 @@ class _CountryListTile$IOS26 extends _CountryListTile {
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    '${isRtl ? '' : '+'}${country.phoneCode}'
-                    '${isRtl ? '+' : ''}',
+                    country.phoneCode.isEmpty
+                        ? ''
+                        : '${isRtl ? '' : '+'}${country.phoneCode}'
+                              '${isRtl ? '+' : ''}',
                     maxLines: 1,
                     style: effectiveTextStyle?.copyWith(
                       color: CupertinoDynamicColor.resolve(
