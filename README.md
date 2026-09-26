@@ -470,6 +470,24 @@ CountryPickerTheme(useIOS26: true)
 
 Leave the colors unset to let them resolve from the ambient Cupertino theme, including the elevated dark-mode variants used by sheets.
 
+In the iOS 26 style scrolling the list also expands the sheet, and the list is clipped below a solid header.
+
+To paint your own surfaces behind the search field and the close button (for example a shader-based liquid glass), pass a `surfaceBuilder`. It receives the control content without the background; taps and accessibility stay handled by the picker.
+
+```dart
+Widget glassSurface(
+  BuildContext context,
+  CountryPickerSurface surface,
+  Widget child,
+) => MyLiquidGlass(
+  shape: surface.shape,
+  pressed: surface.pressed, // ValueListenable<bool> for press animations
+  child: child,
+);
+
+CountryPickerTheme(useIOS26: true, surfaceBuilder: glassSurface)
+```
+
 
 ## All Countries List
 

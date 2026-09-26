@@ -24,7 +24,7 @@ const double _kIOS26FlagSize = 40.0;
 const double _kIOS26SectionRadius = 26.0;
 
 /// Width of the phone code column in the iOS 26 style.
-const double _kIOS26PhoneCodeWidth = 48.0;
+const double _kIOS26PhoneCodeWidth = 56.0;
 
 /// {@template country_list_view}
 /// CountryListView widget.
@@ -301,98 +301,111 @@ class _CountriesListViewState extends State<CountryListView>
       context,
     );
     final iconSize = IconTheme.of(context).size;
+    // Native iOS 26 controls are almost transparent over the sheet
+    // and outlined by a hairline border.
     final side = BorderSide(
       color:
-          pickerTheme.dividerColor?.withValues(alpha: .5) ??
-          CupertinoDynamicColor.resolve(CupertinoColors.separator, context),
-      width: .5,
+          pickerTheme.dividerColor ??
+          CupertinoDynamicColor.resolve(
+            CupertinoColors.opaqueSeparator,
+            context,
+          ),
     );
-    final color = pickerTheme.secondaryBackgroundColor;
+    const color = Colors.transparent;
     void pop() {
       if (widget.useHapticFeedback) HapticFeedback.heavyImpact().ignore();
       Navigator.of(context, rootNavigator: widget.useRootNavigator).pop<void>();
     }
 
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        pickerTheme.padding,
-        pickerTheme.padding,
-        pickerTheme.padding,
-        pickerTheme.padding / 2,
-      ),
-      child: SizedBox(
-        height: _kIOS26ControlHeight,
-        child: Row(
-          spacing: pickerTheme.indent,
-          children: <Widget>[
-            // --- Search field --- //
-            Expanded(
-              child: _Surface(
-                type: CountryPickerSurfaceType.searchField,
-                shape: const StadiumBorder(),
-                decoration: ShapeDecoration(
-                  color: color,
-                  shape: StadiumBorder(side: side),
-                ),
-                child: CupertinoSearchTextField(
-                  autofocus: widget.autofocus || widget.useAutofocus,
-                  controller: _controller.search,
-                  onSuffixTap: _controller.search?.clear,
-                  placeholder: localization.searchPlaceholder,
-                  style: pickerTheme.textStyle?.copyWith(height: 1.3),
-                  placeholderStyle: pickerTheme.textStyle?.copyWith(
-                    color:
-                        pickerTheme.searchTextStyle?.color?.withValues(
-                          alpha: .5,
-                        ) ??
-                        CupertinoDynamicColor.resolve(
-                          CupertinoColors.secondaryLabel,
-                          context,
-                        ),
-                    height: 1.3,
+    // Like native iOS 26 sheets, the header is solid and the list is
+    // clipped right below it, keeping a gap under the controls.
+    return ColoredBox(
+      color: pickerTheme.backgroundColor ?? Colors.transparent,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          pickerTheme.padding,
+          pickerTheme.padding,
+          pickerTheme.padding,
+          pickerTheme.padding,
+        ),
+        child: SizedBox(
+          height: _kIOS26ControlHeight,
+          child: Row(
+            spacing: pickerTheme.indent,
+            children: <Widget>[
+              // --- Search field --- //
+              Expanded(
+                child: _Surface(
+                  type: CountryPickerSurfaceType.searchField,
+                  shape: const StadiumBorder(),
+                  decoration: ShapeDecoration(
+                    color: color,
+                    shape: StadiumBorder(side: side),
                   ),
-                  // The background is painted by the surface.
-                  decoration: const BoxDecoration(),
-                  itemColor: labelColor,
-                  itemSize: iconSize ?? 22,
-                  padding: const EdgeInsetsDirectional.fromSTEB(8, 11, 8, 11),
-                  prefixInsets: EdgeInsetsDirectional.only(
-                    start: pickerTheme.padding * .75,
-                  ),
-                  suffixInsets: EdgeInsetsDirectional.only(
-                    end: pickerTheme.indent,
+                  child: CupertinoSearchTextField(
+                    autofocus: widget.autofocus || widget.useAutofocus,
+                    controller: _controller.search,
+                    onSuffixTap: _controller.search?.clear,
+                    placeholder: localization.searchPlaceholder,
+                    style: pickerTheme.textStyle?.copyWith(height: 1.3),
+                    placeholderStyle: pickerTheme.textStyle?.copyWith(
+                      color:
+                          pickerTheme.searchTextStyle?.color?.withValues(
+                            alpha: .5,
+                          ) ??
+                          CupertinoDynamicColor.resolve(
+                            CupertinoColors.secondaryLabel,
+                            context,
+                          ),
+                      height: 1.3,
+                    ),
+                    // The background is painted by the surface.
+                    decoration: const BoxDecoration(),
+                    itemColor: labelColor,
+                    itemSize: iconSize ?? 22,
+                    padding: const EdgeInsetsDirectional.fromSTEB(8, 11, 8, 11),
+                    prefixInsets: EdgeInsetsDirectional.only(
+                      start: pickerTheme.padding * .75,
+                    ),
+                    suffixInsets: EdgeInsetsDirectional.only(
+                      end: pickerTheme.indent,
+                    ),
                   ),
                 ),
               ),
-            ),
 
-            // --- Close button --- //
-            SizedBox.square(
-              dimension: _kIOS26ControlHeight,
-              child: _Surface(
-                key: const ValueKey<String>('country_picker_close_button'),
-                type: CountryPickerSurfaceType.closeButton,
-                shape: const CircleBorder(),
-                decoration: ShapeDecoration(
-                  color: color,
-                  shape: CircleBorder(side: side),
-                ),
-                onPressed: pop,
-                semanticsLabel: localization.cancelButton,
-                child: Center(
-                  child: Icon(
-                    CupertinoIcons.xmark,
-                    size: iconSize,
-                    color: labelColor,
+              // --- Close button --- //
+              SizedBox.square(
+                dimension: _kIOS26ControlHeight,
+                child: _Surface(
+                  key: const ValueKey<String>('country_picker_close_button'),
+                  type: CountryPickerSurfaceType.closeButton,
+                  shape: const CircleBorder(),
+                  decoration: ShapeDecoration(
+                    color: color,
+                    shape: CircleBorder(side: side),
+                  ),
+                  onPressed: pop,
+                  semanticsLabel: localization.cancelButton,
+                  child: Center(
+                    child: Icon(
+                      CupertinoIcons.xmark,
+                      size: iconSize,
+                      color: labelColor,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
+
+  /// Height of the iOS 26 header: controls with padding around them.
+  static double _headerIOS26Height(CountryPickerTheme pickerTheme) =>
+      pickerTheme.padding * 2 + _kIOS26ControlHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -400,14 +413,14 @@ class _CountriesListViewState extends State<CountryListView>
     final viewPadding = MediaQuery.viewPaddingOf(context);
     final localization = CountryLocalizations.of(context);
     final pickerTheme = CountryPickerTheme.resolve(context);
+    final useIOS26Header =
+        pickerTheme.useIOS26 &&
+        (widget.showSearch ?? widget.showGroup ?? false);
     return Scaffold(
       backgroundColor: pickerTheme.backgroundColor,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(
-          pickerTheme.useIOS26 &&
-                  (widget.showSearch ?? widget.showGroup ?? false)
-              ? _kIOS26ControlHeight + pickerTheme.padding * 1.5
-              : kToolbarHeight,
+          useIOS26Header ? _headerIOS26Height(pickerTheme) : kToolbarHeight,
         ),
         child: ValueListenableBuilder(
           valueListenable: _controller,
@@ -426,6 +439,12 @@ class _CountriesListViewState extends State<CountryListView>
         child: CustomScrollView(
           controller: _scrollController,
           slivers: <Widget>[
+            // --- Gap under the iOS 26 header before scrolling --- //
+            if (useIOS26Header)
+              SliverToBoxAdapter(
+                child: SizedBox(height: pickerTheme.padding / 2),
+              ),
+
             // --- Title --- //
             ValueListenableBuilder(
               valueListenable: _controller,
