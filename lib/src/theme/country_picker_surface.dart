@@ -68,7 +68,7 @@ class CountryPickerSurface {
 /// {@template country_picker_surface_builder}
 /// Builds a control surface of the iOS 26 styled country picker.
 ///
-/// [child] is the surface content without the background.
+/// `child` is the surface content without the background.
 ///
 /// Prefer a top-level or static function, because [CountryPickerTheme]
 /// compares builders by identity.
