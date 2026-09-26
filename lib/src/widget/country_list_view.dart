@@ -173,17 +173,20 @@ class _CountriesListViewState extends State<CountryListView>
   /// Build divider widget.
   Widget _buildDivider() {
     final pickerTheme = CountryPickerTheme.resolve(context);
-    return Padding(
-      padding: const EdgeInsets.only(top: 5),
-      child: Align(
-        heightFactor: 2,
-        child: SizedBox(
-          width: 36,
-          height: 5,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: pickerTheme.dividerColor,
-              borderRadius: const BorderRadius.all(Radius.circular(30)),
+    // The drag handle is purely decorative.
+    return ExcludeSemantics(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 5),
+        child: Align(
+          heightFactor: 2,
+          child: SizedBox(
+            width: 36,
+            height: 5,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: pickerTheme.dividerColor,
+                borderRadius: const BorderRadius.all(Radius.circular(30)),
+              ),
             ),
           ),
         ),
@@ -296,7 +299,8 @@ class _CountriesListViewState extends State<CountryListView>
       CupertinoColors.label,
       context,
     );
-    final controlDecoration = BoxDecoration(
+    final iconSize = IconTheme.of(context).size;
+    final decoration = BoxDecoration(
       color: pickerTheme.secondaryBackgroundColor,
       border: Border.all(
         color:
@@ -341,13 +345,13 @@ class _CountriesListViewState extends State<CountryListView>
                       ),
                   height: 1.3,
                 ),
-                decoration: controlDecoration.copyWith(
+                decoration: decoration.copyWith(
                   borderRadius: const BorderRadius.all(
                     Radius.circular(_kIOS26ControlHeight / 2),
                   ),
                 ),
                 itemColor: labelColor,
-                itemSize: 22,
+                itemSize: iconSize ?? 22,
                 padding: const EdgeInsetsDirectional.fromSTEB(8, 11, 8, 11),
                 prefixInsets: EdgeInsetsDirectional.only(
                   start: pickerTheme.padding * .75,
@@ -362,7 +366,7 @@ class _CountriesListViewState extends State<CountryListView>
             SizedBox.square(
               dimension: _kIOS26ControlHeight,
               child: DecoratedBox(
-                decoration: controlDecoration.copyWith(shape: BoxShape.circle),
+                decoration: decoration.copyWith(shape: BoxShape.circle),
                 child: CupertinoButton(
                   key: const ValueKey<String>('country_picker_close_button'),
                   padding: EdgeInsets.zero,
@@ -370,7 +374,7 @@ class _CountriesListViewState extends State<CountryListView>
                   onPressed: pop,
                   child: Icon(
                     CupertinoIcons.xmark,
-                    size: 20,
+                    size: iconSize,
                     color: labelColor,
                     semanticLabel: localization.cancelButton,
                   ),
@@ -527,8 +531,8 @@ class _CountriesListState extends State<_CountriesList> {
   @override
   void dispose() {
     widget.controller.removeListener(_groupByName);
-    _groups.dispose();
     _fallbackSelected.dispose();
+    _groups.dispose();
     super.dispose();
   }
 
@@ -848,25 +852,41 @@ class _CountryListTile extends StatelessWidget {
   }
 
   /// Wraps [child] into an [InkWell] with the Cupertino-like highlight.
+  ///
+  /// The tile is exposed to accessibility services as a single button
+  /// labelled with the country name and phone code, so decorative parts
+  /// such as the emoji flag are not announced.
+  ///
+  /// [semanticsSelected] is `null` when the tile does not track selection.
   Widget _buildInkWell(
     BuildContext context, {
     required String? nameLocalized,
     required Widget child,
-  }) => Material(
-    // Add Material Widget with transparent color
-    // so the ripple effect of InkWell will show on tap
-    color: Colors.transparent,
-    type: MaterialType.card,
-    child: Theme(
-      data: Theme.of(context).copyWith(
-        highlightColor: CupertinoDynamicColor.resolve(
-          CupertinoColors.systemGrey4,
-          context,
+    bool? semanticsSelected,
+  }) => Semantics(
+    container: true,
+    button: true,
+    selected: semanticsSelected,
+    label: '${nameLocalized ?? country.name}, +${country.phoneCode}',
+    child: Material(
+      // Add Material Widget with transparent color
+      // so the ripple effect of InkWell will show on tap
+      color: Colors.transparent,
+      type: MaterialType.card,
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          highlightColor: CupertinoDynamicColor.resolve(
+            CupertinoColors.systemGrey4,
+            context,
+          ),
+          hoverColor: Colors.transparent,
+          splashColor: Colors.transparent,
         ),
-        hoverColor: Colors.transparent,
-        splashColor: Colors.transparent,
+        child: InkWell(
+          onTap: () => _onTap(context, nameLocalized),
+          child: ExcludeSemantics(child: child),
+        ),
       ),
-      child: InkWell(onTap: () => _onTap(context, nameLocalized), child: child),
     ),
   );
 
@@ -935,6 +955,7 @@ class _CountryListTile extends StatelessWidget {
     return _buildInkWell(
       context,
       nameLocalized: nameLocalized,
+      semanticsSelected: simple ? selected : null,
       child: Padding(
         padding: EdgeInsets.only(
           top: simple ? pickerTheme.padding / 1.25 : pickerTheme.padding / 2,
@@ -992,55 +1013,53 @@ class _CountryListTile$IOS26 extends _CountryListTile {
       country.countryCode,
     );
 
-    return Semantics(
-      selected: selected,
-      child: _buildInkWell(
-        context,
-        nameLocalized: nameLocalized,
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: pickerTheme.padding,
-            vertical: pickerTheme.padding * 1.1,
-          ),
-          child: Row(
-            spacing: pickerTheme.padding,
-            children: <Widget>[
-              // --- Round flag --- //
-              _Flag$IOS26(country, selected: selected),
+    return _buildInkWell(
+      context,
+      nameLocalized: nameLocalized,
+      semanticsSelected: selected,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: pickerTheme.padding,
+          vertical: pickerTheme.padding * 1.1,
+        ),
+        child: Row(
+          spacing: pickerTheme.padding,
+          children: <Widget>[
+            // --- Round flag --- //
+            _Flag$IOS26(country, selected: selected),
 
-              // --- Phone code --- //
-              SizedBox(
-                width: _kIOS26PhoneCodeWidth,
-                child: Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      '${isRtl ? '' : '+'}${country.phoneCode}'
-                      '${isRtl ? '+' : ''}',
-                      maxLines: 1,
-                      style: effectiveTextStyle?.copyWith(
-                        color: CupertinoDynamicColor.resolve(
-                          CupertinoColors.secondaryLabel,
-                          context,
-                        ),
+            // --- Phone code --- //
+            SizedBox(
+              width: _kIOS26PhoneCodeWidth,
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    '${isRtl ? '' : '+'}${country.phoneCode}'
+                    '${isRtl ? '+' : ''}',
+                    maxLines: 1,
+                    style: effectiveTextStyle?.copyWith(
+                      color: CupertinoDynamicColor.resolve(
+                        CupertinoColors.secondaryLabel,
+                        context,
                       ),
                     ),
                   ),
                 ),
               ),
+            ),
 
-              // --- Country name --- //
-              Expanded(
-                child: Text(
-                  nameLocalized ?? country.name,
-                  style: effectiveTextStyle,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
+            // --- Country name --- //
+            Expanded(
+              child: Text(
+                nameLocalized ?? country.name,
+                style: effectiveTextStyle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -1105,6 +1124,29 @@ class _Flag$IOS26 extends StatelessWidget {
   /// Whether to show the checkmark badge.
   final bool selected;
 
+  /// Whether the platform emoji font can draw flag glyphs.
+  ///
+  /// Windows' Segoe UI Emoji has no flags and renders the regional
+  /// indicator pair as two letters. Flutter web always falls back to
+  /// Noto Color Emoji, which has flags on every host OS.
+  static bool get _hasFlagGlyphs =>
+      kIsWeb || defaultTargetPlatform != TargetPlatform.windows;
+
+  /// How much the emoji glyph is scaled to cover the whole circle.
+  ///
+  /// Emoji flags are rectangular glyphs with transparent padding.
+  /// Apple Color Emoji (iOS, macOS) draws waving flags with extra space
+  /// around them, so it needs a bigger scale than the flat Noto flags
+  /// used on Android, Linux and the web.
+  static double _scaleOf(Country country) {
+    if (country.iswWorldWide) return 1.0;
+    if (kIsWeb) return 1.6;
+    return switch (defaultTargetPlatform) {
+      TargetPlatform.iOS || TargetPlatform.macOS => 2.0,
+      _ => 1.6,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final pickerTheme = CountryPickerTheme.resolve(context);
@@ -1119,12 +1161,46 @@ class _Flag$IOS26 extends StatelessWidget {
           context,
         );
 
-    // Emoji flags are rectangular glyphs with transparent padding,
-    // so the glyph is scaled up to cover the whole circle.
     final emoji = country.iswWorldWide
         ? '\uD83C\uDF0D'
         : CountryUtil.countryCodeToEmoji(country.countryCode);
-    final scale = country.iswWorldWide ? 1.0 : 2.0;
+    final scale = _scaleOf(country);
+
+    final Widget flag;
+    if (country.iswWorldWide || _hasFlagGlyphs) {
+      flag = OverflowBox(
+        maxWidth: double.infinity,
+        maxHeight: double.infinity,
+        child: Text(
+          emoji,
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: _kIOS26FlagSize * scale, height: 1),
+        ),
+      );
+    } else {
+      // No flag glyphs: show the ISO code in a tinted circle instead
+      // of a cropped pair of regional indicator letters.
+      flag = ColoredBox(
+        color: CupertinoDynamicColor.resolve(
+          CupertinoColors.tertiarySystemFill,
+          context,
+        ),
+        child: Center(
+          child: Text(
+            country.countryCode.toUpperCase(),
+            style: TextStyle(
+              height: 1,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: CupertinoDynamicColor.resolve(
+                CupertinoColors.secondaryLabel,
+                context,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     return SizedBox.square(
       dimension: _kIOS26FlagSize,
@@ -1132,21 +1208,7 @@ class _Flag$IOS26 extends StatelessWidget {
         clipBehavior: Clip.none,
         children: <Widget>[
           ClipOval(
-            child: SizedBox.square(
-              dimension: _kIOS26FlagSize,
-              child: OverflowBox(
-                maxWidth: double.infinity,
-                maxHeight: double.infinity,
-                child: Text(
-                  emoji,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: _kIOS26FlagSize * scale,
-                    height: 1,
-                  ),
-                ),
-              ),
-            ),
+            child: SizedBox.square(dimension: _kIOS26FlagSize, child: flag),
           ),
           if (selected)
             PositionedDirectional(
@@ -1192,7 +1254,7 @@ class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
     BuildContext context,
     double shrinkOffset,
     bool overlapsContent,
-  ) => SizedBox.expand(child: child);
+  ) => Semantics(header: true, child: SizedBox.expand(child: child));
 
   @override
   double get minExtent => minHeight;

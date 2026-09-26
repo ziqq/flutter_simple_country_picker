@@ -357,6 +357,11 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     _countryController.value = country;
     widget.onCountryChanged?.call(country);
   }
+
+  /// Accessibility label of the country button, e.g. `Russia, +7`.
+  String _semanticsLabelOf(CountryLocalizations localization, Country c) =>
+      '${localization.getFormatedCountryNameByCode(c.countryCode) ?? c.name}'
+      ', +${c.phoneCode}';
 }
 
 /// State for widget [CountryPhoneInput].
@@ -407,19 +412,25 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                       onSelect: _onSelect,
                     )
                   : null,
-              child: Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: 3,
-                  children: <Widget>[
-                    if (selected.flagEmoji.isNotEmpty) ...[
-                      Text(
-                        selected.flagEmoji,
-                        style: textStyle?.copyWith(letterSpacing: 0),
-                      ),
-                    ],
-                    Text('+${selected.phoneCode}', style: textStyle),
-                  ],
+              child: Semantics(
+                // Announce the country instead of the emoji flag name.
+                label: _semanticsLabelOf(localization, selected),
+                child: ExcludeSemantics(
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 3,
+                      children: <Widget>[
+                        if (selected.flagEmoji.isNotEmpty) ...[
+                          Text(
+                            selected.flagEmoji,
+                            style: textStyle?.copyWith(letterSpacing: 0),
+                          ),
+                        ],
+                        Text('+${selected.phoneCode}', style: textStyle),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -577,6 +588,8 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                 width: double.infinity,
                 child: Text(
                   '${selected.flagEmoji} ${localization.getFormatedCountryNameByCode(selected.countryCode)}',
+                  // Announce the country instead of the emoji flag name.
+                  semanticsLabel: _semanticsLabelOf(localization, selected),
                   style: textStyle?.copyWith(fontWeight: FontWeight.w500),
                 ),
               ),
