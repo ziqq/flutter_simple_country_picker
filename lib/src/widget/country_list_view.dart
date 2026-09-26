@@ -14,6 +14,18 @@ import 'package:flutter_simple_country_picker/src/controller/country_controller.
 import 'package:flutter_simple_country_picker/src/data/country_provider.dart';
 import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 
+/// Height of the search field and the close button in the iOS 26 style.
+const double _kIOS26ControlHeight = 44.0;
+
+/// Diameter of the round flag in the iOS 26 style.
+const double _kIOS26FlagSize = 40.0;
+
+/// Border radius of the inset list section in the iOS 26 style.
+const double _kIOS26SectionRadius = 26.0;
+
+/// Width of the phone code column in the iOS 26 style.
+const double _kIOS26PhoneCodeWidth = 56.0;
+
 /// {@template country_list_view}
 /// CountryListView widget.
 ///
@@ -123,6 +135,7 @@ class _CountriesListViewState extends State<CountryListView>
       filter: widget.filter,
       showGroup: widget.showGroup,
       showPhoneCode: widget.showPhoneCode,
+      showWorldWide: widget.showWorldWide,
     )..getCountries();
   }
 
@@ -161,17 +174,20 @@ class _CountriesListViewState extends State<CountryListView>
   /// Build divider widget.
   Widget _buildDivider() {
     final pickerTheme = CountryPickerTheme.resolve(context);
-    return Padding(
-      padding: const EdgeInsets.only(top: 5),
-      child: Align(
-        heightFactor: 2,
-        child: SizedBox(
-          width: 36,
-          height: 5,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: pickerTheme.dividerColor,
-              borderRadius: const BorderRadius.all(Radius.circular(30)),
+    // The drag handle is purely decorative.
+    return ExcludeSemantics(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 5),
+        child: Align(
+          heightFactor: 2,
+          child: SizedBox(
+            width: 36,
+            height: 5,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: pickerTheme.dividerColor,
+                borderRadius: const BorderRadius.all(Radius.circular(30)),
+              ),
             ),
           ),
         ),
@@ -274,21 +290,148 @@ class _CountriesListViewState extends State<CountryListView>
     );
   }
 
+  /// Build search bar widget in the iOS 26 style.
+  ///
+  /// A pill-shaped search field with a round close button next to it.
+  Widget _buildSearchBarIOS26() {
+    final pickerTheme = CountryPickerTheme.resolve(context);
+    final localization = CountryLocalizations.of(context);
+    final labelColor = CupertinoDynamicColor.resolve(
+      CupertinoColors.label,
+      context,
+    );
+    final iconSize = IconTheme.of(context).size;
+    // Native iOS 26 controls are almost transparent over the sheet
+    // and outlined by a hairline border.
+    final side = BorderSide(
+      color:
+          pickerTheme.dividerColor ??
+          CupertinoDynamicColor.resolve(
+            CupertinoColors.opaqueSeparator,
+            context,
+          ),
+    );
+    const color = Colors.transparent;
+    void pop() {
+      if (widget.useHapticFeedback) HapticFeedback.heavyImpact().ignore();
+      Navigator.of(context, rootNavigator: widget.useRootNavigator).pop<void>();
+    }
+
+    // Like native iOS 26 sheets, the header is solid and the list is
+    // clipped right below it, keeping a gap under the controls.
+    return ColoredBox(
+      color: pickerTheme.backgroundColor ?? Colors.transparent,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          pickerTheme.padding,
+          pickerTheme.padding,
+          pickerTheme.padding,
+          pickerTheme.padding,
+        ),
+        child: SizedBox(
+          height: _kIOS26ControlHeight,
+          child: Row(
+            spacing: pickerTheme.indent,
+            children: <Widget>[
+              // --- Search field --- //
+              Expanded(
+                child: _Surface(
+                  type: CountryPickerSurfaceType.searchField,
+                  shape: const StadiumBorder(),
+                  decoration: ShapeDecoration(
+                    color: color,
+                    shape: StadiumBorder(side: side),
+                  ),
+                  child: CupertinoSearchTextField(
+                    autofocus: widget.autofocus || widget.useAutofocus,
+                    controller: _controller.search,
+                    onSuffixTap: _controller.search?.clear,
+                    placeholder: localization.searchPlaceholder,
+                    style: pickerTheme.textStyle?.copyWith(height: 1.3),
+                    placeholderStyle: pickerTheme.textStyle?.copyWith(
+                      color:
+                          pickerTheme.searchTextStyle?.color?.withValues(
+                            alpha: .5,
+                          ) ??
+                          CupertinoDynamicColor.resolve(
+                            CupertinoColors.secondaryLabel,
+                            context,
+                          ),
+                      height: 1.3,
+                    ),
+                    // The background is painted by the surface.
+                    decoration: const BoxDecoration(),
+                    itemColor: labelColor,
+                    itemSize: iconSize ?? 22,
+                    padding: const EdgeInsetsDirectional.fromSTEB(8, 11, 8, 11),
+                    prefixInsets: EdgeInsetsDirectional.only(
+                      start: pickerTheme.padding * .75,
+                    ),
+                    suffixInsets: EdgeInsetsDirectional.only(
+                      end: pickerTheme.indent,
+                    ),
+                  ),
+                ),
+              ),
+
+              // --- Close button --- //
+              SizedBox.square(
+                dimension: _kIOS26ControlHeight,
+                child: _Surface(
+                  key: const ValueKey<String>('country_picker_close_button'),
+                  type: CountryPickerSurfaceType.closeButton,
+                  shape: const CircleBorder(),
+                  decoration: ShapeDecoration(
+                    color: color,
+                    shape: CircleBorder(side: side),
+                  ),
+                  onPressed: pop,
+                  semanticsLabel: localization.cancelButton,
+                  child: Center(
+                    child: Icon(
+                      CupertinoIcons.xmark,
+                      size: iconSize,
+                      color: labelColor,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Height of the iOS 26 header: controls with padding around them.
+  static double _headerIOS26Height(CountryPickerTheme pickerTheme) =>
+      pickerTheme.padding * 2 + _kIOS26ControlHeight;
+
   @override
   Widget build(BuildContext context) {
     final gestureInsets = MediaQuery.systemGestureInsetsOf(context);
     final viewPadding = MediaQuery.viewPaddingOf(context);
     final localization = CountryLocalizations.of(context);
     final pickerTheme = CountryPickerTheme.resolve(context);
+    final useIOS26Header =
+        pickerTheme.useIOS26 &&
+        (widget.showSearch ?? widget.showGroup ?? false);
     return Scaffold(
       backgroundColor: pickerTheme.backgroundColor,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
+        preferredSize: Size.fromHeight(
+          useIOS26Header ? _headerIOS26Height(pickerTheme) : kToolbarHeight,
+        ),
         child: ValueListenableBuilder(
           valueListenable: _controller,
-          builder: (_, state, _) => widget.showSearch ?? state.showGroup
-              ? _buildSearchBar()
-              : _buildDivider(),
+          builder: (_, state, _) => switch ((
+            widget.showSearch ?? state.showGroup,
+            pickerTheme.useIOS26,
+          )) {
+            (true, true) => _buildSearchBarIOS26(),
+            (true, false) => _buildSearchBar(),
+            (false, _) => _buildDivider(),
+          },
         ),
       ),
       body: GestureDetector(
@@ -296,11 +439,21 @@ class _CountriesListViewState extends State<CountryListView>
         child: CustomScrollView(
           controller: _scrollController,
           slivers: <Widget>[
+            // --- Gap under the iOS 26 header before scrolling --- //
+            if (useIOS26Header)
+              SliverToBoxAdapter(
+                child: SizedBox(height: pickerTheme.padding / 2),
+              ),
+
             // --- Title --- //
             ValueListenableBuilder(
               valueListenable: _controller,
               builder: (context, state, _) {
-                if (state.showGroup) {
+                // In the iOS 26 style the search field replaces the title.
+                final hideTitle =
+                    pickerTheme.useIOS26 &&
+                    (widget.showSearch ?? state.showGroup);
+                if (state.showGroup || hideTitle) {
                   return const SliverToBoxAdapter(child: SizedBox.shrink());
                 }
                 return SliverToBoxAdapter(
@@ -323,6 +476,7 @@ class _CountriesListViewState extends State<CountryListView>
             // --- Countries list --- //
             _CountriesList(
               controller: _controller,
+              favorites: widget.favorites,
               selected: widget.selected,
               onSelect: widget.onSelect,
             ),
@@ -350,6 +504,7 @@ class _CountriesList extends StatefulWidget {
   /// {@macro countries_list_view}
   const _CountriesList({
     required this.controller,
+    this.favorites,
     this.selected,
     this.onSelect,
     super.key, // ignore: unused_element_parameter
@@ -357,6 +512,9 @@ class _CountriesList extends StatefulWidget {
 
   /// Countries controller.
   final CountryController controller;
+
+  /// Favorite country codes (iso2) shown in a section above the letters.
+  final List<String>? favorites;
 
   /// {@macro select_country_notifier}
   final SelectedCountry? selected;
@@ -374,6 +532,15 @@ class _CountriesListState extends State<_CountriesList> {
       ValueNotifier<List<(String, List<Country>)>>([]);
   List<Country>? _countries;
   bool? _showGroup;
+
+  /// Fallback notifier used when [_CountriesList.selected] is not provided.
+  final ValueNotifier<Country?> _fallbackSelected = ValueNotifier<Country?>(
+    null,
+  );
+
+  /// The effective selected country notifier.
+  ValueListenable<Country?> get _selected =>
+      widget.selected ?? _fallbackSelected;
 
   @override
   void initState() {
@@ -395,6 +562,7 @@ class _CountriesListState extends State<_CountriesList> {
   @override
   void dispose() {
     widget.controller.removeListener(_groupByName);
+    _fallbackSelected.dispose();
     _groups.dispose();
     super.dispose();
   }
@@ -403,7 +571,9 @@ class _CountriesListState extends State<_CountriesList> {
   void _groupByName() {
     if (!mounted) return;
     final state = widget.controller.state;
-    if (!state.showGroup || !state.isIdle || state.countries.isEmpty) return;
+    // An empty list is grouped too, so a search without results
+    // does not keep showing the previous groups.
+    if (!state.showGroup || !state.isIdle) return;
 
     if (_showGroup == state.showGroup &&
         identical(_countries, state.countries)) {
@@ -417,25 +587,86 @@ class _CountriesListState extends State<_CountriesList> {
   }
 
   /// Build groups of countries.
+  ///
+  /// The leading "World Wide" option and favorites form a section with an
+  /// empty key, which is rendered without a letter header. The rest is
+  /// grouped by the first letter of the localized name. Equal letters are
+  /// merged even when not adjacent, so a letter header never repeats.
   List<(String, List<Country>)> _buildGroups(List<Country> countries) {
-    final result = <(String, List<Country>)>[];
-    List<Country>? bucket;
-    String? currentKey;
+    final favorites =
+        widget.favorites?.map((code) => code.trim().toUpperCase()).toSet() ??
+        const <String>{};
 
-    for (final country in countries) {
-      final name = country.nameLocalized;
-      if (name == null || name.isEmpty) continue;
-
-      final key = name.characters.first.toUpperCase();
-      if (key != currentKey) {
-        currentKey = key;
-        bucket = <Country>[];
-        result.add((key, bucket));
-      }
-      bucket?.add(country);
+    // The controller puts the pinned countries first. The block ends at the
+    // first country that is not pinned or is repeated, because favorites
+    // are listed again among all countries when phone codes are shown.
+    final pinned = <Country>[];
+    final seen = <String>{};
+    var index = 0;
+    for (; index < countries.length; index++) {
+      final country = countries[index];
+      final isPinned =
+          country.iswWorldWide ||
+          favorites.contains(country.countryCode.toUpperCase());
+      if (!isPinned || !seen.add(country.e164Key)) break;
+      pinned.add(country);
     }
 
-    return result;
+    final letters = <String, List<Country>>{};
+    for (final country in countries.skip(index)) {
+      final name = country.nameLocalized ?? country.name;
+      if (name.isEmpty) continue;
+      final key = name.characters.first.toUpperCase();
+      (letters[key] ??= <Country>[]).add(country);
+    }
+
+    return <(String, List<Country>)>[
+      if (pinned.isNotEmpty) ('', pinned),
+      for (final MapEntry(:key, :value) in letters.entries) (key, value),
+    ];
+  }
+
+  /// Notifies [_CountriesList.onSelect] and updates
+  /// [_CountriesList.selected].
+  void _onSelect(Country country) {
+    // Notify external listeners first so they can
+    // compare against the previous SelectedCountry
+    // value, then update the notifier itself.
+    widget.onSelect?.call(country);
+    widget.selected?.value = country;
+  }
+
+  /// Build an inset rounded section of [countries] in the iOS 26 style.
+  Widget _buildIOS26Section(List<Country> countries, Country? selected) {
+    final pickerTheme = CountryPickerTheme.resolve(context);
+    const radius = Radius.circular(_kIOS26SectionRadius);
+    return SliverPadding(
+      padding: EdgeInsets.symmetric(
+        horizontal: pickerTheme.padding,
+        vertical: pickerTheme.padding / 2,
+      ),
+      sliver: SliverList.builder(
+        itemCount: countries.length,
+        itemBuilder: (_, index) {
+          final country = countries[index];
+          return ClipRRect(
+            borderRadius: BorderRadius.vertical(
+              top: index == 0 ? radius : Radius.zero,
+              bottom: index == countries.length - 1 ? radius : Radius.zero,
+            ),
+            child: ColoredBox(
+              color: pickerTheme.secondaryBackgroundColor ?? Colors.transparent,
+              child: _CountryListTile.ios26(
+                key: ValueKey<String>(country.e164Key),
+                country: country,
+                selected: selected?.countryCode == country.countryCode,
+                onSelect: _onSelect,
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -451,6 +682,64 @@ class _CountriesListState extends State<_CountriesList> {
           );
         }
 
+        // --- Grouped countries (iOS 26 style) --- //
+        if (state.showGroup && pickerTheme.useIOS26) {
+          return ValueListenableBuilder(
+            valueListenable: _groups,
+            builder: (_, groups, _) => ValueListenableBuilder(
+              valueListenable: _selected,
+              builder: (_, selected, _) => SliverMainAxisGroup(
+                slivers: <Widget>[
+                  for (final (key, countries) in groups)
+                    SliverMainAxisGroup(
+                      slivers: <Widget>[
+                        if (key.isNotEmpty)
+                          SliverPersistentHeader(
+                            key: ValueKey<String>('header_$key'),
+                            floating: true,
+                            pinned: true,
+                            delegate: _SliverHeaderDelegate(
+                              maxHeight: 36,
+                              minHeight: 36,
+                              child: ColoredBox(
+                                key: ValueKey('header_child_$key'),
+                                color:
+                                    pickerTheme.backgroundColor ??
+                                    Colors.transparent,
+                                child: Padding(
+                                  padding: EdgeInsetsDirectional.only(
+                                    start: pickerTheme.padding * 2,
+                                    end: pickerTheme.padding * 2,
+                                    top: pickerTheme.padding / 2,
+                                  ),
+                                  child: Align(
+                                    alignment: AlignmentDirectional.centerStart,
+                                    child: Text(
+                                      key,
+                                      style: TextStyle(
+                                        height: 1,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
+                                        color: CupertinoDynamicColor.resolve(
+                                          CupertinoColors.secondaryLabel,
+                                          context,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        _buildIOS26Section(countries, selected),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+          );
+        }
+
         // --- Grouped countries --- //
         if (state.showGroup) {
           return ValueListenableBuilder(
@@ -460,40 +749,42 @@ class _CountriesListState extends State<_CountriesList> {
                 for (final (key, countries) in groups)
                   SliverMainAxisGroup(
                     slivers: <Widget>[
-                      SliverPersistentHeader(
-                        key: ValueKey<String>('header_$key'),
-                        floating: true,
-                        pinned: true,
-                        delegate: _SliverHeaderDelegate(
-                          maxHeight: 26,
-                          minHeight: 26,
-                          child: DecoratedBox(
-                            key: ValueKey('header_child_$key'),
-                            decoration: BoxDecoration(
-                              color: pickerTheme.secondaryBackgroundColor,
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: pickerTheme.padding,
+                      if (key.isNotEmpty)
+                        SliverPersistentHeader(
+                          key: ValueKey<String>('header_$key'),
+                          floating: true,
+                          pinned: true,
+                          delegate: _SliverHeaderDelegate(
+                            maxHeight: 26,
+                            minHeight: 26,
+                            child: DecoratedBox(
+                              key: ValueKey('header_child_$key'),
+                              decoration: BoxDecoration(
+                                color: pickerTheme.secondaryBackgroundColor,
                               ),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  key,
-                                  style: TextStyle(
-                                    height: 1,
-                                    fontSize: 15,
-                                    fontWeight: switch (defaultTargetPlatform) {
-                                      .iOS => .w700,
-                                      _ => .w600,
-                                    },
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: pickerTheme.padding,
+                                ),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    key,
+                                    style: TextStyle(
+                                      height: 1,
+                                      fontSize: 15,
+                                      fontWeight:
+                                          switch (defaultTargetPlatform) {
+                                            .iOS => .w700,
+                                            _ => .w600,
+                                          },
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
                       SliverList.separated(
                         itemCount: countries.length,
                         itemBuilder: (_, index) {
@@ -524,6 +815,15 @@ class _CountriesListState extends State<_CountriesList> {
 
               return SliverMainAxisGroup(slivers: slivers);
             },
+          );
+        }
+
+        // --- Plain countries list (iOS 26 style) --- //
+        if (pickerTheme.useIOS26) {
+          return ValueListenableBuilder(
+            valueListenable: _selected,
+            builder: (_, selected, _) =>
+                _buildIOS26Section(state.countries, selected),
           );
         }
 
@@ -572,6 +872,13 @@ class _CountryListTile extends StatelessWidget {
     Key? key,
   }) = _CountryListTile$Simple;
 
+  const factory _CountryListTile.ios26({
+    required Country country,
+    SelectCountryCallback? onSelect,
+    bool selected,
+    Key? key,
+  }) = _CountryListTile$IOS26;
+
   /// Use simple variant?
   final bool simple;
 
@@ -583,6 +890,61 @@ class _CountryListTile extends StatelessWidget {
 
   /// {@macro select_country_callback}
   final SelectCountryCallback? onSelect;
+
+  /// Handles a tap on the tile.
+  void _onTap(BuildContext context, String? nameLocalized) {
+    final useHapticFeedback = context
+        .findAncestorStateOfType<_CountriesListViewState>()
+        ?.widget
+        .useHapticFeedback;
+
+    if (useHapticFeedback ?? true) {
+      HapticFeedback.heavyImpact().ignore();
+    }
+    onSelect?.call(country.copyWith(nameLocalized: nameLocalized));
+    Navigator.of(context).maybePop<void>();
+  }
+
+  /// Wraps [child] into an [InkWell] with the Cupertino-like highlight.
+  ///
+  /// The tile is exposed to accessibility services as a single button
+  /// labelled with the country name and phone code, so decorative parts
+  /// such as the emoji flag are not announced.
+  ///
+  /// [semanticsSelected] is `null` when the tile does not track selection.
+  Widget _buildInkWell(
+    BuildContext context, {
+    required String? nameLocalized,
+    required Widget child,
+    bool? semanticsSelected,
+  }) => Semantics(
+    container: true,
+    button: true,
+    selected: semanticsSelected,
+    label: country.phoneCode.isEmpty
+        ? nameLocalized ?? country.name
+        : '${nameLocalized ?? country.name}, +${country.phoneCode}',
+    child: Material(
+      // Add Material Widget with transparent color
+      // so the ripple effect of InkWell will show on tap
+      color: Colors.transparent,
+      type: MaterialType.card,
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          highlightColor: CupertinoDynamicColor.resolve(
+            CupertinoColors.systemGrey4,
+            context,
+          ),
+          hoverColor: Colors.transparent,
+          splashColor: Colors.transparent,
+        ),
+        child: InkWell(
+          onTap: () => _onTap(context, nameLocalized),
+          child: ExcludeSemantics(child: child),
+        ),
+      ),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -617,10 +979,11 @@ class _CountryListTile extends StatelessWidget {
           _Flag(country),
           SizedBox(width: pickerTheme.padding / 4),
           Flexible(child: title),
-          Text(
-            ' (${isRtl ? '' : '+'}${country.phoneCode}${isRtl ? '+' : ''})',
-            style: effectiveTextStyle,
-          ),
+          if (country.phoneCode.isNotEmpty)
+            Text(
+              ' (${isRtl ? '' : '+'}${country.phoneCode}${isRtl ? '+' : ''})',
+              style: effectiveTextStyle,
+            ),
         ],
       ),
     };
@@ -631,6 +994,7 @@ class _CountryListTile extends StatelessWidget {
         color: pickerTheme.accentColor,
       ),
       (true, false) => null,
+      (false, _) when country.phoneCode.isEmpty => null,
       (false, _) => Padding(
         padding: EdgeInsets.only(top: pickerTheme.padding / 5),
         child: Text(
@@ -646,68 +1010,116 @@ class _CountryListTile extends StatelessWidget {
       ),
     };
 
-    return Material(
-      // Add Material Widget with transparent color
-      // so the ripple effect of InkWell will show on tap
-      color: Colors.transparent,
-      type: MaterialType.card,
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          highlightColor: CupertinoDynamicColor.resolve(
-            CupertinoColors.systemGrey4,
-            context,
-          ),
-          hoverColor: Colors.transparent,
-          splashColor: Colors.transparent,
+    return _buildInkWell(
+      context,
+      nameLocalized: nameLocalized,
+      semanticsSelected: simple ? selected : null,
+      child: Padding(
+        padding: EdgeInsets.only(
+          top: simple ? pickerTheme.padding / 1.25 : pickerTheme.padding / 2,
+          bottom: simple
+              ? pickerTheme.padding / 1.25
+              : pickerTheme.padding / 1.35,
+          left: pickerTheme.padding,
+          right: pickerTheme.padding,
         ),
-        child: InkWell(
-          onTap: () {
-            final useHapticFeedback = context
-                .findAncestorStateOfType<_CountriesListViewState>()
-                ?.widget
-                .useHapticFeedback;
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  // --- Title of the country --- //
+                  effectiveTitle,
 
-            if (useHapticFeedback ?? true) {
-              HapticFeedback.heavyImpact().ignore();
-            }
-            onSelect?.call(country.copyWith(nameLocalized: nameLocalized));
-            Navigator.of(context).maybePop<void>();
-          },
-          child: Padding(
-            padding: EdgeInsets.only(
-              top: simple
-                  ? pickerTheme.padding / 1.25
-                  : pickerTheme.padding / 2,
-              bottom: simple
-                  ? pickerTheme.padding / 1.25
-                  : pickerTheme.padding / 1.35,
-              left: pickerTheme.padding,
-              right: pickerTheme.padding,
+                  // --- Country name --- //
+                  if (!simple) ...[
+                    Text(country.name, style: pickerTheme.secondaryTextStyle),
+                  ],
+                ],
+              ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Flexible(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      // --- Title of the country --- //
-                      effectiveTitle,
+            if (effectiveTrailing != null) effectiveTrailing,
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-                      // --- Country name --- //
-                      if (!simple) ...[
-                        Text(
-                          country.name,
-                          style: pickerTheme.secondaryTextStyle,
-                        ),
-                      ],
-                    ],
+/// Country tile in the iOS 26 style:
+/// round flag, phone code column and the localized country name.
+/// {@macro countries_list_view}
+class _CountryListTile$IOS26 extends _CountryListTile {
+  /// {@macro countries_list_view}
+  const _CountryListTile$IOS26({
+    required super.country,
+    super.selected = false,
+    super.onSelect,
+    super.key, // ignore: unused_element_parameter
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final pickerTheme = CountryPickerTheme.resolve(context);
+    final localization = CountryLocalizations.of(context);
+    final effectiveTextStyle = pickerTheme.textStyle?.copyWith(height: 1.2);
+
+    final nameLocalized = localization.getFormatedCountryNameByCode(
+      country.countryCode,
+    );
+
+    return _buildInkWell(
+      context,
+      nameLocalized: nameLocalized,
+      semanticsSelected: selected,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: pickerTheme.padding,
+          vertical: pickerTheme.padding * 1.1,
+        ),
+        child: Row(
+          spacing: pickerTheme.padding,
+          children: <Widget>[
+            // --- Round flag --- //
+            _Flag$IOS26(country, selected: selected),
+
+            // --- Phone code --- //
+            SizedBox(
+              width: _kIOS26PhoneCodeWidth,
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    country.phoneCode.isEmpty
+                        ? ''
+                        : '${isRtl ? '' : '+'}${country.phoneCode}'
+                              '${isRtl ? '+' : ''}',
+                    maxLines: 1,
+                    style: effectiveTextStyle?.copyWith(
+                      color: CupertinoDynamicColor.resolve(
+                        CupertinoColors.secondaryLabel,
+                        context,
+                      ),
+                    ),
                   ),
                 ),
-                if (effectiveTrailing != null) effectiveTrailing,
-              ],
+              ),
             ),
-          ),
+
+            // --- Country name --- //
+            Expanded(
+              child: Text(
+                nameLocalized ?? country.name,
+                style: effectiveTextStyle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -755,6 +1167,222 @@ class _Flag extends StatelessWidget {
   }
 }
 
+/// Round flag widget with an optional checkmark badge used
+/// in the iOS 26 style.
+/// {@macro countries_list_view}
+class _Flag$IOS26 extends StatelessWidget {
+  /// {@macro countries_list_view}
+  const _Flag$IOS26(
+    this.country, {
+    this.selected = false,
+    super.key, // ignore: unused_element_parameter
+  });
+
+  /// Current country.
+  final Country country;
+
+  /// Whether to show the checkmark badge.
+  final bool selected;
+
+  /// Whether the platform emoji font can draw flag glyphs.
+  ///
+  /// Windows' Segoe UI Emoji has no flags and renders the regional
+  /// indicator pair as two letters. Flutter web always falls back to
+  /// Noto Color Emoji, which has flags on every host OS.
+  static bool get _hasFlagGlyphs =>
+      kIsWeb || defaultTargetPlatform != TargetPlatform.windows;
+
+  /// How much the emoji glyph is scaled to cover the whole circle.
+  ///
+  /// Emoji flags are rectangular glyphs with transparent padding.
+  /// Apple Color Emoji (iOS, macOS) draws waving flags with extra space
+  /// around them, so it needs a bigger scale than the flat Noto flags
+  /// used on Android, Linux and the web.
+  static double _scaleOf(Country country) {
+    if (country.iswWorldWide) return 1.0;
+    if (kIsWeb) return 1.6;
+    return switch (defaultTargetPlatform) {
+      TargetPlatform.iOS || TargetPlatform.macOS => 2.0,
+      _ => 1.6,
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final pickerTheme = CountryPickerTheme.resolve(context);
+    final badgeColor = CupertinoDynamicColor.resolve(
+      CupertinoColors.label,
+      context,
+    );
+    final badgeBorderColor =
+        pickerTheme.secondaryBackgroundColor ??
+        CupertinoDynamicColor.resolve(
+          CupertinoColors.secondarySystemBackground,
+          context,
+        );
+
+    final emoji = country.iswWorldWide
+        ? '\uD83C\uDF0D'
+        : CountryUtil.countryCodeToEmoji(country.countryCode);
+    final scale = _scaleOf(country);
+
+    final Widget flag;
+    if (country.iswWorldWide || _hasFlagGlyphs) {
+      flag = OverflowBox(
+        maxWidth: double.infinity,
+        maxHeight: double.infinity,
+        child: Text(
+          emoji,
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: _kIOS26FlagSize * scale, height: 1),
+        ),
+      );
+    } else {
+      // No flag glyphs: show the ISO code in a tinted circle instead
+      // of a cropped pair of regional indicator letters.
+      flag = ColoredBox(
+        color: CupertinoDynamicColor.resolve(
+          CupertinoColors.tertiarySystemFill,
+          context,
+        ),
+        child: Center(
+          child: Text(
+            country.countryCode.toUpperCase(),
+            style: TextStyle(
+              height: 1,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: CupertinoDynamicColor.resolve(
+                CupertinoColors.secondaryLabel,
+                context,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return SizedBox.square(
+      dimension: _kIOS26FlagSize,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: <Widget>[
+          ClipOval(
+            child: SizedBox.square(dimension: _kIOS26FlagSize, child: flag),
+          ),
+          if (selected)
+            PositionedDirectional(
+              end: -4,
+              bottom: -4,
+              child: DecoratedBox(
+                key: const ValueKey<String>('country_picker_selected_badge'),
+                decoration: BoxDecoration(
+                  color: badgeColor,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: badgeBorderColor, width: 2),
+                ),
+                child: SizedBox.square(
+                  dimension: 20,
+                  child: Icon(
+                    CupertinoIcons.checkmark_alt,
+                    size: 14,
+                    color: badgeBorderColor,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A control surface of the iOS 26 style.
+///
+/// Delegates painting to [CountryPickerTheme.surfaceBuilder] and handles
+/// taps, the pressed state and accessibility itself, so a custom builder
+/// only has to draw the surface.
+class _Surface extends StatefulWidget {
+  const _Surface({
+    required this.type,
+    required this.shape,
+    required this.decoration,
+    required this.child,
+    this.onPressed,
+    this.semanticsLabel,
+    super.key,
+  });
+
+  final CountryPickerSurfaceType type;
+  final ShapeBorder shape;
+  final ShapeDecoration decoration;
+  final VoidCallback? onPressed;
+  final String? semanticsLabel;
+  final Widget child;
+
+  @override
+  State<_Surface> createState() => _SurfaceState();
+}
+
+class _SurfaceState extends State<_Surface> {
+  final ValueNotifier<bool> _pressed = ValueNotifier<bool>(false);
+
+  @override
+  void dispose() {
+    _pressed.dispose();
+    super.dispose();
+  }
+
+  /// Paints [CountryPickerSurface.decoration] and dims the content on press.
+  static Widget _defaultBuilder(
+    BuildContext context,
+    CountryPickerSurface surface,
+    Widget child,
+  ) => DecoratedBox(
+    decoration: surface.decoration,
+    child: !surface.isInteractive
+        ? child
+        : ValueListenableBuilder<bool>(
+            valueListenable: surface.pressed,
+            builder: (_, pressed, child) => AnimatedOpacity(
+              opacity: pressed ? .4 : 1,
+              duration: const Duration(milliseconds: 100),
+              child: child,
+            ),
+            child: child,
+          ),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final builder =
+        CountryPickerTheme.resolve(context).surfaceBuilder ?? _defaultBuilder;
+    final surface = CountryPickerSurface(
+      type: widget.type,
+      shape: widget.shape,
+      decoration: widget.decoration,
+      pressed: _pressed,
+      onPressed: widget.onPressed,
+    );
+    final result = builder(context, surface, widget.child);
+    final onPressed = widget.onPressed;
+    if (onPressed == null) return result;
+    return Semantics(
+      container: true,
+      button: true,
+      label: widget.semanticsLabel,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: (_) => _pressed.value = true,
+        onTapUp: (_) => _pressed.value = false,
+        onTapCancel: () => _pressed.value = false,
+        onTap: onPressed,
+        child: ExcludeSemantics(child: result),
+      ),
+    );
+  }
+}
+
 class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
   /// {@macro countries_list_view}
   _SliverHeaderDelegate({
@@ -772,7 +1400,7 @@ class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
     BuildContext context,
     double shrinkOffset,
     bool overlapsContent,
-  ) => SizedBox.expand(child: child);
+  ) => Semantics(header: true, child: SizedBox.expand(child: child));
 
   @override
   double get minExtent => minHeight;

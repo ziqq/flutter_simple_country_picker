@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+- **ADDED**: `CountryPickerTheme.useIOS26` to render the country picker in the iOS 26 style: pill-shaped search field with a round close button, inset rounded list section, circular flags, phone code before the country name, and a checkmark badge on the selected flag, [#15](https://github.com/ziqq/flutter_simple_country_picker/issues/15)
+- **ADDED**: in the iOS 26 style scrolling the list expands the sheet, which snaps to its initial or full height
+- **ADDED**: `CountryPickerTheme.surfaceBuilder` and `CountryPickerSurface` to paint custom surfaces (e.g. liquid glass) behind the iOS 26 search field and close button
+- **ADDED**: semantics for country tiles, group headers and the `CountryPhoneInput` country buttons; emoji flags are no longer announced
+- **FIXED**: `showWorldWide` was accepted but ignored; the World Wide option is now shown on top of the list
+- **FIXED**: in grouped mode favorites no longer split a letter group into two sections with the same header
+- **FIXED**: in grouped mode a search without results no longer keeps showing the previous groups
+- **FIXED**: in grouped mode countries without a localized name are no longer dropped
+
 ## 0.11.1
 - **DEPRECATED**: `useHaptickFeedback`; use `useHapticFeedback` instead. When both are provided, `useHapticFeedback` takes precedence
 - **ADDED**: `useHapticFeedback` to `showCountryPicker`, `CountryPickerOptions`, `CountryPhoneInput`, and `CountryPhoneInput.extended`

@@ -18,6 +18,9 @@ import 'package:flutter_simple_country_picker/src/theme/country_picker_theme.dar
 import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart';
 import 'package:meta/meta.dart';
 
+/// Top corner radius of the bottom sheet in the iOS 26 style.
+const double _kIOS26SheetRadius = 38.0;
+
 /// {@template show_country_picker}
 /// Shows a bottom sheet containing a list of countries to select one.
 ///
@@ -125,44 +128,64 @@ void showCountryPicker({
   final effectiveUseHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
 
   final pickerTheme = CountryPickerTheme.resolve(context);
-  final radius = Radius.circular(pickerTheme.radius);
+  final radius = Radius.circular(
+    pickerTheme.useIOS26 ? _kIOS26SheetRadius : pickerTheme.radius,
+  );
   final borderRadius = BorderRadius.only(topLeft: radius, topRight: radius);
 
-  Widget builder(BuildContext context, [ScrollController? scrollController]) =>
-      DraggableScrollableSheet(
-        expand: effectiveExpand,
-        initialChildSize: initialChildSize ?? (effectiveExpand ? 1.0 : .65),
-        minChildSize:
-            minChildSize ??
-            (effectiveExpand ? (shouldCloseOnSwipeDown ? .99 : 1.0) : .65),
-        builder: (context, sheetScrollController) => ClipRRect(
+  Widget buildSheet(
+    BuildContext context, [
+    ScrollController? scrollController,
+  ]) => DraggableScrollableSheet(
+    expand: effectiveExpand,
+    // Settle at the initial or the full height, like iOS 26 detents.
+    snap: pickerTheme.useIOS26,
+    initialChildSize: initialChildSize ?? (effectiveExpand ? 1.0 : .65),
+    minChildSize:
+        minChildSize ??
+        (effectiveExpand ? (shouldCloseOnSwipeDown ? .99 : 1.0) : .65),
+    builder: (context, sheetScrollController) => ClipRRect(
+      borderRadius: borderRadius,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
           borderRadius: borderRadius,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: borderRadius,
-              color: pickerTheme.backgroundColor,
-            ),
-            child: CountryListView(
-              exclude: exclude,
-              favorites: favorites,
-              filter: filter,
-              selected: selected,
-              onSelect: onSelect,
-              adaptive: adaptive,
-              autofocus: autofocus || useAutofocus,
-              showGroup: showGroup,
-              showSearch: showSearch,
-              showPhoneCode: showPhoneCode,
-              showWorldWide: showWorldWide,
-              useRootNavigator: useRootNavigator,
-              useHapticFeedback: effectiveUseHapticFeedback,
-              scrollController: isScrollControlled
-                  ? null
-                  : scrollController ?? sheetScrollController,
-            ),
-          ),
+          color: CountryPickerTheme.resolve(context).backgroundColor,
         ),
-      );
+        child: CountryListView(
+          exclude: exclude,
+          favorites: favorites,
+          filter: filter,
+          selected: selected,
+          onSelect: onSelect,
+          adaptive: adaptive,
+          autofocus: autofocus || useAutofocus,
+          showGroup: showGroup,
+          showSearch: showSearch,
+          showPhoneCode: showPhoneCode,
+          showWorldWide: showWorldWide,
+          useRootNavigator: useRootNavigator,
+          useHapticFeedback: effectiveUseHapticFeedback,
+          // In the iOS 26 style scrolling the list also expands the
+          // sheet, like native sheets do.
+          scrollController: isScrollControlled && !pickerTheme.useIOS26
+              ? null
+              : scrollController ?? sheetScrollController,
+        ),
+      ),
+    ),
+  );
+
+  /// In the iOS 26 style the sheet is presented as an elevated surface,
+  /// so dynamic Cupertino colors resolve to their elevated variants.
+  Widget builder(BuildContext context, [ScrollController? scrollController]) =>
+      pickerTheme.useIOS26
+      ? CupertinoUserInterfaceLevel(
+          data: CupertinoUserInterfaceLevelData.elevated,
+          child: Builder(
+            builder: (context) => buildSheet(context, scrollController),
+          ),
+        )
+      : buildSheet(context, scrollController);
 
   /// Provide haptic feedback on opening the picker, if enabled.
   if (effectiveUseHapticFeedback) HapticFeedback.heavyImpact().ignore();

@@ -312,7 +312,111 @@ void main() => group('CountryPickerTheme -', () {
         'padding',
         'indent',
         'radius',
+        'useIOS26',
       ]),
     );
   });
+
+  group('surfaceBuilder -', () {
+    test('defaults to null and is set via constructor and copyWith', () {
+      expect(CountryPickerTheme().surfaceBuilder, isNull);
+      expect(
+        CountryPickerTheme(surfaceBuilder: _surface).surfaceBuilder,
+        same(_surface),
+      );
+      expect(
+        CountryPickerTheme().copyWith(surfaceBuilder: _surface).surfaceBuilder,
+        same(_surface),
+      );
+      expect(
+        CountryPickerTheme(surfaceBuilder: _surface).copyWith().surfaceBuilder,
+        same(_surface),
+      );
+    });
+
+    test('participates in equality by identity', () {
+      expect(
+        CountryPickerTheme(surfaceBuilder: _surface),
+        CountryPickerTheme(surfaceBuilder: _surface),
+      );
+      expect(
+        CountryPickerTheme(surfaceBuilder: _surface) ==
+            CountryPickerTheme(surfaceBuilder: _otherSurface),
+        isFalse,
+      );
+    });
+
+    test('lerp switches builder at the midpoint', () {
+      final a = CountryPickerTheme(surfaceBuilder: _surface);
+      final b = CountryPickerTheme(surfaceBuilder: _otherSurface);
+      expect(
+        (a.lerp(b, .4) as CountryPickerTheme).surfaceBuilder,
+        same(_surface),
+      );
+      expect(
+        (a.lerp(b, .6) as CountryPickerTheme).surfaceBuilder,
+        same(_otherSurface),
+      );
+    });
+
+    test('debugFillProperties reports presence', () {
+      final builder = DiagnosticPropertiesBuilder();
+      CountryPickerTheme(surfaceBuilder: _surface).debugFillProperties(builder);
+      expect(builder.properties.map((p) => p.name), contains('surfaceBuilder'));
+    });
+  });
+
+  group('useIOS26 -', () {
+    test('defaults to false', () {
+      expect(CountryPickerTheme().useIOS26, isFalse);
+      expect(CountryPickerTheme(useIOS26: null).useIOS26, isFalse);
+    });
+
+    test('is set via constructor and copyWith', () {
+      final theme = CountryPickerTheme(useIOS26: true);
+      expect(theme.useIOS26, isTrue);
+      expect(theme.copyWith().useIOS26, isTrue);
+      expect(theme.copyWith(useIOS26: false).useIOS26, isFalse);
+      expect(CountryPickerTheme().copyWith(useIOS26: true).useIOS26, isTrue);
+    });
+
+    test('participates in equality and hashCode', () {
+      final a = CountryPickerTheme(useIOS26: true);
+      final b = CountryPickerTheme(useIOS26: true);
+      final c = CountryPickerTheme();
+      expect(a, equals(b));
+      expect(a.hashCode, b.hashCode);
+      expect(a == c, isFalse);
+    });
+
+    test('lerp switches value at the midpoint', () {
+      final off = CountryPickerTheme();
+      final on = CountryPickerTheme(useIOS26: true);
+      expect((off.lerp(on, .49) as CountryPickerTheme).useIOS26, isFalse);
+      expect((off.lerp(on, .5) as CountryPickerTheme).useIOS26, isTrue);
+      expect((on.lerp(off, .49) as CountryPickerTheme).useIOS26, isTrue);
+    });
+
+    test('debugFillProperties describes enabled flag', () {
+      final builder = DiagnosticPropertiesBuilder();
+      CountryPickerTheme(useIOS26: true).debugFillProperties(builder);
+      final property = builder.properties.firstWhere(
+        (p) => p.name == 'useIOS26',
+      );
+      expect(property.value, isTrue);
+      expect(property.toDescription(), 'iOS 26 style');
+    });
+  });
 });
+
+Widget _surface(
+  BuildContext context,
+  CountryPickerSurface surface,
+  Widget child,
+) => child;
+
+Widget _otherSurface(
+  BuildContext context,
+  CountryPickerSurface surface,
+  Widget child,
+) => child;

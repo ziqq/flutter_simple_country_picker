@@ -56,6 +56,26 @@ void _$defaultCountryPhoneInputTest() {
       expect(textField.decoration?.hintText, Country.ru().mask);
     });
 
+    testWidgets('country button announces country instead of emoji', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => const Scaffold(body: CountryPhoneInput()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.getSemantics(find.bySemanticsLabel('Russia, +7')),
+        isSemantics(isButton: true, hasTapAction: true),
+      );
+      expect(find.bySemanticsLabel(Country.ru().flagEmoji), findsNothing);
+      handle.dispose();
+    });
+
     group('initialization -', () {
       testWidgets('should display the default country '
           'if no initial country is provided', (tester) async {
@@ -920,6 +940,29 @@ void _$extendedCountryPhoneInputTest() {
   const buttonKey = ValueKey<String>('country_picker_button_extended');
   const phoneFieldKey = ValueKey<String>('country_phone_input_extended');
   group(r'CountryPhoneInput$Extended -', () {
+    testWidgets('country button announces country instead of emoji', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => const Scaffold(body: CountryPhoneInput.extended()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.getSemantics(find.bySemanticsLabel('Russia, +7')),
+        isSemantics(isButton: true, hasTapAction: true),
+      );
+      expect(
+        find.bySemanticsLabel(RegExp(Country.ru().flagEmoji)),
+        findsNothing,
+      );
+      handle.dispose();
+    });
+
     testWidgets('should use numeric keyboard type', (tester) async {
       await tester.pumpWidget(
         createWidgetUnderTest(
