@@ -596,6 +596,123 @@ void main() => group('showCountryPicker -', () {
     });
   });
 
+  group('grouping -', () {
+    Future<void> pumpPicker(
+      WidgetTester tester, {
+      required List<String> filter,
+      List<String>? favorites,
+      bool useIOS26 = false,
+      bool showPhoneCode = false,
+      bool showWorldWide = false,
+      bool? showGroup = true,
+      List<String>? exclude,
+    }) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          builder: (context) => Scaffold(
+            body: InheritedCountryPickerTheme(
+              data: CountryPickerTheme(useIOS26: useIOS26),
+              child: Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () => showCountryPicker(
+                    context: context,
+                    filter: exclude == null ? filter : null,
+                    exclude: exclude,
+                    favorites: favorites,
+                    showGroup: showGroup,
+                    showPhoneCode: showPhoneCode,
+                    showWorldWide: showWorldWide,
+                  ),
+                  child: const Text('Show Picker'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Show Picker'));
+      await tester.pumpAndSettle();
+    }
+
+    Finder header(String letter) =>
+        find.byKey(ValueKey<String>('header_$letter'), skipOffstage: false);
+
+    for (final useIOS26 in <bool>[false, true]) {
+      for (final showPhoneCode in <bool>[false, true]) {
+        testWidgets('favorites get their own section without a header and '
+            'letters are not repeated (useIOS26: $useIOS26, '
+            'showPhoneCode: $showPhoneCode)', (tester) async {
+          await pumpPicker(
+            tester,
+            filter: const ['RU', 'RO', 'AU'],
+            favorites: const ['RU'],
+            useIOS26: useIOS26,
+            showPhoneCode: showPhoneCode,
+          );
+
+          expect(header('Р'), findsOneWidget);
+          expect(header('А'), findsOneWidget);
+          expect(header(''), findsNothing);
+
+          // The favorite is listed above every letter header.
+          final favoriteTop = tester.getTopLeft(find.text('Россия').first).dy;
+          expect(favoriteTop, lessThan(tester.getTopLeft(find.text('А')).dy));
+          expect(
+            find.text('Россия'),
+            showPhoneCode ? findsNWidgets(2) : findsOneWidget,
+          );
+        });
+      }
+    }
+
+    testWidgets('search without results clears the groups', (tester) async {
+      await pumpPicker(tester, filter: const ['RU', 'AU']);
+      expect(header('Р'), findsOneWidget);
+
+      await tester.enterText(find.byType(CupertinoSearchTextField), 'zzz');
+      await tester.pumpAndSettle();
+
+      expect(header('Р'), findsNothing);
+      expect(find.text('Россия'), findsNothing);
+    });
+
+    for (final useIOS26 in <bool>[false, true]) {
+      for (final showGroup in <bool>[false, true]) {
+        testWidgets('showWorldWide adds the option on top without a phone '
+            'code (useIOS26: $useIOS26, showGroup: $showGroup)', (
+          tester,
+        ) async {
+          await pumpPicker(
+            tester,
+            filter: const ['RU'],
+            showWorldWide: true,
+            useIOS26: useIOS26,
+            showGroup: showGroup,
+          );
+
+          expect(find.text('Мировой'), findsOneWidget);
+          expect(
+            tester.getTopLeft(find.text('Мировой')).dy,
+            lessThan(tester.getTopLeft(find.text('Россия')).dy),
+          );
+          expect(find.text('+'), findsNothing);
+          expect(find.textContaining('(+)'), findsNothing);
+        });
+      }
+    }
+
+    testWidgets('showWorldWide respects exclude', (tester) async {
+      await pumpPicker(
+        tester,
+        filter: const [],
+        exclude: const ['WW'],
+        showWorldWide: true,
+      );
+      expect(find.text('Мировой'), findsNothing);
+    });
+  });
+
   group('surfaceBuilder -', () {
     Future<void> pumpPicker(
       WidgetTester tester,
