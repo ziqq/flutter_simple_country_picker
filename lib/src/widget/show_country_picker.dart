@@ -138,6 +138,8 @@ void showCountryPicker({
     ScrollController? scrollController,
   ]) => DraggableScrollableSheet(
     expand: effectiveExpand,
+    // Settle at the initial or the full height, like iOS 26 detents.
+    snap: pickerTheme.useIOS26,
     initialChildSize: initialChildSize ?? (effectiveExpand ? 1.0 : .65),
     minChildSize:
         minChildSize ??
@@ -163,7 +165,9 @@ void showCountryPicker({
           showWorldWide: showWorldWide,
           useRootNavigator: useRootNavigator,
           useHapticFeedback: effectiveUseHapticFeedback,
-          scrollController: isScrollControlled
+          // In the iOS 26 style scrolling the list also expands the
+          // sheet, like native sheets do.
+          scrollController: isScrollControlled && !pickerTheme.useIOS26
               ? null
               : scrollController ?? sheetScrollController,
         ),

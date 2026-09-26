@@ -713,6 +713,72 @@ void main() => group('showCountryPicker -', () {
     });
   });
 
+  group('iOS 26 sheet behavior -', () {
+    Future<void> pumpPicker(
+      WidgetTester tester, {
+      required bool useIOS26,
+    }) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          builder: (context) => Scaffold(
+            body: InheritedCountryPickerTheme(
+              data: CountryPickerTheme(useIOS26: useIOS26),
+              child: Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () =>
+                      showCountryPicker(context: context, showSearch: true),
+                  child: const Text('Show Picker'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Show Picker'));
+      await tester.pumpAndSettle();
+    }
+
+    for (final useIOS26 in <bool>[false, true]) {
+      testWidgets('scrolling the list ${useIOS26 ? 'expands' : 'keeps'} '
+          'the sheet (useIOS26: $useIOS26)', (tester) async {
+        await pumpPicker(tester, useIOS26: useIOS26);
+        final search = find.byType(CupertinoSearchTextField);
+        final before = tester.getTopLeft(search).dy;
+
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -200));
+        await tester.pumpAndSettle();
+
+        final after = tester.getTopLeft(search).dy;
+        if (useIOS26) {
+          expect(after, lessThan(before));
+        } else {
+          expect(after, before);
+        }
+      });
+    }
+
+    testWidgets('list is clipped below a solid header', (tester) async {
+      await pumpPicker(tester, useIOS26: true);
+
+      final scaffold = tester.widget<Scaffold>(
+        find
+            .ancestor(
+              of: find.byType(CustomScrollView),
+              matching: find.byType(Scaffold),
+            )
+            .first,
+      );
+      expect(scaffold.extendBodyBehindAppBar, isFalse);
+      expect(
+        tester.getTopLeft(find.byType(CustomScrollView)).dy,
+        greaterThan(
+          tester.getBottomLeft(find.byType(CupertinoSearchTextField)).dy,
+        ),
+      );
+    });
+  });
+
   group('surfaceBuilder -', () {
     Future<void> pumpPicker(
       WidgetTester tester,
