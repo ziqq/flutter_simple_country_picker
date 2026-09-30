@@ -3,7 +3,7 @@
  * Date: 24 June 2024
  */
 
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 
 /// {@template country_util}
 /// CountryUtil class.
@@ -14,11 +14,20 @@ import 'package:meta/meta.dart';
 /// [countryCodeToEmoji] - Convert country code to emoji flag.
 /// [foldDiacritics] - Remove diacritics from letters.
 /// [compareNames] - Compare country names for display order.
+/// [hasFlagEmoji] - Whether the platform emoji font draws flags.
 /// {@endtemplate}
 @internal
 abstract final class CountryUtil {
   /// {@macro country_util}
   const CountryUtil._();
+
+  /// Whether the platform emoji font can draw flag glyphs.
+  ///
+  /// Windows' Segoe UI Emoji has no flags and renders the regional
+  /// indicator pair as two letters. Flutter web always falls back to
+  /// Noto Color Emoji, which has flags on every host OS.
+  static bool get hasFlagEmoji =>
+      kIsWeb || defaultTargetPlatform != TargetPlatform.windows;
 
   static final _codeRegExp = RegExp(r'^[A-Za-z]{2}$');
 

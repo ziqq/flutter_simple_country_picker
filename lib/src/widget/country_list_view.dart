@@ -1163,6 +1163,38 @@ class _Flag extends StatelessWidget {
   Widget build(BuildContext context) {
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     final pickerTheme = CountryPickerTheme.resolve(context);
+    final flagSize = pickerTheme.flagSize ?? 22;
+    if (!country.iswWorldWide && !CountryUtil.hasFlagEmoji) {
+      // No flag glyphs: show the ISO code in a flag-shaped badge instead
+      // of a pair of regional indicator letters.
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          color: CupertinoDynamicColor.resolve(
+            CupertinoColors.tertiarySystemFill,
+            context,
+          ),
+          borderRadius: const BorderRadius.all(Radius.circular(4)),
+        ),
+        child: SizedBox(
+          width: flagSize * 1.4,
+          height: flagSize,
+          child: Center(
+            child: Text(
+              country.countryCode.toUpperCase(),
+              style: TextStyle(
+                height: 1,
+                fontSize: flagSize * .5,
+                fontWeight: FontWeight.w600,
+                color: CupertinoDynamicColor.resolve(
+                  CupertinoColors.secondaryLabel,
+                  context,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     return SizedBox(
       // The conditional 50 prevents irregularities
       // caused by the flags in RTL mode
@@ -1171,7 +1203,7 @@ class _Flag extends StatelessWidget {
         country.iswWorldWide
             ? '\uD83C\uDF0D'
             : CountryUtil.countryCodeToEmoji(country.countryCode),
-        style: TextStyle(fontSize: pickerTheme.flagSize ?? 22, height: 1),
+        style: TextStyle(fontSize: flagSize, height: 1),
       ),
     );
   }
@@ -1193,14 +1225,6 @@ class _Flag$IOS26 extends StatelessWidget {
 
   /// Whether to show the checkmark badge.
   final bool selected;
-
-  /// Whether the platform emoji font can draw flag glyphs.
-  ///
-  /// Windows' Segoe UI Emoji has no flags and renders the regional
-  /// indicator pair as two letters. Flutter web always falls back to
-  /// Noto Color Emoji, which has flags on every host OS.
-  static bool get _hasFlagGlyphs =>
-      kIsWeb || defaultTargetPlatform != TargetPlatform.windows;
 
   /// How much the emoji glyph is scaled to cover the whole circle.
   ///
@@ -1237,7 +1261,7 @@ class _Flag$IOS26 extends StatelessWidget {
     final scale = _scaleOf(country);
 
     final Widget flag;
-    if (country.iswWorldWide || _hasFlagGlyphs) {
+    if (country.iswWorldWide || CountryUtil.hasFlagEmoji) {
       flag = OverflowBox(
         maxWidth: double.infinity,
         maxHeight: double.infinity,
