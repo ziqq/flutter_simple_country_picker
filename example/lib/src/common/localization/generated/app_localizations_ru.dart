@@ -21,8 +21,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get title => 'Preview';
 
   @override
-  String get description =>
-      'Проверьте код страны и введите свой номер телефона.';
+  String get description => 'Проверьте код страны и введите свой номер телефона.';
 
   @override
   String get nextLable => 'Далее';

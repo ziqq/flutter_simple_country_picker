@@ -21,8 +21,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get title => 'Preview';
 
   @override
-  String get description =>
-      'Перевірте код країни та введіть свій номер телефону.';
+  String get description => 'Перевірте код країни та введіть свій номер телефону.';
 
   @override
   String get nextLable => 'Далі';

@@ -21,8 +21,7 @@ class AppLocalizationsNb extends AppLocalizations {
   String get title => 'Preview';
 
   @override
-  String get description =>
-      'Sjekk landskoden og skriv inn telefonnummeret ditt.';
+  String get description => 'Sjekk landskoden og skriv inn telefonnummeret ditt.';
 
   @override
   String get nextLable => 'Neste';

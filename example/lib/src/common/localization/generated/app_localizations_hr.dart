@@ -21,8 +21,7 @@ class AppLocalizationsHr extends AppLocalizations {
   String get title => 'Preview';
 
   @override
-  String get description =>
-      'Provjerite kôd zemlje i unesite svoj broj telefona.';
+  String get description => 'Provjerite kôd zemlje i unesite svoj broj telefona.';
 
   @override
   String get nextLable => 'Dalje';
