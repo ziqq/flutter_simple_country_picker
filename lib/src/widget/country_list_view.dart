@@ -622,7 +622,11 @@ class _CountriesListState extends State<_CountriesList> {
     for (final country in countries.skip(index)) {
       final name = country.nameLocalized ?? country.name;
       if (name.isEmpty) continue;
-      final key = name.characters.first.toUpperCase();
+      // Accented letters are grouped with their base letter,
+      // e.g. `Österreich` under `O`.
+      final key = CountryUtil.foldDiacritics(
+        name.characters.first,
+      ).toUpperCase();
       (letters[key] ??= <Country>[]).add(country);
     }
 

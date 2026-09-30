@@ -648,6 +648,46 @@ void main() => group('showCountryPicker -', () {
     }
   });
 
+  group('diacritics -', () {
+    testWidgets('accented names are sorted and grouped with the base letter', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('de'),
+          builder: (context) => Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => showCountryPicker(
+                  context: context,
+                  filter: const ['AT', 'OM', 'CY', 'EG', 'AL'],
+                  showGroup: true,
+                ),
+                child: const Text('Show Picker'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Show Picker'));
+      await tester.pumpAndSettle();
+
+      double top(String text) => tester.getTopLeft(find.text(text).first).dy;
+      expect(top('Ägypten'), lessThan(top('Albanien')));
+      expect(top('Oman'), lessThan(top('Österreich')));
+      expect(top('Österreich'), lessThan(top('Zypern')));
+      expect(
+        find.byKey(const ValueKey<String>('header_Ö'), skipOffstage: false),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const ValueKey<String>('header_Ä'), skipOffstage: false),
+        findsNothing,
+      );
+    });
+  });
+
   group('grouping -', () {
     Future<void> pumpPicker(
       WidgetTester tester, {

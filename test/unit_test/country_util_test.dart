@@ -84,5 +84,53 @@ void main() {
         expect(() => CountryUtil.countryCodeToEmoji('@#'), throwsArgumentError);
       });
     });
+
+    group('foldDiacritics() -', () {
+      test('removes Latin diacritics', () {
+        expect(CountryUtil.foldDiacritics('Österreich'), 'Osterreich');
+        expect(CountryUtil.foldDiacritics('Égypte'), 'Egypte');
+        expect(CountryUtil.foldDiacritics('États-Unis'), 'Etats-Unis');
+        expect(CountryUtil.foldDiacritics('Curaçao'), 'Curacao');
+        expect(CountryUtil.foldDiacritics('Łódź'), 'Lodz');
+        expect(CountryUtil.foldDiacritics('Ålesund'), 'Alesund');
+      });
+
+      test('expands ligatures', () {
+        expect(CountryUtil.foldDiacritics('Straße'), 'Strasse');
+        expect(CountryUtil.foldDiacritics('Færøerne'), 'Faeroerne');
+      });
+
+      test('folds Greek tonos and Cyrillic Ё but keeps Й', () {
+        expect(CountryUtil.foldDiacritics('Ελλάδα'), 'Ελλαδα');
+        expect(CountryUtil.foldDiacritics('Ёлка'), 'Елка');
+        expect(CountryUtil.foldDiacritics('Йемен'), 'Йемен');
+      });
+
+      test('returns the same instance when nothing changes', () {
+        const value = 'Russia 🇷🇺';
+        expect(identical(CountryUtil.foldDiacritics(value), value), isTrue);
+      });
+
+      test('keeps surrogate pairs around folded letters', () {
+        expect(
+          CountryUtil.foldDiacritics('🇦🇹 Österreich'),
+          '🇦🇹 Osterreich',
+        );
+      });
+    });
+
+    group('compareNames() -', () {
+      test('sorts accented names among their base letter', () {
+        final names = ['Zypern', 'Österreich', 'Oman', 'Ägypten', 'Albanien']
+          ..sort(CountryUtil.compareNames);
+        expect(names, ['Ägypten', 'Albanien', 'Oman', 'Österreich', 'Zypern']);
+      });
+
+      test('ignores case and breaks ties by the original string', () {
+        expect(CountryUtil.compareNames('a', 'B'), lessThan(0));
+        expect(CountryUtil.compareNames('Å', 'A'), greaterThan(0));
+        expect(CountryUtil.compareNames('A', 'A'), 0);
+      });
+    });
   });
 }
