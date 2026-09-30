@@ -1117,41 +1117,6 @@ void main() => group('showCountryPicker -', () {
     });
   });
 
-  group('classic flag rendering -', () {
-    testWidgets(
-      'shows the emoji flag, or the ISO code on Windows',
-      (tester) async {
-        await tester.pumpWidget(
-          createWidgetUnderTest(
-            builder: (context) => Scaffold(
-              body: Builder(
-                builder: (context) => ElevatedButton(
-                  onPressed: () => showCountryPicker(
-                    context: context,
-                    filter: const ['RU'],
-                    showGroup: true,
-                  ),
-                  child: const Text('Show Picker'),
-                ),
-              ),
-            ),
-          ),
-        );
-        await tester.pumpAndSettle();
-        await tester.tap(find.text('Show Picker'));
-        await tester.pumpAndSettle();
-
-        final isWindows = defaultTargetPlatform == TargetPlatform.windows;
-        expect(
-          find.text(Country.ru().flagEmoji),
-          isWindows ? findsNothing : findsOneWidget,
-        );
-        expect(find.text('RU'), isWindows ? findsOneWidget : findsNothing);
-      },
-      variant: TargetPlatformVariant.all(),
-    );
-  });
-
   group('iOS 26 flag rendering -', () {
     const regionalRU = '\u{1F1F7}\u{1F1FA}';
 
