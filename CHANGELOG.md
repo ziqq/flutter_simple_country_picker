@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- **FIXED**: on Windows, where the emoji font has no flags, the classic picker and `CountryPhoneInput` show the ISO code (and `CountryPhoneInput.extended` only the name) instead of two letters, [#19](https://github.com/ziqq/flutter_simple_country_picker/issues/19)
 - **FIXED**: countries with diacritics (e.g. `Österreich`, `Égypte`) are sorted and grouped with their base letter instead of after `Z`, and search ignores diacritics, [#18](https://github.com/ziqq/flutter_simple_country_picker/issues/18)
 - **DEPRECATED**: `CountryPickerTheme.indent`; it no longer has an effect and will be removed in v1.0.0. Gaps between controls, the search clear icon inset and the vertical padding of `CountryPhoneInput.extended` are now derived from `padding` (`padding / 1.6`, `padding / 3.2`); with the default `padding` the layout is unchanged, [#17](https://github.com/ziqq/flutter_simple_country_picker/issues/17)
 - **ADDED**: `CountryPickerStyle` and `CountryPickerTheme.style`; `CountryPickerStyle.ios26` renders the country picker in the iOS 26 style: pill-shaped search field with a round close button, inset rounded list section, circular flags, phone code before the country name, and a checkmark badge on the selected flag, [#15](https://github.com/ziqq/flutter_simple_country_picker/issues/15)
