@@ -19,6 +19,38 @@ void _$defaultCountryPhoneInputTest() {
   const buttonKey = ValueKey<String>('country_picker_phone_code');
   const phoneFieldKey = ValueKey<String>('country_phone_number');
   group('CountryPhoneInput -', () {
+    testWidgets('forwards surfaceBuilder to the picker', (tester) async {
+      final types = <CountryPickerSurfaceType>{};
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => Scaffold(
+            body: InheritedCountryPickerTheme(
+              data: CountryPickerTheme(useIOS26: true),
+              child: CountryPhoneInput(
+                showSearch: true,
+                surfaceBuilder: (context, surface, child) {
+                  types.add(surface.type);
+                  return child;
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(
+        find.byKey(const ValueKey<String>('country_picker_phone_code')),
+      );
+      await tester.pumpAndSettle();
+
+      expect(types, <CountryPickerSurfaceType>{
+        CountryPickerSurfaceType.searchField,
+        CountryPickerSurfaceType.closeButton,
+      });
+    });
+
     testWidgets('should use numeric keyboard type', (tester) async {
       await tester.pumpWidget(
         createWidgetUnderTest(
@@ -940,6 +972,38 @@ void _$extendedCountryPhoneInputTest() {
   const buttonKey = ValueKey<String>('country_picker_button_extended');
   const phoneFieldKey = ValueKey<String>('country_phone_input_extended');
   group(r'CountryPhoneInput$Extended -', () {
+    testWidgets('forwards surfaceBuilder to the picker', (tester) async {
+      final types = <CountryPickerSurfaceType>{};
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => Scaffold(
+            body: InheritedCountryPickerTheme(
+              data: CountryPickerTheme(useIOS26: true),
+              child: CountryPhoneInput.extended(
+                showSearch: true,
+                surfaceBuilder: (context, surface, child) {
+                  types.add(surface.type);
+                  return child;
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(
+        find.byKey(const ValueKey<String>('country_picker_button_extended')),
+      );
+      await tester.pumpAndSettle();
+
+      expect(types, <CountryPickerSurfaceType>{
+        CountryPickerSurfaceType.searchField,
+        CountryPickerSurfaceType.closeButton,
+      });
+    });
+
     testWidgets('country button announces country instead of emoji', (
       tester,
     ) async {

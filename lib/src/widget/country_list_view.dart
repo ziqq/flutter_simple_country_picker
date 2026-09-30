@@ -53,6 +53,7 @@ class CountryListView extends StatefulWidget {
     this.useHapticFeedback = true,
     this.showGroup,
     this.showSearch,
+    this.surfaceBuilder,
     super.key,
   }) : assert(
          filter == null || exclude == null,
@@ -92,6 +93,9 @@ class CountryListView extends StatefulWidget {
 
   /// Scroll controller.
   final ScrollController? scrollController;
+
+  /// {@macro country_picker_surface_builder}
+  final CountryPickerSurfaceBuilder? surfaceBuilder;
 
   /// {@macro select_country_callback}
   final SelectCountryCallback? onSelect;
@@ -336,6 +340,7 @@ class _CountriesListViewState extends State<CountryListView>
               // --- Search field --- //
               Expanded(
                 child: _Surface(
+                  builder: widget.surfaceBuilder,
                   type: CountryPickerSurfaceType.searchField,
                   shape: const StadiumBorder(),
                   decoration: ShapeDecoration(
@@ -378,6 +383,7 @@ class _CountriesListViewState extends State<CountryListView>
               SizedBox.square(
                 dimension: _kIOS26ControlHeight,
                 child: _Surface(
+                  builder: widget.surfaceBuilder,
                   key: const ValueKey<String>('country_picker_close_button'),
                   type: CountryPickerSurfaceType.closeButton,
                   shape: const CircleBorder(),
@@ -1299,7 +1305,7 @@ class _Flag$IOS26 extends StatelessWidget {
 
 /// A control surface of the iOS 26 style.
 ///
-/// Delegates painting to [CountryPickerTheme.surfaceBuilder] and handles
+/// Delegates painting to [builder] and handles
 /// taps, the pressed state and accessibility itself, so a custom builder
 /// only has to draw the surface.
 class _Surface extends StatefulWidget {
@@ -1308,10 +1314,13 @@ class _Surface extends StatefulWidget {
     required this.shape,
     required this.decoration,
     required this.child,
+    this.builder,
     this.onPressed,
     this.semanticsLabel,
     super.key,
   });
+
+  final CountryPickerSurfaceBuilder? builder;
 
   final CountryPickerSurfaceType type;
   final ShapeBorder shape;
@@ -1355,8 +1364,7 @@ class _SurfaceState extends State<_Surface> {
 
   @override
   Widget build(BuildContext context) {
-    final builder =
-        CountryPickerTheme.resolve(context).surfaceBuilder ?? _defaultBuilder;
+    final builder = widget.builder ?? _defaultBuilder;
     final surface = CountryPickerSurface(
       type: widget.type,
       shape: widget.shape,

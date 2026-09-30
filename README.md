@@ -472,7 +472,7 @@ Leave the colors unset to let them resolve from the ambient Cupertino theme, inc
 
 In the iOS 26 style scrolling the list also expands the sheet, and the list is clipped below a solid header.
 
-To paint your own surfaces behind the search field and the close button (for example a shader-based liquid glass), pass a `surfaceBuilder`. It receives the control content without the background; taps and accessibility stay handled by the picker.
+To paint your own surfaces behind the search field and the close button (for example a shader-based liquid glass), pass a `surfaceBuilder` to `showCountryPicker`, `CountryPhoneInput` or `CountryPhoneInput.extended`, like `TextField.contextMenuBuilder`. It receives the control content without the background; taps and accessibility stay handled by the picker.
 
 ```dart
 Widget glassSurface(
@@ -485,7 +485,7 @@ Widget glassSurface(
   child: child,
 );
 
-CountryPickerTheme(useIOS26: true, surfaceBuilder: glassSurface)
+showCountryPicker(context: context, surfaceBuilder: glassSurface);
 ```
 
 

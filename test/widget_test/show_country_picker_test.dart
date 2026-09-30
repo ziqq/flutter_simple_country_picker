@@ -788,13 +788,14 @@ void main() => group('showCountryPicker -', () {
         createWidgetUnderTest(
           builder: (context) => Scaffold(
             body: InheritedCountryPickerTheme(
-              data: CountryPickerTheme(useIOS26: true, surfaceBuilder: builder),
+              data: CountryPickerTheme(useIOS26: true),
               child: Builder(
                 builder: (context) => ElevatedButton(
                   onPressed: () => showCountryPicker(
                     context: context,
                     filter: const ['RU'],
                     showSearch: true,
+                    surfaceBuilder: builder,
                   ),
                   child: const Text('Show Picker'),
                 ),
