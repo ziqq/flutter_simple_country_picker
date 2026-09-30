@@ -16,6 +16,7 @@ import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_simple_country_picker/src/constant/typedef.dart';
 import 'package:flutter_simple_country_picker/src/theme/country_picker_theme.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart';
+import 'package:flutter_simple_country_picker/src/widget/country_picker_surface.dart';
 import 'package:meta/meta.dart';
 
 /// Top corner radius of the bottom sheet in the iOS 26 style.
@@ -85,6 +86,10 @@ const double _kIOS26SheetRadius = 38.0;
 ///
 /// An optional [minChildSize] argument can be used
 /// to set the minimum size of the bottom sheet.
+///
+/// An optional [surfaceBuilder] argument can be used to paint custom
+/// surfaces behind the search field and the close button
+/// in the iOS 26 style.
 /// {@endtemplate}
 void showCountryPicker({
   required BuildContext context,
@@ -122,6 +127,7 @@ void showCountryPicker({
   bool? showSearch,
   double? initialChildSize,
   double? minChildSize,
+  CountryPickerSurfaceBuilder? surfaceBuilder,
 }) {
   final isiOS = defaultTargetPlatform == TargetPlatform.iOS;
   final effectiveExpand = expand || (adaptive && isiOS);
@@ -165,6 +171,7 @@ void showCountryPicker({
           showWorldWide: showWorldWide,
           useRootNavigator: useRootNavigator,
           useHapticFeedback: effectiveUseHapticFeedback,
+          surfaceBuilder: surfaceBuilder,
           // In the iOS 26 style scrolling the list also expands the
           // sheet, like native sheets do.
           scrollController: isScrollControlled && !pickerTheme.useIOS26
@@ -254,6 +261,7 @@ class CountryPickerOptions {
     this.showSearch,
     this.initialChildSize,
     this.minChildSize,
+    this.surfaceBuilder,
   }) : useHaptickFeedback = useHapticFeedback ?? useHaptickFeedback,
        useHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
 
@@ -337,4 +345,7 @@ class CountryPickerOptions {
 
   /// Min child size for the modal bottom sheet.
   final double? minChildSize;
+
+  /// {@macro country_picker_surface_builder}
+  final CountryPickerSurfaceBuilder? surfaceBuilder;
 }

@@ -42,6 +42,7 @@ class CountryPhoneInput extends StatefulWidget {
     this.showSearch,
     this.initialChildSize,
     this.minChildSize,
+    this.surfaceBuilder,
     super.key,
   }) : useHaptickFeedback = useHapticFeedback ?? useHaptickFeedback,
        useHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
@@ -80,6 +81,7 @@ class CountryPhoneInput extends StatefulWidget {
     bool? useHapticFeedback,
     double? initialChildSize,
     double? minChildSize,
+    CountryPickerSurfaceBuilder? surfaceBuilder,
     Key? key,
   }) = CountryPhoneInput$Extended;
 
@@ -166,6 +168,9 @@ class CountryPhoneInput extends StatefulWidget {
 
   /// Called when the country is changed.
   final ValueChanged<Country>? onCountryChanged;
+
+  /// {@macro country_picker_surface_builder}
+  final CountryPickerSurfaceBuilder? surfaceBuilder;
 
   @override
   State<CountryPhoneInput> createState() => _CountryPhoneInputState();
@@ -408,6 +413,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                       isScrollControlled: widget.isScrollControlled,
                       initialChildSize: widget.initialChildSize,
                       minChildSize: widget.minChildSize,
+                      surfaceBuilder: widget.surfaceBuilder,
                       selected: _countryController,
                       onSelect: _onSelect,
                     )
@@ -518,6 +524,7 @@ class CountryPhoneInput$Extended extends CountryPhoneInput {
     super.useHapticFeedback,
     super.initialChildSize,
     super.minChildSize,
+    super.surfaceBuilder,
     super.key,
   });
 
@@ -580,6 +587,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                       shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
                       initialChildSize: widget.initialChildSize,
                       minChildSize: widget.minChildSize,
+                      surfaceBuilder: widget.surfaceBuilder,
                       selected: _countryController,
                       onSelect: _onSelect,
                     )
