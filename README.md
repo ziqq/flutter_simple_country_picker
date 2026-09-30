@@ -158,6 +158,7 @@ Register it in the delegate by creating your own `LocalizationsDelegate<CountryL
 
 Upgrade notes are documented in [MIGRATION.md](MIGRATION.md).
 
+- `0.12.0`: [Migrate to 0.12.0](MIGRATION.md#to-0120)
 - `0.11.1`: [Migrate to 0.11.1](MIGRATION.md#to-0111)
 - `0.10.0`: [Migrate to 0.10.0](MIGRATION.md#to-0100)
 - `0.9.0`: [Migrate to 0.9.0](MIGRATION.md#to-090)

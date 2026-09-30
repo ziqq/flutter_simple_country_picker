@@ -5,9 +5,40 @@ behavior-changing API updates.
 
 ## Contents
 
+- [To 0.12.0](#to-0120)
 - [To 0.11.1](#to-0111)
 - [To 0.10.0](#to-0100)
 - [To 0.9.0](#to-090)
+
+## To 0.12.0
+
+`CountryPickerTheme.indent` is deprecated and no longer has an effect. The
+spacings it used to control are derived from `padding` (`padding / 1.6` for
+gaps between controls and vertical padding, `padding / 3.2` for the classic
+search clear icon inset). With the default `padding: 16` the layout is
+unchanged. Remove `indent` from your theme and adjust `padding` instead.
+
+Before 0.12.0:
+
+```dart
+CountryPickerTheme(padding: 16, indent: 10);
+```
+
+After 0.12.0:
+
+```dart
+CountryPickerTheme(padding: 16);
+```
+
+`indent` will be removed in v1.0.0.
+
+Behavior changes to be aware of:
+
+- `showWorldWide` now adds the World Wide option; it was ignored before.
+- In grouped mode favorites are shown in a leading section without a letter
+  header.
+- Names with diacritics are sorted with their base letter, and search ignores
+  diacritics.
 
 ## To 0.11.1
 
