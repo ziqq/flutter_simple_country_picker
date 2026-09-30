@@ -4,7 +4,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
-import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 import 'package:meta/meta.dart';
 
 /// {@template country_phone_input}
@@ -428,23 +427,12 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                       mainAxisSize: MainAxisSize.min,
                       spacing: 3,
                       children: <Widget>[
-                        if (!CountryUtil.hasFlagEmoji)
-                          // No flag glyphs on this platform (Windows):
-                          // show the ISO code instead of two letters.
-                          Text(
-                            selected.countryCode.toUpperCase(),
-                            style: textStyle?.copyWith(
-                              color: CupertinoDynamicColor.resolve(
-                                CupertinoColors.secondaryLabel,
-                                context,
-                              ),
-                            ),
-                          )
-                        else if (selected.flagEmoji.isNotEmpty)
+                        if (selected.flagEmoji.isNotEmpty) ...[
                           Text(
                             selected.flagEmoji,
                             style: textStyle?.copyWith(letterSpacing: 0),
                           ),
+                        ],
                         Text('+${selected.phoneCode}', style: textStyle),
                       ],
                     ),
@@ -607,9 +595,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
               child: SizedBox(
                 width: double.infinity,
                 child: Text(
-                  // Without flag glyphs (Windows) only the name is shown.
-                  '${CountryUtil.hasFlagEmoji ? '${selected.flagEmoji} ' : ''}'
-                  '${localization.getFormatedCountryNameByCode(selected.countryCode)}',
+                  '${selected.flagEmoji} ${localization.getFormatedCountryNameByCode(selected.countryCode)}',
                   // Announce the country instead of the emoji flag name.
                   semanticsLabel: _semanticsLabelOf(localization, selected),
                   style: textStyle?.copyWith(fontWeight: FontWeight.w500),
