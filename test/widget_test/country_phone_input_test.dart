@@ -88,6 +88,36 @@ void _$defaultCountryPhoneInputTest() {
       expect(textField.decoration?.hintText, Country.ru().mask);
     });
 
+    testWidgets('gap between code button and phone field is derived '
+        'from padding and ignores indent', (tester) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => Scaffold(
+            body: InheritedCountryPickerTheme(
+              data: CountryPickerTheme(
+                padding: 24,
+                // ignore: deprecated_member_use_from_same_package
+                indent: 40,
+              ),
+              child: const CountryPhoneInput(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final buttonEnd = tester.getTopRight(find.byKey(buttonKey)).dx;
+      final fieldStart = tester
+          .getTopLeft(
+            find.byKey(
+              const ValueKey<String>('country_phone_number_background'),
+            ),
+          )
+          .dx;
+      expect(fieldStart - buttonEnd, 24 / 1.6);
+    });
+
     testWidgets('country button announces country instead of emoji', (
       tester,
     ) async {

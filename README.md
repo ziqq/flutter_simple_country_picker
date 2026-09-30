@@ -452,7 +452,6 @@ MaterialApp(
         flagSize: 22,
         inputHeight: 56,
         padding: 16,
-        indent: 10,
         radius: 12,
       ),
     ],

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- **DEPRECATED**: `CountryPickerTheme.indent`; it no longer has an effect and will be removed in v1.0.0. Gaps between controls, the search clear icon inset and the vertical padding of `CountryPhoneInput.extended` are now derived from `padding` (`padding / 1.6`, `padding / 3.2`); with the default `padding` the layout is unchanged, [#17](https://github.com/ziqq/flutter_simple_country_picker/issues/17)
 - **ADDED**: `CountryPickerStyle` and `CountryPickerTheme.style`; `CountryPickerStyle.ios26` renders the country picker in the iOS 26 style: pill-shaped search field with a round close button, inset rounded list section, circular flags, phone code before the country name, and a checkmark badge on the selected flag, [#15](https://github.com/ziqq/flutter_simple_country_picker/issues/15)
 - **ADDED**: in the iOS 26 style scrolling the list expands the sheet, which snaps to its initial or full height
 - **ADDED**: `surfaceBuilder` to `showCountryPicker`, `CountryPhoneInput` and `CountryPhoneInput.extended`, and `CountryPickerSurface`, to paint custom surfaces (e.g. liquid glass) behind the iOS 26 search field and close button
