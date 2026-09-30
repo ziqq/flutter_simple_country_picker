@@ -14,6 +14,7 @@ import 'package:flutter/material.dart'
         Colors;
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_simple_country_picker/src/constant/typedef.dart';
+import 'package:flutter_simple_country_picker/src/theme/country_picker_style.dart';
 import 'package:flutter_simple_country_picker/src/theme/country_picker_theme.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_picker_surface.dart';
@@ -135,7 +136,9 @@ void showCountryPicker({
 
   final pickerTheme = CountryPickerTheme.resolve(context);
   final radius = Radius.circular(
-    pickerTheme.useIOS26 ? _kIOS26SheetRadius : pickerTheme.radius,
+    pickerTheme.style == CountryPickerStyle.ios26
+        ? _kIOS26SheetRadius
+        : pickerTheme.radius,
   );
   final borderRadius = BorderRadius.only(topLeft: radius, topRight: radius);
 
@@ -145,7 +148,7 @@ void showCountryPicker({
   ]) => DraggableScrollableSheet(
     expand: effectiveExpand,
     // Settle at the initial or the full height, like iOS 26 detents.
-    snap: pickerTheme.useIOS26,
+    snap: pickerTheme.style == CountryPickerStyle.ios26,
     initialChildSize: initialChildSize ?? (effectiveExpand ? 1.0 : .65),
     minChildSize:
         minChildSize ??
@@ -174,7 +177,9 @@ void showCountryPicker({
           surfaceBuilder: surfaceBuilder,
           // In the iOS 26 style scrolling the list also expands the
           // sheet, like native sheets do.
-          scrollController: isScrollControlled && !pickerTheme.useIOS26
+          scrollController:
+              isScrollControlled &&
+                  pickerTheme.style != CountryPickerStyle.ios26
               ? null
               : scrollController ?? sheetScrollController,
         ),
@@ -185,7 +190,7 @@ void showCountryPicker({
   /// In the iOS 26 style the sheet is presented as an elevated surface,
   /// so dynamic Cupertino colors resolve to their elevated variants.
   Widget builder(BuildContext context, [ScrollController? scrollController]) =>
-      pickerTheme.useIOS26
+      pickerTheme.style == CountryPickerStyle.ios26
       ? CupertinoUserInterfaceLevel(
           data: CupertinoUserInterfaceLevelData.elevated,
           child: Builder(

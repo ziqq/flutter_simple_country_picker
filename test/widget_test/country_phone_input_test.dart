@@ -26,7 +26,7 @@ void _$defaultCountryPhoneInputTest() {
           locale: const Locale('en'),
           builder: (_) => Scaffold(
             body: InheritedCountryPickerTheme(
-              data: CountryPickerTheme(useIOS26: true),
+              data: CountryPickerTheme(style: CountryPickerStyle.ios26),
               child: CountryPhoneInput(
                 showSearch: true,
                 surfaceBuilder: (context, surface, child) {
@@ -979,7 +979,7 @@ void _$extendedCountryPhoneInputTest() {
           locale: const Locale('en'),
           builder: (_) => Scaffold(
             body: InheritedCountryPickerTheme(
-              data: CountryPickerTheme(useIOS26: true),
+              data: CountryPickerTheme(style: CountryPickerStyle.ios26),
               child: CountryPhoneInput.extended(
                 showSearch: true,
                 surfaceBuilder: (context, surface, child) {

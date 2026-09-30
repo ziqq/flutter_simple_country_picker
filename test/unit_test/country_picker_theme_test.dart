@@ -312,28 +312,31 @@ void main() => group('CountryPickerTheme -', () {
         'padding',
         'indent',
         'radius',
-        'useIOS26',
+        'style',
       ]),
     );
   });
 
-  group('useIOS26 -', () {
-    test('defaults to false', () {
-      expect(CountryPickerTheme().useIOS26, isFalse);
-      expect(CountryPickerTheme(useIOS26: null).useIOS26, isFalse);
+  group('style -', () {
+    const ios26 = CountryPickerStyle.ios26;
+    const classic = CountryPickerStyle.classic;
+
+    test('defaults to classic', () {
+      expect(CountryPickerTheme().style, classic);
+      expect(CountryPickerTheme(style: null).style, classic);
     });
 
     test('is set via constructor and copyWith', () {
-      final theme = CountryPickerTheme(useIOS26: true);
-      expect(theme.useIOS26, isTrue);
-      expect(theme.copyWith().useIOS26, isTrue);
-      expect(theme.copyWith(useIOS26: false).useIOS26, isFalse);
-      expect(CountryPickerTheme().copyWith(useIOS26: true).useIOS26, isTrue);
+      final theme = CountryPickerTheme(style: ios26);
+      expect(theme.style, ios26);
+      expect(theme.copyWith().style, ios26);
+      expect(theme.copyWith(style: classic).style, classic);
+      expect(CountryPickerTheme().copyWith(style: ios26).style, ios26);
     });
 
     test('participates in equality and hashCode', () {
-      final a = CountryPickerTheme(useIOS26: true);
-      final b = CountryPickerTheme(useIOS26: true);
+      final a = CountryPickerTheme(style: ios26);
+      final b = CountryPickerTheme(style: ios26);
       final c = CountryPickerTheme();
       expect(a, equals(b));
       expect(a.hashCode, b.hashCode);
@@ -341,21 +344,19 @@ void main() => group('CountryPickerTheme -', () {
     });
 
     test('lerp switches value at the midpoint', () {
-      final off = CountryPickerTheme();
-      final on = CountryPickerTheme(useIOS26: true);
-      expect((off.lerp(on, .49) as CountryPickerTheme).useIOS26, isFalse);
-      expect((off.lerp(on, .5) as CountryPickerTheme).useIOS26, isTrue);
-      expect((on.lerp(off, .49) as CountryPickerTheme).useIOS26, isTrue);
+      final from = CountryPickerTheme();
+      final to = CountryPickerTheme(style: ios26);
+      expect((from.lerp(to, .49) as CountryPickerTheme).style, classic);
+      expect((from.lerp(to, .5) as CountryPickerTheme).style, ios26);
+      expect((to.lerp(from, .49) as CountryPickerTheme).style, ios26);
     });
 
-    test('debugFillProperties describes enabled flag', () {
+    test('debugFillProperties describes the style', () {
       final builder = DiagnosticPropertiesBuilder();
-      CountryPickerTheme(useIOS26: true).debugFillProperties(builder);
-      final property = builder.properties.firstWhere(
-        (p) => p.name == 'useIOS26',
-      );
-      expect(property.value, isTrue);
-      expect(property.toDescription(), 'iOS 26 style');
+      CountryPickerTheme(style: ios26).debugFillProperties(builder);
+      final property = builder.properties.firstWhere((p) => p.name == 'style');
+      expect(property.value, ios26);
+      expect(property.toDescription(), 'ios26');
     });
   });
 });

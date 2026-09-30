@@ -190,9 +190,9 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
                 child: const Text('Show picker (adaptive)'),
               ),
               InheritedCountryPickerTheme(
-                // Only `useIOS26` is set, so colors still resolve
+                // Only `style` is set, so colors still resolve
                 // from the ambient theme.
-                data: CountryPickerTheme(useIOS26: true),
+                data: CountryPickerTheme(style: CountryPickerStyle.ios26),
                 child: Builder(
                   builder: (context) => CupertinoButton(
                     key: const ValueKey<String>('ios26_picker_button'),

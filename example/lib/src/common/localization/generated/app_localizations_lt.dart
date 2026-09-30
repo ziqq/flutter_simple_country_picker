@@ -21,7 +21,8 @@ class AppLocalizationsLt extends AppLocalizations {
   String get title => 'Preview';
 
   @override
-  String get description => 'Patikrinkite šalies kodą ir įveskite savo telefono numerį.';
+  String get description =>
+      'Patikrinkite šalies kodą ir įveskite savo telefono numerį.';
 
   @override
   String get nextLable => 'Kitas';

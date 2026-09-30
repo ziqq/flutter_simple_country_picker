@@ -420,7 +420,7 @@ class _CountriesListViewState extends State<CountryListView>
     final localization = CountryLocalizations.of(context);
     final pickerTheme = CountryPickerTheme.resolve(context);
     final useIOS26Header =
-        pickerTheme.useIOS26 &&
+        pickerTheme.style == CountryPickerStyle.ios26 &&
         (widget.showSearch ?? widget.showGroup ?? false);
     return Scaffold(
       backgroundColor: pickerTheme.backgroundColor,
@@ -432,7 +432,7 @@ class _CountriesListViewState extends State<CountryListView>
           valueListenable: _controller,
           builder: (_, state, _) => switch ((
             widget.showSearch ?? state.showGroup,
-            pickerTheme.useIOS26,
+            pickerTheme.style == CountryPickerStyle.ios26,
           )) {
             (true, true) => _buildSearchBarIOS26(),
             (true, false) => _buildSearchBar(),
@@ -457,7 +457,7 @@ class _CountriesListViewState extends State<CountryListView>
               builder: (context, state, _) {
                 // In the iOS 26 style the search field replaces the title.
                 final hideTitle =
-                    pickerTheme.useIOS26 &&
+                    pickerTheme.style == CountryPickerStyle.ios26 &&
                     (widget.showSearch ?? state.showGroup);
                 if (state.showGroup || hideTitle) {
                   return const SliverToBoxAdapter(child: SizedBox.shrink());
@@ -689,7 +689,7 @@ class _CountriesListState extends State<_CountriesList> {
         }
 
         // --- Grouped countries (iOS 26 style) --- //
-        if (state.showGroup && pickerTheme.useIOS26) {
+        if (state.showGroup && pickerTheme.style == CountryPickerStyle.ios26) {
           return ValueListenableBuilder(
             valueListenable: _groups,
             builder: (_, groups, _) => ValueListenableBuilder(
@@ -825,7 +825,7 @@ class _CountriesListState extends State<_CountriesList> {
         }
 
         // --- Plain countries list (iOS 26 style) --- //
-        if (pickerTheme.useIOS26) {
+        if (pickerTheme.style == CountryPickerStyle.ios26) {
           return ValueListenableBuilder(
             valueListenable: _selected,
             builder: (_, selected, _) =>
