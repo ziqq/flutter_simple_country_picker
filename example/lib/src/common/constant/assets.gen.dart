@@ -13,12 +13,10 @@ class $AssetsIconsGen {
   const $AssetsIconsGen();
 
   /// File path: assets/icons/icon-1000x1000.jpeg
-  AssetGenImage get icon1000x1000 =>
-      const AssetGenImage('assets/icons/icon-1000x1000.jpeg');
+  AssetGenImage get icon1000x1000 => const AssetGenImage('assets/icons/icon-1000x1000.jpeg');
 
   /// File path: assets/icons/icon-1024x1024.jpg
-  AssetGenImage get icon1024x1024 =>
-      const AssetGenImage('assets/icons/icon-1024x1024.jpg');
+  AssetGenImage get icon1024x1024 => const AssetGenImage('assets/icons/icon-1024x1024.jpg');
 
   /// List of all assets
   List<AssetGenImage> get values => [icon1000x1000, icon1024x1024];

@@ -21,8 +21,7 @@ class AppLocalizationsEt extends AppLocalizations {
   String get title => 'Preview';
 
   @override
-  String get description =>
-      'Kontrollige riigikoodi ja sisestage oma telefoninumber.';
+  String get description => 'Kontrollige riigikoodi ja sisestage oma telefoninumber.';
 
   @override
   String get nextLable => 'Järgmine';

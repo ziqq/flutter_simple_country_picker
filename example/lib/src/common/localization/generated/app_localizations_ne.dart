@@ -21,8 +21,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get title => 'टेट्राडका';
 
   @override
-  String get description =>
-      'देशको कोड जाँच गर्नुहोस् र तपाईंको फोन नम्बर प्रविष्ट गर्नुहोस्।';
+  String get description => 'देशको कोड जाँच गर्नुहोस् र तपाईंको फोन नम्बर प्रविष्ट गर्नुहोस्।';
 
   @override
   String get nextLable => 'अर्को';

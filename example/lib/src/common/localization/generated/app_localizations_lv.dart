@@ -21,8 +21,7 @@ class AppLocalizationsLv extends AppLocalizations {
   String get title => 'Preview';
 
   @override
-  String get description =>
-      'Pārbaudiet valsts kodu un ievadiet savu tālruņa numuru.';
+  String get description => 'Pārbaudiet valsts kodu un ievadiet savu tālruņa numuru.';
 
   @override
   String get nextLable => 'Nākamais';

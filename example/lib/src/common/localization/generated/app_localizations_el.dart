@@ -21,8 +21,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get title => 'Προεπισκόπηση';
 
   @override
-  String get description =>
-      'Ελέγξτε τον κωδικό χώρας και εισάγετε τον αριθμό τηλεφώνου σας.';
+  String get description => 'Ελέγξτε τον κωδικό χώρας και εισάγετε τον αριθμό τηλεφώνου σας.';
 
   @override
   String get nextLable => 'Επόμενο';
