@@ -21,7 +21,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get title => 'Visualizar';
 
   @override
-  String get description => 'Verifique o código do país e insira seu número de telefone.';
+  String get description =>
+      'Verifique o código do país e insira seu número de telefone.';
 
   @override
   String get nextLable => 'Próximo';

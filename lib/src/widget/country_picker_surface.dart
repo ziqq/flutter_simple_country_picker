@@ -72,7 +72,7 @@ class CountryPickerSurface {
 ///
 /// Passed to `showCountryPicker` or `CountryPhoneInput`, like
 /// `TextField.contextMenuBuilder`. Used only in the iOS 26 style
-/// (`CountryPickerTheme.useIOS26`). When `null`, the picker paints
+/// (`CountryPickerStyle.ios26`). When `null`, the picker paints
 /// [CountryPickerSurface.decoration] and dims the content on press.
 ///
 /// ```dart

@@ -21,7 +21,8 @@ class AppLocalizationsNl extends AppLocalizations {
   String get title => 'Preview';
 
   @override
-  String get description => 'Controleer de landcode en voer uw telefoonnummer in.';
+  String get description =>
+      'Controleer de landcode en voer uw telefoonnummer in.';
 
   @override
   String get nextLable => 'Volgende';

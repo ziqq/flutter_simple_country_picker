@@ -35,7 +35,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
 /// The translations for Chinese, as used in China (`zh_CN`).
 class AppLocalizationsZhCn extends AppLocalizationsZh {
-  AppLocalizationsZhCn(): super('zh_CN');
+  AppLocalizationsZhCn() : super('zh_CN');
 
   @override
   String get localeCode => 'zh_CN';
