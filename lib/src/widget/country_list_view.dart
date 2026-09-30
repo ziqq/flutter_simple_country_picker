@@ -409,10 +409,6 @@ class _CountriesListViewState extends State<CountryListView>
     );
   }
 
-  /// Height of the iOS 26 header: controls with padding around them.
-  static double _headerIOS26Height(CountryPickerTheme pickerTheme) =>
-      pickerTheme.padding * 2 + _kIOS26ControlHeight;
-
   @override
   Widget build(BuildContext context) {
     final gestureInsets = MediaQuery.systemGestureInsetsOf(context);
@@ -426,7 +422,9 @@ class _CountriesListViewState extends State<CountryListView>
       backgroundColor: pickerTheme.backgroundColor,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(
-          useIOS26Header ? _headerIOS26Height(pickerTheme) : kToolbarHeight,
+          useIOS26Header
+              ? _kIOS26ControlHeight + pickerTheme.padding * 2
+              : kToolbarHeight,
         ),
         child: ValueListenableBuilder(
           valueListenable: _controller,
