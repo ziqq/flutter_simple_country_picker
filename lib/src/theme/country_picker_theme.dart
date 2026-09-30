@@ -69,6 +69,10 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     Color? onSecondaryBackgroundColor,
     double? flagSize,
     double? padding,
+    @Deprecated(
+      'No longer used: spacing is derived from padding. '
+      'This property will be removed in v1.0.0 releases.',
+    )
     double? indent,
     double? radius,
     double? inputHeight,
@@ -122,8 +126,12 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     required this.textStyle,
     required this.flagSize,
     required this.padding,
-    required this.indent,
     required this.radius,
+    @Deprecated(
+      'No longer used: spacing is derived from padding. '
+      'This property will be removed in v1.0.0 releases.',
+    )
+    this.indent = _kDefaultIndent,
     this.style = CountryPickerStyle.classic,
   });
 
@@ -248,8 +256,13 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   /// If null, set to `16.0`
   final double padding;
 
-  /// The indent of the divider.
-  /// If null, set to `10.0`
+  /// Not used anymore: gaps between controls, the clear icon inset and
+  /// the vertical padding of `CountryPhoneInput.extended` are derived
+  /// from [padding].
+  @Deprecated(
+    'No longer used: spacing is derived from padding. '
+    'This property will be removed in v1.0.0 releases.',
+  )
   final double indent;
 
   /// The border radius of elements.
@@ -275,6 +288,10 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     double? inputHeight,
     double? flagSize,
     double? padding,
+    @Deprecated(
+      'No longer used: spacing is derived from padding. '
+      'This property will be removed in v1.0.0 releases.',
+    )
     double? indent,
     double? radius,
     TextStyle? secondaryTextStyle,

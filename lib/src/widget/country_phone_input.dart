@@ -385,7 +385,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
     return ValueListenableBuilder(
       valueListenable: _countryController,
       builder: (context, selected, _) => Row(
-        spacing: pickerTheme.indent,
+        spacing: pickerTheme.padding / 1.6,
         children: <Widget>[
           ConstrainedBox(
             constraints: constraints,
@@ -542,7 +542,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
     final localization = CountryLocalizations.of(context);
     final padding = EdgeInsets.symmetric(
       horizontal: pickerTheme.padding / 2,
-      vertical: pickerTheme.indent,
+      vertical: pickerTheme.padding / 1.6,
     );
     final textStyle = pickerTheme.textStyle?.copyWith(
       fontSize: 20,
@@ -566,9 +566,9 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
             CupertinoButton(
               key: const ValueKey<String>('country_picker_button_extended'),
               padding: EdgeInsets.only(
-                top: pickerTheme.indent,
+                top: pickerTheme.padding / 1.6,
                 left: pickerTheme.padding,
-                bottom: pickerTheme.indent,
+                bottom: pickerTheme.padding / 1.6,
                 right: pickerTheme.padding / 2,
               ),
               onPressed: widget.enableOpenPicker

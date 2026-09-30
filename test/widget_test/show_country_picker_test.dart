@@ -600,6 +600,54 @@ void main() => group('showCountryPicker -', () {
     });
   });
 
+  group('spacing -', () {
+    for (final ios26 in <bool>[false, true]) {
+      testWidgets('gap between search field and close button is derived '
+          'from padding and ignores indent (ios26: $ios26)', (tester) async {
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            builder: (context) => Scaffold(
+              body: InheritedCountryPickerTheme(
+                data: CountryPickerTheme(
+                  style: ios26
+                      ? CountryPickerStyle.ios26
+                      : CountryPickerStyle.classic,
+                  padding: 24,
+                  // ignore: deprecated_member_use_from_same_package
+                  indent: 40,
+                ),
+                child: Builder(
+                  builder: (context) => ElevatedButton(
+                    onPressed: () =>
+                        showCountryPicker(context: context, showSearch: true),
+                    child: const Text('Show Picker'),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Show Picker'));
+        await tester.pumpAndSettle();
+
+        final fieldEnd = tester
+            .getTopRight(find.byType(CupertinoSearchTextField))
+            .dx;
+        final buttonStart = ios26
+            ? tester
+                  .getTopLeft(
+                    find.byKey(
+                      const ValueKey<String>('country_picker_close_button'),
+                    ),
+                  )
+                  .dx
+            : tester.getTopLeft(find.byType(CupertinoButton).last).dx;
+        expect(buttonStart - fieldEnd, 24 / 1.6);
+      });
+    }
+  });
+
   group('grouping -', () {
     Future<void> pumpPicker(
       WidgetTester tester, {

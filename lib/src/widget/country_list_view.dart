@@ -226,7 +226,7 @@ class _CountriesListViewState extends State<CountryListView>
               padding: EdgeInsets.symmetric(horizontal: pickerTheme.padding),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                spacing: pickerTheme.indent,
+                spacing: pickerTheme.padding / 1.6,
                 children: <Widget>[
                   // --- Search field --- //
                   Expanded(
@@ -251,7 +251,7 @@ class _CountriesListViewState extends State<CountryListView>
                             )
                           : null,
                       suffixInsets: EdgeInsetsDirectional.only(
-                        end: pickerTheme.indent / 2,
+                        end: pickerTheme.padding / 3.2,
                       ),
                       prefixInsets: EdgeInsetsDirectional.only(
                         start: pickerTheme.padding / 2,
@@ -335,7 +335,7 @@ class _CountriesListViewState extends State<CountryListView>
         child: SizedBox(
           height: _kIOS26ControlHeight,
           child: Row(
-            spacing: pickerTheme.indent,
+            spacing: pickerTheme.padding / 1.6,
             children: <Widget>[
               // --- Search field --- //
               Expanded(
@@ -373,7 +373,7 @@ class _CountriesListViewState extends State<CountryListView>
                       start: pickerTheme.padding * .75,
                     ),
                     suffixInsets: EdgeInsetsDirectional.only(
-                      end: pickerTheme.indent,
+                      end: pickerTheme.padding / 1.6,
                     ),
                   ),
                 ),

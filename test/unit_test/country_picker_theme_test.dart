@@ -317,6 +317,32 @@ void main() => group('CountryPickerTheme -', () {
     );
   });
 
+  group('indent (deprecated) -', () {
+    test('defaults to 10 and is optional in raw', () {
+      // ignore: deprecated_member_use_from_same_package
+      expect(CountryPickerTheme().indent, 10);
+      const theme = CountryPickerTheme.raw(
+        accentColor: null,
+        backgroundColor: null,
+        onBackgroundColor: null,
+        barrierColor: null,
+        dividerColor: null,
+        secondaryBackgroundColor: null,
+        onSecondaryBackgroundColor: null,
+        inputDecoration: null,
+        inputHeight: 56,
+        secondaryTextStyle: null,
+        searchTextStyle: null,
+        textStyle: null,
+        flagSize: 22,
+        padding: 16,
+        radius: 12,
+      );
+      // ignore: deprecated_member_use_from_same_package
+      expect(theme.indent, 10);
+    });
+  });
+
   group('style -', () {
     const ios26 = CountryPickerStyle.ios26;
     const classic = CountryPickerStyle.classic;
