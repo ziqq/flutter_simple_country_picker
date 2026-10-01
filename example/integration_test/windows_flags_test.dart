@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -7,7 +8,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
-import 'package:flutter_simple_country_picker/src/util/country_flag_font.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -22,9 +22,6 @@ void main() {
           rootBundle.load('assets/fonts/SF-Pro/SF-Pro-Rounded-Regular.otf'),
         ))
         .load();
-    // Verify the package's font loader before reading the rendered pixels.
-    // ignore: invalid_use_of_internal_member
-    await CountryFlagFont.ensureLoaded();
   });
 
   for (final extended in <bool>[false, true]) {
@@ -32,6 +29,19 @@ void main() {
       'renders colored flags: ${extended ? 'extended' : 'default'} input',
       (tester) async {
         final boundaryKey = GlobalKey();
+        final fontLoaded = Completer<void>();
+        void onFontLoaded() {
+          if (!fontLoaded.isCompleted) fontLoaded.complete();
+        }
+
+        if (!extended) {
+          PaintingBinding.instance.systemFonts.addListener(onFontLoaded);
+          addTearDown(
+            () => PaintingBinding.instance.systemFonts.removeListener(
+              onFontLoaded,
+            ),
+          );
+        }
         await tester.pumpWidget(
           _app(
             boundaryKey,
@@ -45,6 +55,9 @@ void main() {
             ),
           ),
         );
+        if (!extended) {
+          await fontLoaded.future.timeout(const Duration(seconds: 30));
+        }
         await tester.pumpAndSettle();
         await _checkFlag(
           tester,
