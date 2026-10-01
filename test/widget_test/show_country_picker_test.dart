@@ -1139,12 +1139,20 @@ void main() => group('showCountryPicker -', () {
       await tester.tap(find.text('Show Picker'));
       await tester.pumpAndSettle();
 
-      final flag = tester.widget<Text>(find.text(Country.ru().flagEmoji));
+      final flag = tester.widget<RichText>(
+        find.descendant(
+          of: find.text(Country.ru().flagEmoji),
+          matching: find.byType(RichText),
+        ),
+      );
       expect(
-        flag.style?.fontFamily,
+        flag.text
+            .getSpanForPosition(const TextPosition(offset: 0))
+            ?.style
+            ?.fontFamily,
         defaultTargetPlatform == TargetPlatform.windows
             ? 'TwemojiCountryFlags'
-            : isNull,
+            : isNot('TwemojiCountryFlags'),
       );
     }, variant: TargetPlatformVariant.all());
   });
@@ -1200,19 +1208,96 @@ void main() => group('showCountryPicker -', () {
         expect(fontSizeOf(tester, regionalRU), 40 * expectedScale);
 
         // Windows has no flag glyphs: the bundled Twemoji font is used.
-        final fontFamily = tester
-            .widget<Text>(find.text(regionalRU))
-            .style
+        final flag = tester.widget<RichText>(
+          find.descendant(
+            of: find.text(regionalRU),
+            matching: find.byType(RichText),
+          ),
+        );
+        final fontFamily = flag.text
+            .getSpanForPosition(const TextPosition(offset: 0))
+            ?.style
             ?.fontFamily;
         expect(
           fontFamily,
           defaultTargetPlatform == TargetPlatform.windows
               ? 'TwemojiCountryFlags'
-              : isNull,
+              : isNot('TwemojiCountryFlags'),
         );
       },
       variant: TargetPlatformVariant.all(),
     );
+  });
+
+  group('flag rendering with a package font -', () {
+    for (final style in CountryPickerStyle.values) {
+      testWidgets('preserves inherited package fonts in $style', (
+        tester,
+      ) async {
+        const textStyle = TextStyle(
+          fontFamily: 'Body',
+          package: 'theme_fonts',
+          fontFamilyFallback: <String>['Fallback'],
+        );
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            locale: const Locale('en'),
+            builder: (context) => Theme(
+              data: ThemeData(
+                fontFamily: 'Body',
+                package: 'theme_fonts',
+                fontFamilyFallback: const <String>['Fallback'],
+              ),
+              child: Scaffold(
+                body: InheritedCountryPickerTheme(
+                  data: CountryPickerTheme(style: style),
+                  child: Builder(
+                    builder: (context) => ElevatedButton(
+                      onPressed: () => showCountryPicker(
+                        context: context,
+                        filter: const ['RU'],
+                        showSearch: false,
+                      ),
+                      child: const Text('Show Picker'),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Show Picker'));
+        await tester.pumpAndSettle();
+
+        final flag = tester.widget<RichText>(
+          find.descendant(
+            of: find.text(Country.ru().flagEmoji),
+            matching: find.byType(RichText),
+          ),
+        );
+        final flagSpan = flag.text.getSpanForPosition(
+          const TextPosition(offset: 0),
+        );
+        expect(
+          flagSpan?.style?.fontFamily,
+          defaultTargetPlatform == TargetPlatform.windows
+              ? 'TwemojiCountryFlags'
+              : isNot('TwemojiCountryFlags'),
+        );
+        final name = tester.widget<RichText>(
+          find.descendant(
+            of: find.text('Russia'),
+            matching: find.byType(RichText),
+          ),
+        );
+        expect(name.text.style?.fontFamily, textStyle.fontFamily);
+        expect(
+          name.text.style?.fontFamilyFallback,
+          textStyle.fontFamilyFallback,
+        );
+      }, variant: TargetPlatformVariant.all());
+    }
   });
 
   test('CountryPickerOptions accepts all optional fields', () {

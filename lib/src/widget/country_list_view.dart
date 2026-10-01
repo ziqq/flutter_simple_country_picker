@@ -1049,7 +1049,7 @@ class _CountryListTile extends StatelessWidget {
                 ],
               ),
             ),
-            if (effectiveTrailing != null) effectiveTrailing,
+            ?effectiveTrailing,
           ],
         ),
       ),
@@ -1166,15 +1166,18 @@ class _Flag extends StatelessWidget {
       // The conditional 50 prevents irregularities
       // caused by the flags in RTL mode
       width: isRtl ? 44 : null,
-      child: Text(
-        country.iswWorldWide
-            ? '\uD83C\uDF0D'
-            : CountryUtil.countryCodeToEmoji(country.countryCode),
-        style: TextStyle(
-          fontSize: pickerTheme.flagSize ?? 22,
-          height: 1,
-          fontFamily: country.iswWorldWide ? null : CountryFlagFont.fontFamily,
+      child: Text.rich(
+        TextSpan(
+          text: country.iswWorldWide
+              ? '\uD83C\uDF0D'
+              : CountryUtil.countryCodeToEmoji(country.countryCode),
+          style: TextStyle(
+            fontFamily: country.iswWorldWide
+                ? null
+                : CountryFlagFont.fontFamily,
+          ),
         ),
+        style: TextStyle(fontSize: pickerTheme.flagSize ?? 22, height: 1),
       ),
     );
   }
@@ -1234,14 +1237,17 @@ class _Flag$IOS26 extends StatelessWidget {
     final flag = OverflowBox(
       maxWidth: double.infinity,
       maxHeight: double.infinity,
-      child: Text(
-        emoji,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: _kIOS26FlagSize * scale,
-          height: 1,
-          fontFamily: country.iswWorldWide ? null : CountryFlagFont.fontFamily,
+      child: Text.rich(
+        TextSpan(
+          text: emoji,
+          style: TextStyle(
+            fontFamily: country.iswWorldWide
+                ? null
+                : CountryFlagFont.fontFamily,
+          ),
         ),
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: _kIOS26FlagSize * scale, height: 1),
       ),
     );
 

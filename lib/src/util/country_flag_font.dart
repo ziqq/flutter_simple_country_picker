@@ -40,6 +40,8 @@ abstract final class CountryFlagFont {
   ///
   /// Starts loading the font on first use; text is laid out again
   /// automatically once the font is registered.
+  /// Apply this family to a flag's text span so the surrounding text style's
+  /// package and fallback fonts are preserved.
   static String? get fontFamily {
     if (!isRequired) return null;
     ensureLoaded();

@@ -71,6 +71,8 @@ dev_dependencies:
   l: ^5.0.1
 
 flutter:
+  licenses:
+    - assets/fonts/TwemojiCountryFlags.LICENSE.md
   assets:
     # Flag glyphs for Windows, whose emoji font has no country flags.
     # Bundled only into Windows builds.
