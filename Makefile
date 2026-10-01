@@ -56,7 +56,7 @@ l10n: ## Generate localization
 
 .PHONY: format
 format: ## Format code
-				@find lib test -path '*/generated/*' -prune -o -type f -name '*.dart' ! -name '*.*.dart' ! -name 'messages_.*.dart' ! -name 'l10n.dart' -print0 | xargs -0 mise exec -- dart format --set-exit-if-changed --line-length 80 -o none || (echo "¯\_(ツ)_/¯ Format code error"; exit 1)
+				@find lib test example/integration_test -path '*/generated/*' -prune -o -type f -name '*.dart' ! -name '*.*.dart' ! -name 'messages_.*.dart' ! -name 'l10n.dart' -print0 | xargs -0 mise exec -- dart format --set-exit-if-changed --line-length 80 -o none || (echo "¯\_(ツ)_/¯ Format code error"; exit 1)
 
 .PHONY: fix
 fix: format ## Fix code
@@ -80,7 +80,7 @@ update: get build-runner ## Update dependencies and codegen
 
 .PHONY: analyze
 analyze: ## Analyze code
-				@mise exec -- flutter analyze --fatal-warnings --no-fatal-infos lib/ test/ || (echo "¯\_(ツ)_/¯ Analyze code error"; exit 1)
+				@mise exec -- flutter analyze --fatal-warnings --no-fatal-infos lib/ test/ example/integration_test/ || (echo "¯\_(ツ)_/¯ Analyze code error"; exit 1)
 
 .PHONY: check
 check: ## Check code
@@ -88,7 +88,11 @@ check: ## Check code
 				@mise exec -- dart pub global run dependency_validator:dependency_validator || (echo "¯\_(ツ)_/¯ Dependency Validator error"; exit 1)
 				@mise exec -- dart pub publish --dry-run || (echo "¯\_(ツ)_/¯ Publish dry-run error"; exit 2)
 				@mise exec -- dart pub global activate pana || (echo "¯\_(ツ)_/¯ Pana activation error"; exit 3)
-				@mise exec -- dart pub global run pana --json --no-warning > log.pana.json || (echo "¯\_(ツ)_/¯ Pana error"; exit 3)
+				# Pana reads repository metadata and pubspecs; fetch large asset blobs on demand.
+				@GIT_CONFIG_COUNT=2 \
+					GIT_CONFIG_KEY_0=remote.origin.promisor GIT_CONFIG_VALUE_0=true \
+					GIT_CONFIG_KEY_1=remote.origin.partialclonefilter GIT_CONFIG_VALUE_1=blob:none \
+					mise exec -- dart pub global run pana --json --no-warning > log.pana.json || (echo "¯\_(ツ)_/¯ Pana error"; exit 3)
 
 .PHONY: publish
 publish: ## Publish package
