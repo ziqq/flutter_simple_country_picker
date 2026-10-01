@@ -72,7 +72,7 @@ jobs:
     steps:
       - name: Get latest code
         id: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           sparse-checkout: |
             .github
@@ -88,39 +88,37 @@ jobs:
             CHANGELOG.md
 
       - name: Check content
-        id: check-files
         timeout-minutes: 1
-        uses: andstor/file-existence-action@v1
-        with:
-          files: "README.md, CHANGELOG.md, CONTRIBUTING.md, LICENSE, example"
-
-      - name: File exists
-        if: steps.check-files.outputs.files_exists == 'true'
-        run: echo Content is OK!
+        shell: bash
+        run: |
+          for file in README.md CHANGELOG.md CONTRIBUTING.md LICENSE; do
+            test -f "$file" || { echo "::error::Missing required file: $file"; exit 1; }
+          done
+          test -d example
 
       - name: Check description
         timeout-minutes: 1
-        run: echo | grep -q Description README.md ; echo $?
+        run: grep -Fxq '## Description' README.md
 
-      - name: Check suick start
+      - name: Check quick start
         timeout-minutes: 1
-        run: echo | grep -q Quick Start README.md ; echo $?
+        run: grep -Fxq '## Quick Start' README.md
 
       - name: Check getting started
         timeout-minutes: 1
-        run: echo | grep -q Getting Started README.md ; echo $?
+        run: grep -Fxq '## Getting Started' README.md
 
       - name: Check setup localizations
         timeout-minutes: 1
-        run: echo | grep -q Setup Localizations README.md ; echo $?
+        run: grep -Fxq '## Setup Localizations' README.md
 
       - name: Check custom localizations
         timeout-minutes: 1
-        run: echo | grep -q Custom localizations README.md ; echo $?
+        run: grep -Fxq '### Custom localizations' README.md
 
       - name: Check usage
         timeout-minutes: 1
-        run: echo | grep -q Usage README.md ; echo $?
+        run: grep -Fxq '## Usage' README.md
 
       - name: Install flutter
         uses: jdx/mise-action@v4.0.0
@@ -136,7 +134,7 @@ jobs:
 
       - name: Restore Pub modules
         id: cache-pub-restore
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: /home/runner/.pub-cache
           key: ${{ runner.os }}-pub-${{ env.pub-cache-name }}-${{ hashFiles('**/pubspec.yaml') }}
@@ -163,7 +161,8 @@ jobs:
         id: install-dependencies
         shell: bash
         run: |
-          apt-get update && apt-get install -y lcov
+          sudo apt-get update
+          sudo apt-get install -y lcov
           echo /home/runner/.pub-cache/bin >> $GITHUB_PATH
           flutter config --no-cli-animations --no-analytics
           flutter pub get
@@ -171,7 +170,7 @@ jobs:
       - name: Save Pub modules
         id: cache-pub-save
         if: steps.cache-pub-restore.outputs.cache-hit != 'true'
-        uses: actions/cache@v4
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: /home/runner/.pub-cache
           key: ${{ runner.os }}-pub-${{ env.pub-cache-name }}-${{ hashFiles('**/pubspec.yaml') }}
@@ -206,14 +205,14 @@ jobs:
           flutter test --coverage --concurrency=40 test/flutter_simple_country_picker_test.dart
 
       - name: Upload coverage report
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
           fail_ci_if_error: true
 
       - name: Upload test report
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # v3.0.0
         with:
           name: "Test report"
           path: "reports/tests.json"
@@ -221,23 +220,69 @@ jobs:
           fail-on-error: "false"
 
   windows:
-    name: Windows flags
-    runs-on: windows-latest
+    name: Windows flags (${{ matrix.architecture }}, Flutter ${{ matrix.flutter }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: windows-latest
+            architecture: x64
+            flutter: '3.47.5'
+          - runner: windows-latest
+            architecture: x64
+            flutter: '3.41.0'
+          - runner: windows-11-arm
+            architecture: arm64
+            flutter: '3.47.5'
+    env:
+      MISE_FLUTTER_VERSION: ${{ matrix.flutter }}
     timeout-minutes: 25
     permissions:
       contents: read
     steps:
       - name: Get latest code
-        uses: actions/checkout@v4
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - name: Install Flutter
         uses: jdx/mise-action@v4.0.0
         with:
           install: true
+          install_args: flutter@${{ matrix.flutter }}
           cache: true
+
+      - name: Initialize native ARM64 Dart
+        if: matrix.architecture == 'arm64'
+        shell: pwsh
+        run: |
+          # The official Windows archive includes x64 Dart. Let Flutter's own
+          # bootstrap download the matching native SDK on the ARM64 runner.
+          $flutterRoot = mise where flutter
+          Remove-Item "$flutterRoot/bin/cache/engine-dart-sdk.stamp" -ErrorAction SilentlyContinue
+          mise exec -- flutter --version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $dartVersion = mise exec -- dart --version 2>&1 | Out-String
+          if ($dartVersion -notmatch 'windows_arm64') {
+            throw "Expected native ARM64 Dart: $dartVersion"
+          }
+
+      - name: Check Flutter version
+        shell: pwsh
+        run: |
+          $version = mise exec -- flutter --version --machine | ConvertFrom-Json
+          if ($version.frameworkVersion -ne '${{ matrix.flutter }}') {
+            throw "Unexpected Flutter version: $($version.frameworkVersion)"
+          }
 
       - name: Install dependencies
         run: mise exec -- flutter pub get
+
+      - name: Check minimum Flutter compatibility
+        if: matrix.flutter == '3.41.0'
+        run: |
+          mise exec -- flutter analyze --fatal-warnings --no-fatal-infos lib/ test/ example/integration_test/
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          mise exec -- flutter test test/flutter_simple_country_picker_test.dart
 
       - name: Build Windows example
         working-directory: example
@@ -247,7 +292,7 @@ jobs:
         shell: pwsh
         run: |
           $source = 'assets/fonts/TwemojiCountryFlags.ttf'
-          $bundled = 'example/build/windows/x64/runner/Release/data/flutter_assets/packages/flutter_simple_country_picker/assets/fonts/TwemojiCountryFlags.ttf'
+          $bundled = 'example/build/windows/${{ matrix.architecture }}/runner/Release/data/flutter_assets/packages/flutter_simple_country_picker/assets/fonts/TwemojiCountryFlags.ttf'
           if (!(Test-Path $bundled)) { throw 'Windows flag font is missing from the release bundle' }
           if ((Get-FileHash $source).Hash -ne (Get-FileHash $bundled).Hash) {
             throw 'Windows flag font differs from the source asset'
@@ -259,9 +304,9 @@ jobs:
 
       - name: Upload flag screenshots
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: windows-flags
+          name: windows-flags-${{ matrix.architecture }}-${{ matrix.flutter }}
           path: example/build/windows-flags/*.png
           if-no-files-found: ignore
 
@@ -283,33 +328,36 @@ jobs:
       NOTIFY_TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       NOTIFY_TELEGRAM_TARGETS: ${{ secrets.TELEGRAM_TARGETS }}
     steps:
-      - name: Report missing notification secrets
-        if: >-
-          env.NOTIFY_DISCORD_WEBHOOKS == '' ||
-          env.NOTIFY_TELEGRAM_BOT_TOKEN == '' ||
-          env.NOTIFY_TELEGRAM_TARGETS == ''
+      - name: Select configured notification channels
+        id: channels
         shell: bash
-        run: >-
-          echo "::warning::CI notification skipped because one or more notification secrets are not configured."
+        run: |
+          providers=()
+          if [[ -n "$NOTIFY_DISCORD_WEBHOOKS" ]]; then
+            providers+=(discord)
+          else
+            echo '::notice::Discord notifications need the DISCORD_WEBHOOKS repository secret.'
+          fi
+          if [[ -n "$NOTIFY_TELEGRAM_BOT_TOKEN" && -n "$NOTIFY_TELEGRAM_TARGETS" ]]; then
+            providers+=(telegram)
+          else
+            echo '::notice::Telegram notifications need the TELEGRAM_BOT_TOKEN and TELEGRAM_TARGETS repository secrets.'
+          fi
+          printf 'providers=%s\n' "$(IFS=,; echo "${providers[*]}")" >> "$GITHUB_OUTPUT"
 
       - name: Checkout trusted notification template
-        if: >-
-          env.NOTIFY_DISCORD_WEBHOOKS != '' &&
-          env.NOTIFY_TELEGRAM_BOT_TOKEN != '' &&
-          env.NOTIFY_TELEGRAM_TARGETS != ''
+        if: steps.channels.outputs.providers != ''
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
 
-      - name: Notify Discord and Telegram
+      - name: Notify configured channels
         if: >-
-          env.NOTIFY_DISCORD_WEBHOOKS != '' &&
-          env.NOTIFY_TELEGRAM_BOT_TOKEN != '' &&
-          env.NOTIFY_TELEGRAM_TARGETS != '' &&
+          steps.channels.outputs.providers != '' &&
           hashFiles('.github/notify/templates/ci.md') != ''
         uses: ziqq/actions/notify@ccd1a799683cd461a45d9303ac6fcb2792f8f5d2
         with:
-          providers: discord,telegram
+          providers: ${{ steps.channels.outputs.providers }}
           template-path: .github/notify/templates/ci.md
           variables: |
             {
