@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/controller/country_controller.dart';
 import 'package:flutter_simple_country_picker/src/data/country_provider.dart';
+import 'package:flutter_simple_country_picker/src/util/country_flag_font.dart';
 import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 
 /// Height of the search field and the close button in the iOS 26 style.
@@ -1169,7 +1170,11 @@ class _Flag extends StatelessWidget {
         country.iswWorldWide
             ? '\uD83C\uDF0D'
             : CountryUtil.countryCodeToEmoji(country.countryCode),
-        style: TextStyle(fontSize: pickerTheme.flagSize ?? 22, height: 1),
+        style: TextStyle(
+          fontSize: pickerTheme.flagSize ?? 22,
+          height: 1,
+          fontFamily: country.iswWorldWide ? null : CountryFlagFont.fontFamily,
+        ),
       ),
     );
   }
@@ -1192,20 +1197,12 @@ class _Flag$IOS26 extends StatelessWidget {
   /// Whether to show the checkmark badge.
   final bool selected;
 
-  /// Whether the platform emoji font can draw flag glyphs.
-  ///
-  /// Windows' Segoe UI Emoji has no flags and renders the regional
-  /// indicator pair as two letters. Flutter web always falls back to
-  /// Noto Color Emoji, which has flags on every host OS.
-  static bool get _hasFlagGlyphs =>
-      kIsWeb || defaultTargetPlatform != TargetPlatform.windows;
-
   /// How much the emoji glyph is scaled to cover the whole circle.
   ///
   /// Emoji flags are rectangular glyphs with transparent padding.
   /// Apple Color Emoji (iOS, macOS) draws waving flags with extra space
   /// around them, so it needs a bigger scale than the flat Noto flags
-  /// used on Android, Linux and the web.
+  /// (Android, Linux, web) and the bundled Twemoji flags (Windows).
   static double _scaleOf(Country country) {
     if (country.iswWorldWide) return 1.0;
     if (kIsWeb) return 1.6;
@@ -1234,41 +1231,19 @@ class _Flag$IOS26 extends StatelessWidget {
         : CountryUtil.countryCodeToEmoji(country.countryCode);
     final scale = _scaleOf(country);
 
-    final Widget flag;
-    if (country.iswWorldWide || _hasFlagGlyphs) {
-      flag = OverflowBox(
-        maxWidth: double.infinity,
-        maxHeight: double.infinity,
-        child: Text(
-          emoji,
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: _kIOS26FlagSize * scale, height: 1),
+    final flag = OverflowBox(
+      maxWidth: double.infinity,
+      maxHeight: double.infinity,
+      child: Text(
+        emoji,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: _kIOS26FlagSize * scale,
+          height: 1,
+          fontFamily: country.iswWorldWide ? null : CountryFlagFont.fontFamily,
         ),
-      );
-    } else {
-      // No flag glyphs: show the ISO code in a tinted circle instead
-      // of a cropped pair of regional indicator letters.
-      flag = ColoredBox(
-        color: CupertinoDynamicColor.resolve(
-          CupertinoColors.tertiarySystemFill,
-          context,
-        ),
-        child: Center(
-          child: Text(
-            country.countryCode.toUpperCase(),
-            style: TextStyle(
-              height: 1,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: CupertinoDynamicColor.resolve(
-                CupertinoColors.secondaryLabel,
-                context,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
+      ),
+    );
 
     return SizedBox.square(
       dimension: _kIOS26FlagSize,

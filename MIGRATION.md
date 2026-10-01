@@ -32,6 +32,10 @@ CountryPickerTheme(padding: 16);
 
 `indent` will be removed in v1.0.0.
 
+The minimum Flutter version is now 3.41.0. The package declares a
+Windows-only font asset for flags, and platform-specific assets are supported
+starting with Flutter 3.41.0.
+
 Behavior changes to be aware of:
 
 - `showWorldWide` now adds the World Wide option; it was ignored before.

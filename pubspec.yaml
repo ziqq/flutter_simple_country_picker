@@ -34,7 +34,8 @@ platforms:
 
 environment:
   sdk: '>=3.10.0 <4.0.0'
-  flutter: ">=3.38.0"
+  # 3.41.0 is the first release with platform-specific assets.
+  flutter: ">=3.41.0"
 
 dependencies:
   flutter:
@@ -68,3 +69,10 @@ dev_dependencies:
 
   # Logging
   l: ^5.0.1
+
+flutter:
+  assets:
+    # Flag glyphs for Windows, whose emoji font has no country flags.
+    # Bundled only into Windows builds.
+    - path: assets/fonts/TwemojiCountryFlags.ttf
+      platforms: [windows]

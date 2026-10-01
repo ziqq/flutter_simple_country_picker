@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:flutter_simple_country_picker/src/util/country_flag_font.dart';
 import 'package:meta/meta.dart';
 
 /// {@template country_phone_input}
@@ -430,7 +431,10 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                         if (selected.flagEmoji.isNotEmpty) ...[
                           Text(
                             selected.flagEmoji,
-                            style: textStyle?.copyWith(letterSpacing: 0),
+                            style: textStyle?.copyWith(
+                              letterSpacing: 0,
+                              fontFamily: CountryFlagFont.fontFamily,
+                            ),
                           ),
                         ],
                         Text('+${selected.phoneCode}', style: textStyle),
@@ -598,7 +602,13 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                   '${selected.flagEmoji} ${localization.getFormatedCountryNameByCode(selected.countryCode)}',
                   // Announce the country instead of the emoji flag name.
                   semanticsLabel: _semanticsLabelOf(localization, selected),
-                  style: textStyle?.copyWith(fontWeight: FontWeight.w500),
+                  style: textStyle?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontFamilyFallback: <String>[
+                      ...?CountryFlagFont.fontFamilyFallback,
+                      ...?textStyle.fontFamilyFallback,
+                    ],
+                  ),
                 ),
               ),
             ),

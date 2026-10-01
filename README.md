@@ -489,6 +489,14 @@ showCountryPicker(context: context, surfaceBuilder: glassSurface);
 ```
 
 
+## Flags on Windows
+
+The Windows emoji font has no country flags, so a flag emoji is shown as two
+letters there. On Windows the package loads a bundled flags-only font
+(about 180 KB). It is declared as a Windows-only asset, so iOS, Android,
+macOS, Linux and web builds do not include it. This requires Flutter 3.41 or
+newer.
+
 ## All Countries List
 
 See the [All Countries List](https://github.com/ziqq/flutter_simple_country_picker/wiki/All-Countries-list) on the wiki.
@@ -520,6 +528,12 @@ If you want to support the development of this library:
 ## License
 
 [MIT](https://github.com/ziqq/flutter_simple_country_picker/blob/main/LICENSE)
+
+Flags on Windows use the bundled "Twemoji Country Flags" font from
+[country-flag-emoji-polyfill](https://github.com/talkjs/country-flag-emoji-polyfill) (MIT).
+The flag artwork comes from [Twemoji](https://github.com/jdecked/twemoji) and is licensed under
+[CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/). See
+[assets/fonts/TwemojiCountryFlags.LICENSE.md](assets/fonts/TwemojiCountryFlags.LICENSE.md).
 
 
 ## Coverage
