@@ -20,6 +20,9 @@ on:
       - .github/workflows/*.yml
       - "pubspec.yaml"
       - "example/pubspec.yaml"
+      - "assets/**"
+      - "mise.toml"
+      - "mise.lock"
   pull_request:
     branches:
       - "main"
@@ -38,6 +41,9 @@ on:
       - .github/workflows/*.yml
       - "pubspec.yaml"
       - "example/pubspec.yaml"
+      - "assets/**"
+      - "mise.toml"
+      - "mise.lock"
 
 permissions:
   actions: read
@@ -71,6 +77,9 @@ jobs:
           sparse-checkout: |
             .github
             pubspec.yaml
+            mise.toml
+            mise.lock
+            assets
             lib
             test
             analysis_options.yaml
@@ -112,10 +121,11 @@ jobs:
         run: echo | grep -q Usage README.md ; echo $?
 
       - name: Install flutter
-        uses: subosito/flutter-action@v2
+        uses: jdx/mise-action@v4.0.0
         id: install-flutter
         with:
-          channel: 'stable'
+          install: true
+          cache: true
 
       - name: Check flutter version
         id: check-flutter-version
