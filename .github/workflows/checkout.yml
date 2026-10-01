@@ -82,6 +82,7 @@ jobs:
             assets
             lib
             test
+            example
             analysis_options.yaml
             CHANGELOG.md
 
@@ -184,7 +185,7 @@ jobs:
         id: check-format
         timeout-minutes: 1
         run: |
-          find lib test \
+          find lib test example/integration_test \
           -path '*/generated/*' -prune -o \
           -type f -name '*.dart' \
           ! -name '*.*.dart' \
@@ -197,14 +198,14 @@ jobs:
         id: check-analyzer
         timeout-minutes: 1
         run: |
-          flutter analyze --fatal-warnings --no-fatal-infos lib/ test/
+          flutter analyze --fatal-warnings --no-fatal-infos lib/ test/ example/integration_test/
 
       - name: Unit & Widget tests
         run: |
           flutter test --coverage --concurrency=40 test/flutter_simple_country_picker_test.dart
 
       - name: Upload coverage report
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
@@ -217,9 +218,54 @@ jobs:
           reporter: flutter-json
           fail-on-error: "false"
 
+  windows:
+    name: Windows flags
+    runs-on: windows-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    steps:
+      - name: Get latest code
+        uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: jdx/mise-action@v4.0.0
+        with:
+          install: true
+          cache: true
+
+      - name: Install dependencies
+        run: mise exec -- flutter pub get
+
+      - name: Build Windows example
+        working-directory: example
+        run: mise exec -- flutter build windows --release
+
+      - name: Check bundled flag font
+        shell: pwsh
+        run: |
+          $source = 'assets/fonts/TwemojiCountryFlags.ttf'
+          $bundled = 'example/build/windows/x64/runner/Release/data/flutter_assets/packages/flutter_simple_country_picker/assets/fonts/TwemojiCountryFlags.ttf'
+          if (!(Test-Path $bundled)) { throw 'Windows flag font is missing from the release bundle' }
+          if ((Get-FileHash $source).Hash -ne (Get-FileHash $bundled).Hash) {
+            throw 'Windows flag font differs from the source asset'
+          }
+
+      - name: Check native flag rendering
+        working-directory: example
+        run: mise exec -- flutter test integration_test/windows_flags_test.dart -d windows
+
+      - name: Upload flag screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-flags
+          path: example/build/windows-flags/*.png
+          if-no-files-found: ignore
+
   notify:
     name: Notify CI result
-    needs: checkout
+    needs: [checkout, windows]
     continue-on-error: true
     if: >-
       always() &&
@@ -266,7 +312,7 @@ jobs:
           variables: |
             {
               "pub_dev_url": "https://pub.dev/packages/flutter_simple_country_picker",
-              "status_label": ${{ toJSON(needs.checkout.result == 'success' && 'success' || needs.checkout.result == 'cancelled' && 'cancelled' || 'failure') }}
+              "status_label": ${{ toJSON(needs.checkout.result == 'success' && needs.windows.result == 'success' && 'success' || (needs.checkout.result == 'cancelled' || needs.windows.result == 'cancelled') && 'cancelled' || 'failure') }}
             }
           failure-policy: best-effort
           timeout-ms: "10000"
