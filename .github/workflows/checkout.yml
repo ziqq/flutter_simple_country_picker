@@ -235,8 +235,6 @@ jobs:
           - runner: windows-11-arm
             architecture: arm64
             flutter: '3.47.5'
-    env:
-      MISE_FLUTTER_VERSION: ${{ matrix.flutter }}
     timeout-minutes: 25
     permissions:
       contents: read
@@ -244,11 +242,17 @@ jobs:
       - name: Get latest code
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
+      - name: Select minimum Flutter
+        if: matrix.flutter == '3.41.0'
+        shell: pwsh
+        run: |
+          (Get-Content mise.toml -Raw).Replace('version = "3.47.5"', 'version = "3.41.0"') |
+            Set-Content mise.toml
+
       - name: Install Flutter
         uses: jdx/mise-action@v4.0.0
         with:
           install: true
-          install_args: flutter@${{ matrix.flutter }}
           cache: true
 
       - name: Initialize native ARM64 Dart
@@ -269,7 +273,9 @@ jobs:
       - name: Check Flutter version
         shell: pwsh
         run: |
-          $version = mise exec -- flutter --version --machine | ConvertFrom-Json
+          mise exec -- flutter --version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $version = mise exec -- flutter --version --machine | Out-String | ConvertFrom-Json
           if ($version.frameworkVersion -ne '${{ matrix.flutter }}') {
             throw "Unexpected Flutter version: $($version.frameworkVersion)"
           }
