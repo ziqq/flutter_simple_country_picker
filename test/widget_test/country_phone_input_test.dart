@@ -30,10 +30,71 @@ void _$defaultCountryPhoneInputTest() {
       await tester.pumpAndSettle();
 
       final isWindows = defaultTargetPlatform == TargetPlatform.windows;
-      final flag = tester.widget<Text>(find.text(Country.ru().flagEmoji));
+      final flag = tester.widget<RichText>(
+        find.descendant(
+          of: find.text(Country.ru().flagEmoji),
+          matching: find.byType(RichText),
+        ),
+      );
       expect(
-        flag.style?.fontFamily,
+        flag.text
+            .getSpanForPosition(const TextPosition(offset: 0))
+            ?.style
+            ?.fontFamily,
         isWindows ? 'TwemojiCountryFlags' : isNot('TwemojiCountryFlags'),
+      );
+    }, variant: TargetPlatformVariant.all());
+
+    testWidgets('preserves package fonts and fallbacks beside the flag', (
+      tester,
+    ) async {
+      const textStyle = TextStyle(
+        fontFamily: 'Body',
+        package: 'theme_fonts',
+        fontFamilyFallback: <String>['Fallback'],
+        fontSize: 19,
+        height: 1.4,
+        color: Colors.purple,
+      );
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => Scaffold(
+            body: InheritedCountryPickerTheme(
+              data: CountryPickerTheme(textStyle: textStyle),
+              child: const CountryPhoneInput(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final flag = tester.widget<RichText>(
+        find.descendant(
+          of: find.text(Country.ru().flagEmoji),
+          matching: find.byType(RichText),
+        ),
+      );
+      final flagSpan = flag.text.getSpanForPosition(
+        const TextPosition(offset: 0),
+      );
+      expect(
+        flagSpan?.style?.fontFamily,
+        defaultTargetPlatform == TargetPlatform.windows
+            ? 'TwemojiCountryFlags'
+            : isNot('TwemojiCountryFlags'),
+      );
+      expect(flag.text.style?.fontSize, textStyle.fontSize);
+      expect(flag.text.style?.height, textStyle.height);
+      expect(flag.text.style?.color, textStyle.color);
+
+      final phoneCode = tester.widget<RichText>(
+        find.descendant(of: find.text('+7'), matching: find.byType(RichText)),
+      );
+      expect(phoneCode.text.style?.fontFamily, textStyle.fontFamily);
+      expect(
+        phoneCode.text.style?.fontFamilyFallback,
+        textStyle.fontFamilyFallback,
       );
     }, variant: TargetPlatformVariant.all());
 
@@ -1030,15 +1091,69 @@ void _$extendedCountryPhoneInputTest() {
       await tester.pumpAndSettle();
 
       final isWindows = defaultTargetPlatform == TargetPlatform.windows;
-      final label = tester.widget<Text>(
-        find.text('${Country.ru().flagEmoji} Russia'),
+      final label = tester.widget<RichText>(
+        find.descendant(
+          of: find.text('${Country.ru().flagEmoji} Russia'),
+          matching: find.byType(RichText),
+        ),
       );
       expect(
-        label.style?.fontFamilyFallback ?? const <String>[],
-        isWindows
-            ? contains('TwemojiCountryFlags')
-            : isNot(contains('TwemojiCountryFlags')),
+        label.text
+            .getSpanForPosition(const TextPosition(offset: 0))
+            ?.style
+            ?.fontFamily,
+        isWindows ? 'TwemojiCountryFlags' : isNot('TwemojiCountryFlags'),
       );
+    }, variant: TargetPlatformVariant.all());
+
+    testWidgets('preserves package fonts and fallbacks beside the flag', (
+      tester,
+    ) async {
+      const textStyle = TextStyle(
+        fontFamily: 'Body',
+        package: 'theme_fonts',
+        fontFamilyFallback: <String>['Fallback'],
+        height: 1.4,
+      );
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => Scaffold(
+            body: InheritedCountryPickerTheme(
+              data: CountryPickerTheme(textStyle: textStyle),
+              child: const CountryPhoneInput.extended(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final label = tester.widget<RichText>(
+        find.descendant(
+          of: find.text('${Country.ru().flagEmoji} Russia'),
+          matching: find.byType(RichText),
+        ),
+      );
+      final flagSpan = label.text.getSpanForPosition(
+        const TextPosition(offset: 0),
+      );
+      expect(
+        flagSpan?.style?.fontFamily,
+        defaultTargetPlatform == TargetPlatform.windows
+            ? 'TwemojiCountryFlags'
+            : isNot('TwemojiCountryFlags'),
+      );
+      expect(label.text.style?.fontFamily, textStyle.fontFamily);
+      expect(
+        label.text.style?.fontFamilyFallback,
+        textStyle.fontFamilyFallback,
+      );
+      expect(label.text.style?.height, textStyle.height);
+      expect(label.text.style?.fontWeight, FontWeight.w500);
+      final nameSpan = label.text.getSpanForPosition(
+        TextPosition(offset: Country.ru().flagEmoji.length + 1),
+      );
+      expect(nameSpan?.style?.fontFamily, isNot('TwemojiCountryFlags'));
     }, variant: TargetPlatformVariant.all());
 
     testWidgets('forwards surfaceBuilder to the picker', (tester) async {

@@ -497,6 +497,10 @@ letters there. On Windows the package loads a bundled flags-only font
 macOS, Linux and web builds do not include it. This requires Flutter 3.41 or
 newer.
 
+The font is applied only to flag text, so custom package fonts and their
+fallbacks remain in use for country names and phone codes. The bundled
+font's license notices are included in Flutter's application license list.
+
 ## All Countries List
 
 See the [All Countries List](https://github.com/ziqq/flutter_simple_country_picker/wiki/All-Countries-list) on the wiki.

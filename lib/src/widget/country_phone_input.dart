@@ -429,12 +429,14 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                       spacing: 3,
                       children: <Widget>[
                         if (selected.flagEmoji.isNotEmpty) ...[
-                          Text(
-                            selected.flagEmoji,
-                            style: textStyle?.copyWith(
-                              letterSpacing: 0,
-                              fontFamily: CountryFlagFont.fontFamily,
+                          Text.rich(
+                            TextSpan(
+                              text: selected.flagEmoji,
+                              style: TextStyle(
+                                fontFamily: CountryFlagFont.fontFamily,
+                              ),
                             ),
+                            style: textStyle?.copyWith(letterSpacing: 0),
                           ),
                         ],
                         Text('+${selected.phoneCode}', style: textStyle),
@@ -598,17 +600,24 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                   : null,
               child: SizedBox(
                 width: double.infinity,
-                child: Text(
-                  '${selected.flagEmoji} ${localization.getFormatedCountryNameByCode(selected.countryCode)}',
-                  // Announce the country instead of the emoji flag name.
-                  semanticsLabel: _semanticsLabelOf(localization, selected),
-                  style: textStyle?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    fontFamilyFallback: <String>[
-                      ...?CountryFlagFont.fontFamilyFallback,
-                      ...?textStyle.fontFamilyFallback,
+                child: Text.rich(
+                  TextSpan(
+                    children: <InlineSpan>[
+                      TextSpan(
+                        text: selected.flagEmoji,
+                        style: TextStyle(
+                          fontFamily: CountryFlagFont.fontFamily,
+                        ),
+                      ),
+                      TextSpan(
+                        text:
+                            ' ${localization.getFormatedCountryNameByCode(selected.countryCode)}',
+                      ),
                     ],
                   ),
+                  // Announce the country instead of the emoji flag name.
+                  semanticsLabel: _semanticsLabelOf(localization, selected),
+                  style: textStyle?.copyWith(fontWeight: FontWeight.w500),
                 ),
               ),
             ),
