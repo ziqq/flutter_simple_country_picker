@@ -6,7 +6,7 @@
 - **ADDED**: in the iOS 26 style scrolling the list expands the sheet, which snaps to its initial or full height
 - **ADDED**: `surfaceBuilder` to `showCountryPicker`, `CountryPhoneInput` and `CountryPhoneInput.extended`, and `CountryPickerSurface`, to paint custom surfaces (e.g. liquid glass) behind the iOS 26 search field and close button
 - **ADDED**: semantics for country tiles, group headers and the `CountryPhoneInput` country buttons; emoji flags are no longer announced
-- **CHANGED**: the minimum Flutter version is now 3.41.0, the first release with platform-specific assets
+- **CHANGED**: the minimum Flutter version is now 3.44.0, required by the Cupertino sheet scrollableBuilder API
 - **FIXED**: flags on Windows: the Windows emoji font has no country flags, so the package now bundles the "Twemoji Country Flags" font as a Windows-only asset and uses it for flags in the picker and `CountryPhoneInput` while preserving custom package fonts and their fallbacks, [#19](https://github.com/ziqq/flutter_simple_country_picker/issues/19)
 - **FIXED**: countries with diacritics (e.g. `Österreich`, `Égypte`) are sorted and grouped with their base letter instead of after `Z`, and search ignores diacritics, [#18](https://github.com/ziqq/flutter_simple_country_picker/issues/18)
 - **FIXED**: `showWorldWide` was accepted but ignored; the World Wide option is now shown on top of the list

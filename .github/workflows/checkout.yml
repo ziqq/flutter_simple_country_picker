@@ -231,7 +231,7 @@ jobs:
             flutter: '3.47.5'
           - runner: windows-latest
             architecture: x64
-            flutter: '3.41.0'
+            flutter: '3.44.0'
           - runner: windows-11-arm
             architecture: arm64
             flutter: '3.47.5'
@@ -243,10 +243,10 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - name: Select minimum Flutter
-        if: matrix.flutter == '3.41.0'
+        if: matrix.flutter == '3.44.0'
         shell: pwsh
         run: |
-          (Get-Content mise.toml -Raw).Replace('version = "3.47.5"', 'version = "3.41.0"') |
+          (Get-Content mise.toml -Raw).Replace('version = "3.47.5"', 'version = "3.44.0"') |
             Set-Content mise.toml
 
       - name: Install Flutter
@@ -284,7 +284,7 @@ jobs:
         run: mise exec -- flutter pub get
 
       - name: Check minimum Flutter compatibility
-        if: matrix.flutter == '3.41.0'
+        if: matrix.flutter == '3.44.0'
         run: |
           mise exec -- flutter analyze --fatal-warnings --no-fatal-infos lib/ test/ example/integration_test/
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

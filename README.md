@@ -494,8 +494,8 @@ showCountryPicker(context: context, surfaceBuilder: glassSurface);
 The Windows emoji font has no country flags, so a flag emoji is shown as two
 letters there. On Windows the package loads a bundled flags-only font
 (about 180 KB). It is declared as a Windows-only asset, so iOS, Android,
-macOS, Linux and web builds do not include it. This requires Flutter 3.41 or
-newer.
+macOS, Linux and web builds do not include it. The package requires Flutter
+3.44 or newer for its Cupertino sheet API.
 
 The font is applied only to flag text, so custom package fonts and their
 fallbacks remain in use for country names and phone codes. The bundled
