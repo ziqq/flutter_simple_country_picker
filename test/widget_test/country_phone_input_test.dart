@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart' show CupertinoButton;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
@@ -19,6 +20,23 @@ void _$defaultCountryPhoneInputTest() {
   const buttonKey = ValueKey<String>('country_picker_phone_code');
   const phoneFieldKey = ValueKey<String>('country_phone_number');
   group('CountryPhoneInput -', () {
+    testWidgets('uses the bundled flag font only on Windows', (tester) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => const Scaffold(body: CountryPhoneInput()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final isWindows = defaultTargetPlatform == TargetPlatform.windows;
+      final flag = tester.widget<Text>(find.text(Country.ru().flagEmoji));
+      expect(
+        flag.style?.fontFamily,
+        isWindows ? 'TwemojiCountryFlags' : isNot('TwemojiCountryFlags'),
+      );
+    }, variant: TargetPlatformVariant.all());
+
     testWidgets('forwards surfaceBuilder to the picker', (tester) async {
       final types = <CountryPickerSurfaceType>{};
       await tester.pumpWidget(
@@ -1002,6 +1020,27 @@ void _$extendedCountryPhoneInputTest() {
   const buttonKey = ValueKey<String>('country_picker_button_extended');
   const phoneFieldKey = ValueKey<String>('country_phone_input_extended');
   group(r'CountryPhoneInput$Extended -', () {
+    testWidgets('uses the bundled flag font only on Windows', (tester) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => const Scaffold(body: CountryPhoneInput.extended()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final isWindows = defaultTargetPlatform == TargetPlatform.windows;
+      final label = tester.widget<Text>(
+        find.text('${Country.ru().flagEmoji} Russia'),
+      );
+      expect(
+        label.style?.fontFamilyFallback ?? const <String>[],
+        isWindows
+            ? contains('TwemojiCountryFlags')
+            : isNot(contains('TwemojiCountryFlags')),
+      );
+    }, variant: TargetPlatformVariant.all());
+
     testWidgets('forwards surfaceBuilder to the picker', (tester) async {
       final types = <CountryPickerSurfaceType>{};
       await tester.pumpWidget(

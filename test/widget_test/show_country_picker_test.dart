@@ -1117,6 +1117,38 @@ void main() => group('showCountryPicker -', () {
     });
   });
 
+  group('classic flag rendering -', () {
+    testWidgets('uses the bundled flag font only on Windows', (tester) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          builder: (context) => Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => showCountryPicker(
+                  context: context,
+                  filter: const ['RU'],
+                  showGroup: true,
+                ),
+                child: const Text('Show Picker'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Show Picker'));
+      await tester.pumpAndSettle();
+
+      final flag = tester.widget<Text>(find.text(Country.ru().flagEmoji));
+      expect(
+        flag.style?.fontFamily,
+        defaultTargetPlatform == TargetPlatform.windows
+            ? 'TwemojiCountryFlags'
+            : isNull,
+      );
+    }, variant: TargetPlatformVariant.all());
+  });
+
   group('iOS 26 flag rendering -', () {
     const regionalRU = '\u{1F1F7}\u{1F1FA}';
 
@@ -1158,23 +1190,26 @@ void main() => group('showCountryPicker -', () {
           _ => 1.6,
         };
 
-        if (defaultTargetPlatform == TargetPlatform.windows) {
-          // Segoe UI Emoji has no flags: ISO code fallback in a circle.
-          expect(find.text(regionalRU), findsNothing);
-          expect(
-            find.ancestor(of: find.text('RU'), matching: find.byType(ClipOval)),
-            findsOneWidget,
-          );
-        } else {
-          expect(
-            find.ancestor(
-              of: find.text(regionalRU),
-              matching: find.byType(ClipOval),
-            ),
-            findsOneWidget,
-          );
-          expect(fontSizeOf(tester, regionalRU), 40 * expectedScale);
-        }
+        expect(
+          find.ancestor(
+            of: find.text(regionalRU),
+            matching: find.byType(ClipOval),
+          ),
+          findsOneWidget,
+        );
+        expect(fontSizeOf(tester, regionalRU), 40 * expectedScale);
+
+        // Windows has no flag glyphs: the bundled Twemoji font is used.
+        final fontFamily = tester
+            .widget<Text>(find.text(regionalRU))
+            .style
+            ?.fontFamily;
+        expect(
+          fontFamily,
+          defaultTargetPlatform == TargetPlatform.windows
+              ? 'TwemojiCountryFlags'
+              : isNull,
+        );
       },
       variant: TargetPlatformVariant.all(),
     );
