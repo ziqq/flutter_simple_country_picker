@@ -285,10 +285,13 @@ class _CountriesListViewState extends State<CountryListView>
           child: ColoredBox(
             color:
                 pickerTheme.dividerColor ??
+                // Theme resolution always supplies a divider color.
+                // coverage:ignore-start
                 CupertinoDynamicColor.resolve(
                   CupertinoColors.opaqueSeparator,
                   context,
                 ),
+            // coverage:ignore-end
           ),
         ),
       ],
@@ -311,10 +314,13 @@ class _CountriesListViewState extends State<CountryListView>
     final side = BorderSide(
       color:
           pickerTheme.dividerColor ??
+          // Theme resolution always supplies a divider color.
+          // coverage:ignore-start
           CupertinoDynamicColor.resolve(
             CupertinoColors.opaqueSeparator,
             context,
           ),
+      // coverage:ignore-end
     );
     const color = Colors.transparent;
     void pop() {
@@ -557,10 +563,13 @@ class _CountriesListState extends State<_CountriesList> {
   @override
   void didUpdateWidget(covariant _CountriesList oldWidget) {
     super.didUpdateWidget(oldWidget);
+    // The parent owns a late final controller, so it cannot be replaced.
     if (oldWidget.controller != widget.controller) {
+      // coverage:ignore-start
       oldWidget.controller.removeListener(_groupByName);
       widget.controller.addListener(_groupByName);
       _groupByName();
+      // coverage:ignore-end
     }
   }
 
@@ -1224,10 +1233,13 @@ class _Flag$IOS26 extends StatelessWidget {
     );
     final badgeBorderColor =
         pickerTheme.secondaryBackgroundColor ??
+        // Theme resolution always supplies a secondary background color.
+        // coverage:ignore-start
         CupertinoDynamicColor.resolve(
           CupertinoColors.secondarySystemBackground,
           context,
         );
+    // coverage:ignore-end
 
     final emoji = country.iswWorldWide
         ? '\uD83C\uDF0D'

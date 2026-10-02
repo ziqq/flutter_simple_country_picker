@@ -204,8 +204,11 @@ class _InheritedCountries extends InheritedModel<_CountryScopeAspect> {
       context.getInheritedWidgetOfExactType<_InheritedCountries>(),
 
     // Notify about every change.
+    // No CountryScope API currently subscribes to the state aspect.
     _CountryScopeAspect.state =>
+      // coverage:ignore-start
       context.dependOnInheritedWidgetOfExactType<_InheritedCountries>(),
+    // coverage:ignore-end
 
     // Notify about countries list changes.
     _CountryScopeAspect.countries =>
@@ -250,7 +253,10 @@ class _InheritedCountries extends InheritedModel<_CountryScopeAspect> {
             ):
           // Notify about changes in countries list.
           return true;
+        // No CountryScope API currently subscribes to the state aspect.
+        // coverage:ignore-start
         case _CountryScopeAspect.state when !identical(oldWidget.state, state):
+          // coverage:ignore-end
           // Notify about changes in countries state.
           return true;
         default:
