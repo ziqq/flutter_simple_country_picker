@@ -62,8 +62,20 @@ write-capable configuration. After merge, run one manual label sync; following
 events will use the trusted default-branch file.
 ## Notifications
 
-`.github/workflows/notifications.yml` sends a required notification to Discord
-and Telegram when a new issue is opened.
+`.github/workflows/notifications.yml` calls
+`ziqq/actions/.github/workflows/notify-events.yml@7737ce8c4d87c656b7ccf5f78138d8d7e53a1b62`
+to send required Discord and Telegram notifications for newly opened issues
+and pull requests (including drafts and forks).
+
+Both events are explicitly enabled here with `notify-issues: true` and
+`notify-pull-requests: true`. Set either input to `false` to disable that event;
+the reusable workflow defaults both inputs to `false`. Edits, reopened items,
+and draft-to-ready changes do not send another notification.
+
+Templates belong to this repository: `.github/notify/templates/issue.md` and
+`.github/notify/templates/pull-request.md`. Pull request notifications use
+`pull_request_target` and check out only the trusted base SHA, never PR-head
+code with repository secrets.
 
 The final `notify` job in `.github/workflows/checkout.yml` runs after every CI
 result on pushes, manual runs, and same-repository pull requests. Fork and
