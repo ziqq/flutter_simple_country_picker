@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:flutter_simple_country_picker/src/controller/country_controller.dart';
@@ -83,6 +84,30 @@ void _$controllerTest() => group('CountryController -', () {
       await controller.getCountries();
       expect(controller.state.countries.any((c) => c.iswWorldWide), isFalse);
     });
+  });
+
+  test(
+    'excluded favorites are omitted from both favorites and main list',
+    () async {
+      when(provider.getCountries()).thenAnswer((_) async => [mockCountry]);
+      final filtered = CountryController(
+        provider: provider,
+        favorites: [mockCountry.countryCode],
+        exclude: [mockCountry.countryCode],
+      );
+      addTearDown(filtered.dispose);
+      expect(await filtered.getCountries(), isEmpty);
+      expect(filtered.state.countries, isEmpty);
+    },
+  );
+
+  test('countries without a localized name remain visible', () async {
+    final unknown = mockCountry.copyWith(countryCode: 'XX', name: 'Unknown');
+    when(provider.getCountries()).thenAnswer((_) async => [unknown]);
+    controller.initLocalization(
+      await CountryLocalizations.delegate.load(const Locale('en')),
+    );
+    expect(await controller.getCountries(), [unknown]);
   });
 
   test('getCountries excludes countries based on the exclude list', () async {

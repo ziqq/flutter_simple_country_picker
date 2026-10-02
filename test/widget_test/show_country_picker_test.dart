@@ -12,6 +12,38 @@ import 'package:flutter_test/flutter_test.dart';
 import '../util/test_util.dart';
 
 void main() => group('showCountryPicker -', () {
+  testWidgets('adaptive iOS sheet selects a country and calls whenComplete', (
+    tester,
+  ) async {
+    Country? selected;
+    var completed = 0;
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        locale: const Locale('en'),
+        builder: (context) => Scaffold(
+          body: ElevatedButton(
+            onPressed: () => showCountryPicker(
+              context: context,
+              adaptive: true,
+              filter: const ['RU'],
+              onSelect: (country) => selected = country,
+              whenComplete: () => completed++,
+            ),
+            child: const Text('Open adaptive picker'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open adaptive picker'));
+    await tester.pumpAndSettle();
+    expect(find.byType(CountryListView), findsOneWidget);
+    await tester.tap(find.text('Russia'));
+    await tester.pumpAndSettle();
+    expect(selected!.countryCode, 'RU');
+    expect(completed, 1);
+    expect(find.byType(CountryListView), findsNothing);
+  }, variant: TargetPlatformVariant.only(.iOS));
+
   testWidgets('displays bottom sheet with country list view', (tester) async {
     await tester.pumpWidget(
       createWidgetUnderTest(
@@ -977,6 +1009,28 @@ void main() => group('showCountryPicker -', () {
       await tester.pumpAndSettle();
       expect(find.byType(CountryListView), findsNothing);
     });
+
+    testWidgets(
+      'cancelled close gesture resets pressed state and keeps picker',
+      (tester) async {
+        ValueListenable<bool>? pressed;
+        await pumpPicker(tester, (context, surface, child) {
+          if (surface.type == CountryPickerSurfaceType.closeButton) {
+            pressed = surface.pressed;
+          }
+          return child;
+        });
+        final gesture = await tester.startGesture(
+          tester.getCenter(find.byKey(closeButton)),
+        );
+        await tester.pump(kPressTimeout);
+        expect(pressed!.value, isTrue);
+        await gesture.cancel();
+        await tester.pumpAndSettle();
+        expect(pressed!.value, isFalse);
+        expect(find.byType(CountryListView), findsOneWidget);
+      },
+    );
 
     testWidgets('builder with its own tap handler can call onPressed', (
       tester,
