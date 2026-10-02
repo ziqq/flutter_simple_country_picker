@@ -7,6 +7,41 @@ import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart
 import 'package:flutter_test/flutter_test.dart';
 
 void main() => group('CountryPickerTheme -', () {
+  testWidgets('resolves divider and badge colors from a partial theme', (
+    tester,
+  ) async {
+    for (final brightness in Brightness.values) {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(brightness: brightness),
+          home: InheritedCountryPickerTheme(
+            data: CountryPickerTheme(),
+            child: Builder(
+              builder: (context) {
+                final resolved = CountryPickerTheme.resolve(context);
+                expect(
+                  resolved.dividerColor,
+                  CupertinoDynamicColor.resolve(
+                    CupertinoColors.opaqueSeparator,
+                    context,
+                  ),
+                );
+                expect(
+                  resolved.secondaryBackgroundColor,
+                  CupertinoDynamicColor.resolve(
+                    CupertinoColors.secondarySystemBackground,
+                    context,
+                  ),
+                );
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        ),
+      );
+    }
+  });
+
   test('constructs with default values', () {
     final theme = CountryPickerTheme(
       accentColor: CupertinoColors.systemRed,

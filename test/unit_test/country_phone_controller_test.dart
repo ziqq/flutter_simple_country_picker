@@ -20,6 +20,13 @@ void main() => group('CountryPhoneController -', () {
         .add(countryCode);
   }
 
+  test('bundled candidates have ISO2 identifiers and integer priorities', () {
+    for (final entry in countries) {
+      expect(entry['iso2_cc'], allOf(isA<String>(), isNotEmpty));
+      expect(entry['level'], isA<int>(), reason: '${entry["iso2_cc"]}');
+    }
+  });
+
   group('immutable values -', () {
     test('equal resolutions have equal hashes and deduplicate in sets', () {
       const first = CountryPhoneResolution(
