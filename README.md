@@ -158,6 +158,7 @@ Register it in the delegate by creating your own `LocalizationsDelegate<CountryL
 
 Upgrade notes are documented in [MIGRATION.md](MIGRATION.md).
 
+- `0.12.0`: [Migrate to 0.12.0](MIGRATION.md#to-0120)
 - `0.11.1`: [Migrate to 0.11.1](MIGRATION.md#to-0111)
 - `0.10.0`: [Migrate to 0.10.0](MIGRATION.md#to-0100)
 - `0.9.0`: [Migrate to 0.9.0](MIGRATION.md#to-090)
@@ -452,7 +453,6 @@ MaterialApp(
         flagSize: 22,
         inputHeight: 56,
         padding: 16,
-        indent: 10,
         radius: 12,
       ),
     ],
@@ -460,6 +460,46 @@ MaterialApp(
 );
 ```
 
+#### iOS 26 style
+
+Set `style: CountryPickerStyle.ios26` to render the country picker closer to the native iOS 26 picker: a pill-shaped search field with a round close button, an inset rounded list section, circular flags, the phone code shown before the country name and a checkmark badge on the selected flag. The default is `CountryPickerStyle.classic`.
+
+```dart
+CountryPickerTheme(style: CountryPickerStyle.ios26)
+```
+
+Leave the colors unset to let them resolve from the ambient Cupertino theme, including the elevated dark-mode variants used by sheets.
+
+In the iOS 26 style scrolling the list also expands the sheet, and the list is clipped below a solid header.
+
+To paint your own surfaces behind the search field and the close button (for example a shader-based liquid glass), pass a `surfaceBuilder` to `showCountryPicker`, `CountryPhoneInput` or `CountryPhoneInput.extended`, like `TextField.contextMenuBuilder`. It receives the control content without the background; taps and accessibility stay handled by the picker.
+
+```dart
+Widget glassSurface(
+  BuildContext context,
+  CountryPickerSurface surface,
+  Widget child,
+) => MyLiquidGlass(
+  shape: surface.shape,
+  pressed: surface.pressed, // ValueListenable<bool> for press animations
+  child: child,
+);
+
+showCountryPicker(context: context, surfaceBuilder: glassSurface);
+```
+
+
+## Flags on Windows
+
+The Windows emoji font has no country flags, so a flag emoji is shown as two
+letters there. On Windows the package loads a bundled flags-only font
+(about 180 KB). It is declared as a Windows-only asset, so iOS, Android,
+macOS, Linux and web builds do not include it. The package requires Flutter
+3.44 or newer for its Cupertino sheet API.
+
+The font is applied only to flag text, so custom package fonts and their
+fallbacks remain in use for country names and phone codes. The bundled
+font's license notices are included in Flutter's application license list.
 
 ## All Countries List
 
@@ -469,7 +509,7 @@ See the [All Countries List](https://github.com/ziqq/flutter_simple_country_pick
 ## Maintainer Notes
 
 For bundled dataset maintenance, shared calling-code caveats, and a copy-paste
-template for new entries, see [docs/country_codes.md](docs/country_codes.md).
+template for new entries, see [docs/country-codes.md](docs/country-codes.md).
 
 
 ## Changelog
@@ -492,6 +532,12 @@ If you want to support the development of this library:
 ## License
 
 [MIT](https://github.com/ziqq/flutter_simple_country_picker/blob/main/LICENSE)
+
+Flags on Windows use the bundled "Twemoji Country Flags" font from
+[country-flag-emoji-polyfill](https://github.com/talkjs/country-flag-emoji-polyfill) (MIT).
+The flag artwork comes from [Twemoji](https://github.com/jdecked/twemoji) and is licensed under
+[CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/). See
+[assets/fonts/TwemojiCountryFlags.LICENSE.md](assets/fonts/TwemojiCountryFlags.LICENSE.md).
 
 
 ## Coverage

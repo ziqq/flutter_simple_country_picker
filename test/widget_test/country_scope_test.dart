@@ -146,4 +146,33 @@ void main() => group('CountryScope -', () {
       expect(country!.countryCode, 'RU');
     },
   );
+  testWidgets(
+    'rebuilding a scope without state changes does not notify readers',
+    (tester) async {
+      var builds = 0;
+      late StateSetter rebuild;
+      final child = Builder(
+        builder: (context) {
+          CountryScope.countriesOf(context);
+          builds++;
+          return const SizedBox();
+        },
+      );
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          builder: (_) => StatefulBuilder(
+            builder: (context, setState) {
+              rebuild = setState;
+              return CountryScope(child: child);
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final before = builds;
+      rebuild(() {});
+      await tester.pumpAndSettle();
+      expect(builds, before);
+    },
+  );
 });

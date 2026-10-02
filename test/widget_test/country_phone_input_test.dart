@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart' show CupertinoButton;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
@@ -19,6 +20,140 @@ void _$defaultCountryPhoneInputTest() {
   const buttonKey = ValueKey<String>('country_picker_phone_code');
   const phoneFieldKey = ValueKey<String>('country_phone_number');
   group('CountryPhoneInput -', () {
+    testWidgets(
+      'notifier-driven background does not request redundant repaint',
+      (tester) async {
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            builder: (_) => const Scaffold(body: CountryPhoneInput()),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final paints = tester.widgetList<CustomPaint>(
+          find.descendant(
+            of: find.byType(CountryPhoneInput),
+            matching: find.byType(CustomPaint),
+          ),
+        );
+        final background = paints
+            .map((paint) => paint.painter)
+            .whereType<CustomPainter>()
+            .first;
+        expect(background.shouldRepaint(background), isFalse);
+        expect(background.shouldRebuildSemantics(background), isFalse);
+      },
+    );
+
+    testWidgets('uses the bundled flag font only on Windows', (tester) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => const Scaffold(body: CountryPhoneInput()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final isWindows = defaultTargetPlatform == TargetPlatform.windows;
+      final flag = tester.widget<RichText>(
+        find.descendant(
+          of: find.text(Country.ru().flagEmoji),
+          matching: find.byType(RichText),
+        ),
+      );
+      expect(
+        flag.text
+            .getSpanForPosition(const TextPosition(offset: 0))
+            ?.style
+            ?.fontFamily,
+        isWindows ? 'TwemojiCountryFlags' : isNot('TwemojiCountryFlags'),
+      );
+    }, variant: TargetPlatformVariant.all());
+
+    testWidgets('preserves package fonts and fallbacks beside the flag', (
+      tester,
+    ) async {
+      const textStyle = TextStyle(
+        fontFamily: 'Body',
+        package: 'theme_fonts',
+        fontFamilyFallback: <String>['Fallback'],
+        fontSize: 19,
+        height: 1.4,
+        color: Colors.purple,
+      );
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => Scaffold(
+            body: InheritedCountryPickerTheme(
+              data: CountryPickerTheme(textStyle: textStyle),
+              child: const CountryPhoneInput(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final flag = tester.widget<RichText>(
+        find.descendant(
+          of: find.text(Country.ru().flagEmoji),
+          matching: find.byType(RichText),
+        ),
+      );
+      final flagSpan = flag.text.getSpanForPosition(
+        const TextPosition(offset: 0),
+      );
+      expect(
+        flagSpan?.style?.fontFamily,
+        defaultTargetPlatform == TargetPlatform.windows
+            ? 'TwemojiCountryFlags'
+            : isNot('TwemojiCountryFlags'),
+      );
+      expect(flag.text.style?.fontSize, textStyle.fontSize);
+      expect(flag.text.style?.height, textStyle.height);
+      expect(flag.text.style?.color, textStyle.color);
+
+      final phoneCode = tester.widget<RichText>(
+        find.descendant(of: find.text('+7'), matching: find.byType(RichText)),
+      );
+      expect(phoneCode.text.style?.fontFamily, textStyle.fontFamily);
+      expect(
+        phoneCode.text.style?.fontFamilyFallback,
+        textStyle.fontFamilyFallback,
+      );
+    }, variant: TargetPlatformVariant.all());
+
+    testWidgets('forwards surfaceBuilder to the picker', (tester) async {
+      final types = <CountryPickerSurfaceType>{};
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => Scaffold(
+            body: InheritedCountryPickerTheme(
+              data: CountryPickerTheme(style: CountryPickerStyle.ios26),
+              child: CountryPhoneInput(
+                showSearch: true,
+                surfaceBuilder: (context, surface, child) {
+                  types.add(surface.type);
+                  return child;
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(
+        find.byKey(const ValueKey<String>('country_picker_phone_code')),
+      );
+      await tester.pumpAndSettle();
+
+      expect(types, <CountryPickerSurfaceType>{
+        CountryPickerSurfaceType.searchField,
+        CountryPickerSurfaceType.closeButton,
+      });
+    });
+
     testWidgets('should use numeric keyboard type', (tester) async {
       await tester.pumpWidget(
         createWidgetUnderTest(
@@ -54,6 +189,56 @@ void _$defaultCountryPhoneInputTest() {
           .first;
       // Cehck that hintText matches expected mask for default country (RU)
       expect(textField.decoration?.hintText, Country.ru().mask);
+    });
+
+    testWidgets('gap between code button and phone field is derived '
+        'from padding and ignores indent', (tester) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => Scaffold(
+            body: InheritedCountryPickerTheme(
+              data: CountryPickerTheme(
+                padding: 24,
+                // ignore: deprecated_member_use_from_same_package
+                indent: 40,
+              ),
+              child: const CountryPhoneInput(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final buttonEnd = tester.getTopRight(find.byKey(buttonKey)).dx;
+      final fieldStart = tester
+          .getTopLeft(
+            find.byKey(
+              const ValueKey<String>('country_phone_number_background'),
+            ),
+          )
+          .dx;
+      expect(fieldStart - buttonEnd, 24 / 1.6);
+    });
+
+    testWidgets('country button announces country instead of emoji', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => const Scaffold(body: CountryPhoneInput()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.getSemantics(find.bySemanticsLabel('Russia, +7')),
+        isSemantics(isButton: true, hasTapAction: true),
+      );
+      expect(find.bySemanticsLabel(Country.ru().flagEmoji), findsNothing);
+      handle.dispose();
     });
 
     group('initialization -', () {
@@ -920,6 +1105,136 @@ void _$extendedCountryPhoneInputTest() {
   const buttonKey = ValueKey<String>('country_picker_button_extended');
   const phoneFieldKey = ValueKey<String>('country_phone_input_extended');
   group(r'CountryPhoneInput$Extended -', () {
+    testWidgets('uses the bundled flag font only on Windows', (tester) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => const Scaffold(body: CountryPhoneInput.extended()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final isWindows = defaultTargetPlatform == TargetPlatform.windows;
+      final label = tester.widget<RichText>(
+        find.descendant(
+          of: find.text('${Country.ru().flagEmoji} Russia'),
+          matching: find.byType(RichText),
+        ),
+      );
+      expect(
+        label.text
+            .getSpanForPosition(const TextPosition(offset: 0))
+            ?.style
+            ?.fontFamily,
+        isWindows ? 'TwemojiCountryFlags' : isNot('TwemojiCountryFlags'),
+      );
+    }, variant: TargetPlatformVariant.all());
+
+    testWidgets('preserves package fonts and fallbacks beside the flag', (
+      tester,
+    ) async {
+      const textStyle = TextStyle(
+        fontFamily: 'Body',
+        package: 'theme_fonts',
+        fontFamilyFallback: <String>['Fallback'],
+        height: 1.4,
+      );
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => Scaffold(
+            body: InheritedCountryPickerTheme(
+              data: CountryPickerTheme(textStyle: textStyle),
+              child: const CountryPhoneInput.extended(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final label = tester.widget<RichText>(
+        find.descendant(
+          of: find.text('${Country.ru().flagEmoji} Russia'),
+          matching: find.byType(RichText),
+        ),
+      );
+      final flagSpan = label.text.getSpanForPosition(
+        const TextPosition(offset: 0),
+      );
+      expect(
+        flagSpan?.style?.fontFamily,
+        defaultTargetPlatform == TargetPlatform.windows
+            ? 'TwemojiCountryFlags'
+            : isNot('TwemojiCountryFlags'),
+      );
+      expect(label.text.style?.fontFamily, textStyle.fontFamily);
+      expect(
+        label.text.style?.fontFamilyFallback,
+        textStyle.fontFamilyFallback,
+      );
+      expect(label.text.style?.height, textStyle.height);
+      expect(label.text.style?.fontWeight, FontWeight.w500);
+      final nameSpan = label.text.getSpanForPosition(
+        TextPosition(offset: Country.ru().flagEmoji.length + 1),
+      );
+      expect(nameSpan?.style?.fontFamily, isNot('TwemojiCountryFlags'));
+    }, variant: TargetPlatformVariant.all());
+
+    testWidgets('forwards surfaceBuilder to the picker', (tester) async {
+      final types = <CountryPickerSurfaceType>{};
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => Scaffold(
+            body: InheritedCountryPickerTheme(
+              data: CountryPickerTheme(style: CountryPickerStyle.ios26),
+              child: CountryPhoneInput.extended(
+                showSearch: true,
+                surfaceBuilder: (context, surface, child) {
+                  types.add(surface.type);
+                  return child;
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(
+        find.byKey(const ValueKey<String>('country_picker_button_extended')),
+      );
+      await tester.pumpAndSettle();
+
+      expect(types, <CountryPickerSurfaceType>{
+        CountryPickerSurfaceType.searchField,
+        CountryPickerSurfaceType.closeButton,
+      });
+    });
+
+    testWidgets('country button announces country instead of emoji', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => const Scaffold(body: CountryPhoneInput.extended()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.getSemantics(find.bySemanticsLabel('Russia, +7')),
+        isSemantics(isButton: true, hasTapAction: true),
+      );
+      expect(
+        find.bySemanticsLabel(RegExp(Country.ru().flagEmoji)),
+        findsNothing,
+      );
+      handle.dispose();
+    });
+
     testWidgets('should use numeric keyboard type', (tester) async {
       await tester.pumpWidget(
         createWidgetUnderTest(

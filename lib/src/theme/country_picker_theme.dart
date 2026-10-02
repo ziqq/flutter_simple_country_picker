@@ -8,6 +8,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_simple_country_picker/src/theme/country_picker_style.dart';
 
 /// Default height for [CountryPhoneInput].
 const double _kDefaultInputHeight = 56.0;
@@ -68,6 +69,10 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     Color? onSecondaryBackgroundColor,
     double? flagSize,
     double? padding,
+    @Deprecated(
+      'No longer used: spacing is derived from padding. '
+      'This property will be removed in v1.0.0 releases.',
+    )
     double? indent,
     double? radius,
     double? inputHeight,
@@ -76,6 +81,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     TextStyle? textStyle,
     TextStyle? secondaryTextStyle,
     TextStyle? searchTextStyle,
+    CountryPickerStyle? style,
   }) {
     inputHeight ??= _kDefaultInputHeight;
     flagSize ??= _kDefaultFlagSize;
@@ -99,6 +105,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       padding: padding,
       indent: indent,
       radius: radius,
+      style: style ?? CountryPickerStyle.classic,
     );
   }
 
@@ -119,8 +126,13 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     required this.textStyle,
     required this.flagSize,
     required this.padding,
-    required this.indent,
     required this.radius,
+    @Deprecated(
+      'No longer used: spacing is derived from padding. '
+      'This property will be removed in v1.0.0 releases.',
+    )
+    this.indent = _kDefaultIndent,
+    this.style = CountryPickerStyle.classic,
   });
 
   /// The state from the closest instance of this class
@@ -186,6 +198,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       padding: other?.padding ?? theme?.padding ?? defaults.padding,
       indent: other?.indent ?? theme?.indent ?? defaults.indent,
       radius: other?.radius ?? theme?.radius ?? defaults.radius,
+      style: other?.style ?? theme?.style ?? defaults.style,
     );
   }
 
@@ -243,13 +256,23 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   /// If null, set to `16.0`
   final double padding;
 
-  /// The indent of the divider.
-  /// If null, set to `10.0`
+  /// Not used anymore: gaps between controls, the clear icon inset and
+  /// the vertical padding of `CountryPhoneInput.extended` are derived
+  /// from [padding].
+  @Deprecated(
+    'No longer used: spacing is derived from padding. '
+    'This property will be removed in v1.0.0 releases.',
+  )
   final double indent;
 
   /// The border radius of elements.
   /// If null, set to `12.0`
   final double radius;
+
+  /// The visual style of the country picker.
+  ///
+  /// Default is [CountryPickerStyle.classic].
+  final CountryPickerStyle style;
 
   @override
   CountryPickerTheme copyWith({
@@ -265,11 +288,16 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     double? inputHeight,
     double? flagSize,
     double? padding,
+    @Deprecated(
+      'No longer used: spacing is derived from padding. '
+      'This property will be removed in v1.0.0 releases.',
+    )
     double? indent,
     double? radius,
     TextStyle? secondaryTextStyle,
     TextStyle? searchTextStyle,
     TextStyle? textStyle,
+    CountryPickerStyle? style,
   }) => CountryPickerTheme(
     accentColor: accentColor ?? this.accentColor,
     backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -289,6 +317,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     secondaryTextStyle: secondaryTextStyle ?? this.secondaryTextStyle,
     searchTextStyle: searchTextStyle ?? this.searchTextStyle,
     textStyle: textStyle ?? this.textStyle,
+    style: style ?? this.style,
   );
 
   /// Controls how the properties change on theme changes
@@ -334,6 +363,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       padding: ui.lerpDouble(padding, other.padding, t),
       indent: ui.lerpDouble(indent, other.indent, t),
       radius: ui.lerpDouble(radius, other.radius, t),
+      style: t < .5 ? style : other.style,
     );
   }
 
@@ -355,6 +385,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     padding,
     indent,
     radius,
+    style,
   ]);
 
   @override
@@ -376,7 +407,8 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         other.flagSize == flagSize &&
         other.padding == padding &&
         other.indent == indent &&
-        other.radius == radius;
+        other.radius == radius &&
+        other.style == style;
   }
 
   @override
@@ -493,6 +525,13 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
           'radius',
           radius,
           defaultValue: _kDefaultRadius,
+        ),
+      )
+      ..add(
+        EnumProperty<CountryPickerStyle>(
+          'style',
+          style,
+          defaultValue: CountryPickerStyle.classic,
         ),
       );
   }

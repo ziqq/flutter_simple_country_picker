@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:flutter_simple_country_picker/src/controller/country_controller.dart';
@@ -47,6 +48,67 @@ void _$controllerTest() => group('CountryController -', () {
       verify(provider.getCountries()).called(1);
     },
   );
+
+  group('showWorldWide -', () {
+    test('puts the World Wide option before favorites', () async {
+      final ca = mockCountry.copyWith(name: 'Canada', countryCode: 'CA');
+      final us = mockCountry.copyWith(name: 'United States', countryCode: 'US');
+      when(provider.getCountries()).thenAnswer((_) async => [ca, us]);
+
+      controller = CountryController(
+        provider: provider,
+        showWorldWide: true,
+        favorites: const ['US'],
+      );
+      await controller.getCountries();
+
+      expect(controller.state.countries.map((c) => c.countryCode), <String>[
+        'WW',
+        'US',
+        'CA',
+        'US',
+      ]);
+    });
+
+    test('is hidden by default and when excluded', () async {
+      when(provider.getCountries()).thenAnswer((_) async => [mockCountry]);
+
+      await controller.getCountries();
+      expect(controller.state.countries.any((c) => c.iswWorldWide), isFalse);
+
+      controller = CountryController(
+        provider: provider,
+        showWorldWide: true,
+        exclude: const ['ww'],
+      );
+      await controller.getCountries();
+      expect(controller.state.countries.any((c) => c.iswWorldWide), isFalse);
+    });
+  });
+
+  test(
+    'excluded favorites are omitted from both favorites and main list',
+    () async {
+      when(provider.getCountries()).thenAnswer((_) async => [mockCountry]);
+      final filtered = CountryController(
+        provider: provider,
+        favorites: [mockCountry.countryCode],
+        exclude: [mockCountry.countryCode],
+      );
+      addTearDown(filtered.dispose);
+      expect(await filtered.getCountries(), isEmpty);
+      expect(filtered.state.countries, isEmpty);
+    },
+  );
+
+  test('countries without a localized name remain visible', () async {
+    final unknown = mockCountry.copyWith(countryCode: 'XX', name: 'Unknown');
+    when(provider.getCountries()).thenAnswer((_) async => [unknown]);
+    controller.initLocalization(
+      await CountryLocalizations.delegate.load(const Locale('en')),
+    );
+    expect(await controller.getCountries(), [unknown]);
+  });
 
   test('getCountries excludes countries based on the exclude list', () async {
     final countries = [mockCountry.copyWith(name: 'Canada', countryCode: 'CA')];

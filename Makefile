@@ -24,13 +24,17 @@ help: ## Help dialog
 precommit: ## validate the branch before commit
 precommit: all
 
+.PHONY: setup
+setup: ## Install the toolchain pinned in mise.toml
+				@mise install
+
 .PHONY: doctor
-doctor: ## Check fvm flutter doctor
-				@fvm flutter doctor
+doctor: ## Check flutter doctor
+				@mise exec -- flutter doctor
 
 .PHONY: version
-version: ## Check fvm flutter version
-				@fvm flutter --version
+version: ## Check flutter version
+				@mise exec -- flutter --version
 
 .PHONY: generate
 generate: ## Generate code
@@ -38,57 +42,61 @@ generate: ## Generate code
 
 .PHONY: generate-json
 generate-json: ## Generate json country data from dart code
-				@fvm dart --disable-analytics run tool/generate_json.dart
+				@mise exec -- dart --disable-analytics run tool/generate_json.dart
 
 .PHONY: build-runner
 build-runner: ## Run build_runner:build
-		@fvm dart --disable-analytics && fvm dart run build_runner build --delete-conflicting-outputs --release
+		@mise exec -- dart --disable-analytics && mise exec -- dart run build_runner build --delete-conflicting-outputs --release
 
 .PHONY: l10n
 l10n: ## Generate localization
-				@fvm dart pub global activate intl_utils
-				@fvm dart pub global run intl_utils:generate
-				@fvm flutter gen-l10n --arb-dir lib/src/localization/translations --output-dir lib/src/localization/generated --template-arb-file intl_ru.arb
+				@mise exec -- dart pub global activate intl_utils
+				@mise exec -- dart pub global run intl_utils:generate
+				@mise exec -- flutter gen-l10n --arb-dir lib/src/localization/translations --output-dir lib/src/localization/generated --template-arb-file intl_ru.arb
 
 .PHONY: format
 format: ## Format code
-				@find lib test -path '*/generated/*' -prune -o -type f -name '*.dart' ! -name '*.*.dart' ! -name 'messages_.*.dart' ! -name 'l10n.dart' -print0 | xargs -0 dart format --set-exit-if-changed --line-length 80 -o none || (echo "¯\_(ツ)_/¯ Format code error"; exit 1)
+				@find lib test example/integration_test -path '*/generated/*' -prune -o -type f -name '*.dart' ! -name '*.*.dart' ! -name 'messages_.*.dart' ! -name 'l10n.dart' -print0 | xargs -0 mise exec -- dart format --set-exit-if-changed --line-length 80 -o none || (echo "¯\_(ツ)_/¯ Format code error"; exit 1)
 
 .PHONY: fix
 fix: format ## Fix code
-				@fvm dart fix --apply lib
+				@mise exec -- dart fix --apply lib
 
 .PHONY: clean-cache
 clean-cache: ## Clean the pub cache
-				@fvm flutter pub cache repair
+				@mise exec -- flutter pub cache repair
 
 .PHONY: clean
 clean: ## Clean flutter
-				@fvm flutter clean
+				@mise exec -- flutter clean
 
 .PHONY: get
 get: ## Get dependencies
-				@fvm flutter pub get || (echo "¯\_(ツ)_/¯Get dependencies error"; exit 1)
+				@mise exec -- flutter pub get || (echo "¯\_(ツ)_/¯Get dependencies error"; exit 1)
 
 .PHONY: update
 update: get build-runner ## Update dependencies and codegen
-				@cd example fvm flutter pub get || (echo "¯\_(ツ)_/¯Get dependencies error"; exit 1)
+				@cd example && mise exec -- flutter pub get || (echo "¯\_(ツ)_/¯Get dependencies error"; exit 1)
 
 .PHONY: analyze
 analyze: ## Analyze code
-				@fvm flutter analyze --fatal-warnings --no-fatal-infos lib/ test/ || (echo "¯\_(ツ)_/¯ Analyze code error"; exit 1)
+				@mise exec -- flutter analyze --fatal-warnings --no-fatal-infos lib/ test/ example/integration_test/ || (echo "¯\_(ツ)_/¯ Analyze code error"; exit 1)
 
 .PHONY: check
 check: ## Check code
-				@fvm dart pub global activate dependency_validator || (echo "¯\_(ツ)_/¯ Dependency Validator activation error"; exit 1)
-				@fvm dart pub global run dependency_validator:dependency_validator || (echo "¯\_(ツ)_/¯ Dependency Validator error"; exit 1)
-				@fvm dart pub publish --dry-run || (echo "¯\_(ツ)_/¯ Publish dry-run error"; exit 2)
-				@fvm dart pub global activate pana || (echo "¯\_(ツ)_/¯ Pana activation error"; exit 3)
-				@fvm dart pub global run pana --json --no-warning > log.pana.json || (echo "¯\_(ツ)_/¯ Pana error"; exit 3)
+				@mise exec -- dart pub global activate dependency_validator || (echo "¯\_(ツ)_/¯ Dependency Validator activation error"; exit 1)
+				@mise exec -- dart pub global run dependency_validator:dependency_validator || (echo "¯\_(ツ)_/¯ Dependency Validator error"; exit 1)
+				@mise exec -- dart pub publish --dry-run || (echo "¯\_(ツ)_/¯ Publish dry-run error"; exit 2)
+				@mise exec -- dart pub global activate pana || (echo "¯\_(ツ)_/¯ Pana activation error"; exit 3)
+				# Pana reads repository metadata and pubspecs; fetch large asset blobs on demand.
+				@GIT_CONFIG_COUNT=2 \
+					GIT_CONFIG_KEY_0=remote.origin.promisor GIT_CONFIG_VALUE_0=true \
+					GIT_CONFIG_KEY_1=remote.origin.partialclonefilter GIT_CONFIG_VALUE_1=blob:none \
+					mise exec -- dart pub global run pana --json --no-warning > log.pana.json || (echo "¯\_(ツ)_/¯ Pana error"; exit 3)
 
 .PHONY: publish
 publish: ## Publish package
-				@fvm dart pub publish --server=https://pub.dartlang.org || (echo "¯\_(ツ)_/¯Publish error"; exit 1)
+				@mise exec -- dart pub publish --server=https://pub.dartlang.org || (echo "¯\_(ツ)_/¯Publish error"; exit 1)
 
 .PHONY: coverage
 coverage: ## Runs get coverage
@@ -96,13 +104,13 @@ coverage: ## Runs get coverage
 
 .PHONY: test-unit
 test-unit: ## Runs unit and widget tests
-				@fvm flutter test --coverage test/flutter_simple_country_picker_test.dart
+				@mise exec -- flutter test --coverage test/flutter_simple_country_picker_test.dart
 				@lcov --remove coverage/lcov.info 'lib/src/localization/*' -o coverage/lcov.info
 				@genhtml coverage/lcov.info --output=coverage -o coverage/html || (echo "¯\_(ツ)_/¯ Error while running genhtml with coverage"; exit 2)
 
 .PHONY: tag
 tag: ## Add a tag to the current commit
-	@dart run tool/tag.dart
+	@mise exec -- dart run tool/tag.dart
 
 .PHONY: tag-add
 tag-add: ## Make command to add TAG. E.g: make tag-add TAG=v1.0.0

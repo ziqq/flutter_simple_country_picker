@@ -20,7 +20,7 @@ country dataset. `lib/src/constant/country_codes.json` is a generated mirror and
 must never be edited manually.
 
 For a deeper maintainer guide with concrete shared-calling-code examples, see
-`docs/country_codes.md`.
+`docs/country-codes.md`.
 
 ### Update workflow
 
@@ -28,19 +28,19 @@ For a deeper maintainer guide with concrete shared-calling-code examples, see
 2. Regenerate the JSON mirror:
 
 	 ```shell
-	 fvm dart --disable-analytics run tool/generate_json.dart
+	 mise exec -- dart --disable-analytics run tool/generate_json.dart
 	 ```
 
 3. Run the country dataset tests. At minimum, run:
 
 	 ```shell
-	 fvm flutter test test/unit_test/country_codes_test.dart
+	 mise exec -- flutter test test/unit_test/country_codes_test.dart
 	 ```
 
 4. If the new entry changes phone resolution behavior, also run:
 
 	 ```shell
-	 fvm flutter test test/unit_test/country_phone_controller_test.dart
+	 mise exec -- flutter test test/unit_test/country_phone_controller_test.dart
 	 ```
 
 ### Required field invariants

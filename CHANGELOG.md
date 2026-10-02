@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.12.0-pre.1
+- **DEPRECATED**: `CountryPickerTheme.indent`; it no longer has an effect and will be removed in v1.0.0. Gaps between controls, the search clear icon inset and the vertical padding of `CountryPhoneInput.extended` are now derived from `padding` (`padding / 1.6`, `padding / 3.2`); with the default `padding` the layout is unchanged, [#17](https://github.com/ziqq/flutter_simple_country_picker/issues/17)
+- **ADDED**: `CountryPickerStyle` and `CountryPickerTheme.style`; `CountryPickerStyle.ios26` renders the country picker in the iOS 26 style: pill-shaped search field with a round close button, inset rounded list section, circular flags, phone code before the country name, and a checkmark badge on the selected flag, [#15](https://github.com/ziqq/flutter_simple_country_picker/issues/15)
+- **ADDED**: in the iOS 26 style scrolling the list expands the sheet, which snaps to its initial or full height
+- **ADDED**: `surfaceBuilder` to `showCountryPicker`, `CountryPhoneInput` and `CountryPhoneInput.extended`, and `CountryPickerSurface`, to paint custom surfaces (e.g. liquid glass) behind the iOS 26 search field and close button
+- **ADDED**: semantics for country tiles, group headers and the `CountryPhoneInput` country buttons; emoji flags are no longer announced
+- **CHANGED**: the minimum Flutter version is now 3.44.0, required by the Cupertino sheet scrollableBuilder API
+- **FIXED**: flags on Windows: the Windows emoji font has no country flags, so the package now bundles the "Twemoji Country Flags" font as a Windows-only asset and uses it for flags in the picker and `CountryPhoneInput` while preserving custom package fonts and their fallbacks, [#19](https://github.com/ziqq/flutter_simple_country_picker/issues/19)
+- **FIXED**: countries with diacritics (e.g. `Österreich`, `Égypte`) are sorted and grouped with their base letter instead of after `Z`, and search ignores diacritics, [#18](https://github.com/ziqq/flutter_simple_country_picker/issues/18)
+- **FIXED**: `showWorldWide` was accepted but ignored; the World Wide option is now shown on top of the list
+- **FIXED**: in grouped mode favorites no longer split a letter group into two sections with the same header
+- **FIXED**: in grouped mode a search without results no longer keeps showing the previous groups
+- **FIXED**: in grouped mode countries without a localized name are no longer dropped
+
 ## 0.11.1
 - **DEPRECATED**: `useHaptickFeedback`; use `useHapticFeedback` instead. When both are provided, `useHapticFeedback` takes precedence
 - **ADDED**: `useHapticFeedback` to `showCountryPicker`, `CountryPickerOptions`, `CountryPhoneInput`, and `CountryPhoneInput.extended`
