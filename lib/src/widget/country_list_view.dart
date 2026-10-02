@@ -12,7 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/controller/country_controller.dart';
 import 'package:flutter_simple_country_picker/src/data/country_provider.dart';
-import 'package:flutter_simple_country_picker/src/util/country_flag_font.dart';
+import 'package:flutter_simple_country_picker/src/util/country_flag_font_util.dart';
 import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 
 /// Height of the search field and the close button in the iOS 26 style.
@@ -1174,7 +1174,7 @@ class _Flag extends StatelessWidget {
           style: TextStyle(
             fontFamily: country.iswWorldWide
                 ? null
-                : CountryFlagFont.fontFamily,
+                : CountryFlagFontUtil.fontFamily,
           ),
         ),
         style: TextStyle(fontSize: pickerTheme.flagSize ?? 22, height: 1),
@@ -1243,7 +1243,7 @@ class _Flag$IOS26 extends StatelessWidget {
           style: TextStyle(
             fontFamily: country.iswWorldWide
                 ? null
-                : CountryFlagFont.fontFamily,
+                : CountryFlagFontUtil.fontFamily,
           ),
         ),
         textAlign: TextAlign.center,

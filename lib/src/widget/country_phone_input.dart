@@ -4,7 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
-import 'package:flutter_simple_country_picker/src/util/country_flag_font.dart';
+import 'package:flutter_simple_country_picker/src/util/country_flag_font_util.dart';
 import 'package:meta/meta.dart';
 
 /// {@template country_phone_input}
@@ -433,7 +433,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                             TextSpan(
                               text: selected.flagEmoji,
                               style: TextStyle(
-                                fontFamily: CountryFlagFont.fontFamily,
+                                fontFamily: CountryFlagFontUtil.fontFamily,
                               ),
                             ),
                             style: textStyle?.copyWith(letterSpacing: 0),
@@ -606,7 +606,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                       TextSpan(
                         text: selected.flagEmoji,
                         style: TextStyle(
-                          fontFamily: CountryFlagFont.fontFamily,
+                          fontFamily: CountryFlagFontUtil.fontFamily,
                         ),
                       ),
                       TextSpan(

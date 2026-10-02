@@ -6,7 +6,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-/// {@template country_flag_font}
+/// {@template country_flag_font_util}
 /// Flag glyphs for platforms whose emoji font has no country flags.
 ///
 /// Windows' Segoe UI Emoji renders a flag emoji as two regional indicator
@@ -17,14 +17,16 @@ import 'package:flutter/services.dart';
 /// Flutter web is not affected: it always falls back to Noto Color Emoji.
 /// {@endtemplate}
 @internal
-abstract final class CountryFlagFont {
-  /// {@macro country_flag_font}
-  const CountryFlagFont._();
+abstract final class CountryFlagFontUtil {
+  /// {@macro country_flag_font_util}
+  const CountryFlagFontUtil._();
 
   /// The font family registered with [FontLoader].
   static const String family = 'TwemojiCountryFlags';
 
   /// The bundled font asset key.
+  ///
+  /// [rootBundle] prefixes dependency asset paths with `packages/<package>/`.
   static const String asset =
       'packages/flutter_simple_country_picker/assets/fonts/'
       'TwemojiCountryFlags.ttf';
@@ -32,8 +34,7 @@ abstract final class CountryFlagFont {
   static Future<void>? _loading;
 
   /// Whether flags need the bundled font on the current platform.
-  static bool get isRequired =>
-      !kIsWeb && defaultTargetPlatform == TargetPlatform.windows;
+  static bool get isRequired => !kIsWeb && defaultTargetPlatform == .windows;
 
   /// The family to use for a flag-only text, or `null` to use the
   /// platform emoji font.

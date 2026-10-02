@@ -509,7 +509,7 @@ See the [All Countries List](https://github.com/ziqq/flutter_simple_country_pick
 ## Maintainer Notes
 
 For bundled dataset maintenance, shared calling-code caveats, and a copy-paste
-template for new entries, see [docs/country_codes.md](docs/country_codes.md).
+template for new entries, see [docs/country-codes.md](docs/country-codes.md).
 
 
 ## Changelog
