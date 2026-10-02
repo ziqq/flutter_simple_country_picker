@@ -26,7 +26,7 @@ abstract final class CountryFlagFontUtil {
 
   /// The bundled font asset key.
   ///
-  /// [rootBundle] prefixes dependency asset paths with `packages/<package>/`.
+  /// Dependency assets use the `packages/<package>/` prefix in [rootBundle].
   static const String asset =
       'packages/flutter_simple_country_picker/assets/fonts/'
       'TwemojiCountryFlags.ttf';
