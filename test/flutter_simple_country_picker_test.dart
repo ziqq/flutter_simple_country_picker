@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'unit_test/country_codes_test.dart' as unit_country_codes_test;
 import 'unit_test/country_controller_test.dart' as unit_country_controller_test;
+import 'unit_test/country_flag_font_util_test.dart'
+    as unit_country_flag_font_util_test;
 import 'unit_test/country_input_formater_test.dart'
     as unit_country_input_formater_test;
 import 'unit_test/country_localizations_test.dart'
@@ -16,6 +18,8 @@ import 'unit_test/country_test.dart' as unit_country_test;
 import 'unit_test/country_util_test.dart' as unit_country_util_test;
 import 'widget_test/country_input_formater_test.dart'
     as widget_country_input_formater_test;
+import 'widget_test/country_list_view_test.dart'
+    as widget_country_list_view_test;
 import 'widget_test/country_localizations_test.dart'
     as widget_country_localizations_test;
 import 'widget_test/country_parser_test.dart' as widget_countries_parser_test;
@@ -33,6 +37,7 @@ void main() {
     group('unit_test -', () {
       unit_country_codes_test.main();
       unit_country_controller_test.main();
+      unit_country_flag_font_util_test.main();
       unit_country_input_formater_test.main();
       unit_country_localizations_test.main();
       unit_country_parser_test.main();
@@ -44,6 +49,7 @@ void main() {
     });
     group('widget_test -', () {
       widget_country_input_formater_test.main();
+      widget_country_list_view_test.main();
       widget_country_localizations_test.main();
       widget_countries_parser_test.main();
       widget_country_phone_input_test.main();

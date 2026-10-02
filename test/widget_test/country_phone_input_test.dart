@@ -20,6 +20,30 @@ void _$defaultCountryPhoneInputTest() {
   const buttonKey = ValueKey<String>('country_picker_phone_code');
   const phoneFieldKey = ValueKey<String>('country_phone_number');
   group('CountryPhoneInput -', () {
+    testWidgets(
+      'notifier-driven background does not request redundant repaint',
+      (tester) async {
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            builder: (_) => const Scaffold(body: CountryPhoneInput()),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final paints = tester.widgetList<CustomPaint>(
+          find.descendant(
+            of: find.byType(CountryPhoneInput),
+            matching: find.byType(CustomPaint),
+          ),
+        );
+        final background = paints
+            .map((paint) => paint.painter)
+            .whereType<CustomPainter>()
+            .first;
+        expect(background.shouldRepaint(background), isFalse);
+        expect(background.shouldRebuildSemantics(background), isFalse);
+      },
+    );
+
     testWidgets('uses the bundled flag font only on Windows', (tester) async {
       await tester.pumpWidget(
         createWidgetUnderTest(
