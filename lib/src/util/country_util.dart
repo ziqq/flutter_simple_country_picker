@@ -65,19 +65,6 @@ abstract final class CountryUtil {
       'IiIiOoOoRrRrUuUuSsTtHhAaEeOoOoOoOoYy'
       'ʹΑΕΗΙΟΥΩιΙΥαεηιυιυουωϒϒЕеOoLlDdiσ';
 
-  static final Map<int, String> _foldTable = () {
-    final table = <int, String>{};
-    final accented = _accentedLetters.runes.toList(growable: false);
-    final folded = _foldedLetters.runes.toList(growable: false);
-    for (var i = 0; i < accented.length; i++) {
-      table[accented[i]] = String.fromCharCode(folded[i]);
-    }
-    for (final MapEntry(:key, :value) in _foldedLigatures.entries) {
-      table[key.runes.single] = value;
-    }
-    return table;
-  }();
-
   /// Letters that fold into more than one letter.
   static const Map<String, String> _foldedLigatures = <String, String>{
     'ß': 'ss',
@@ -87,6 +74,19 @@ abstract final class CountryUtil {
     'Œ': 'OE',
     'œ': 'oe',
   };
+
+  static final Map<int, String> _foldTable = () {
+    final accented = _accentedLetters.runes.toList(growable: false);
+    final folded = _foldedLetters.runes.toList(growable: false);
+    final table = <int, String>{};
+    for (var i = 0; i < accented.length; i++) {
+      table[accented[i]] = String.fromCharCode(folded[i]);
+    }
+    for (final MapEntry(:key, :value) in _foldedLigatures.entries) {
+      table[key.runes.single] = value;
+    }
+    return table;
+  }();
 
   /// Removes diacritics from Latin, Greek and Cyrillic letters,
   /// e.g. `Österreich` → `Osterreich`, `Égypte` → `Egypte`, `Ёлка` → `Елка`.
