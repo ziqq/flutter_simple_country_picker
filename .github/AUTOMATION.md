@@ -65,7 +65,8 @@ events will use the trusted default-branch file.
 `.github/workflows/notifications.yml` calls
 `ziqq/actions/.github/workflows/notify-events.yml@7737ce8c4d87c656b7ccf5f78138d8d7e53a1b62`
 to send required Discord and Telegram notifications for newly opened issues
-and pull requests (including drafts and forks).
+and pull requests (including drafts and forks)
+opened by anyone other than the repository owner.
 
 Both events are explicitly enabled here with `notify-issues: true` and
 `notify-pull-requests: true`. Set either input to `false` to disable that event;
