@@ -220,6 +220,23 @@ void main() => group('CountryListView -', () {
     );
   }
 
+  for (final style in CountryPickerStyle.values) {
+    testWidgets(
+      'missing Turkish translation keeps the country in its group: $style',
+      (tester) async {
+        await pumpList(
+          tester,
+          style: style,
+          locale: const Locale('tr'),
+          filter: const ['HR'],
+          showGroup: true,
+        );
+        expect(find.text('Croatia'), findsWidgets);
+        expect(find.text('C'), findsOneWidget);
+      },
+    );
+  }
+
   testWidgets('group headers rebuild for different letters and style heights', (
     tester,
   ) async {

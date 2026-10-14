@@ -110,6 +110,25 @@ void _$controllerTest() => group('CountryController -', () {
     expect(await controller.getCountries(), [unknown]);
   });
 
+  test('sorts untranslated countries by the original name', () async {
+    final croatia = Country.fromCountryCode('HR');
+    when(provider.getCountries()).thenAnswer(
+      (_) async => [
+        croatia,
+        Country.fromCountryCode('AT'),
+        Country.fromCountryCode('DE'),
+      ],
+    );
+    controller.initLocalization(
+      await CountryLocalizations.delegate.load(const Locale('tr')),
+    );
+
+    final localized = (await controller.getCountries())!;
+
+    expect(localized.map((country) => country.countryCode), ['DE', 'AT', 'HR']);
+    expect(localized.last.nameLocalized, 'Croatia');
+  });
+
   test('getCountries excludes countries based on the exclude list', () async {
     final countries = [mockCountry.copyWith(name: 'Canada', countryCode: 'CA')];
 

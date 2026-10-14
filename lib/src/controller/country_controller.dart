@@ -349,7 +349,7 @@ final class CountryController extends ValueNotifier<CountryState> {
       // If localization is not available for a country,
       // we can use the original name.
       if (formatted == null || formatted.isEmpty) {
-        result.add(country);
+        result.add(country.copyWith(nameLocalized: country.name));
       } else {
         result.add(country.copyWith(nameLocalized: formatted));
       }

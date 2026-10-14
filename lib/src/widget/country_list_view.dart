@@ -10,22 +10,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:flutter_simple_country_picker/src/constant/constants.dart';
 import 'package:flutter_simple_country_picker/src/controller/country_controller.dart';
 import 'package:flutter_simple_country_picker/src/data/country_provider.dart';
 import 'package:flutter_simple_country_picker/src/util/country_flag_font_util.dart';
 import 'package:flutter_simple_country_picker/src/util/country_util.dart';
-
-/// Height of the search field and the close button in the iOS 26 style.
-const double _kIOS26ControlHeight = 44.0;
-
-/// Diameter of the round flag in the iOS 26 style.
-const double _kIOS26FlagSize = 40.0;
-
-/// Border radius of the inset list section in the iOS 26 style.
-const double _kIOS26SectionRadius = 26.0;
-
-/// Width of the phone code column in the iOS 26 style.
-const double _kIOS26PhoneCodeWidth = 56.0;
 
 /// {@template country_list_view}
 /// CountryListView widget.
@@ -340,7 +329,7 @@ class _CountriesListViewState extends State<CountryListView>
           pickerTheme.padding,
         ),
         child: SizedBox(
-          height: _kIOS26ControlHeight,
+          height: kIOS26ControlHeight,
           child: Row(
             spacing: pickerTheme.padding / 1.6,
             children: <Widget>[
@@ -388,7 +377,7 @@ class _CountriesListViewState extends State<CountryListView>
 
               // --- Close button --- //
               SizedBox.square(
-                dimension: _kIOS26ControlHeight,
+                dimension: kIOS26ControlHeight,
                 child: _Surface(
                   builder: widget.surfaceBuilder,
                   key: const ValueKey<String>('country_picker_close_button'),
@@ -430,7 +419,7 @@ class _CountriesListViewState extends State<CountryListView>
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(
           useIOS26Header
-              ? _kIOS26ControlHeight + pickerTheme.padding * 2
+              ? kIOS26ControlHeight + pickerTheme.padding * 2
               : kToolbarHeight,
         ),
         child: ValueListenableBuilder(
@@ -657,7 +646,7 @@ class _CountriesListState extends State<_CountriesList> {
   /// Build an inset rounded section of [countries] in the iOS 26 style.
   Widget _buildIOS26Section(List<Country> countries, Country? selected) {
     final pickerTheme = CountryPickerTheme.resolve(context);
-    const radius = Radius.circular(_kIOS26SectionRadius);
+    const radius = Radius.circular(kIOS26SectionRadius);
     return SliverPadding(
       padding: EdgeInsets.symmetric(
         horizontal: pickerTheme.padding,
@@ -1106,7 +1095,7 @@ class _CountryListTile$IOS26 extends _CountryListTile {
 
             // --- Phone code --- //
             SizedBox(
-              width: _kIOS26PhoneCodeWidth,
+              width: kIOS26PhoneCodeWidth,
               child: Align(
                 alignment: AlignmentDirectional.centerStart,
                 child: FittedBox(
@@ -1259,17 +1248,17 @@ class _Flag$IOS26 extends StatelessWidget {
           ),
         ),
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: _kIOS26FlagSize * scale, height: 1),
+        style: TextStyle(fontSize: kIOS26FlagSize * scale, height: 1),
       ),
     );
 
     return SizedBox.square(
-      dimension: _kIOS26FlagSize,
+      dimension: kIOS26FlagSize,
       child: Stack(
         clipBehavior: Clip.none,
         children: <Widget>[
           ClipOval(
-            child: SizedBox.square(dimension: _kIOS26FlagSize, child: flag),
+            child: SizedBox.square(dimension: kIOS26FlagSize, child: flag),
           ),
           if (selected)
             PositionedDirectional(

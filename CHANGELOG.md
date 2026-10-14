@@ -12,7 +12,7 @@
 - **FIXED**: `showWorldWide` was accepted but ignored; the World Wide option is now shown on top of the list
 - **FIXED**: in grouped mode favorites no longer split a letter group into two sections with the same header
 - **FIXED**: in grouped mode a search without results no longer keeps showing the previous groups
-- **FIXED**: in grouped mode countries without a localized name are no longer dropped
+- **FIXED**: countries without a translation (e.g. Croatia in Turkish) use their original name for sorting and grouping and remain visible in both picker styles
 
 ## 0.11.1
 - **DEPRECATED**: `useHaptickFeedback`; use `useHapticFeedback` instead. When both are provided, `useHapticFeedback` takes precedence

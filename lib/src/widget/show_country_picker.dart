@@ -13,15 +13,12 @@ import 'package:flutter/material.dart'
         DraggableScrollableSheet,
         Colors;
 import 'package:flutter/services.dart' show HapticFeedback;
+import 'package:flutter_simple_country_picker/src/constant/constants.dart';
 import 'package:flutter_simple_country_picker/src/constant/typedef.dart';
-import 'package:flutter_simple_country_picker/src/theme/country_picker_style.dart';
 import 'package:flutter_simple_country_picker/src/theme/country_picker_theme.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_picker_surface.dart';
 import 'package:meta/meta.dart';
-
-/// Top corner radius of the bottom sheet in the iOS 26 style.
-const double _kIOS26SheetRadius = 38.0;
 
 /// {@template show_country_picker}
 /// Shows a bottom sheet containing a list of countries to select one.
@@ -130,15 +127,13 @@ void showCountryPicker({
   double? minChildSize,
   CountryPickerSurfaceBuilder? surfaceBuilder,
 }) {
-  final isiOS = defaultTargetPlatform == TargetPlatform.iOS;
+  final isiOS = defaultTargetPlatform == .iOS;
   final effectiveExpand = expand || (adaptive && isiOS);
   final effectiveUseHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
 
   final pickerTheme = CountryPickerTheme.resolve(context);
   final radius = Radius.circular(
-    pickerTheme.style == CountryPickerStyle.ios26
-        ? _kIOS26SheetRadius
-        : pickerTheme.radius,
+    pickerTheme.style == .ios26 ? kIOS26SheetRadius : pickerTheme.radius,
   );
   final borderRadius = BorderRadius.only(topLeft: radius, topRight: radius);
 
@@ -148,7 +143,7 @@ void showCountryPicker({
   ]) => DraggableScrollableSheet(
     expand: effectiveExpand,
     // Settle at the initial or the full height, like iOS 26 detents.
-    snap: pickerTheme.style == CountryPickerStyle.ios26,
+    snap: pickerTheme.style == .ios26,
     initialChildSize: initialChildSize ?? (effectiveExpand ? 1.0 : .65),
     minChildSize:
         minChildSize ??
@@ -177,9 +172,7 @@ void showCountryPicker({
           surfaceBuilder: surfaceBuilder,
           // In the iOS 26 style scrolling the list also expands the
           // sheet, like native sheets do.
-          scrollController:
-              isScrollControlled &&
-                  pickerTheme.style != CountryPickerStyle.ios26
+          scrollController: isScrollControlled && pickerTheme.style != .ios26
               ? null
               : scrollController ?? sheetScrollController,
         ),
@@ -190,9 +183,9 @@ void showCountryPicker({
   /// In the iOS 26 style the sheet is presented as an elevated surface,
   /// so dynamic Cupertino colors resolve to their elevated variants.
   Widget builder(BuildContext context, [ScrollController? scrollController]) =>
-      pickerTheme.style == CountryPickerStyle.ios26
+      pickerTheme.style == .ios26
       ? CupertinoUserInterfaceLevel(
-          data: CupertinoUserInterfaceLevelData.elevated,
+          data: .elevated,
           child: Builder(
             builder: (context) => buildSheet(context, scrollController),
           ),

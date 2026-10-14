@@ -479,7 +479,7 @@ Widget glassSurface(
   BuildContext context,
   CountryPickerSurface surface,
   Widget child,
-) => MyLiquidGlass(
+) => GlassWidget(
   shape: surface.shape,
   pressed: surface.pressed, // ValueListenable<bool> for press animations
   child: child,

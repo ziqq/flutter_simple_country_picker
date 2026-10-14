@@ -80,7 +80,7 @@ class CountryPickerSurface {
 ///   BuildContext context,
 ///   CountryPickerSurface surface,
 ///   Widget child,
-/// ) => MyLiquidGlass(
+/// ) => GlassWidget(
 ///   shape: surface.shape,
 ///   pressed: surface.pressed,
 ///   child: child,
