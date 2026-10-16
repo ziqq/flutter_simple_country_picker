@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -237,27 +238,184 @@ void main() => group('CountryListView -', () {
     );
   }
 
-  testWidgets('group headers rebuild for different letters and style heights', (
-    tester,
-  ) async {
-    await pumpList(tester, showGroup: true);
-    final delegates = tester
-        .widgetList<SliverPersistentHeader>(find.byType(SliverPersistentHeader))
-        .map((header) => header.delegate)
-        .toList();
-    expect(delegates, hasLength(2));
-    expect(delegates.first.shouldRebuild(delegates.first), isFalse);
-    expect(delegates.first.shouldRebuild(delegates.last), isTrue);
-    expect(delegates.first.minExtent, 26);
-    await pumpList(tester, showGroup: true, style: .ios26);
-    final elevated = tester
-        .widget<SliverPersistentHeader>(
-          find.byType(SliverPersistentHeader).first,
-        )
-        .delegate;
-    expect(elevated.minExtent, 36);
-    expect(elevated.shouldRebuild(delegates.first), isTrue);
-  });
+  testWidgets(
+    'group headers keep their labels and style heights after rebuild',
+    (tester) async {
+      await pumpList(tester, showGroup: true);
+      final r = find.byKey(const ValueKey<String>('header_R'));
+      final u = find.byKey(const ValueKey<String>('header_U'));
+      expect(tester.getSize(r).height, 26);
+      expect(tester.getSize(u).height, 26);
+      expect(find.text('R'), findsOneWidget);
+      expect(find.text('U'), findsOneWidget);
+      await pumpList(tester, showGroup: true, style: .ios26);
+      expect(tester.getSize(r).height, 36);
+      expect(tester.getSize(u).height, 36);
+    },
+  );
+
+  for (final style in CountryPickerStyle.values) {
+    testWidgets(
+      'grouped $style builds viewport rows instead of every section',
+      (tester) async {
+        await pumpList(
+          tester,
+          style: style,
+          showGroup: true,
+          filter: null,
+          showWorldWide: true,
+        );
+        final rows = find.byWidgetPredicate(
+          (widget) =>
+              widget is Semantics &&
+              widget.properties.button == true &&
+              (widget.properties.label?.contains(', +') ?? false),
+          skipOffstage: false,
+        );
+        // At this viewport the old section-per-sliver tree mounts over 35 rows.
+        expect(rows.evaluate().length, lessThan(25));
+        await tester.enterText(find.byType(CupertinoSearchTextField), 'zzzzzz');
+        await tester.pumpAndSettle();
+        expect(rows, findsNothing);
+        await tester.tap(find.byIcon(CupertinoIcons.xmark_circle_fill));
+        await tester.pumpAndSettle();
+        expect(rows.evaluate().length, lessThan(25));
+        expect(find.bySemanticsLabel('Worldwide'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      '$style sticky headers pin, hand off, and return on reverse scroll',
+      (tester) async {
+        tester.view.physicalSize = const Size(400, 360);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        final controller = ScrollController();
+        addTearDown(controller.dispose);
+        var selections = 0;
+        await pumpList(
+          tester,
+          style: style,
+          showGroup: true,
+          scrollController: controller,
+          onSelect: (_) => selections++,
+          filter: const [
+            'AL',
+            'AT',
+            'AU',
+            'BE',
+            'BG',
+            'BR',
+            'CA',
+            'CH',
+            'CN',
+            'DE',
+            'DK',
+            'DO',
+          ],
+        );
+        final viewport = tester.getRect(find.byType(CustomScrollView));
+        final first = find.byKey(
+          const ValueKey<String>('header_A'),
+          skipOffstage: false,
+        );
+        final next = find.byKey(
+          const ValueKey<String>('header_B'),
+          skipOffstage: false,
+        );
+        final pinnedA = find.byKey(const ValueKey<String>('pinned_header_A'));
+        final pinnedB = find.byKey(const ValueKey<String>('pinned_header_B'));
+        final initialTop = tester.getTopLeft(first).dy;
+        final height = style == CountryPickerStyle.ios26 ? 36.0 : 26.0;
+        controller.jumpTo(20);
+        await tester.pump();
+        expect(tester.getTopLeft(pinnedA).dy, closeTo(viewport.top, .001));
+
+        controller.jumpTo(
+          controller.offset +
+              tester.getTopLeft(next).dy -
+              viewport.top -
+              height / 2,
+        );
+        await tester.pump();
+        expect(
+          tester.getTopLeft(next).dy,
+          closeTo(viewport.top + height / 2, .001),
+        );
+        expect(
+          tester.getBottomLeft(pinnedA).dy,
+          closeTo(tester.getTopLeft(next).dy, .001),
+        );
+        controller.jumpTo(controller.offset + height);
+        await tester.pump();
+        expect(pinnedA, findsNothing);
+        expect(tester.getTopLeft(pinnedB).dy, closeTo(viewport.top, .001));
+
+        // The pinned copy must be the only exposed header for this section.
+        final labels = <String>[];
+        void collect(SemanticsNode node) {
+          labels.add(node.getSemanticsData().label);
+          node.visitChildren((child) {
+            collect(child);
+            return true;
+          });
+        }
+
+        collect(
+          tester
+              .binding
+              .renderViews
+              .single
+              .owner!
+              .semanticsOwner!
+              .rootSemanticsNode!,
+        );
+        expect(labels.where((label) => label == 'B'), hasLength(1));
+        await tester.tap(pinnedB);
+        await tester.pump();
+        expect(selections, 0);
+
+        controller.jumpTo(controller.offset - height);
+        await tester.pump();
+        expect(
+          tester.getBottomLeft(pinnedA).dy,
+          closeTo(tester.getTopLeft(next).dy, .001),
+        );
+        controller.jumpTo(0);
+        await tester.pump();
+        expect(pinnedA, findsNothing);
+        expect(pinnedB, findsNothing);
+        expect(tester.getTopLeft(first).dy, initialTop);
+      },
+    );
+
+    testWidgets(
+      '$style grouped list reaches the final country and selects it',
+      (tester) async {
+        Country? selection;
+        await pumpList(
+          tester,
+          style: style,
+          showGroup: true,
+          filter: null,
+          onSelect: (value) => selection = value,
+        );
+        await tester.scrollUntilVisible(
+          find.bySemanticsLabel('Zimbabwe, +263'),
+          500,
+          scrollable: find.descendant(
+            of: find.byType(CustomScrollView),
+            matching: find.byType(Scrollable),
+          ),
+        );
+        await tester.tap(find.bySemanticsLabel('Zimbabwe, +263'));
+        await tester.pumpAndSettle();
+        expect(selection?.countryCode, 'ZW');
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
 
   for (final insets in [
     (const EdgeInsets.only(bottom: 20), EdgeInsets.zero, 20.0),

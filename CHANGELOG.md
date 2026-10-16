@@ -13,6 +13,7 @@
 - **FIXED**: in grouped mode favorites no longer split a letter group into two sections with the same header
 - **FIXED**: in grouped mode a search without results no longer keeps showing the previous groups
 - **FIXED**: countries without a translation (e.g. Croatia in Turkish) use their original name for sorting and grouping and remain visible in both picker styles
+- **FIXED**: grouped pickers virtualize country rows in one lazy list while preserving the section appearance and sticky header hand-off
 
 ## 0.11.1
 - **DEPRECATED**: `useHaptickFeedback`; use `useHapticFeedback` instead. When both are provided, `useHapticFeedback` takes precedence

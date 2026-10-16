@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/cupertino.dart'
     show
         CupertinoDynamicColor,
@@ -8,6 +10,7 @@ import 'package:flutter/cupertino.dart'
         CupertinoIcons;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/constants.dart';
@@ -15,6 +18,8 @@ import 'package:flutter_simple_country_picker/src/controller/country_controller.
 import 'package:flutter_simple_country_picker/src/data/country_provider.dart';
 import 'package:flutter_simple_country_picker/src/util/country_flag_font_util.dart';
 import 'package:flutter_simple_country_picker/src/util/country_util.dart';
+
+part 'country_grouped_list.dart';
 
 /// {@template country_list_view}
 /// CountryListView widget.
@@ -530,6 +535,8 @@ class _CountriesList extends StatefulWidget {
 class _CountriesListState extends State<_CountriesList> {
   final ValueNotifier<List<(String, List<Country>)>> _groups =
       ValueNotifier<List<(String, List<Country>)>>([]);
+  List<(int, int)> _entries = [];
+  List<int> _headers = [];
   List<Country>? _countries;
   bool? _showGroup;
 
@@ -586,7 +593,24 @@ class _CountriesListState extends State<_CountriesList> {
     _countries = state.countries;
     _showGroup = state.showGroup;
 
-    _groups.value = _buildGroups(state.countries);
+    final groups = _buildGroups(state.countries);
+    final entries = <(int, int)>[];
+    final headers = <int>[];
+    for (var group = 0; group < groups.length; group++) {
+      final (key, countries) = groups[group];
+      final header = key.isEmpty ? -1 : entries.length;
+      if (key.isNotEmpty) {
+        entries.add((group, -1));
+        headers.add(header);
+      }
+      for (var index = 0; index < countries.length; index++) {
+        entries.add((group, index));
+        headers.add(header);
+      }
+    }
+    _entries = entries;
+    _headers = headers;
+    _groups.value = groups;
   }
 
   /// Build groups of countries.
@@ -676,6 +700,125 @@ class _CountriesListState extends State<_CountriesList> {
     );
   }
 
+  /// Keeps section headers and country rows in one lazy delegate.
+  Widget _buildGroupedList(
+    List<(String, List<Country>)> groups,
+    CountryPickerTheme theme,
+    Country? selected,
+  ) {
+    final entries = _entries;
+    final ios26 = theme.style == CountryPickerStyle.ios26;
+    final headerHeight = ios26 ? 36.0 : 26.0;
+
+    Widget header(BuildContext context, int entry, {bool pinned = false}) {
+      final key = groups[entries[entry].$1].$1;
+      return Semantics(
+        key: ValueKey<String>('${pinned ? 'pinned_header' : 'header'}_$key'),
+        header: true,
+        child: SizedBox(
+          height: headerHeight,
+          child: ColoredBox(
+            key: ValueKey<String>('header_child_$key'),
+            color:
+                (ios26
+                    ? theme.backgroundColor
+                    : theme.secondaryBackgroundColor) ??
+                Colors.transparent,
+            child: Padding(
+              padding: ios26
+                  ? EdgeInsetsDirectional.only(
+                      start: theme.padding * 2,
+                      end: theme.padding * 2,
+                      top: theme.padding / 2,
+                    )
+                  : EdgeInsets.symmetric(horizontal: theme.padding),
+              child: Align(
+                alignment: ios26
+                    ? AlignmentDirectional.centerStart
+                    : Alignment.centerLeft,
+                child: Text(
+                  key,
+                  style: TextStyle(
+                    height: 1,
+                    fontSize: 15,
+                    fontWeight:
+                        !ios26 && defaultTargetPlatform == TargetPlatform.iOS
+                        ? FontWeight.w700
+                        : FontWeight.w600,
+                    color: ios26
+                        ? CupertinoDynamicColor.resolve(
+                            CupertinoColors.secondaryLabel,
+                            context,
+                          )
+                        : null,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return _CountryGroupedList(
+      // Each entry carries its preceding header; the leading favorites use -1.
+      headers: _headers,
+      headerHeight: headerHeight,
+      headerBuilder: (context, index) => header(context, index, pinned: true),
+      delegate: SliverChildBuilderDelegate((context, entry) {
+        final (group, index) = entries[entry];
+        if (index < 0) return header(context, entry);
+        final countries = groups[group].$2;
+        final country = countries[index];
+        final last = index == countries.length - 1;
+        if (ios26) {
+          const radius = Radius.circular(kIOS26SectionRadius);
+          return Padding(
+            padding: EdgeInsets.fromLTRB(
+              theme.padding,
+              index == 0 ? theme.padding / 2 : 0,
+              theme.padding,
+              last ? theme.padding / 2 : 0,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.vertical(
+                top: index == 0 ? radius : Radius.zero,
+                bottom: last ? radius : Radius.zero,
+              ),
+              child: ColoredBox(
+                color: theme.secondaryBackgroundColor ?? Colors.transparent,
+                child: _CountryListTile.ios26(
+                  key: ValueKey<String>(country.e164Key),
+                  country: country,
+                  selected: selected?.countryCode == country.countryCode,
+                  onSelect: _onSelect,
+                ),
+              ),
+            ),
+          );
+        }
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _CountryListTile(
+              key: ValueKey<String>(country.e164Key),
+              country: country,
+              onSelect: _onSelect,
+            ),
+            if (!last)
+              Divider(
+                height: 1,
+                thickness: 1,
+                indent: theme.padding,
+                endIndent: theme.padding,
+                color: theme.dividerColor,
+              ),
+          ],
+        );
+      }, childCount: entries.length),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final pickerTheme = CountryPickerTheme.resolve(context);
@@ -689,138 +832,19 @@ class _CountriesListState extends State<_CountriesList> {
           );
         }
 
-        // --- Grouped countries (iOS 26 style) --- //
-        if (state.showGroup && pickerTheme.style == CountryPickerStyle.ios26) {
-          return ValueListenableBuilder(
-            valueListenable: _groups,
-            builder: (_, groups, _) => ValueListenableBuilder(
-              valueListenable: _selected,
-              builder: (_, selected, _) => SliverMainAxisGroup(
-                slivers: <Widget>[
-                  for (final (key, countries) in groups)
-                    SliverMainAxisGroup(
-                      slivers: <Widget>[
-                        if (key.isNotEmpty)
-                          SliverPersistentHeader(
-                            key: ValueKey<String>('header_$key'),
-                            floating: true,
-                            pinned: true,
-                            delegate: _SliverHeaderDelegate(
-                              maxHeight: 36,
-                              minHeight: 36,
-                              child: ColoredBox(
-                                key: ValueKey('header_child_$key'),
-                                color:
-                                    pickerTheme.backgroundColor ??
-                                    Colors.transparent,
-                                child: Padding(
-                                  padding: EdgeInsetsDirectional.only(
-                                    start: pickerTheme.padding * 2,
-                                    end: pickerTheme.padding * 2,
-                                    top: pickerTheme.padding / 2,
-                                  ),
-                                  child: Align(
-                                    alignment: AlignmentDirectional.centerStart,
-                                    child: Text(
-                                      key,
-                                      style: TextStyle(
-                                        height: 1,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600,
-                                        color: CupertinoDynamicColor.resolve(
-                                          CupertinoColors.secondaryLabel,
-                                          context,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        _buildIOS26Section(countries, selected),
-                      ],
-                    ),
-                ],
-              ),
-            ),
-          );
-        }
-
         // --- Grouped countries --- //
         if (state.showGroup) {
           return ValueListenableBuilder(
             valueListenable: _groups,
             builder: (_, groups, _) {
-              final slivers = <Widget>[
-                for (final (key, countries) in groups)
-                  SliverMainAxisGroup(
-                    slivers: <Widget>[
-                      if (key.isNotEmpty)
-                        SliverPersistentHeader(
-                          key: ValueKey<String>('header_$key'),
-                          floating: true,
-                          pinned: true,
-                          delegate: _SliverHeaderDelegate(
-                            maxHeight: 26,
-                            minHeight: 26,
-                            child: DecoratedBox(
-                              key: ValueKey('header_child_$key'),
-                              decoration: BoxDecoration(
-                                color: pickerTheme.secondaryBackgroundColor,
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: pickerTheme.padding,
-                                ),
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    key,
-                                    style: TextStyle(
-                                      height: 1,
-                                      fontSize: 15,
-                                      fontWeight:
-                                          switch (defaultTargetPlatform) {
-                                            .iOS => .w700,
-                                            _ => .w600,
-                                          },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      SliverList.separated(
-                        itemCount: countries.length,
-                        itemBuilder: (_, index) {
-                          final country = countries[index];
-                          return _CountryListTile(
-                            key: ValueKey<String>(country.e164Key),
-                            onSelect: (country) {
-                              // Notify external listeners first so they can
-                              // compare against the previous SelectedCountry
-                              // value, then update the notifier itself.
-                              widget.onSelect?.call(country);
-                              widget.selected?.value = country;
-                            },
-                            country: country,
-                          );
-                        },
-                        separatorBuilder: (_, _) => Divider(
-                          height: 1,
-                          thickness: 1,
-                          indent: pickerTheme.padding,
-                          endIndent: pickerTheme.padding,
-                          color: pickerTheme.dividerColor,
-                        ),
-                      ),
-                    ],
-                  ),
-              ];
-
-              return SliverMainAxisGroup(slivers: slivers);
+              if (pickerTheme.style == CountryPickerStyle.classic) {
+                return _buildGroupedList(groups, pickerTheme, null);
+              }
+              return ValueListenableBuilder(
+                valueListenable: _selected,
+                builder: (_, selected, _) =>
+                    _buildGroupedList(groups, pickerTheme, selected),
+              );
             },
           );
         }
@@ -1373,36 +1397,4 @@ class _SurfaceState extends State<_Surface> {
       ),
     );
   }
-}
-
-class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
-  /// {@macro countries_list_view}
-  _SliverHeaderDelegate({
-    required this.child,
-    required this.minHeight,
-    required this.maxHeight,
-  });
-
-  final Widget child;
-  final double minHeight;
-  final double maxHeight;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) => Semantics(header: true, child: SizedBox.expand(child: child));
-
-  @override
-  double get minExtent => minHeight;
-
-  @override
-  double get maxExtent => maxHeight;
-
-  @override
-  bool shouldRebuild(covariant _SliverHeaderDelegate oldDelegate) =>
-      oldDelegate.minHeight != minHeight ||
-      oldDelegate.maxHeight != maxHeight ||
-      oldDelegate.child.key != child.key;
 }
