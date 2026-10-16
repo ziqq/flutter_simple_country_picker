@@ -6,7 +6,7 @@
 - **ADDED**: in the iOS 26 style scrolling the list expands the sheet, which snaps to its initial or full height
 - **ADDED**: `surfaceBuilder` to `showCountryPicker`, `CountryPhoneInput` and `CountryPhoneInput.extended`, and `CountryPickerSurface`, to paint custom surfaces (e.g. liquid glass) behind the iOS 26 search field and close button
 - **ADDED**: semantics for country tiles, group headers and the `CountryPhoneInput` country buttons; emoji flags are no longer announced
-- **ADDED**: first-opening frame timings, total frame latency, raster-queue delay and image-cache memory diagnostics in the grouped picker profile benchmark, with optional filtering by picker style
+- **ADDED**: first-opening frame timings, total frame latency, raster-queue delay and image-cache memory diagnostics in the grouped picker profile benchmark, with optional filtering by picker style; [A8 raster measurements and native flag comparisons](docs/ios26-raster-performance.md)
 - **ADDED**: flag-cache regression tests for bounded preparation, selection, text scaling, RTL, pixel density, font loading, memory pressure, eviction, disabled caching and selectable text
 - **CHANGED**: the minimum Flutter version is now 3.44.0, required by the Cupertino sheet scrollableBuilder API
 - **FIXED**: flags on Windows: the Windows emoji font has no country flags, so the package now bundles the "Twemoji Country Flags" font as a Windows-only asset and uses it for flags in the picker and `CountryPhoneInput` while preserving custom package fonts and their fallbacks, [#19](https://github.com/ziqq/flutter_simple_country_picker/issues/19)

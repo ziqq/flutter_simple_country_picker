@@ -4,6 +4,10 @@ Measured on 14 and 16 October 2026 with Flutter 3.47.5 / Dart 3.13.4 in profile
 mode on a physical Samsung Galaxy A8 (SM-A530F), Android 9, ARM64.
 The benchmark uses the public `showCountryPicker` API.
 
+The subsequent flag raster-cache comparison, native screenshots, first-opening
+limits and deferred full-latency check are documented in
+[iOS 26 picker raster performance](ios26-raster-performance.md).
+
 ## Virtualized grouped list — 16 October 2026
 
 Before: `a3db0ca7031edb8d85df86e4fa2d11f22edbe1a4`. After:
