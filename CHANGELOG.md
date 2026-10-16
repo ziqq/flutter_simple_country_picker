@@ -6,6 +6,8 @@
 - **ADDED**: in the iOS 26 style scrolling the list expands the sheet, which snaps to its initial or full height
 - **ADDED**: `surfaceBuilder` to `showCountryPicker`, `CountryPhoneInput` and `CountryPhoneInput.extended`, and `CountryPickerSurface`, to paint custom surfaces (e.g. liquid glass) behind the iOS 26 search field and close button
 - **ADDED**: semantics for country tiles, group headers and the `CountryPhoneInput` country buttons; emoji flags are no longer announced
+- **ADDED**: first-opening frame timings, total frame latency, raster-queue delay and image-cache memory diagnostics in the grouped picker profile benchmark, with optional filtering by picker style
+- **ADDED**: flag-cache regression tests for bounded preparation, selection, text scaling, RTL, pixel density, font loading, memory pressure, eviction, disabled caching and selectable text
 - **CHANGED**: the minimum Flutter version is now 3.44.0, required by the Cupertino sheet scrollableBuilder API
 - **FIXED**: flags on Windows: the Windows emoji font has no country flags, so the package now bundles the "Twemoji Country Flags" font as a Windows-only asset and uses it for flags in the picker and `CountryPhoneInput` while preserving custom package fonts and their fallbacks, [#19](https://github.com/ziqq/flutter_simple_country_picker/issues/19)
 - **FIXED**: countries with diacritics (e.g. `Österreich`, `Égypte`) are sorted and grouped with their base letter instead of after `Z`, and search ignores diacritics, [#18](https://github.com/ziqq/flutter_simple_country_picker/issues/18)
@@ -14,6 +16,7 @@
 - **FIXED**: in grouped mode a search without results no longer keeps showing the previous groups
 - **FIXED**: countries without a translation (e.g. Croatia in Turkish) use their original name for sorting and grouping and remain visible in both picker styles
 - **FIXED**: grouped pickers virtualize country rows in one lazy list while preserving the section appearance and sticky header hand-off
+- **FIXED**: repeated color-emoji raster work in the iOS 26 picker: flags reuse GPU images through Flutter's bounded `ImageCache`, preserve their original glyphs, scale, circular clipping and selection badges, and refresh after text-style, density or system-font changes; preparation is limited to two images per frame while original text remains visible, and disabled caching or selectable text retains the original renderer
 
 ## 0.11.1
 - **DEPRECATED**: `useHaptickFeedback`; use `useHapticFeedback` instead. When both are provided, `useHapticFeedback` takes precedence

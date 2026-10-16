@@ -15,6 +15,7 @@ void main() {
     ..reportData = <String, dynamic>{
       'source_revision': const String.fromEnvironment('BENCHMARK_REVISION'),
       'mode': 'profile',
+      'first_open_measured': true,
       'semantics_enabled': const bool.fromEnvironment(
         'BENCHMARK_SEMANTICS',
         defaultValue: true,
@@ -29,6 +30,8 @@ void main() {
 
   for (final style in CountryPickerStyle.values) {
     for (final language in ['en', 'tr', 'ru']) {
+      const requestedStyle = String.fromEnvironment('BENCHMARK_STYLE');
+      if (requestedStyle.isNotEmpty && style.name != requestedStyle) continue;
       final scenario = '${style.name}_$language';
       testWidgets(
         'grouped picker performance: $scenario',
@@ -96,7 +99,27 @@ void main() {
           });
 
           // Warm the locale, font glyphs and rendering pipeline before timing.
-          await open();
+          final firstOpenTimings = <FrameTiming>[];
+          void onFirstOpen(List<FrameTiming> frames) =>
+              firstOpenTimings.addAll(frames);
+          binding.addTimingsCallback(onFirstOpen);
+          try {
+            await binding.watchPerformance(
+              open,
+              reportKey: '${scenario}_first_open',
+            );
+          } finally {
+            binding.removeTimingsCallback(onFirstOpen);
+          }
+          final firstOpen = phases.last;
+          binding.reportData!['${scenario}_first_open_frames'] = [
+            for (final frame in firstOpenTimings)
+              if (frame.timestampInMicroseconds(FramePhase.buildStart) >=
+                      firstOpen.start &&
+                  frame.timestampInMicroseconds(FramePhase.buildStart) <
+                      firstOpen.end)
+                _frameData(frame),
+          ];
           final headers = headersFinder.evaluate().length;
           final countryButtons = find.byWidgetPredicate(
             (widget) =>
@@ -171,6 +194,12 @@ void main() {
           } finally {
             binding.removeTimingsCallback(onTimings);
           }
+          binding.reportData!['${scenario}_image_cache'] = {
+            'count': imageCache.currentSize,
+            'bytes': imageCache.currentSizeBytes,
+            'live': imageCache.liveImageCount,
+            'pending': imageCache.pendingImageCount,
+          };
           binding.reportData!['${scenario}_phases'] = [
             for (final phase in phases)
               {
@@ -181,10 +210,7 @@ void main() {
                             phase.start &&
                         frame.timestampInMicroseconds(FramePhase.buildStart) <
                             phase.end)
-                      {
-                        'ui_us': frame.buildDuration.inMicroseconds,
-                        'raster_us': frame.rasterDuration.inMicroseconds,
-                      },
+                      _frameData(frame),
                 ],
               },
           ];
@@ -197,3 +223,12 @@ void main() {
     }
   }
 }
+
+Map<String, int> _frameData(FrameTiming frame) => {
+  'ui_us': frame.buildDuration.inMicroseconds,
+  'raster_us': frame.rasterDuration.inMicroseconds,
+  'raster_queue_us':
+      frame.timestampInMicroseconds(FramePhase.rasterStart) -
+      frame.timestampInMicroseconds(FramePhase.buildFinish),
+  'total_us': frame.totalSpan.inMicroseconds,
+};

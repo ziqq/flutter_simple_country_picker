@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart'
     show
@@ -20,6 +21,7 @@ import 'package:flutter_simple_country_picker/src/util/country_flag_font_util.da
 import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 
 part 'country_grouped_list.dart';
+part 'country_flag_raster.dart';
 
 /// {@template country_list_view}
 /// CountryListView widget.
@@ -1282,7 +1284,9 @@ class _Flag$IOS26 extends StatelessWidget {
         clipBehavior: Clip.none,
         children: <Widget>[
           ClipOval(
-            child: SizedBox.square(dimension: kIOS26FlagSize, child: flag),
+            child: _FlagRasterCache(
+              child: SizedBox.square(dimension: kIOS26FlagSize, child: flag),
+            ),
           ),
           if (selected)
             PositionedDirectional(
