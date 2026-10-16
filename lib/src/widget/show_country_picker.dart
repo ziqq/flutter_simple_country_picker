@@ -13,9 +13,11 @@ import 'package:flutter/material.dart'
         DraggableScrollableSheet,
         Colors;
 import 'package:flutter/services.dart' show HapticFeedback;
+import 'package:flutter_simple_country_picker/src/constant/constants.dart';
 import 'package:flutter_simple_country_picker/src/constant/typedef.dart';
 import 'package:flutter_simple_country_picker/src/theme/country_picker_theme.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart';
+import 'package:flutter_simple_country_picker/src/widget/country_picker_surface.dart';
 import 'package:meta/meta.dart';
 
 /// {@template show_country_picker}
@@ -82,6 +84,10 @@ import 'package:meta/meta.dart';
 ///
 /// An optional [minChildSize] argument can be used
 /// to set the minimum size of the bottom sheet.
+///
+/// An optional [surfaceBuilder] argument can be used to paint custom
+/// surfaces behind the search field and the close button
+/// in the iOS 26 style.
 /// {@endtemplate}
 void showCountryPicker({
   required BuildContext context,
@@ -119,50 +125,72 @@ void showCountryPicker({
   bool? showSearch,
   double? initialChildSize,
   double? minChildSize,
+  CountryPickerSurfaceBuilder? surfaceBuilder,
 }) {
-  final isiOS = defaultTargetPlatform == TargetPlatform.iOS;
+  final isiOS = defaultTargetPlatform == .iOS;
   final effectiveExpand = expand || (adaptive && isiOS);
   final effectiveUseHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
 
   final pickerTheme = CountryPickerTheme.resolve(context);
-  final radius = Radius.circular(pickerTheme.radius);
+  final radius = Radius.circular(
+    pickerTheme.style == .ios26 ? kIOS26SheetRadius : pickerTheme.radius,
+  );
   final borderRadius = BorderRadius.only(topLeft: radius, topRight: radius);
 
-  Widget builder(BuildContext context, [ScrollController? scrollController]) =>
-      DraggableScrollableSheet(
-        expand: effectiveExpand,
-        initialChildSize: initialChildSize ?? (effectiveExpand ? 1.0 : .65),
-        minChildSize:
-            minChildSize ??
-            (effectiveExpand ? (shouldCloseOnSwipeDown ? .99 : 1.0) : .65),
-        builder: (context, sheetScrollController) => ClipRRect(
+  Widget buildSheet(
+    BuildContext context, [
+    ScrollController? scrollController,
+  ]) => DraggableScrollableSheet(
+    expand: effectiveExpand,
+    // Settle at the initial or the full height, like iOS 26 detents.
+    snap: pickerTheme.style == .ios26,
+    initialChildSize: initialChildSize ?? (effectiveExpand ? 1.0 : .65),
+    minChildSize:
+        minChildSize ??
+        (effectiveExpand ? (shouldCloseOnSwipeDown ? .99 : 1.0) : .65),
+    builder: (context, sheetScrollController) => ClipRRect(
+      borderRadius: borderRadius,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
           borderRadius: borderRadius,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: borderRadius,
-              color: pickerTheme.backgroundColor,
-            ),
-            child: CountryListView(
-              exclude: exclude,
-              favorites: favorites,
-              filter: filter,
-              selected: selected,
-              onSelect: onSelect,
-              adaptive: adaptive,
-              autofocus: autofocus || useAutofocus,
-              showGroup: showGroup,
-              showSearch: showSearch,
-              showPhoneCode: showPhoneCode,
-              showWorldWide: showWorldWide,
-              useRootNavigator: useRootNavigator,
-              useHapticFeedback: effectiveUseHapticFeedback,
-              scrollController: isScrollControlled
-                  ? null
-                  : scrollController ?? sheetScrollController,
-            ),
-          ),
+          color: CountryPickerTheme.resolve(context).backgroundColor,
         ),
-      );
+        child: CountryListView(
+          exclude: exclude,
+          favorites: favorites,
+          filter: filter,
+          selected: selected,
+          onSelect: onSelect,
+          adaptive: adaptive,
+          autofocus: autofocus || useAutofocus,
+          showGroup: showGroup,
+          showSearch: showSearch,
+          showPhoneCode: showPhoneCode,
+          showWorldWide: showWorldWide,
+          useRootNavigator: useRootNavigator,
+          useHapticFeedback: effectiveUseHapticFeedback,
+          surfaceBuilder: surfaceBuilder,
+          // In the iOS 26 style scrolling the list also expands the
+          // sheet, like native sheets do.
+          scrollController: isScrollControlled && pickerTheme.style != .ios26
+              ? null
+              : scrollController ?? sheetScrollController,
+        ),
+      ),
+    ),
+  );
+
+  /// In the iOS 26 style the sheet is presented as an elevated surface,
+  /// so dynamic Cupertino colors resolve to their elevated variants.
+  Widget builder(BuildContext context, [ScrollController? scrollController]) =>
+      pickerTheme.style == .ios26
+      ? CupertinoUserInterfaceLevel(
+          data: .elevated,
+          child: Builder(
+            builder: (context) => buildSheet(context, scrollController),
+          ),
+        )
+      : buildSheet(context, scrollController);
 
   /// Provide haptic feedback on opening the picker, if enabled.
   if (effectiveUseHapticFeedback) HapticFeedback.heavyImpact().ignore();
@@ -231,6 +259,7 @@ class CountryPickerOptions {
     this.showSearch,
     this.initialChildSize,
     this.minChildSize,
+    this.surfaceBuilder,
   }) : useHaptickFeedback = useHapticFeedback ?? useHaptickFeedback,
        useHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
 
@@ -314,4 +343,7 @@ class CountryPickerOptions {
 
   /// Min child size for the modal bottom sheet.
   final double? minChildSize;
+
+  /// {@macro country_picker_surface_builder}
+  final CountryPickerSurfaceBuilder? surfaceBuilder;
 }

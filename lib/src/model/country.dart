@@ -155,17 +155,18 @@ class Country {
   String? getTranslatedName(BuildContext context) => toLocalizedString(context);
 
   /// Check if the country starts with a query
+  ///
+  /// Diacritics are ignored, so `osterreich` matches `Österreich`.
   bool startsWith(String query, CountryLocalizations? localization) {
-    var $query = query.toLowerCase();
+    String normalize(String value) =>
+        CountryUtil.foldDiacritics(value).toLowerCase();
+    var $query = normalize(query);
     if (query.startsWith('+')) $query = query.replaceAll('+', '').trim();
+    final localized = localization?.getCountryNameByCode(countryCode);
     return phoneCode.startsWith($query) ||
-        name.toLowerCase().startsWith($query) ||
+        normalize(name).startsWith($query) ||
         countryCode.toLowerCase().startsWith($query) ||
-        (localization
-                ?.getCountryNameByCode(countryCode)
-                ?.toLowerCase()
-                .startsWith($query) ??
-            false);
+        (localized != null && normalize(localized).startsWith($query));
   }
 
   /// Copy the country with new values
