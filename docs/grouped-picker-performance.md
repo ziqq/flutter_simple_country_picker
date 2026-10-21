@@ -5,7 +5,7 @@ mode on a physical Samsung Galaxy A8 (SM-A530F), Android 9, ARM64.
 The benchmark uses the public `showCountryPicker` API.
 
 The subsequent flag raster-cache comparison, native screenshots, first-opening
-limits and deferred full-latency check are documented in
+limits and completed full-latency check are documented in
 [iOS 26 picker raster performance](ios26-raster-performance.md).
 
 ## Virtualized grouped list — 16 October 2026

@@ -1,6 +1,6 @@
 # iOS 26 picker raster performance
 
-Measured on 16 October 2026 on the same physical Samsung Galaxy A8
+Measured on 16 and 21 October 2026 on the same physical Samsung Galaxy A8
 (SM-A530F), Android 9, ARM64, Flutter 3.47.5 / Dart 3.13.4, profile mode,
 Skia/OpenGL. The baseline already includes country-row virtualization.
 
@@ -40,7 +40,7 @@ Flutter API references: [ImageCache](https://api.flutter.dev/flutter/painting/Im
 [Picture.toImageSync](https://api.flutter.dev/flutter/dart-ui/Picture/toImageSync.html),
 [setIsComplexHint](https://api.flutter.dev/flutter/rendering/PaintingContext/setIsComplexHint.html).
 
-## Controlled comparison with native captures
+## Controlled comparison with native captures — 16 October
 
 Each revision ran in a newly launched process with the identical benchmark:
 English, Turkish and Russian, one separately measured first opening followed
@@ -76,22 +76,78 @@ fixtures after preceding scenarios; the system/driver glyph and shader
 caches were not reset. The first process opening remains about 160 ms in
 raster, and tr/ru first-opening raster maxima worsened in this batch.
 
-## Full frame latency check
+## Full frame latency check — 21 October
 
-A second controlled pair was started with per-frame `totalSpan` and
-`rasterStart - buildFinish` measurements, in addition to UI/raster duration.
-The baseline completed, but A8 disconnected before the changed version could
-run. That after measurement remains pending until the same phone is available.
-No reduction of total frame latency or GPU-queue waiting is claimed from the
-raster-only comparison above.
+The deferred comparison is complete. Both sides were rerun together rather
+than pairing a new candidate run with the incomplete 16 October baseline.
+Before: `d5d2a30eb2b063267a89bc96efde84d1082cc346`. After:
+`117d0c17fdc772ae41400a759f96054c84984a00`, whose library sources are identical
+to implementation commit `320836b`. No additional renderer changes were made.
+
+The temporary native host was regenerated with the same pinned SDK and the
+saved manifest, icon dependency/lock and exact Dart benchmark/driver. Both
+sides use this one restored host, changing the package dependency path and
+revision label. The three-cycle protocol and separately measured first
+opening are unchanged. Both processes completed all scenarios. Battery
+temperatures were 24.4 °C before, 24.8 °C between and 25.1 °C after the runs;
+charge stayed at 100%. Android API 28 uses the legacy OpenGL fallback with
+this default configuration; see [Flutter's renderer availability](https://docs.flutter.dev/perf/impeller#android).
 
 `FrameTiming.totalSpan` measures vsync start through raster finish; it does
 not measure input-to-display latency. The queue field measures the interval
 between UI build completion and raster start. Both are collected in the
-committed benchmark, so the deferred run can check whether image preparation
-merely shifts work outside the measured raster duration.
+committed benchmark. Per-phase frame counts and UI/raster p90 values were
+cross-checked against the SDK summaries before calculating total/queue values.
 See [FrameTiming.totalSpan](https://api.flutter.dev/flutter/dart-ui/FrameTiming/totalSpan.html)
 and [FramePhase](https://api.flutter.dev/flutter/dart-ui/FramePhase.html).
+
+All cells show **before → after**; the first opening is excluded from these
+three-cycle results, as in the earlier comparison.
+
+| Locale | Frames | UI p90, ms | Raster p90, ms | Total p50, ms | Total p90, ms | Queue p90, ms |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| en | 387 → 393 | 9.961 → 11.305 | 17.187 → 12.805 | 11.786 → 13.111 | 39.732 → 23.912 | 1.045 → 0.866 |
+| tr | 391 → 391 | 10.663 → 11.912 | 16.214 → 13.078 | 13.083 → 13.036 | 30.715 → 25.879 | 0.963 → 0.870 |
+| ru | 383 → 389 | 12.135 → 11.052 | 17.405 → 13.721 | 12.978 → 13.996 | 39.627 → 22.345 | 1.037 → 0.905 |
+
+Total p90 decreased in all three locales, by 16–44%, and queue p90 also
+decreased. This supports a real tail-latency improvement in these scenarios;
+the raster reduction was not offset by greater queue waiting. It does not
+establish an improvement to every frame: total median increased for en/ru,
+and UI p90 increased for en/tr.
+
+| Locale | Raster >16 ms | Total >16 ms | Raster maximum, ms | Total maximum, ms |
+| --- | ---: | ---: | ---: | ---: |
+| en | 53 → 12 | 135 → 144 | 128.494 → 79.270 | 134.221 → 135.098 |
+| tr | 42 → 11 | 148 → 148 | 52.725 → 56.951 | 98.433 → 102.764 |
+| ru | 51 → 19 | 156 → 143 | 52.666 → 101.925 | 108.007 → 108.720 |
+
+Raster overruns fell from 146/1,161 to 42/1,173 frames (12.58% → 3.58%,
+71.2% fewer overruns). Total-span overruns barely changed: 439 → 435
+(37.81% → 37.08%). Queue intervals above 16 ms fell from 18 to one.
+Total maxima did not improve; the Russian raster maximum increased and
+occurred during opening. The English maximum occurred while scrolling down.
+These are single-batch observations, not proof of a universal FPS increase.
+
+First opening remains a separate limitation:
+
+| Locale | Frames | Raster maximum, ms | Total maximum, ms |
+| --- | ---: | ---: | ---: |
+| en | 5 → 5 | 175.999 → 174.612 | 236.008 → 239.710 |
+| tr | 6 → 7 | 32.504 → 69.466 | 99.504 → 129.022 |
+| ru | 5 → 7 | 31.040 → 50.466 | 96.786 → 101.677 |
+
+Only en is first in the process. The first-frame original-text path is kept,
+and preparing missing images adds work on subsequent frames. The experiment
+does not isolate all startup/font/shader costs, and does not establish a
+cold-opening improvement. New-locale raster maxima and all three first-open
+total maxima worsened in this batch. All first-open samples are retained.
+
+The cache again held 25 / 49 / 77 images, with the same byte totals below and
+zero pending/live entries. Exact per-phase p50/p90/p99/max/count values are in
+[ios26-raster-latency-frame-timings.csv](ios26-raster-latency-frame-timings.csv).
+Raw reports, toolchain/source hashes, the restored host configuration and
+calculation script are saved in `reports/ios26-raster-2026-10-21/`.
 
 ## Memory and appearance
 
@@ -153,8 +209,8 @@ icon font and driver, changing only the package dependency path. These are
 new comparisons, separate from the earlier virtualization fixture, which
 omitted `cupertino_icons`. Do not compare their absolute values as one A/B.
 
-Exact phase values, frame counts, maxima and overruns are versioned in
-[ios26-raster-frame-timings.csv](ios26-raster-frame-timings.csv). Source hashes,
+Exact 16 October phase values, frame counts, maxima and overruns are versioned
+in [ios26-raster-frame-timings.csv](ios26-raster-frame-timings.csv). Source hashes,
 raw reports, exact harnesses, native PNGs/diffs, red/green tests and local CI
 output are saved in `reports/ios26-raster-2026-10-16/` (excluded from publishing).
 These results establish this A8 behavior, not iOS/Windows or cross-device
