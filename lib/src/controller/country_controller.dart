@@ -340,31 +340,28 @@ final class CountryController extends ValueNotifier<CountryState> {
     // we can skip localizing and sorting.
     if (localization == null) return countries.toList(growable: false);
 
-    final result = <Country>[];
+    final result = <({Country country, String name, String sortKey})>[];
     for (final country in countries) {
       final formatted = localization.getFormatedCountryNameByCode(
         country.countryCode,
       );
-
-      // If localization is not available for a country,
-      // we can use the original name.
-      if (formatted == null || formatted.isEmpty) {
-        result.add(country.copyWith(nameLocalized: country.name));
-      } else {
-        result.add(country.copyWith(nameLocalized: formatted));
-      }
+      final name = formatted == null || formatted.isEmpty
+          ? country.name
+          : formatted;
+      result.add((
+        country: country.copyWith(nameLocalized: name),
+        name: name,
+        sortKey: CountryUtil.foldDiacritics(name).toLowerCase(),
+      ));
     }
 
-    // Sorting countries by localized name,
-    // if available, otherwise by original name.
-    result.sort(
-      (a, b) => CountryUtil.compareNames(
-        a.nameLocalized ?? a.name,
-        b.nameLocalized ?? b.name,
-      ),
-    );
+    // Normalize each name once, keeping the original spelling as a tie-breaker.
+    result.sort((a, b) {
+      final order = a.sortKey.compareTo(b.sortKey);
+      return order != 0 ? order : a.name.compareTo(b.name);
+    });
 
-    return result.toList(growable: false);
+    return result.map((entry) => entry.country).toList(growable: false);
   }
 
   /// Handles a given operation with error handling and completion tracking.

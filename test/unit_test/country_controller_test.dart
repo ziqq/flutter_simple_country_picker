@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:flutter_simple_country_picker/src/controller/country_controller.dart';
+import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -127,6 +128,47 @@ void _$controllerTest() => group('CountryController -', () {
 
     expect(localized.map((country) => country.countryCode), ['DE', 'AT', 'HR']);
     expect(localized.last.nameLocalized, 'Croatia');
+  });
+
+  test('preserves display ordering in every bundled locale', () async {
+    final input = countries.map(Country.fromJson).toList();
+    when(provider.getCountries()).thenAnswer((_) async => input);
+
+    for (final locale in CountryLocalizations.supportedLocales) {
+      final localization = await CountryLocalizations.delegate.load(locale);
+      controller.initLocalization(localization);
+      final actual = (await controller.getCountries())!;
+      final expected = [...actual]
+        ..sort(
+          (a, b) => CountryUtil.compareNames(
+            a.nameLocalized ?? a.name,
+            b.nameLocalized ?? b.name,
+          ),
+        );
+
+      expect(actual, expected, reason: locale.toLanguageTag());
+      expect(actual, hasLength(input.length));
+    }
+  });
+
+  test('breaks equal normalized names by their original spelling', () async {
+    when(provider.getCountries()).thenAnswer(
+      (_) async => [
+        mockCountry.copyWith(countryCode: 'XA', name: 'Öland'),
+        mockCountry.copyWith(countryCode: 'XB', name: 'Oland'),
+        mockCountry.copyWith(countryCode: 'XC', name: 'oland'),
+      ],
+    );
+    controller.initLocalization(
+      await CountryLocalizations.delegate.load(const Locale('en')),
+    );
+
+    final result = (await controller.getCountries())!;
+    expect(result.map((country) => country.nameLocalized), [
+      'Oland',
+      'oland',
+      'Öland',
+    ]);
   });
 
   test('getCountries excludes countries based on the exclude list', () async {

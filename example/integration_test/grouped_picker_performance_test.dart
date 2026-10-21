@@ -112,6 +112,8 @@ void main() {
             binding.removeTimingsCallback(onFirstOpen);
           }
           final firstOpen = phases.last;
+          binding.reportData!['${scenario}_first_open_action_us'] =
+              firstOpen.end - firstOpen.start;
           binding.reportData!['${scenario}_first_open_frames'] = [
             for (final frame in firstOpenTimings)
               if (frame.timestampInMicroseconds(FramePhase.buildStart) >=
@@ -204,6 +206,7 @@ void main() {
             for (final phase in phases)
               {
                 'name': phase.name,
+                'action_us': phase.end - phase.start,
                 'frames': [
                   for (final frame in frameTimings)
                     if (frame.timestampInMicroseconds(FramePhase.buildStart) >=
