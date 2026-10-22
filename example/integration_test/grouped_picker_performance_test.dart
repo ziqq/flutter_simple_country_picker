@@ -17,7 +17,8 @@ void main() {
     'source_revision': const String.fromEnvironment('BENCHMARK_REVISION'),
     'mode': 'profile',
     'frame_policy': binding.framePolicy.name,
-    'protocol_version': 2,
+    'protocol_version': 3,
+    'first_open_timing_flush_ms': 1100,
     'first_open_measured': true,
     'semantics_enabled': const bool.fromEnvironment(
       'BENCHMARK_SEMANTICS',
@@ -107,10 +108,11 @@ void main() {
               firstOpenTimings.addAll(frames);
           binding.addTimingsCallback(onFirstOpen);
           try {
-            await binding.watchPerformance(
-              open,
-              reportKey: '${scenario}_first_open',
-            );
+            await binding.watchPerformance(() async {
+              await open();
+              // Retain the final timing batch before removing the callback.
+              await Future<void>.delayed(const Duration(milliseconds: 1100));
+            }, reportKey: '${scenario}_first_open');
           } finally {
             binding.removeTimingsCallback(onFirstOpen);
           }

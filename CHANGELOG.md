@@ -18,7 +18,7 @@
 - **FIXED**: grouped pickers virtualize country rows in one lazy list while preserving the section appearance and sticky header hand-off
 - **FIXED**: repeated color-emoji raster work in the iOS 26 picker: flags reuse GPU images through Flutter's bounded `ImageCache`, preserve their original glyphs, scale, circular clipping and selection badges, and refresh after text-style, density or system-font changes; preparation is limited to two images per frame while original text remains visible, and disabled caching or selectable text retains the original renderer
 - **FIXED**: repeated diacritic folding and case normalization while sorting localized countries: comparison keys are computed once per country while preserving the existing display order and original-name fallback
-- **FIXED**: the grouped picker profile benchmark now uses `benchmarkLive` to capture framework-requested animation frames and records raw timing samples, action windows, the frame policy and protocol version; earlier driven-frame measurements remain documented separately, with no shader warm-up or public API change
+- **FIXED**: the grouped picker profile benchmark now uses `benchmarkLive` to capture framework-requested animation frames and records raw timing samples, action windows, the frame policy and protocol version; first-opening capture also drains the final timing batch while keeping the action window separate; earlier measurement protocols and the A8 GPU-compiler experiments remain documented separately, with no shader warm-up or public API change
 
 ## 0.11.1
 - **DEPRECATED**: `useHaptickFeedback`; use `useHapticFeedback` instead. When both are provided, `useHapticFeedback` takes precedence

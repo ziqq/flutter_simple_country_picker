@@ -438,3 +438,133 @@ No warm-up or new public API was added; the maintainer explicitly excluded
 both. Source hashes, exact host harnesses, raw JSON, native comparison PNGs,
 complete/incomplete traces and command logs are retained in
 `reports/ios26-no-warmup-2026-10-22/`, excluded from package publication.
+
+## GPU compiler follow-up — 22 October 2026
+
+**First-opening jank and all remaining raster peaks are not fixed.** No library
+optimization from this batch is accepted or shipped. The production library
+remains byte-for-byte identical to `a090295`; all 61 tracked library files are
+retained in the evidence manifest. The shipped change fixes first-opening
+measurement completeness and updates these results and the CHANGELOG.
+
+Shaders are GPU programs. In these traces, names such as `FillRRectOp`,
+`AtlasTextOp`, `CircularRRectOp` and `TextureOp` identify Skia drawing operations,
+not shader files supplied by this package. Preparing a program for a new drawing
+configuration can also happen during a later interaction, including dismissal.
+
+### Complete control trace: the later peaks also compile programs
+
+A control with the original library uses the same physical A8, Flutter 3.47.5,
+profile Skia/OpenGL, semantics disabled and no picker warm-up. The diagnostic
+fixture uses Turkish, opens and interacts with the picker, then repeats opening,
+scrolling and closing. `--trace-skia --endless-trace-buffer` retains the entire
+start/end interval of every recorded action. All nine intervals were checked
+against the earliest/latest trace events. These instrumented numbers include
+tracing overhead and are kept separate from untraced comparisons.
+
+| Action | Worst raster, ms | Shader compilation in that frame, ms | Share |
+| --- | ---: | ---: | ---: |
+| First open | 190.486 | 153.022 | 80.33% |
+| First scroll down | 49.946 | 30.587 | 61.24% |
+| First scroll up | 40.358 | 28.305 | 70.13% |
+| Search | 31.255 | 21.712 | 69.47% |
+| Close | 91.380 | 75.234 | 82.33% |
+| Repeated open | 35.005 | 19.836 | 56.67% |
+| Repeated scroll | 19.840 | 0.000 | 0.00% |
+| Repeated close | 21.215 | 0.000 | 0.00% |
+
+The 91.380 ms dismissal frame contains a 75.234 ms `FillRRectOp` program
+compilation. The worst first-opening frame contains 153.022 ms of compilation
+out of 190.486 ms. An additional 78.586 ms `FillRectOp` compilation occurs during
+the launch-button interaction in a separate frame. Limiting image snapshots
+cannot remove these program compilations by itself.
+
+A separate path-background prototype retains the original clips but replaces
+the background fill with explicit conics. It adds a 33.003 ms `AAConvexPathOp`
+compilation without removing the 60.839 ms `FillRRectOp` compilation. Its traced
+first-opening raster reaches 224.893 ms. It is rejected; the control trace above
+comes from the unchanged renderer, not this prototype.
+
+### Untraced experiments on the same A8
+
+All rows below retain the original native flag glyphs. Cells are observed maxima
+in the first en open action; UI/raster/queue/total maxima can belong to different
+frames. Complete action time includes test settling/polling and is not physical
+presentation latency. Only en is the first picker in a process; tr/ru follow it.
+No OS/driver cache reset is claimed.
+
+| Run | Protocol | UI max, ms | Raster max, ms | Queue max, ms | Total max, ms | Action, ms |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Control 1 | 2 | 43.734 | 192.765 | 163.067 | 291.485 | 690.604 |
+| Control 2 | 2 | 34.686 | 183.719 | 152.048 | 280.413 | 691.369 |
+| Split background + uniform row clips | 2 | 36.070 | 165.331 | 143.374 | 252.520 | 676.051 |
+| Split background, original rows | 2 | 36.774 | 163.167 | 137.313 | 257.919 | 685.448 |
+| Rounded background repaint | 2 | 34.658 | 208.090 | 189.934 | 299.299 | 682.593 |
+| One snapshot per UI frame | 2 | 42.101 | 153.885 | 138.115 | 258.408 | 686.660 |
+| One snapshot, repeat | 2 | 34.646 | 181.765 | 165.533 | 275.607 | 680.060 |
+| One asynchronous GPU conversion | 2 | 35.939 | 182.102 | 181.117 | 274.424 | 684.907 |
+| Protocol 3 control, original renderer | 3 | 38.140 | 189.302 | 161.048 | 284.410 | 678.590 |
+| Protocol 3 guarded background proposal | 3 | 32.900 | 160.919 | 134.547 | 257.352 | 675.331 |
+
+The one-image result did not reproduce: its repeat returned to 181.765 ms,
+and a later raster peak reached 94.933 ms. The asynchronous conversion prototype
+also leaves a later peak of 92.317 ms. Neither is accepted. Repainting the rounded
+background regresses cold raster latency to 208.090 ms and still changes corner
+pixels. None of these is substituted for a solved rendering problem.
+
+The guarded background proposal reduces first-opening raster from 189.302 to
+160.919 ms (15.0%) and maximum total span from 284.410 to 257.352 ms (9.5%) in the
+protocol 3 pair. The complete open action changes by less than 1%. Repeated-cycle
+SDK raster maxima are en/tr/ru 45.861/100.340/44.769 ms for the control and
+67.179/39.791/49.226 ms for the proposal. These are one pair of runs; the proposal
+does not establish elimination of all later peaks. It remains unapplied pending
+a decision on its corner antialiasing difference and further validation.
+
+### Native appearance and the unapplied proposal
+
+Four native PixelCopy captures compare the actual modal route, light/dark and
+partial/full height, including several flags, search/close controls and a selected
+badge. The initial split-background candidate changes 132–266 pixels per
+1080×2175 image, confined to the antialiased upper corners (maximum channel delta
+15/255). All other pixels, including flags, countries and controls, match.
+The guarded prototype reproduces the same four pixel comparisons.
+The rounded-background repaint attempt also differs at those corners and does
+not meet the performance gate.
+
+The guarded proposal keeps the original row clips, flags, selection badge and
+sticky-list implementation. It is limited to Android with an opaque iOS 26
+background, the stock search header, sufficient inset/size and no custom
+`surfaceBuilder`; other configurations keep the original rounded shell.
+It is stored as `guarded-split-unapplied.patch` under the excluded evidence
+folder and is not part of the package or this PR's library diff.
+
+### Protocol 3: drain the first-opening timing batch
+
+Protocol 2 could remove its first-opening callback before the final batch arrived.
+For example, the second control exported only eleven first-opening samples.
+Protocol 3 waits 1100 ms after the action before removing the callback, as the
+main-cycle recorder already does. The action start/end boundaries remain inside
+`open()` and exclude that wait. The report records `first_open_timing_flush_ms`;
+raw samples outside the action remain available. This wait performs no synthetic
+picker rendering or pre-opening preparation.
+
+The protocol 3 control retains first-opening frames up to 2.374/2.645/5.153 ms
+before the end of the en/tr/ru action windows. Its raw timing callbacks also
+include preparation/flush frames, which must not be treated as action frames.
+SDK first-opening summaries include the added flush interval; the named action
+window does not. The interval before the repeated cycles also changes, so SDK
+percentiles from protocols 2 and 3 must not be compared as an identical workload.
+Protocol 2 first-opening rows describe the observed subset, not a guaranteed
+complete action-window percentile population.
+
+[ios26-compiler-frame-summary.csv](ios26-compiler-frame-summary.csv) retains
+observed action-window UI/raster/queue/total p90/max values, complete action
+durations and protocol/flush metadata. `named_phases` combines the three measured
+interaction cycles, excluding idle/flush intervals. SDK summaries remain in the
+raw JSON and are not mixed into those CSV rows. Percentiles use the sorted
+sample at `ceil((count - 1) * .9)`.
+
+Raw JSON, complete control/prototype traces, source snapshots, source hashes,
+commands, logs, modal PNG comparisons and the unapplied proposal are retained
+in `reports/ios26-compiler-2026-10-22/`, excluded from publication. No shader
+warm-up or supported public API change is included.
