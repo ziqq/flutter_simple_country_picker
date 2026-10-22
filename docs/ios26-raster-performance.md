@@ -215,3 +215,125 @@ raw reports, exact harnesses, native PNGs/diffs, red/green tests and local CI
 output are saved in `reports/ios26-raster-2026-10-16/` (excluded from publishing).
 These results establish this A8 behavior, not iOS/Windows or cross-device
 performance, and do not establish that all frames meet 16 ms.
+
+## Cold-opening diagnosis and data preparation — 21–22 October 2026
+
+This follow-up compares the current cache implementation, baseline
+`1861f58705674920dca1d82c88358d57cf2c3482`, with
+`2c3accac555db78d29cee6f16f9e043b155bf8c7`. It uses the same Galaxy A8,
+pinned Flutter 3.47.5 and Skia/OpenGL. Two baseline processes and one final
+candidate process ran the same three-locale, three-cycle protocol. No
+shader warm-up runs before these timed scenarios. The renderer, flags,
+clipping, sticky list and public API are unchanged by this follow-up.
+
+### What causes the remaining spikes
+
+A separate `--trace-skia` diagnosis attributes 142.258 ms of a 193.670 ms
+raster frame to shader compilation. A FillRRect program alone took 63.047 ms,
+including 55.193 ms in driver linking. The first downward and upward flings
+also compiled additional clip/text/texture programs; repeated phases normally
+had no shader compilation. A button-only control still cost 80.278 ms with
+no picker, while opening the picker directly retained its own cold spike.
+The caller's ink effect and the picker's shader costs are separate.
+
+These instrumented traces diagnose the cause; the following performance
+tables come from runs without tracing. Extra flag layers, eager snapshots,
+preclipped images, alternate rounded paths, and row-theme/Material changes
+were tested and excluded because they did not consistently improve cold
+opening and subsequent peaks. Requesting Impeller still selected Skia on
+this API 28 device. No renderer override is shipped.
+
+### Accepted data-path change
+
+Localized names used to be folded and lowercased inside every sort
+comparison. The controller now computes a comparison key once per country,
+then compares the original spelling on equal keys. The untranslated-name
+fallback and display order stay the same. Regression checks compare the
+result with `CountryUtil.compareNames` in all bundled locales and exercise
+case/diacritic ties. No coverage exclusions were added.
+
+A separate A8 controller benchmark performs 31 loads per locale, including
+World Wide and three favorites (245 returned entries). The timer covers
+`getCountries`; it excludes provider construction and loading the localization
+delegate. The first sample is retained separately; the table is the median
+of the remaining 30 samples. This measures data preparation, not a frame or
+input-to-display latency.
+
+| Locale | Preparation before, ms | Preparation after, ms |
+| --- | ---: | ---: |
+| en | 2.526 | 1.950 |
+| tr | 6.168 | 1.351 |
+| ru | 5.685 | 1.250 |
+
+### Full-frame comparison
+
+Cells show **baseline run 1 / baseline run 2 → final candidate**. The two
+baseline runs expose the measurement spread. Main-cycle values exclude the
+separately retained first opening. Counts over 16 ms use the fixed diagnostic
+budget; they are not display FPS or dropped-frame measurements.
+
+| Locale | UI p90, ms | Raster p90, ms | Total p90, ms | Total p99, ms |
+| --- | ---: | ---: | ---: | ---: |
+| en | 10.735 / 10.961 → 10.449 | 14.082 / 13.127 → 13.059 | 25.549 / 25.283 → 23.265 | 89.861 / 78.505 → 76.994 |
+| tr | 13.937 / 10.545 → 10.613 | 13.993 / 12.551 → 12.782 | 25.349 / 21.242 → 21.280 | 78.813 / 86.715 → 75.945 |
+| ru | 14.440 / 13.484 → 11.735 | 13.662 / 13.447 → 13.551 | 27.696 / 27.205 → 24.803 | 81.521 / 79.321 → 81.529 |
+
+| Locale | First-open UI maximum, ms | Raster maximum, ms | Total maximum, ms | Complete open action, ms |
+| --- | ---: | ---: | ---: | ---: |
+| en | 40.557 / 47.899 → 37.556 | 193.091 / 161.123 → 160.443 | 234.524 / 209.989 → 198.697 | 637.060 / 675.897 → 668.543 |
+| tr | 52.292 / 41.898 → 74.782 | 47.402 / 49.540 → 58.942 | 101.148 / 92.306 → 135.217 | 676.215 / 750.264 → 667.606 |
+| ru | 45.059 / 64.094 → 74.400 | 47.163 / 60.890 → 57.966 | 93.609 / 126.195 → 133.725 | 678.445 / 766.779 → 671.809 |
+
+Only en opens the first picker in each process; tr/ru create new locale
+fixtures after previous scenarios. The complete action includes the test's
+`pumpAndSettle` polling and is not physical touch-to-display latency.
+`FrameTiming.totalSpan` ends at raster completion, before display presentation.
+
+**The cold shader problem and all remaining heavy frames are not fixed.**
+The final first-process raster maximum is 160.443 ms against baseline
+161.123–193.091 ms. Localized first-opening UI maxima still worsen in this
+batch. Main-cycle maxima and the full per-phase values are retained in
+[ios26-cold-opening-frame-summary.csv](ios26-cold-opening-frame-summary.csv).
+The accepted change reduces data preparation work; these measurements do
+not establish a reliable end-to-end cold-opening improvement.
+
+### Explicit warm-up experiment
+
+A separate temporary-host prototype explicitly prepares drawing programs
+before opening. With tracing enabled, first-opening raster maximum changed
+from 193.670 to 80.720 ms and total maximum from 237.993 to 115.490 ms.
+The preparation itself took **406.307 ms before the action**. It shifts work
+to preparation; it does not remove that work or prove faster startup. First
+scrolling still had an approximately 79 ms raster frame. An expanded warm-up
+cost 724.627 ms and did not consistently remove later compilation peaks.
+
+No warm-up or new public API is included in `2c3acca`. Adding an explicit
+opt-in API requires a separate decision about preparation time and app
+integration. The baseline/candidate tables above include no hidden warm-up.
+The mechanism follows Flutter's
+[ShaderWarmUp](https://api.flutter.dev/flutter/painting/ShaderWarmUp-class.html)
+contract. The tests of extra layers and paths also follow the measurement
+trade-off described in PlugFox's
+[canvas rendering guide](https://plugfox.dev/high-performance-canvas-rendering/).
+
+### Visual and validation evidence
+
+Android PixelCopy compares 60 states: both styles, light/dark/RTL at text
+scale 1.8, initial/held-RU/pinned/handoff/next/reverse/search/empty/clear/
+selected-FR. The 54 static states are pixel-exact. Of six held-press states,
+five are exact; the RTL iOS 26 pair differs at 104 of 2,349,000 pixels by at
+most 1/255 per channel. All scroll offsets match. Presses advance through
+30 actual frames before capture so the initial ink/fade animations finish.
+Baseline static captures and settled-press captures are separate runs of
+the same unchanged baseline sources. Earlier transient press captures are
+excluded from this comparison. The interrupted final capture produced no
+report and was replaced by a completed retry on the same A8.
+
+`make ci` passed on `2c3acca`: 6,221 tests, 100% filtered line coverage
+(2,275/2,275), publish dry-run with zero warnings and Pana 160/160. The 61
+tracked library files match the measured candidate snapshot; only the
+controller differs from the baseline. Full action durations were added to
+the existing benchmark. Raw JSON, shader traces, exact temporary-host
+harnesses, source hashes, native PNGs and logs are in
+`reports/ios26-cold-raster-2026-10-21/`, excluded from publication. These results
+establish behavior on this A8, not performance on other devices or backends.
