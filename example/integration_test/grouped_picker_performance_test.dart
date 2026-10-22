@@ -12,21 +12,24 @@ import 'package:integration_test/integration_test.dart';
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized()
-    ..reportData = <String, dynamic>{
-      'source_revision': const String.fromEnvironment('BENCHMARK_REVISION'),
-      'mode': 'profile',
-      'first_open_measured': true,
-      'semantics_enabled': const bool.fromEnvironment(
-        'BENCHMARK_SEMANTICS',
-        defaultValue: true,
-      ),
-      'platform': defaultTargetPlatform.name,
-      'dart_version': Platform.version,
-      'repetitions': 3,
-      'favorites': ['RU', 'US', 'FR'],
-      'show_world_wide': true,
-      'show_phone_code': true,
-    };
+    ..framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive;
+  binding.reportData = <String, dynamic>{
+    'source_revision': const String.fromEnvironment('BENCHMARK_REVISION'),
+    'mode': 'profile',
+    'frame_policy': binding.framePolicy.name,
+    'protocol_version': 2,
+    'first_open_measured': true,
+    'semantics_enabled': const bool.fromEnvironment(
+      'BENCHMARK_SEMANTICS',
+      defaultValue: true,
+    ),
+    'platform': defaultTargetPlatform.name,
+    'dart_version': Platform.version,
+    'repetitions': 3,
+    'favorites': ['RU', 'US', 'FR'],
+    'show_world_wide': true,
+    'show_phone_code': true,
+  };
 
   for (final style in CountryPickerStyle.values) {
     for (final language in ['en', 'tr', 'ru']) {
@@ -98,7 +101,7 @@ void main() {
             await tester.pumpAndSettle();
           });
 
-          // Warm the locale, font glyphs and rendering pipeline before timing.
+          // Retain the first opening separately from the repeated cycles.
           final firstOpenTimings = <FrameTiming>[];
           void onFirstOpen(List<FrameTiming> frames) =>
               firstOpenTimings.addAll(frames);
@@ -114,6 +117,13 @@ void main() {
           final firstOpen = phases.last;
           binding.reportData!['${scenario}_first_open_action_us'] =
               firstOpen.end - firstOpen.start;
+          binding.reportData!['${scenario}_first_open_window'] = {
+            'start_us': firstOpen.start,
+            'end_us': firstOpen.end,
+          };
+          binding.reportData!['${scenario}_first_open_samples'] = [
+            for (final frame in firstOpenTimings) _frameData(frame),
+          ];
           binding.reportData!['${scenario}_first_open_frames'] = [
             for (final frame in firstOpenTimings)
               if (frame.timestampInMicroseconds(FramePhase.buildStart) >=
@@ -202,10 +212,15 @@ void main() {
             'live': imageCache.liveImageCount,
             'pending': imageCache.pendingImageCount,
           };
+          binding.reportData!['${scenario}_timing_samples'] = [
+            for (final frame in frameTimings) _frameData(frame),
+          ];
           binding.reportData!['${scenario}_phases'] = [
             for (final phase in phases)
               {
                 'name': phase.name,
+                'start_us': phase.start,
+                'end_us': phase.end,
                 'action_us': phase.end - phase.start,
                 'frames': [
                   for (final frame in frameTimings)
@@ -228,6 +243,10 @@ void main() {
 }
 
 Map<String, int> _frameData(FrameTiming frame) => {
+  'frame_number': frame.frameNumber,
+  'build_start_us': frame.timestampInMicroseconds(FramePhase.buildStart),
+  'raster_start_us': frame.timestampInMicroseconds(FramePhase.rasterStart),
+  'raster_finish_us': frame.timestampInMicroseconds(FramePhase.rasterFinish),
   'ui_us': frame.buildDuration.inMicroseconds,
   'raster_us': frame.rasterDuration.inMicroseconds,
   'raster_queue_us':

@@ -7,6 +7,12 @@ Skia/OpenGL. The baseline already includes country-row virtualization.
 Before: `d5d2a30eb2b063267a89bc96efde84d1082cc346`. After:
 `320836b714f16ad0c15a9085510d6b1972aa056d`.
 
+> Measurement update, 22 October: the measurements below used the test
+> binding's default `fadePointers` policy. They describe that driven test,
+> rather than a freely scheduled animation. The [benchmarkLive follow-up](#live-frame-protocol-follow-up--22-october-2026)
+> records natural frame scheduling separately; values from the two protocols
+> must not be compared directly.
+
 ## Cause and change
 
 The circular iOS 26 flags repeatedly rasterized enlarged native color-emoji
@@ -307,9 +313,10 @@ to preparation; it does not remove that work or prove faster startup. First
 scrolling still had an approximately 79 ms raster frame. An expanded warm-up
 cost 724.627 ms and did not consistently remove later compilation peaks.
 
-No warm-up or new public API is included in `2c3acca`. Adding an explicit
-opt-in API requires a separate decision about preparation time and app
-integration. The baseline/candidate tables above include no hidden warm-up.
+No warm-up or new public API is included in `2c3acca`. On 22 October the
+maintainer explicitly rejected a new API and preliminary warm-up. Both
+remain excluded from the continuation. The baseline/candidate tables above
+include no hidden warm-up.
 The mechanism follows Flutter's
 [ShaderWarmUp](https://api.flutter.dev/flutter/painting/ShaderWarmUp-class.html)
 contract. The tests of extra layers and paths also follow the measurement
@@ -337,3 +344,97 @@ the existing benchmark. Raw JSON, shader traces, exact temporary-host
 harnesses, source hashes, native PNGs and logs are in
 `reports/ios26-cold-raster-2026-10-21/`, excluded from publication. These results
 establish behavior on this A8, not performance on other devices or backends.
+
+
+## Live-frame protocol follow-up — 22 October 2026
+
+The benchmark now explicitly uses Flutter's `benchmarkLive` frame policy.
+The previous default, `fadePointers`, can skip animation frames that a test
+does not pump. For example, the first control in this batch records five
+first-opening frames with the old protocol and seventeen with the live one.
+This changes the workload, so the old and new percentile figures must not be
+compared directly. The cache implementation has not been remeasured against
+its pre-cache revision under this new protocol.
+
+`benchmarkLive` continuously services frames in this binding, including during
+idle waits. It is a controlled device benchmark, not a measurement of idle
+app behavior, display FPS or physical touch-to-display latency. SDK
+`watchPerformance` summaries include capture/flush intervals, while named
+phases contain the actions themselves. These windows have different frame
+counts and are retained separately in
+[ios26-live-frame-summary.csv](ios26-live-frame-summary.csv): `sdk_main`
+contains SDK UI/raster samples; `named_phases` and individual phases retain
+full `FrameTiming.totalSpan` and raster-queue timings for their action windows.
+A missing total in an SDK-summary row is unavailable data, not zero latency.
+
+The final harness also exports every collected `FrameTiming`, with frame
+numbers and build/raster timestamps, the boundaries of each action, and the
+frame policy/protocol version. Frames outside named phases remain inspectable.
+No behavior assertion or gesture was removed. First opening is still timed
+separately from the repeated cycles, with no picker shader/flag warm-up.
+
+All runs use the same physical A8 `5200fe1d4f1d95b7`, pinned Flutter 3.47.5,
+profile Skia/OpenGL, DPR 3, semantics disabled, the same en/tr/ru fixtures and
+three repeated interaction cycles. Only en opens the first picker in each
+process; tr/ru follow earlier fixtures. No OS/driver cache reset is claimed.
+All 61 tracked library files in the final temporary package match `b14873f`.
+The public API, renderer, native flags and sticky-list implementation remain
+unchanged by this continuation.
+
+### Untraced first-opening controls and rejected candidates
+
+The following rows use protocol 2. Cells are maxima inside the first en open
+action; action duration includes settling/polling and is not presentation time.
+The final-harness row changes recording metadata, not package rendering.
+
+| Run | UI max, ms | Raster max, ms | Total max, ms | Complete action, ms |
+| --- | ---: | ---: | ---: | ---: |
+| Control 1 | 44.628 | 153.435 | 246.747 | 682.521 |
+| Control 2 | 51.331 | 152.211 | 260.890 | 682.786 |
+| Control 3 | 50.479 | 158.115 | 260.259 | 683.289 |
+| Final harness, unchanged renderer | 42.122 | 157.762 | 261.456 | 691.676 |
+| Rejected uniform AA clips | 41.733 | 183.419 | 271.709 | 678.112 |
+| Rejected single-edge AA clips | 41.481 | 194.626 | 284.885 | 731.475 |
+
+The equivalent-looking AA candidate matched all 60 native PixelCopy captures
+exactly, but did not improve cold opening. Extending the rectangular AA clip
+to constrain only the flat edge also failed the latency gate. Neither is
+shipped. Earlier hard-edge and preclipped-image prototypes changed pixels
+(up to 7/255 at section edges and 40/255 at flag edges respectively) and were
+excluded. A sheet repaint boundary also failed to improve the old-protocol
+control. The complete experiment CSV and sources remain in the evidence folder.
+
+### Final unchanged-renderer live-cycle measurements
+
+These are SDK `watchPerformance` summaries for the final harness. They include
+its capture intervals; the linked CSV retains action-window total latency and
+the corresponding per-phase values separately.
+
+| Locale | SDK frames | UI p90, ms | Raster p90, ms | Raster maximum, ms |
+| --- | ---: | ---: | ---: | ---: |
+| en | 742 | 8.801 | 15.787 | 52.954 |
+| tr | 766 | 8.645 | 15.982 | 95.168 |
+| ru | 764 | 9.368 | 15.725 | 44.964 |
+
+**No renderer optimization is accepted in this follow-up. Heavy first opening
+and all remaining raster peaks are still unresolved.** Improvements in an
+isolated phase did not justify a cold-opening regression or changed pixels.
+The only shipped code change here corrects and completes the benchmark.
+
+### Complete live-frame shader diagnosis
+
+A separate instrumented run uses `--trace-skia --endless-trace-buffer` and
+captures only the first opening. Its trace covers the full action. The worst
+raster frame is 189.072 ms; `shader_compile` spans overlap 149.852 ms of that
+frame, or 79.26%. The FillRRect program takes 61.419 ms, including 53.328 ms
+in driver linking. A separate FillRect compilation takes 79.899 ms.
+These diagnostic timings include tracing overhead and are not substituted
+for the untraced controls above.
+
+An earlier live trace with the default ring buffer lost the beginning of
+the action; its empty shader list cannot prove an absence of shader work.
+It is retained as an incomplete diagnostic and excluded from attribution.
+No warm-up or new public API was added; the maintainer explicitly excluded
+both. Source hashes, exact host harnesses, raw JSON, native comparison PNGs,
+complete/incomplete traces and command logs are retained in
+`reports/ios26-no-warmup-2026-10-22/`, excluded from package publication.
