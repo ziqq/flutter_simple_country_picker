@@ -20,6 +20,7 @@ void main() => group('CountryListView -', () {
     bool emptyTextTheme = false,
     bool showWorldWide = false,
     bool rtl = false,
+    InteractiveInkFeatureFactory? splashFactory,
     ScrollController? scrollController,
     ValueNotifier<Country?>? selected,
     void Function(Country)? onSelect,
@@ -32,6 +33,7 @@ void main() => group('CountryListView -', () {
         locale: locale,
         builder: (context) => Theme(
           data: (dark ? ThemeData.dark() : ThemeData.light()).copyWith(
+            splashFactory: splashFactory,
             textTheme: emptyTextTheme ? const TextTheme() : null,
           ),
           child: MediaQuery(
@@ -66,6 +68,67 @@ void main() => group('CountryListView -', () {
     );
     await tester.pumpAndSettle();
   }
+
+  group('country row splash -', () {
+    Finder countryInkWell() => find.descendant(
+      of: find.byKey(ValueKey<String>(Country.fromCountryCode('RU').e164Key)),
+      matching: find.byType(InkWell),
+    );
+
+    for (final dark in [false, true]) {
+      testWidgets('ios26 replaces InkSparkle and retains highlight: $dark', (
+        tester,
+      ) async {
+        Country? chosen;
+        await pumpList(
+          tester,
+          style: .ios26,
+          dark: dark,
+          splashFactory: InkSparkle.splashFactory,
+          onSelect: (country) => chosen = country,
+        );
+        final ink = countryInkWell();
+        expect(
+          tester.widget<InkWell>(ink).splashFactory,
+          NoSplash.splashFactory,
+        );
+        final context = tester.element(ink);
+        expect(
+          Theme.of(context).highlightColor,
+          CupertinoDynamicColor.resolve(CupertinoColors.systemGrey4, context),
+        );
+        await tester.tap(ink);
+        await tester.pumpAndSettle();
+        expect(chosen?.countryCode, 'RU');
+      });
+    }
+
+    testWidgets('classic retains the inherited InkSparkle factory', (
+      tester,
+    ) async {
+      await pumpList(tester, splashFactory: InkSparkle.splashFactory);
+      final ink = countryInkWell();
+      expect(tester.widget<InkWell>(ink).splashFactory, isNull);
+      expect(
+        Theme.of(tester.element(ink)).splashFactory,
+        InkSparkle.splashFactory,
+      );
+    });
+
+    for (final factory in [
+      InkRipple.splashFactory,
+      InkSparkle.constantTurbulenceSeedSplashFactory,
+    ]) {
+      testWidgets('ios26 retains custom splash factory: $factory', (
+        tester,
+      ) async {
+        await pumpList(tester, style: .ios26, splashFactory: factory);
+        final ink = countryInkWell();
+        expect(tester.widget<InkWell>(ink).splashFactory, isNull);
+        expect(Theme.of(tester.element(ink)).splashFactory, factory);
+      });
+    }
+  });
 
   testWidgets('status bar tap scrolls the list back to the first country', (
     tester,

@@ -649,8 +649,9 @@ Flags, rows, controls and selection badges match outside the improved boundary.
 The stable-shell implementation was then measured in the two pairs above.
 A final combined screenshot rerun of that implementation and an optional
 pressed-state comparison could not finish after the A8 disconnected from ADB.
-Those final captures remain pending; the earlier four primitive comparisons
-must not be presented as that unfinished rerun.
+The earlier four primitive comparisons were not presented as that unfinished
+rerun. The completed 23 October final-source visual follow-up is documented
+below and closes the modal/settled-list capture gap.
 
 ### Diagnosis and excluded changes
 
@@ -673,12 +674,104 @@ An isolated press experiment replaces only the default Android `InkSparkle`
 in iOS 26 country rows with `NoSplash`, retaining the gray highlight and custom
 splash factories. Its first en/tr row presses are 6.900/15.723 ms versus
 77.024/88.678 ms with the unchanged effect. First opening and 40–58 ms later
-peaks remain. This experiment removes transient white sparkles and therefore
-changes pressed appearance; it remains outside the implementation pending
-visual review and explicit approval. No caller-button effect is changed.
+peaks remain. This experiment was excluded from the background-only change
+while visual review and explicit approval were pending. The approved
+23 October follow-up below replaces the default factory while retaining the
+gray highlight. No caller-button effect is changed.
 
 The accepted background passes the existing 6,221 tests and analysis, with
 100% filtered line coverage (2309/2309). Unit/widget tests and coverage
 exclusions are unchanged. Exact fixture sources, source/APK hashes, logs,
 raw frames, native PNGs, quality calculations and rejected prototypes are
 retained under `reports/ios26-edge-quality-2026-10-22/`, excluded from publishing.
+
+### ios26 row presses without InkSparkle — 23 October 2026
+
+The approved follow-up replaces only the standard `InkSparkle.splashFactory`
+with `NoSplash.splashFactory` for iOS 26 country rows. The gray Cupertino
+highlight, selection callbacks, flag renderer and sticky headers remain.
+Classic rows and caller-provided splash factories keep their effects.
+No public API or preliminary warm-up is added. The caller button is unchanged.
+
+Two new matched A/B pairs ran on the same Galaxy A8 SM-A530F
+(`5200fe1d4f1d95b7`, Android 9/API 28, DPR 3), with Flutter 3.47.5 /
+Dart 3.13.4 in profile mode using Skia/OpenGL and `--no-enable-impeller`.
+The control is `e612892`; the candidate adds only the row-factory change.
+Both variants use the same archived protocol-4 fixture: `benchmarkLive`,
+semantics disabled, locales en/tr/ru in that order, three cycles per locale,
+and a 150 ms row hold followed by cancellation in each cycle.
+The second pair reuses the exact saved APKs in fresh processes.
+No OS/driver cache reset is claimed; only en is the first picker in a process.
+
+#### First row press in each locale
+
+All values are milliseconds. Each cell is control → candidate. Maxima in
+different columns can belong to different frames. Action duration includes
+the fixed 150 ms hold, cancellation and animation settling; it is not a
+tap-to-display measurement.
+
+| Pair / locale | UI max | Raster max | Queue max | Total span max | Complete action |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 / en | 6.355 → 4.973 | 79.057 → 6.981 | 65.396 → 0.760 | 86.433 → 12.310 | 766.392 → 257.340 |
+| 1 / tr | 6.041 → 7.178 | 87.685 → 14.376 | 73.093 → 0.720 | 93.272 → 18.182 | 773.124 → 262.950 |
+| 1 / ru | 7.820 → 7.949 | 9.719 → 29.232 | 1.340 → 5.334 | 24.709 → 35.535 | 773.755 → 264.750 |
+| 2 / en | 5.831 → 4.758 | 78.016 → 6.962 | 63.534 → 0.867 | 84.126 → 12.597 | 764.354 → 258.580 |
+| 2 / tr | 7.841 → 4.309 | 87.798 → 12.658 | 75.749 → 0.757 | 98.463 → 14.183 | 771.698 → 258.541 |
+| 2 / ru | 9.409 → 10.141 | 16.942 → 13.927 | 4.238 → 2.876 | 27.357 → 26.357 | 774.607 → 272.236 |
+
+The heavy en/tr press peaks disappear in both pairs. The third locale
+does not show a consistent peak improvement: the candidate has a 29.232 ms
+first-press raster spike in one run and 13.927 ms in the repeat.
+Across all 18 measured presses per variant, the maximum raster duration
+changes from 87.798 to 29.232 ms, maximum queue delay from 75.749 to 5.334 ms,
+and maximum total span from 98.463 to 35.535 ms. Warm-press raster maxima
+are 24.832 and 18.367 ms. Not every press fits the 16.667 ms raster budget.
+
+The complete hold/cancel/settle windows are 764.281–783.719 ms in the controls
+and 257.340–272.236 ms in the candidates. Removing the extra splash animation
+also reduces the captured press-frame count from 809 to 282. Raster durations
+over 16.667 ms are 29/809 and 8/282; the different animation lengths and
+sample counts must be retained when interpreting these counts.
+
+#### First opening and remaining peaks
+
+This change does not fix cold opening. Only the first en opening is compared
+as a fresh-process opening; its timing capture retains the protocol-4
+1100 ms drain after the separately recorded action window.
+
+| Run | UI max | Raster max | Queue max | Total span max | Complete opening action |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| before | 43.338 | 140.303 | 121.342 | 242.007 | 694.300 |
+| after | 40.930 | 149.253 | 129.964 | 250.181 | 697.674 |
+| before-repeat | 50.856 | 135.984 | 127.405 | 248.053 | 683.684 |
+| after-repeat | 40.669 | 137.201 | 119.002 | 239.401 | 688.699 |
+
+The opening samples show no consistent improvement. Later non-press phases
+still reach 51.461 ms raster in the controls and 50.751 ms in the candidates.
+The result is limited to removing the standard country-row splash cost;
+it does not establish a universal device speedup or eliminate the remaining
+opening, scrolling and search peaks.
+
+[Per-action frame summary](ios26-ink-sparkle-frame-summary.csv) contains
+300 rows covering all four runs, all locales and actions, with action duration,
+UI/raster/queue/total p50/p90/p99/max values and threshold counts. Raw timing
+samples, action windows, exact host sources, APK/source hashes and process IDs
+are retained in `reports/ios26-no-sparkle-2026-10-23/`, excluded from publishing.
+
+The five new widget checks preserve the light/dark highlight and selection,
+the classic default, and two custom factories. Both replacement checks fail
+on the original implementation and pass on the candidate. The full suite
+passes 6,226 tests with 100% filtered line coverage (2311/2311); no coverage
+exclusions were added.
+
+The final-source A8 visual follow-up also completes the previously interrupted
+capture. All 60 settled list states match the earlier native reference
+pixel-for-pixel: both styles, light/dark/RTL at text scale 1.8, initial,
+held press, sticky pinned/handoff/next/reverse, search/empty/clear and selected
+flag. The held press advances 30 × 50 ms before capture; this verifies the
+preserved gray highlight, not the removed transient splash animation.
+All scroll offsets match. Four actual modal captures reproduce the edge-quality
+table above, with zero worse boundary pixels and zero changed pixels outside
+the improved boundary. The final flag/row/control/badge pixels remain unchanged.
+The 64 screenshots, comparison results and unchanged visual fixture sources
+are retained alongside the timing evidence.

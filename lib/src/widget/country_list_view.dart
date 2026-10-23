@@ -980,6 +980,11 @@ class _CountryListTile extends StatelessWidget {
           splashColor: Colors.transparent,
         ),
         child: InkWell(
+          splashFactory:
+              CountryPickerTheme.resolve(context).style == .ios26 &&
+                  Theme.of(context).splashFactory == InkSparkle.splashFactory
+              ? NoSplash.splashFactory
+              : null,
           onTap: () => _onTap(context, nameLocalized),
           child: ExcludeSemantics(child: child),
         ),
