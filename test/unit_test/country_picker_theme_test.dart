@@ -7,6 +7,41 @@ import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart
 import 'package:flutter_test/flutter_test.dart';
 
 void main() => group('CountryPickerTheme -', () {
+  testWidgets('resolves divider and badge colors from a partial theme', (
+    tester,
+  ) async {
+    for (final brightness in Brightness.values) {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(brightness: brightness),
+          home: InheritedCountryPickerTheme(
+            data: CountryPickerTheme(),
+            child: Builder(
+              builder: (context) {
+                final resolved = CountryPickerTheme.resolve(context);
+                expect(
+                  resolved.dividerColor,
+                  CupertinoDynamicColor.resolve(
+                    CupertinoColors.opaqueSeparator,
+                    context,
+                  ),
+                );
+                expect(
+                  resolved.secondaryBackgroundColor,
+                  CupertinoDynamicColor.resolve(
+                    CupertinoColors.secondarySystemBackground,
+                    context,
+                  ),
+                );
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        ),
+      );
+    }
+  });
+
   test('constructs with default values', () {
     final theme = CountryPickerTheme(
       accentColor: CupertinoColors.systemRed,
@@ -312,7 +347,77 @@ void main() => group('CountryPickerTheme -', () {
         'padding',
         'indent',
         'radius',
+        'style',
       ]),
     );
+  });
+
+  group('indent (deprecated) -', () {
+    test('defaults to 10 and is optional in raw', () {
+      // ignore: deprecated_member_use_from_same_package
+      expect(CountryPickerTheme().indent, 10);
+      const theme = CountryPickerTheme.raw(
+        accentColor: null,
+        backgroundColor: null,
+        onBackgroundColor: null,
+        barrierColor: null,
+        dividerColor: null,
+        secondaryBackgroundColor: null,
+        onSecondaryBackgroundColor: null,
+        inputDecoration: null,
+        inputHeight: 56,
+        secondaryTextStyle: null,
+        searchTextStyle: null,
+        textStyle: null,
+        flagSize: 22,
+        padding: 16,
+        radius: 12,
+      );
+      // ignore: deprecated_member_use_from_same_package
+      expect(theme.indent, 10);
+    });
+  });
+
+  group('style -', () {
+    const ios26 = CountryPickerStyle.ios26;
+    const classic = CountryPickerStyle.classic;
+
+    test('defaults to classic', () {
+      expect(CountryPickerTheme().style, classic);
+      expect(CountryPickerTheme(style: null).style, classic);
+    });
+
+    test('is set via constructor and copyWith', () {
+      final theme = CountryPickerTheme(style: ios26);
+      expect(theme.style, ios26);
+      expect(theme.copyWith().style, ios26);
+      expect(theme.copyWith(style: classic).style, classic);
+      expect(CountryPickerTheme().copyWith(style: ios26).style, ios26);
+    });
+
+    test('participates in equality and hashCode', () {
+      final a = CountryPickerTheme(style: ios26);
+      final b = CountryPickerTheme(style: ios26);
+      final c = CountryPickerTheme();
+      expect(a, equals(b));
+      expect(a.hashCode, b.hashCode);
+      expect(a == c, isFalse);
+    });
+
+    test('lerp switches value at the midpoint', () {
+      final from = CountryPickerTheme();
+      final to = CountryPickerTheme(style: ios26);
+      expect((from.lerp(to, .49) as CountryPickerTheme).style, classic);
+      expect((from.lerp(to, .5) as CountryPickerTheme).style, ios26);
+      expect((to.lerp(from, .49) as CountryPickerTheme).style, ios26);
+    });
+
+    test('debugFillProperties describes the style', () {
+      final builder = DiagnosticPropertiesBuilder();
+      CountryPickerTheme(style: ios26).debugFillProperties(builder);
+      final property = builder.properties.firstWhere((p) => p.name == 'style');
+      expect(property.value, ios26);
+      expect(property.toDescription(), 'ios26');
+    });
   });
 });

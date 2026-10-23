@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:flutter_simple_country_picker/src/util/country_flag_font_util.dart';
 import 'package:meta/meta.dart';
 
 /// {@template country_phone_input}
@@ -42,6 +43,7 @@ class CountryPhoneInput extends StatefulWidget {
     this.showSearch,
     this.initialChildSize,
     this.minChildSize,
+    this.surfaceBuilder,
     super.key,
   }) : useHaptickFeedback = useHapticFeedback ?? useHaptickFeedback,
        useHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
@@ -80,6 +82,7 @@ class CountryPhoneInput extends StatefulWidget {
     bool? useHapticFeedback,
     double? initialChildSize,
     double? minChildSize,
+    CountryPickerSurfaceBuilder? surfaceBuilder,
     Key? key,
   }) = CountryPhoneInput$Extended;
 
@@ -166,6 +169,9 @@ class CountryPhoneInput extends StatefulWidget {
 
   /// Called when the country is changed.
   final ValueChanged<Country>? onCountryChanged;
+
+  /// {@macro country_picker_surface_builder}
+  final CountryPickerSurfaceBuilder? surfaceBuilder;
 
   @override
   State<CountryPhoneInput> createState() => _CountryPhoneInputState();
@@ -357,6 +363,11 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     _countryController.value = country;
     widget.onCountryChanged?.call(country);
   }
+
+  /// Accessibility label of the country button, e.g. `Russia, +7`.
+  String _semanticsLabelOf(CountryLocalizations localization, Country c) =>
+      '${localization.getFormatedCountryNameByCode(c.countryCode) ?? c.name}'
+      ', +${c.phoneCode}';
 }
 
 /// State for widget [CountryPhoneInput].
@@ -375,7 +386,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
     return ValueListenableBuilder(
       valueListenable: _countryController,
       builder: (context, selected, _) => Row(
-        spacing: pickerTheme.indent,
+        spacing: pickerTheme.padding / 1.6,
         children: <Widget>[
           ConstrainedBox(
             constraints: constraints,
@@ -403,23 +414,35 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                       isScrollControlled: widget.isScrollControlled,
                       initialChildSize: widget.initialChildSize,
                       minChildSize: widget.minChildSize,
+                      surfaceBuilder: widget.surfaceBuilder,
                       selected: _countryController,
                       onSelect: _onSelect,
                     )
                   : null,
-              child: Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: 3,
-                  children: <Widget>[
-                    if (selected.flagEmoji.isNotEmpty) ...[
-                      Text(
-                        selected.flagEmoji,
-                        style: textStyle?.copyWith(letterSpacing: 0),
-                      ),
-                    ],
-                    Text('+${selected.phoneCode}', style: textStyle),
-                  ],
+              child: Semantics(
+                // Announce the country instead of the emoji flag name.
+                label: _semanticsLabelOf(localization, selected),
+                child: ExcludeSemantics(
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 3,
+                      children: <Widget>[
+                        if (selected.flagEmoji.isNotEmpty) ...[
+                          Text.rich(
+                            TextSpan(
+                              text: selected.flagEmoji,
+                              style: TextStyle(
+                                fontFamily: CountryFlagFontUtil.fontFamily,
+                              ),
+                            ),
+                            style: textStyle?.copyWith(letterSpacing: 0),
+                          ),
+                        ],
+                        Text('+${selected.phoneCode}', style: textStyle),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -507,6 +530,7 @@ class CountryPhoneInput$Extended extends CountryPhoneInput {
     super.useHapticFeedback,
     super.initialChildSize,
     super.minChildSize,
+    super.surfaceBuilder,
     super.key,
   });
 
@@ -524,7 +548,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
     final localization = CountryLocalizations.of(context);
     final padding = EdgeInsets.symmetric(
       horizontal: pickerTheme.padding / 2,
-      vertical: pickerTheme.indent,
+      vertical: pickerTheme.padding / 1.6,
     );
     final textStyle = pickerTheme.textStyle?.copyWith(
       fontSize: 20,
@@ -548,9 +572,9 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
             CupertinoButton(
               key: const ValueKey<String>('country_picker_button_extended'),
               padding: EdgeInsets.only(
-                top: pickerTheme.indent,
+                top: pickerTheme.padding / 1.6,
                 left: pickerTheme.padding,
-                bottom: pickerTheme.indent,
+                bottom: pickerTheme.padding / 1.6,
                 right: pickerTheme.padding / 2,
               ),
               onPressed: widget.enableOpenPicker
@@ -569,14 +593,30 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                       shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
                       initialChildSize: widget.initialChildSize,
                       minChildSize: widget.minChildSize,
+                      surfaceBuilder: widget.surfaceBuilder,
                       selected: _countryController,
                       onSelect: _onSelect,
                     )
                   : null,
               child: SizedBox(
                 width: double.infinity,
-                child: Text(
-                  '${selected.flagEmoji} ${localization.getFormatedCountryNameByCode(selected.countryCode)}',
+                child: Text.rich(
+                  TextSpan(
+                    children: <InlineSpan>[
+                      TextSpan(
+                        text: selected.flagEmoji,
+                        style: TextStyle(
+                          fontFamily: CountryFlagFontUtil.fontFamily,
+                        ),
+                      ),
+                      TextSpan(
+                        text:
+                            ' ${localization.getFormatedCountryNameByCode(selected.countryCode)}',
+                      ),
+                    ],
+                  ),
+                  // Announce the country instead of the emoji flag name.
+                  semanticsLabel: _semanticsLabelOf(localization, selected),
                   style: textStyle?.copyWith(fontWeight: FontWeight.w500),
                 ),
               ),

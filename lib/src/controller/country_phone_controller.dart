@@ -407,9 +407,10 @@ final class CountryPhoneController
     final code = _extractCallingCode(e164);
     if (code.isEmpty) return e164.length;
 
+    // _extractCallingCode only returns a prefix of e164.
     return e164.startsWith(code)
         ? e164.substring(code.length).length
-        : e164.length;
+        : e164.length; // coverage:ignore-line
   }
 
   static String _toE164Digits(String value) {
@@ -445,12 +446,15 @@ final class CountryPhoneController
       national: national,
     );
 
+    // Every detected calling code has a bundled candidate with an ISO2 code.
     if (heuristicMatches.isEmpty) {
+      // coverage:ignore-start
       return _unresolvedResolution(
         phone: normalizedPhone,
         phoneCode: callingCode,
         nationalNumber: national,
       );
+      // coverage:ignore-end
     }
 
     final status = heuristicMatches.length == 1
@@ -502,7 +506,8 @@ final class CountryPhoneController
           : _commonPrefixLength(national, exampleDigits);
       final level = switch (country['level']) {
         int v => v,
-        String s => int.tryParse(s) ?? 0,
+        // The bundled dataset only stores integer levels.
+        String s => int.tryParse(s) ?? 0, // coverage:ignore-line
         _ => 0,
       };
 

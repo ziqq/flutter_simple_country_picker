@@ -1,6 +1,8 @@
+import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:flutter_simple_country_picker/src/controller/country_controller.dart';
+import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -47,6 +49,127 @@ void _$controllerTest() => group('CountryController -', () {
       verify(provider.getCountries()).called(1);
     },
   );
+
+  group('showWorldWide -', () {
+    test('puts the World Wide option before favorites', () async {
+      final ca = mockCountry.copyWith(name: 'Canada', countryCode: 'CA');
+      final us = mockCountry.copyWith(name: 'United States', countryCode: 'US');
+      when(provider.getCountries()).thenAnswer((_) async => [ca, us]);
+
+      controller = CountryController(
+        provider: provider,
+        showWorldWide: true,
+        favorites: const ['US'],
+      );
+      await controller.getCountries();
+
+      expect(controller.state.countries.map((c) => c.countryCode), <String>[
+        'WW',
+        'US',
+        'CA',
+        'US',
+      ]);
+    });
+
+    test('is hidden by default and when excluded', () async {
+      when(provider.getCountries()).thenAnswer((_) async => [mockCountry]);
+
+      await controller.getCountries();
+      expect(controller.state.countries.any((c) => c.iswWorldWide), isFalse);
+
+      controller = CountryController(
+        provider: provider,
+        showWorldWide: true,
+        exclude: const ['ww'],
+      );
+      await controller.getCountries();
+      expect(controller.state.countries.any((c) => c.iswWorldWide), isFalse);
+    });
+  });
+
+  test(
+    'excluded favorites are omitted from both favorites and main list',
+    () async {
+      when(provider.getCountries()).thenAnswer((_) async => [mockCountry]);
+      final filtered = CountryController(
+        provider: provider,
+        favorites: [mockCountry.countryCode],
+        exclude: [mockCountry.countryCode],
+      );
+      addTearDown(filtered.dispose);
+      expect(await filtered.getCountries(), isEmpty);
+      expect(filtered.state.countries, isEmpty);
+    },
+  );
+
+  test('countries without a localized name remain visible', () async {
+    final unknown = mockCountry.copyWith(countryCode: 'XX', name: 'Unknown');
+    when(provider.getCountries()).thenAnswer((_) async => [unknown]);
+    controller.initLocalization(
+      await CountryLocalizations.delegate.load(const Locale('en')),
+    );
+    expect(await controller.getCountries(), [unknown]);
+  });
+
+  test('sorts untranslated countries by the original name', () async {
+    final croatia = Country.fromCountryCode('HR');
+    when(provider.getCountries()).thenAnswer(
+      (_) async => [
+        croatia,
+        Country.fromCountryCode('AT'),
+        Country.fromCountryCode('DE'),
+      ],
+    );
+    controller.initLocalization(
+      await CountryLocalizations.delegate.load(const Locale('tr')),
+    );
+
+    final localized = (await controller.getCountries())!;
+
+    expect(localized.map((country) => country.countryCode), ['DE', 'AT', 'HR']);
+    expect(localized.last.nameLocalized, 'Croatia');
+  });
+
+  test('preserves display ordering in every bundled locale', () async {
+    final input = countries.map(Country.fromJson).toList();
+    when(provider.getCountries()).thenAnswer((_) async => input);
+
+    for (final locale in CountryLocalizations.supportedLocales) {
+      final localization = await CountryLocalizations.delegate.load(locale);
+      controller.initLocalization(localization);
+      final actual = (await controller.getCountries())!;
+      final expected = [...actual]
+        ..sort(
+          (a, b) => CountryUtil.compareNames(
+            a.nameLocalized ?? a.name,
+            b.nameLocalized ?? b.name,
+          ),
+        );
+
+      expect(actual, expected, reason: locale.toLanguageTag());
+      expect(actual, hasLength(input.length));
+    }
+  });
+
+  test('breaks equal normalized names by their original spelling', () async {
+    when(provider.getCountries()).thenAnswer(
+      (_) async => [
+        mockCountry.copyWith(countryCode: 'XA', name: 'Öland'),
+        mockCountry.copyWith(countryCode: 'XB', name: 'Oland'),
+        mockCountry.copyWith(countryCode: 'XC', name: 'oland'),
+      ],
+    );
+    controller.initLocalization(
+      await CountryLocalizations.delegate.load(const Locale('en')),
+    );
+
+    final result = (await controller.getCountries())!;
+    expect(result.map((country) => country.nameLocalized), [
+      'Oland',
+      'oland',
+      'Öland',
+    ]);
+  });
 
   test('getCountries excludes countries based on the exclude list', () async {
     final countries = [mockCountry.copyWith(name: 'Canada', countryCode: 'CA')];
