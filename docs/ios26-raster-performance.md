@@ -568,3 +568,117 @@ Raw JSON, complete control/prototype traces, source snapshots, source hashes,
 commands, logs, modal PNG comparisons and the unapplied proposal are retained
 in `reports/ios26-compiler-2026-10-22/`, excluded from publication. No shader
 warm-up or supported public API change is included.
+
+## Opaque Android sheet background — 22–23 October 2026
+
+The accepted implementation paints the opaque iOS 26 modal background once.
+This path is used with the stock search header.
+It draws a uniform rounded rectangle whose lower corners start below the
+sheet, with a separate rectangular clip for the content. The original row
+clips, native emoji renderer, image-cache budget, selection badges and sticky
+list are retained. The stock header's inset keeps its content inside the upper
+corners. Custom surfaces, translucent backgrounds, small padding, oversized
+icons and insufficient space retain the original rounded shell. Other platforms
+also retain the original shell.
+
+The Android shell keeps the same widget ancestry when its layout/theme changes,
+preserving the search and scroll state. Its content widgets are reused across
+draggable-height changes. No preliminary shader preparation, delayed loading or
+supported public API change is introduced.
+The background uses `CustomPaint` with a color-based `shouldRepaint`;
+[Plugfox's canvas rendering guide](https://plugfox.dev/high-performance-canvas-rendering/)
+discusses the repaint and layer trade-offs behind this approach.
+
+### Controlled device measurements
+
+Two control/candidate pairs ran on the same physical Galaxy A8 SM-A530F,
+Android 9/API 28, DPR 3, Flutter 3.47.5/Dart 3.13.4, profile Skia/OpenGL and
+semantics disabled. Protocol 4 retains protocol 3's first-opening timing drain
+and adds a 150 ms held-and-cancelled country-row press to each repeated cycle.
+The caller, three locales, three cycles and other actions are unchanged.
+The second pair reuses the exact APKs in fresh processes. No OS/driver cache
+reset is claimed. Only en is the first picker in a process; tr and ru follow it.
+
+Cells below are maxima within the first en opening action, in milliseconds.
+UI, raster, queue and total maxima can belong to different frames. Action time
+includes animation/test settling; total span ends at raster finish and does not
+measure physical presentation latency.
+
+| Run | UI | Raster | Queue | Total | Complete action |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Control 1 | 53.086 | 157.830 | 142.885 | 264.369 | 685.040 |
+| Single background 1 | 41.338 | 136.190 | 120.915 | 240.667 | 690.811 |
+| Control 2 | 42.836 | 155.693 | 153.144 | 257.109 | 685.802 |
+| Single background 2 | 39.144 | 144.416 | 124.280 | 244.489 | 685.249 |
+
+The average of these two observed raster maxima decreases from 156.762 to
+140.303 ms (10.5%); the average maximum total span decreases from 260.739 to
+242.578 ms (7.0%). Complete opening time remains about 685–691 ms. These two
+pairs establish an improvement on this A8; they do not establish a universal
+cross-device gain or a 16.7 ms cold-frame budget.
+
+In the en repeated cycles, closing raster maxima are 94.372/26.051 ms for
+the controls and 11.534/12.523 ms with the single background. First row-press
+spikes remain: en press maxima are 77.851/80.286 ms versus 77.024/77.188 ms.
+Cold scroll/search work also remains. Per-locale, per-action frame counts,
+percentiles, maxima, budget overruns and complete action times are recorded in
+[ios26-sheet-background-frame-summary.csv](ios26-sheet-background-frame-summary.csv).
+The CSV uses named action windows; it does not mix their percentiles with SDK
+watch windows or earlier protocol versions. The setup close between the first
+opening and repeated-cycle windows is outside these windows.
+
+### Edge quality and native pixels
+
+Four modal PixelCopy comparisons exercise light/dark themes at full height
+and the partial detent (including a fractional physical top of 808.05 px).
+The single-fill drawing primitive is compared with the unchanged renderer
+and an 8×/16× supersampled reference of the intended 38 logical-pixel radius.
+The 8×/16× reference difference is below 0.00187 coverage. Errors below are
+absolute RGB-channel differences on the boundary band, on a 0–255 scale.
+The reference uses component-wise source-over composition against the captured
+background in screenshot RGB space.
+
+| State | Mean error before → after | Maximum error before → after | Improved pixels | Worsened pixels | Changes outside boundary |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Light, partial | 2.827 → 0.221 | 26.171 → 2.863 | 1244 | 0 | 0 |
+| Light, full | 2.867 → 0.176 | 25.873 → 2.698 | 385 | 0 | 0 |
+| Dark, partial | 0.657 → 0.162 | 6.556 → 0.953 | 1230 | 0 | 0 |
+| Dark, full | 0.658 → 0.060 | 6.583 → 0.861 | 366 | 0 | 0 |
+
+Flags, rows, controls and selection badges match outside the improved boundary.
+The stable-shell implementation was then measured in the two pairs above.
+A final combined screenshot rerun of that implementation and an optional
+pressed-state comparison could not finish after the A8 disconnected from ADB.
+Those final captures remain pending; the earlier four primitive comparisons
+must not be presented as that unfinished rerun.
+
+### Diagnosis and excluded changes
+
+A separate stock-widget fragment trace isolates the shell: its 167.603 ms
+raster frame overlaps 148.627 ms of shader compilation, including two
+`FillRRectOp` programs of 84.423 and 54.565 ms. This is a diagnostic trace,
+not a performance comparison with the untraced table above. The fragments
+run sequentially, so a later fragment can reuse programs compiled by an earlier
+one. It confirms substantial shell cost even without country data or flags.
+
+An inset-content prototype reduced first raster to 122.984 ms, but changed
+flag pixels by 1–3/255 and worsened some section edges. It is excluded.
+Alternative path/circle search borders, section paints and rounded paths
+either regress first opening or fail the appearance gate. A visibility check
+for offscreen flag preparation gives 136.508 ms against 136.190/144.416 ms
+for the accepted background, without a demonstrated additional gain; it is
+also excluded. The production flag-cache implementation remains unchanged.
+
+An isolated press experiment replaces only the default Android `InkSparkle`
+in iOS 26 country rows with `NoSplash`, retaining the gray highlight and custom
+splash factories. Its first en/tr row presses are 6.900/15.723 ms versus
+77.024/88.678 ms with the unchanged effect. First opening and 40–58 ms later
+peaks remain. This experiment removes transient white sparkles and therefore
+changes pressed appearance; it remains outside the implementation pending
+visual review and explicit approval. No caller-button effect is changed.
+
+The accepted background passes the existing 6,221 tests and analysis, with
+100% filtered line coverage (2309/2309). Unit/widget tests and coverage
+exclusions are unchanged. Exact fixture sources, source/APK hashes, logs,
+raw frames, native PNGs, quality calculations and rejected prototypes are
+retained under `reports/ios26-edge-quality-2026-10-22/`, excluded from publishing.

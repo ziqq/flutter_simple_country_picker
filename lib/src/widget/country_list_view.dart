@@ -51,11 +51,15 @@ class CountryListView extends StatefulWidget {
     this.showGroup,
     this.showSearch,
     this.surfaceBuilder,
+    this.paintBackground = true,
     super.key,
   }) : assert(
          filter == null || exclude == null,
          'Cannot provide both filter and exclude',
        );
+
+  /// Whether the view paints its background or the modal shell supplies it.
+  final bool paintBackground;
 
   /// An optional argument for adaptive modal presentation.
   final bool adaptive;
@@ -327,7 +331,9 @@ class _CountriesListViewState extends State<CountryListView>
     // Like native iOS 26 sheets, the header is solid and the list is
     // clipped right below it, keeping a gap under the controls.
     return ColoredBox(
-      color: pickerTheme.backgroundColor ?? Colors.transparent,
+      color: widget.paintBackground
+          ? pickerTheme.backgroundColor ?? Colors.transparent
+          : Colors.transparent,
       child: Padding(
         padding: EdgeInsets.fromLTRB(
           pickerTheme.padding,
@@ -422,7 +428,9 @@ class _CountriesListViewState extends State<CountryListView>
         pickerTheme.style == CountryPickerStyle.ios26 &&
         (widget.showSearch ?? widget.showGroup ?? false);
     return Scaffold(
-      backgroundColor: pickerTheme.backgroundColor,
+      backgroundColor: widget.paintBackground
+          ? pickerTheme.backgroundColor
+          : Colors.transparent,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(
           useIOS26Header
