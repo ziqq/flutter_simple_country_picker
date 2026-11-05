@@ -8,4 +8,5 @@
 // Keep separable kernels without indexed sample pairing in D3D.
 #define SCROLL_EDGE_SEPARATED
 #define SCROLL_EDGE_UNPAIRED
+#define SCROLL_EDGE_TOP_LEFT_INPUT
 #include "scroll_edge.glsl"

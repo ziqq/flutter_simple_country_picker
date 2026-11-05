@@ -90,7 +90,7 @@ vec4 sampleBackdrop(vec2 position) {
   // The vertical input surrounds the horizontal result with one transparent texel.
   if (u_stage > 2.5 && u_stage < 3.5) position.y = clamp(position.y, 1.5, u_size.y - 1.5);
   vec2 uv = position / u_size;
-#ifdef IMPELLER_TARGET_OPENGLES
+#if defined(IMPELLER_TARGET_OPENGLES) && !defined(SCROLL_EDGE_TOP_LEFT_INPUT)
   uv.y = 1.0 - uv.y;
 #endif
   return texture(u_texture_input, uv);
@@ -119,7 +119,7 @@ vec4 sampleGaussian(vec2 position, int start, int count) {
         if (x >= count) break;
         vec2 horizontal = u_kernel_pairs[start + x];
         vec2 uv = (position + vec2(horizontal.x, vertical.x)) / u_size;
-#ifdef IMPELLER_TARGET_OPENGLES
+#if defined(IMPELLER_TARGET_OPENGLES) && !defined(SCROLL_EDGE_TOP_LEFT_INPUT)
         uv.y = 1.0 - uv.y;
 #endif
         interior += texture(u_texture_input, uv) * horizontal.y * vertical.y;

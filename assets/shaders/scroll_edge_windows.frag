@@ -7,4 +7,5 @@
 
 // Use the original Gaussian sum without indexed sample pairing in D3D.
 #define SCROLL_EDGE_UNPAIRED
+#define SCROLL_EDGE_TOP_LEFT_INPUT
 #include "scroll_edge.glsl"
