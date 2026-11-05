@@ -327,7 +327,7 @@ jobs:
           Get-ChildItem Env: | Where-Object {
             $_.Name -match 'TOKEN|SECRET|PASSWORD|WEBHOOK|CREDENTIAL|PRIVATE_KEY'
           } | ForEach-Object { Remove-Item "Env:$($_.Name)" }
-          mise exec -- flutter test integration_test/windows_flags_test.dart -d windows --reporter expanded --verbose
+          mise exec -- flutter drive --target=integration_test/windows_flags_test.dart --driver=test_driver/native_flags.dart -d windows --verbose
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Read native renderer crash events
