@@ -1,5 +1,8 @@
 # iOS 26 picker raster performance
 
+The [5 November single-UI investigation](picker-raster-2026-11-05.md) records the
+new device baselines, rejected variants and remaining performance gates.
+
 The device measurements below cover the picker designs used in October 2026.
 They predate the 3 November Telegram-style layout with compact flags and floating
 glass controls, so they do not establish frame-time performance for that layout.
