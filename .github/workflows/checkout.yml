@@ -370,6 +370,8 @@ jobs:
             do {
               $native = Get-Process -Name example -ErrorAction SilentlyContinue | Select-Object -First 1
               if ($native) {
+                # Retain the handle before exit; reopening an exited PID loses its status.
+                $null = $native.Handle
                 $native.WaitForExit()
                 @{ pid = $native.Id; exitCode = $native.ExitCode } |
                   ConvertTo-Json | Set-Content $path
