@@ -1,3 +1,8 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 25 October 2024
+ */
+
 import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
@@ -54,7 +59,7 @@ void main() => group('CountryPickerTheme -', () {
       flagSize: 25,
       padding: 16,
       indent: 10,
-      radius: 10,
+      baseCornerRadius: 10,
       inputDecoration: const InputDecoration(),
     );
 
@@ -68,7 +73,7 @@ void main() => group('CountryPickerTheme -', () {
     expect(theme.flagSize, 25.0);
     expect(theme.padding, 16.0);
     expect(theme.indent, 10.0);
-    expect(theme.radius, 10.0);
+    expect(theme.baseCornerRadius, 10.0);
     expect(theme.inputDecoration, isA<InputDecoration>());
   });
 
@@ -84,7 +89,7 @@ void main() => group('CountryPickerTheme -', () {
       flagSize: 25,
       padding: 16,
       indent: 10,
-      radius: 10,
+      baseCornerRadius: 10,
       inputDecoration: const InputDecoration(),
     );
 
@@ -112,7 +117,7 @@ void main() => group('CountryPickerTheme -', () {
       flagSize: 25,
       padding: 10,
       indent: 10,
-      radius: 10,
+      baseCornerRadius: 10,
       inputDecoration: const InputDecoration(),
     );
 
@@ -127,11 +132,14 @@ void main() => group('CountryPickerTheme -', () {
       flagSize: 35,
       padding: 20,
       indent: 15,
-      radius: 20,
+      baseCornerRadius: 20,
       inputDecoration: const InputDecoration(),
     );
 
-    final lerpedTheme = theme1.lerp(theme2, 0.5) as CountryPickerTheme;
+    final lerpedTheme = switch (theme1.lerp(theme2, 0.5)) {
+      CountryPickerTheme theme => theme,
+      _ => throw StateError('Expected a picker theme.'),
+    };
 
     expect(
       lerpedTheme.accentColor,
@@ -144,7 +152,7 @@ void main() => group('CountryPickerTheme -', () {
     expect(lerpedTheme.barrierColor, Color.lerp(Colors.blue, Colors.red, 0.5));
     expect(lerpedTheme.flagSize, ui.lerpDouble(25.0, 35.0, 0.5));
     expect(lerpedTheme.padding, ui.lerpDouble(10.0, 20.0, 0.5));
-    expect(lerpedTheme.radius, ui.lerpDouble(10.0, 20.0, 0.5));
+    expect(lerpedTheme.baseCornerRadius, ui.lerpDouble(10.0, 20.0, 0.5));
     expect(lerpedTheme.textStyle?.fontSize, 17.0);
   });
 
@@ -160,7 +168,7 @@ void main() => group('CountryPickerTheme -', () {
       flagSize: 25,
       padding: 10,
       indent: 10,
-      radius: 10,
+      baseCornerRadius: 10,
       inputDecoration: const InputDecoration(),
     );
 
@@ -175,7 +183,7 @@ void main() => group('CountryPickerTheme -', () {
       flagSize: 25,
       padding: 10,
       indent: 10,
-      radius: 10,
+      baseCornerRadius: 10,
       inputDecoration: const InputDecoration(),
     );
 
@@ -195,7 +203,7 @@ void main() => group('CountryPickerTheme -', () {
       flagSize: 25,
       padding: 10,
       indent: 10,
-      radius: 10,
+      baseCornerRadius: 10,
       inputDecoration: const InputDecoration(),
     );
     expect(identical(theme.lerp(theme, 0.5), theme), isTrue);
@@ -213,7 +221,7 @@ void main() => group('CountryPickerTheme -', () {
       flagSize: 25,
       padding: 10,
       indent: 10,
-      radius: 10,
+      baseCornerRadius: 10,
       inputDecoration: const InputDecoration(),
     );
     // lerp(null, t) → other is! CountryPickerTheme → returns this
@@ -232,7 +240,7 @@ void main() => group('CountryPickerTheme -', () {
       flagSize: 25,
       padding: 10,
       indent: 10,
-      radius: 10,
+      baseCornerRadius: 10,
       inputDecoration: const InputDecoration(),
     );
     // ignore: unrelated_type_equality_checks
@@ -253,7 +261,7 @@ void main() => group('CountryPickerTheme -', () {
       flagSize: 25,
       padding: 10,
       indent: 10,
-      radius: 10,
+      baseCornerRadius: 10,
       inputDecoration: const InputDecoration(),
     );
 
@@ -275,7 +283,7 @@ void main() => group('CountryPickerTheme -', () {
     expect(base == base.copyWith(flagSize: 30), isFalse);
     expect(base == base.copyWith(padding: 20), isFalse);
     expect(base == base.copyWith(indent: 20), isFalse);
-    expect(base == base.copyWith(radius: 20), isFalse);
+    expect(base == base.copyWith(baseCornerRadius: 20), isFalse);
   });
 
   test('copyWith preserves optional fields (onBackgroundColor etc.)', () {
@@ -293,7 +301,7 @@ void main() => group('CountryPickerTheme -', () {
       flagSize: 25,
       padding: 10,
       indent: 10,
-      radius: 10,
+      baseCornerRadius: 10,
       inputDecoration: const InputDecoration(),
       inputHeight: 56,
     );
@@ -320,7 +328,7 @@ void main() => group('CountryPickerTheme -', () {
       flagSize: 25,
       padding: 10,
       indent: 10,
-      radius: 10,
+      baseCornerRadius: 10,
       inputDecoration: const InputDecoration(),
     );
 
@@ -346,8 +354,8 @@ void main() => group('CountryPickerTheme -', () {
         'flagSize',
         'padding',
         'indent',
-        'radius',
-        'style',
+        'baseCornerRadius',
+        'sheetCornerRadius',
       ]),
     );
   });
@@ -371,53 +379,84 @@ void main() => group('CountryPickerTheme -', () {
         textStyle: null,
         flagSize: 22,
         padding: 16,
+        // ignore: deprecated_member_use_from_same_package
         radius: 12,
       );
       // ignore: deprecated_member_use_from_same_package
       expect(theme.indent, 10);
+      expect(theme.baseCornerRadius, 12);
+      expect(theme.sheetCornerRadius, 38);
     });
   });
 
-  group('style -', () {
-    const ios26 = CountryPickerStyle.ios26;
-    const classic = CountryPickerStyle.classic;
-
-    test('defaults to classic', () {
-      expect(CountryPickerTheme().style, classic);
-      expect(CountryPickerTheme(style: null).style, classic);
+  group('corner radii -', () {
+    test('defaults keep input and sheet corners independent', () {
+      final theme = CountryPickerTheme();
+      expect(theme.baseCornerRadius, 12);
+      expect(theme.sheetCornerRadius, 38);
     });
 
-    test('is set via constructor and copyWith', () {
-      final theme = CountryPickerTheme(style: ios26);
-      expect(theme.style, ios26);
-      expect(theme.copyWith().style, ios26);
-      expect(theme.copyWith(style: classic).style, classic);
-      expect(CountryPickerTheme().copyWith(style: ios26).style, ios26);
+    test('constructors and copyWith preserve the deprecated radius alias', () {
+      // ignore: deprecated_member_use_from_same_package
+      final legacy = CountryPickerTheme(radius: 9);
+      expect(legacy.baseCornerRadius, 9);
+      expect(legacy.sheetCornerRadius, 38);
+      // ignore: deprecated_member_use_from_same_package
+      expect(legacy.radius, 9);
+      // ignore: deprecated_member_use_from_same_package
+      expect(legacy.copyWith(radius: 7).baseCornerRadius, 7);
+      // ignore: deprecated_member_use_from_same_package
+      final preferred = CountryPickerTheme(radius: 9, baseCornerRadius: 16);
+      expect(preferred.baseCornerRadius, 16);
+      // ignore: deprecated_member_use_from_same_package
+      expect(
+        legacy.copyWith(radius: 7, baseCornerRadius: 20).baseCornerRadius,
+        20,
+      );
     });
 
-    test('participates in equality and hashCode', () {
-      final a = CountryPickerTheme(style: ios26);
-      final b = CountryPickerTheme(style: ios26);
-      final c = CountryPickerTheme();
-      expect(a, equals(b));
-      expect(a.hashCode, b.hashCode);
-      expect(a == c, isFalse);
+    test(
+      'sheet overrides allow square corners without changing input radius',
+      () {
+        final theme = CountryPickerTheme(sheetCornerRadius: 0);
+        expect(theme.sheetCornerRadius, 0);
+        expect(theme.baseCornerRadius, 12);
+        expect(theme.copyWith(sheetCornerRadius: 24).sheetCornerRadius, 24);
+        expect(theme.copyWith(sheetCornerRadius: 24).baseCornerRadius, 12);
+      },
+    );
+
+    test('both radii participate in equality, hashing and interpolation', () {
+      final start = CountryPickerTheme(
+        baseCornerRadius: 8,
+        sheetCornerRadius: 0,
+      );
+      final end = start.copyWith(baseCornerRadius: 16, sheetCornerRadius: 38);
+      expect(start, isNot(end));
+      expect(start.hashCode, isNot(end.hashCode));
+      expect(start, start.copyWith());
+      expect(start.hashCode, start.copyWith().hashCode);
+      if (start.lerp(end, .5) case CountryPickerTheme middle) {
+        expect(middle.baseCornerRadius, 12);
+        expect(middle.sheetCornerRadius, 19);
+      } else {
+        fail('Expected an interpolated CountryPickerTheme.');
+      }
     });
 
-    test('lerp switches value at the midpoint', () {
-      final from = CountryPickerTheme();
-      final to = CountryPickerTheme(style: ios26);
-      expect((from.lerp(to, .49) as CountryPickerTheme).style, classic);
-      expect((from.lerp(to, .5) as CountryPickerTheme).style, ios26);
-      expect((to.lerp(from, .49) as CountryPickerTheme).style, ios26);
-    });
-
-    test('debugFillProperties describes the style', () {
+    test('diagnostics describe separate corner radii', () {
       final builder = DiagnosticPropertiesBuilder();
-      CountryPickerTheme(style: ios26).debugFillProperties(builder);
-      final property = builder.properties.firstWhere((p) => p.name == 'style');
-      expect(property.value, ios26);
-      expect(property.toDescription(), 'ios26');
+      CountryPickerTheme(
+        baseCornerRadius: 8,
+        sheetCornerRadius: 24,
+      ).debugFillProperties(builder);
+      final values = {
+        for (final property in builder.properties)
+          property.name: property.value,
+      };
+      expect(values['baseCornerRadius'], 8);
+      expect(values['sheetCornerRadius'], 24);
+      expect(values.containsKey('radius'), isFalse);
     });
   });
 });

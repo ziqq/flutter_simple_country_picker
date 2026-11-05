@@ -1,5 +1,9 @@
 # iOS 26 picker raster performance
 
+The device measurements below cover the picker designs used in October 2026.
+They predate the 3 November Telegram-style layout with compact flags and floating
+glass controls, so they do not establish frame-time performance for that layout.
+
 Measured on 16 and 21 October 2026 on the same physical Samsung Galaxy A8
 (SM-A530F), Android 9, ARM64, Flutter 3.47.5 / Dart 3.13.4, profile mode,
 Skia/OpenGL. The baseline already includes country-row virtualization.

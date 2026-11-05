@@ -1,3 +1,8 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 1 October 2026
+ */
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -68,8 +73,8 @@ void main() {
     );
   }
 
-  for (final style in CountryPickerStyle.values) {
-    testWidgets('renders a colored flag in the ${style.name} picker', (
+  for (final brightness in Brightness.values) {
+    testWidgets('renders a colored flag in the ${brightness.name} picker', (
       tester,
     ) async {
       final boundaryKey = GlobalKey();
@@ -90,12 +95,12 @@ void main() {
               ),
             ),
           ),
-          style: style,
+          brightness: brightness,
         ),
       );
       await tester.tap(find.text('Show picker'));
       await tester.pumpAndSettle();
-      await _checkFlag(tester, boundaryKey, style.name);
+      await _checkFlag(tester, boundaryKey, brightness.name);
     });
   }
 }
@@ -103,7 +108,7 @@ void main() {
 Widget _app(
   GlobalKey boundaryKey,
   Widget child, {
-  CountryPickerStyle style = CountryPickerStyle.classic,
+  Brightness brightness = Brightness.light,
 }) => MaterialApp(
   locale: const Locale('en'),
   supportedLocales: CountryLocalizations.supportedLocales,
@@ -114,6 +119,7 @@ Widget _app(
     GlobalCupertinoLocalizations.delegate,
   ],
   theme: ThemeData(
+    brightness: brightness,
     fontFamily: 'Body',
     package: 'theme_fonts',
     fontFamilyFallback: const <String>['Fallback'],
@@ -121,8 +127,8 @@ Widget _app(
   builder: (context, child) => RepaintBoundary(
     key: boundaryKey,
     child: InheritedCountryPickerTheme(
-      data: CountryPickerTheme(style: style),
-      child: child!,
+      data: CountryPickerTheme(),
+      child: child ?? const SizedBox.shrink(),
     ),
   ),
   home: Scaffold(backgroundColor: Colors.white, body: child),
@@ -150,20 +156,22 @@ Future<void> _checkFlag(
         ?.fontFamily,
     'TwemojiCountryFlags',
   );
-  final boundary =
-      boundaryKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+  final boundary = switch (boundaryKey.currentContext?.findRenderObject()) {
+    RenderRepaintBoundary boundary => boundary,
+    _ => throw StateError('Flag capture boundary is missing.'),
+  };
   final image = await boundary.toImage();
   try {
-    final png = (await image.toByteData(format: ui.ImageByteFormat.png))!;
+    final png = await image.toByteData(format: ui.ImageByteFormat.png);
+    if (png == null) throw StateError('PNG encoding failed.');
     final directory = await Directory(
       'build/windows-flags',
     ).create(recursive: true);
     await File('${directory.path}/$name.png').writeAsBytes(
       png.buffer.asUint8List(png.offsetInBytes, png.lengthInBytes),
     );
-    final pixels = (await image.toByteData(
-      format: ui.ImageByteFormat.rawRgba,
-    ))!;
+    final pixels = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+    if (pixels == null) throw StateError('RGBA extraction failed.');
     var red = 0;
     var blue = 0;
     for (var i = 0; i < pixels.lengthInBytes; i += 4) {

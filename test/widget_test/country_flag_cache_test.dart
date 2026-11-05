@@ -1,15 +1,21 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 16 October 2026
+ */
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:flutter_simple_country_picker/src/widget/country_flag_cache.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../util/test_util.dart';
 
-void main() => group('Country flag raster -', () {
+void main() => group('Country flag cache -', () {
   TestWidgetsFlutterBinding.ensureInitialized();
   final cache = PaintingBinding.instance.imageCache;
 
@@ -39,7 +45,7 @@ void main() => group('Country flag raster -', () {
         locale: const Locale('en'),
         builder: (context) {
           final list = InheritedCountryPickerTheme(
-            data: CountryPickerTheme(style: CountryPickerStyle.ios26),
+            data: CountryPickerTheme(),
             child: Theme(
               data: Theme.of(context).copyWith(
                 textTheme: Theme.of(context).textTheme.apply(bodyColor: color),
@@ -106,29 +112,51 @@ void main() => group('Country flag raster -', () {
     expect(cache.pendingImageCount, 0);
   });
 
+  testWidgets(
+    'non-text children retain their normal renderer without caching',
+    (tester) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          builder: (_) => const Center(
+            child: CountryFlagCache(
+              child: SizedBox.square(
+                dimension: 20,
+                child: ColoredBox(color: Colors.red),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(cache.currentSize, 0);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('shows text first and prepares at most two images per frame', (
     tester,
   ) async {
     await pumpFlags(tester, settle: false);
     for (
       var frame = 0;
-      frame < 10 && find.byType(ClipOval).evaluate().isEmpty;
+      frame < 10 && find.byType(CountryFlagCache).evaluate().isEmpty;
       frame++
     ) {
       await tester.pump(const Duration(milliseconds: 16));
     }
-    expect(find.byType(ClipOval), findsNWidgets(3));
+    expect(find.byType(CountryFlagCache), findsNWidgets(3));
     expect(cache.currentSize, 0);
     final glyphs = find.descendant(
-      of: find.byType(ClipOval),
+      of: find.byType(CountryFlagCache),
       matching: find.byType(RichText),
     );
     expect(glyphs, findsNWidgets(3));
     for (final element in glyphs.evaluate()) {
-      expect(
-        (element.renderObject! as RenderParagraph).debugNeedsPaint,
-        isFalse,
-      );
+      if (element.renderObject case RenderParagraph paragraph) {
+        expect(paragraph.debugNeedsPaint, isFalse);
+      } else {
+        fail('Expected the original flag paragraph before raster caching.');
+      }
     }
     await tester.pump(const Duration(milliseconds: 16));
     expect(cache.currentSize, 2);
@@ -143,13 +171,24 @@ void main() => group('Country flag raster -', () {
     final bytes = cache.currentSizeBytes;
     await pumpFlags(tester, scale: 1.8);
     expect(cache.currentSize, 6);
+    final scaledBytes = cache.currentSizeBytes - bytes;
+    expect(scaledBytes, greaterThan(bytes * 2.5));
     await pumpFlags(tester, scale: 1.8, rtl: true);
     expect(cache.currentSize, 9);
+    final beforeDensity = cache.currentSizeBytes;
     await pumpFlags(tester, scale: 1.8, rtl: true, dpr: 2);
     expect(cache.currentSize, 12);
-    expect(cache.currentSizeBytes, bytes * 7);
-    for (final element in find.byType(ClipOval).evaluate()) {
-      expect((element.renderObject! as RenderBox).size, const Size(40, 40));
+    // Doubling pixel density quadruples the image area, modulo pixel rounding.
+    expect(
+      cache.currentSizeBytes - beforeDensity,
+      closeTo(scaledBytes * 4, scaledBytes * .08),
+    );
+    for (final element in find.byType(CountryFlagCache).evaluate()) {
+      if (element.renderObject case RenderBox box) {
+        expect(box.size.height, closeTo(22 * 1.8, 1));
+      } else {
+        fail('Expected a laid-out flag cache.');
+      }
     }
   });
 

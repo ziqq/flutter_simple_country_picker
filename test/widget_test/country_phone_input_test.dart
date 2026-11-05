@@ -1,3 +1,8 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 25 October 2024
+ */
+
 import 'package:flutter/cupertino.dart' show CupertinoButton;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -129,7 +134,7 @@ void _$defaultCountryPhoneInputTest() {
           locale: const Locale('en'),
           builder: (_) => Scaffold(
             body: InheritedCountryPickerTheme(
-              data: CountryPickerTheme(style: CountryPickerStyle.ios26),
+              data: CountryPickerTheme(),
               child: CountryPhoneInput(
                 showSearch: true,
                 surfaceBuilder: (context, surface, child) {
@@ -1187,7 +1192,7 @@ void _$extendedCountryPhoneInputTest() {
           locale: const Locale('en'),
           builder: (_) => Scaffold(
             body: InheritedCountryPickerTheme(
-              data: CountryPickerTheme(style: CountryPickerStyle.ios26),
+              data: CountryPickerTheme(),
               child: CountryPhoneInput.extended(
                 showSearch: true,
                 surfaceBuilder: (context, surface, child) {

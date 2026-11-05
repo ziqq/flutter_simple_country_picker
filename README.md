@@ -376,6 +376,40 @@ debugPrint('${formatter.valueStatus.currentLength}/${formatter.valueStatus.expec
 | `#`    | digit `[0-9]` |
 | `A`    | digit `[0-9]` |
 
+For automatic country and prefix rules with a soft tail, opt in explicitly:
+
+```dart
+CountryPhoneInput(
+  initialCountry: Country.fromCountryCode('ID'),
+  useCountryFormatting: true,
+);
+
+final formatter = CountryInputFormatter.forCountry(
+  country: Country.fromCountryCode('ID'),
+  shouldTryStripLeadingPrefix: true,
+);
+```
+
+The extended input accepts the same option. Automatic formatting chooses a
+country/prefix pattern and preserves all digits beyond its capacity, including
+separators. For Indonesian mobile inputs, all supported lengths from 9 to 12
+digits can be complete. `expectedLength` is the next supported length at or
+above the current input, or the maximum for overflow. This describes length,
+not assignment, reachability or SMS support. Both selection endpoints follow
+digit positions; active IME composition is left untouched until commit.
+
+The regular formatter constructors and the default input mode retain manual
+mask behavior, including custom filters and `mask: null`. `updateMask` selects
+manual formatting; `updateCountry` selects automatic rules. The bundled rules
+cover 238 countries. HM, GS and VA retain the bundled mask as a soft fallback;
+number-prefix transforms that add or rewrite digits are not implemented.
+Metadata comes from pinned Apache-2.0 libphonenumber data; generation is in
+`tool/generate_phone_rules.dart`, with attribution under `assets/licenses/`.
+Run `mise exec -- dart run tool/generate_phone_rules.dart` to regenerate, or
+add `--metadata /path/PhoneNumberMetadata.xml --check` for an offline check.
+The generator verifies the pinned XML SHA-256 and runs the pinned Dart formatter
+before writing or comparing the output.
+
 
 ## Gotchas
 
@@ -385,7 +419,8 @@ debugPrint('${formatter.valueStatus.currentLength}/${formatter.valueStatus.expec
 - Shared calling codes such as `+1`, `+7`, and `+44` can legitimately produce
   multiple candidates.
 - `filter` and `exclude` should not be used together in `showCountryPicker`.
-- `CountryInputFormatter` switches to flat mode when input exceeds the mask.
+- Manual `CountryInputFormatter` switches to flat mode when input exceeds the mask;
+  automatic country formatting keeps the soft tail instead.
 - `mask` describes the national number only. It should not include the calling
   code.
 
@@ -453,24 +488,46 @@ MaterialApp(
         flagSize: 22,
         inputHeight: 56,
         padding: 16,
-        radius: 12,
+        baseCornerRadius: 12,
       ),
     ],
   ),
 );
 ```
 
-#### iOS 26 style
+#### Country picker appearance
 
-Set `style: CountryPickerStyle.ios26` to render the country picker closer to the native iOS 26 picker: a pill-shaped search field with a round close button, an inset rounded list section, circular flags, the phone code shown before the country name and a checkmark badge on the selected flag. The default is `CountryPickerStyle.classic`.
+The package uses one interface: compact native emoji flags beside localized country names, English subtitles and trailing phone codes. Enable `showGroup: true` for scrolling letter headers and alphabet navigation. In light mode, white rounded groups have equal horizontal theme padding on the secondary background; dark mode keeps a continuous dark list. A transparent, compact `CupertinoNavigationBar` floats above the list, with progressive blur and a soft shade tail adapted from `tetradka_app`'s `UIScrollEdgeEffect`. Renderers without shader-filter support retain the shade. A floating search field and round glass close button sit above the keyboard; another close button appears beside the title. A checkmark marks the selected row.
+
+`CountryPickerStyle` and `CountryPickerTheme.style` have been removed. Remove `style:` from existing theme configuration; the new interface is always used.
+
+Sheet corners use superellipse geometry with a default radius of 38 logical pixels, matching the native UIKit sheet measured on iOS 26.5. Override it through the theme independently of phone input corners:
 
 ```dart
-CountryPickerTheme(style: CountryPickerStyle.ios26)
+CountryPickerTheme(sheetCornerRadius: 24, baseCornerRadius: 12)
 ```
 
-Leave the colors unset to let them resolve from the ambient Cupertino theme, including the elevated dark-mode variants used by sheets.
+`radius` is deprecated; use `baseCornerRadius` instead. If both are supplied, `baseCornerRadius` takes precedence.
 
-In the iOS 26 style scrolling the list also expands the sheet, and the list is clipped below a solid header.
+`sheetCornerRadius` also applies to adaptive Cupertino presentation, including smaller and square corners. Phone inputs retain their default `baseCornerRadius: 12`. At the default `padding: 16`, the header close button has 16 logical pixels above and beside it, with 8 below the navigation bar.
+
+Leave the colors unset to let the list resolve them from the ambient Cupertino theme, with a black list background in dark mode.
+
+Pickers open at full available height by default. Set `expand: false` for a partial nonadaptive sheet; scrolling the list or focusing search then expands it. Search results hide the alphabet index and letter headers; dragging the list dismisses the keyboard. The default close-button treatment is adapted from `tetradka_app`'s `UILiquidGlass$Fake`, using Flutter backdrop blur and press feedback without an app dependency. Reduced motion disables this feedback and high contrast uses opaque close buttons.
+
+With `shouldCloseOnSwipeDown: true`, a gesture started inside the scrolled list returns it to the beginning without dismissing the sheet, including during inertia. A new downward gesture started at the beginning can dismiss it. Tapping the compact app bar or the native iOS status bar scrolls the list to the beginning.
+
+The search field shares the close buttons' press and hover feedback while retaining native text editing, selection and focus. A custom `surfaceBuilder` can observe these search presses through `CountryPickerSurface.pressed`.
+
+The bottom search gap uses the bottom safe area when it is nonzero; otherwise it uses `padding / 2`. Horizontal insets are `padding * 0.75`. The controls are at least 44 logical pixels high and grow with text scaling.
+
+List spacing is the same on Android and iOS: light group surfaces have `padding`
+outside and inside, while dark rows use `padding * 2`. With the default theme,
+these are 16 + 16 logical pixels. Alphabet glyphs are centered in the outer
+padding, with a wider hit target for dragging. The header close button has
+`padding` above and beside it and `padding / 2` below the navigation bar.
+
+Pass `shouldCloseOnSwipeDown: true` to enable dragging the sheet down to dismiss it, including a downward drag from the beginning of the country list. The grouped example enables this option. Stock controls take their fill, outline and foreground colors from `CountryPickerTheme`, with the ambient Material theme as a fallback.
 
 To paint your own surfaces behind the search field and the close button (for example a shader-based liquid glass), pass a `surfaceBuilder` to `showCountryPicker`, `CountryPhoneInput` or `CountryPhoneInput.extended`, like `TextField.contextMenuBuilder`. It receives the control content without the background; taps and accessibility stay handled by the picker.
 

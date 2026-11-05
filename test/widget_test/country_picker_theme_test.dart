@@ -1,3 +1,8 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 25 October 2024
+ */
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
@@ -20,7 +25,7 @@ void main() => group('CountryPickerTheme -', () {
       flagSize: 25,
       padding: 10,
       indent: 10,
-      radius: 10,
+      baseCornerRadius: 10,
       inputDecoration: const InputDecoration(),
     );
 
@@ -78,7 +83,7 @@ void main() => group('CountryPickerTheme -', () {
       flagSize: 24,
       padding: 8,
       indent: 12,
-      radius: 15,
+      baseCornerRadius: 15,
       inputDecoration: const InputDecoration(hintText: 'Search...'),
     );
 
@@ -108,7 +113,7 @@ void main() => group('CountryPickerTheme -', () {
     expect(inheritedTheme.flagSize, 24.0);
     expect(inheritedTheme.padding, 8.0);
     expect(inheritedTheme.indent, 12.0);
-    expect(inheritedTheme.radius, 15.0);
+    expect(inheritedTheme.baseCornerRadius, 15.0);
     expect(inheritedTheme.inputDecoration?.hintText, 'Search...');
   });
 
@@ -169,7 +174,7 @@ void main() => group('CountryPickerTheme -', () {
               flagSize: 28,
               padding: 12,
               indent: 8,
-              radius: 16,
+              baseCornerRadius: 16,
               inputDecoration: const InputDecoration(),
             );
             resolved = CountryPickerTheme.resolve(context, other);
@@ -199,7 +204,7 @@ void main() => group('CountryPickerTheme -', () {
         flagSize: 25,
         padding: 10,
         indent: 10,
-        radius: 10,
+        baseCornerRadius: 10,
         inputDecoration: const InputDecoration(),
       );
       final theme2 = theme1.copyWith(flagSize: 30);
@@ -245,7 +250,7 @@ void main() => group('CountryPickerTheme -', () {
       flagSize: 25,
       padding: 10,
       indent: 10,
-      radius: 10,
+      baseCornerRadius: 10,
       inputDecoration: const InputDecoration(),
     );
 
@@ -284,7 +289,7 @@ void main() => group('CountryPickerTheme -', () {
       flagSize: 26,
       padding: 10,
       indent: 10,
-      radius: 10,
+      baseCornerRadius: 10,
       inputDecoration: const InputDecoration(),
     );
 

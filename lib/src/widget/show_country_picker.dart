@@ -1,3 +1,8 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 7 October 2024
+ */
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'
@@ -5,18 +10,18 @@ import 'package:flutter/material.dart'
         BuildContext,
         VoidCallback,
         BorderRadius,
-        ClipRRect,
         Radius,
         showModalBottomSheet,
-        BoxDecoration,
+        ShapeDecoration,
+        RoundedSuperellipseBorder,
         DecoratedBox,
-        DraggableScrollableSheet,
         Colors;
 import 'package:flutter/services.dart' show HapticFeedback;
-import 'package:flutter_simple_country_picker/src/constant/constants.dart';
 import 'package:flutter_simple_country_picker/src/constant/typedef.dart';
 import 'package:flutter_simple_country_picker/src/theme/country_picker_theme.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart';
+import 'package:flutter_simple_country_picker/src/widget/country_picker_controls.dart';
+import 'package:flutter_simple_country_picker/src/widget/country_picker_sheet_gesture.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_picker_surface.dart';
 import 'package:meta/meta.dart';
 
@@ -43,6 +48,7 @@ import 'package:meta/meta.dart';
 ///
 /// The [expand] argument can be used
 /// to expand the bottom sheet to full height.
+/// Defaults to `true`; set it to `false` for a partial nonadaptive sheet.
 ///
 /// The [adaptive] argument can be used
 /// to show iOS style bottom sheet on iOS platform.
@@ -57,6 +63,10 @@ import 'package:meta/meta.dart';
 ///
 /// The [shouldCloseOnSwipeDown] argument can be used
 /// to close the bottom sheet on swipe down gesture.
+/// It controls sheet dragging and dismissal when the
+/// country list is dragged down by a gesture that started at its beginning.
+/// A gesture started farther down only scrolls the list, including its inertia;
+/// reaching the beginning does not transfer that gesture to sheet dismissal.
 ///
 /// The [showPhoneCode] argument can be used
 /// to show phone code before the country name.
@@ -86,8 +96,7 @@ import 'package:meta/meta.dart';
 /// to set the minimum size of the bottom sheet.
 ///
 /// An optional [surfaceBuilder] argument can be used to paint custom
-/// surfaces behind the search field and the close button
-/// in the iOS 26 style.
+/// surfaces behind the search field and the close button.
 /// {@endtemplate}
 void showCountryPicker({
   required BuildContext context,
@@ -101,7 +110,7 @@ void showCountryPicker({
   )
   VoidCallback? onDone,
   VoidCallback? whenComplete,
-  bool expand = false,
+  bool expand = true,
   bool adaptive = false,
   bool autofocus = false,
   bool isDismissible = true,
@@ -129,29 +138,29 @@ void showCountryPicker({
 }) {
   final isiOS = defaultTargetPlatform == .iOS;
   final effectiveExpand = expand || (adaptive && isiOS);
+  final effectiveMinChildSize =
+      minChildSize ??
+      initialChildSize ??
+      (effectiveExpand ? (shouldCloseOnSwipeDown ? .99 : 1.0) : .65);
   final effectiveUseHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
 
   final pickerTheme = CountryPickerTheme.resolve(context);
-  final radius = Radius.circular(
-    pickerTheme.style == .ios26 ? kIOS26SheetRadius : pickerTheme.radius,
-  );
+  final radius = Radius.circular(pickerTheme.sheetCornerRadius);
   final borderRadius = BorderRadius.only(topLeft: radius, topRight: radius);
+  void complete() => (whenComplete ?? onDone)?.call();
 
-  Widget buildSheet(
-    BuildContext context, [
-    ScrollController? scrollController,
-  ]) => DraggableScrollableSheet(
-    expand: effectiveExpand,
-    // Settle at the initial or the full height, like iOS 26 detents.
-    snap: pickerTheme.style == .ios26,
-    initialChildSize: initialChildSize ?? (effectiveExpand ? 1.0 : .65),
-    minChildSize:
-        minChildSize ??
-        (effectiveExpand ? (shouldCloseOnSwipeDown ? .99 : 1.0) : .65),
-    builder: (context, sheetScrollController) {
-      final color = CountryPickerTheme.resolve(context).backgroundColor!;
-      Widget content({required bool paintBackground}) => CountryListView(
-        paintBackground: paintBackground,
+  Widget buildSheet(BuildContext context) => CountryPickerSheetGesture(
+    initialSize: initialChildSize ?? (effectiveExpand ? 1.0 : .65),
+    minSize: effectiveMinChildSize,
+    canDismiss: shouldCloseOnSwipeDown,
+    onDismiss: () =>
+        Navigator.of(context, rootNavigator: useRootNavigator).pop<void>(),
+    builder: (context, controller) {
+      final color = countryPickerSheetBackgroundColor(
+        context,
+        CountryPickerTheme.resolve(context),
+      );
+      final content = CountryListView(
         exclude: exclude,
         favorites: favorites,
         filter: filter,
@@ -166,86 +175,48 @@ void showCountryPicker({
         useRootNavigator: useRootNavigator,
         useHapticFeedback: effectiveUseHapticFeedback,
         surfaceBuilder: surfaceBuilder,
-        // In the iOS 26 style scrolling the list also expands the
-        // sheet, like native sheets do.
-        scrollController: isScrollControlled && pickerTheme.style != .ios26
-            ? null
-            : scrollController ?? sheetScrollController,
+        scrollController: controller,
       );
-      final backgroundContent = content(paintBackground: true);
-      if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) {
-        return ClipRRect(
-          borderRadius: borderRadius,
-          child: DecoratedBox(
-            decoration: BoxDecoration(borderRadius: borderRadius, color: color),
-            child: backgroundContent,
+      // The full-width scroll edge paints into the corners too. Clip the whole
+      // surface once so its shade cannot reveal a rectangular sheet beneath it.
+      return ClipRSuperellipse(
+        // Keep backdrop filters inside the sheet's alpha outline. A plain
+        // antialiased clip lets their input restore a rectangular corner.
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        borderRadius: borderRadius,
+        child: DecoratedBox(
+          decoration: ShapeDecoration(
+            shape: RoundedSuperellipseBorder(borderRadius: borderRadius),
+            color: color,
           ),
-        );
-      }
-      // Reuse the content while the draggable extent changes.
-      final foregroundContent = content(paintBackground: false);
-      final iconSize = IconTheme.of(context).size ?? 24;
-      final insetHeader =
-          pickerTheme.style == .ios26 &&
-          (showSearch ?? showGroup ?? false) &&
-          surfaceBuilder == null &&
-          color.a == 1 &&
-          pickerTheme.padding >= 16 &&
-          iconSize <= kIOS26ControlHeight;
-      return LayoutBuilder(
-        builder: (context, constraints) {
-          final separateBackground =
-              insetHeader &&
-              constraints.maxWidth >= radius.x * 2 + pickerTheme.padding * 2 &&
-              constraints.maxHeight >=
-                  kIOS26ControlHeight + pickerTheme.padding * 2;
-          // Keep one shell tree so style and size changes retain view state.
-          return ClipRRect(
-            borderRadius: borderRadius,
-            clipBehavior: separateBackground ? Clip.none : Clip.antiAlias,
-            child: DecoratedBox(
-              decoration: separateBackground
-                  ? const BoxDecoration()
-                  : BoxDecoration(borderRadius: borderRadius, color: color),
-              child: CustomPaint(
-                painter: separateBackground
-                    ? _SheetBackgroundPainter(color)
-                    : null,
-                child: ClipRect(
-                  clipBehavior: separateBackground ? Clip.hardEdge : Clip.none,
-                  child: separateBackground
-                      ? foregroundContent
-                      : backgroundContent,
-                ),
-              ),
-            ),
-          );
-        },
+          child: content,
+        ),
       );
     },
   );
 
-  /// In the iOS 26 style the sheet is presented as an elevated surface,
-  /// so dynamic Cupertino colors resolve to their elevated variants.
-  Widget builder(BuildContext context, [ScrollController? scrollController]) =>
-      pickerTheme.style == .ios26
-      ? CupertinoUserInterfaceLevel(
-          data: .elevated,
-          child: Builder(
-            builder: (context) => buildSheet(context, scrollController),
-          ),
-        )
-      : buildSheet(context, scrollController);
+  /// Uses the base Cupertino surface for the country list background.
+  Widget builder(BuildContext context, [ScrollController? _]) =>
+      CupertinoUserInterfaceLevel(
+        data: .base,
+        child: Builder(builder: buildSheet),
+      );
 
   /// Provide haptic feedback on opening the picker, if enabled.
   if (effectiveUseHapticFeedback) HapticFeedback.heavyImpact().ignore();
 
   /// Show adaptive bottom sheet for `iOS` platform, if [adaptive] is `true`.
   if (adaptive && isiOS) {
-    showCupertinoSheet<void>(
-      context: context,
-      scrollableBuilder: builder,
-    ).whenComplete(() => (whenComplete ?? onDone)?.call()).ignore();
+    final navigator = Navigator.of(context, rootNavigator: useRootNavigator);
+    final themes = InheritedTheme.capture(from: context, to: navigator.context);
+    navigator
+        .push<void>(
+          _CountryPickerCupertinoRoute(
+            contentBuilder: (context) => themes.wrap(builder(context)),
+          ),
+        )
+        .whenComplete(complete)
+        .ignore();
 
     /// Show material bottom sheet for other platforms.
   } else {
@@ -255,11 +226,36 @@ void showCountryPicker({
       barrierColor: pickerTheme.barrierColor,
       isDismissible: isDismissible,
       isScrollControlled: true,
+      enableDrag: false,
       useRootNavigator: useRootNavigator,
       useSafeArea: useSafeArea,
       builder: builder,
-    ).whenComplete(() => (whenComplete ?? onDone)?.call()).ignore();
+    ).whenComplete(complete).ignore();
   }
+}
+
+/// Retains SDK sheet transitions while the picker owns clipping and gestures.
+///
+/// The stock route clips its content to a fixed radius before the builder runs.
+/// Overriding this public hook lets the picker theme also specify smaller or
+/// square corners, without a second clip truncating them.
+class _CountryPickerCupertinoRoute extends CupertinoSheetRoute<void> {
+  _CountryPickerCupertinoRoute({required WidgetBuilder contentBuilder})
+    : _contentBuilder = contentBuilder,
+      super(
+        enableDrag: false,
+        scrollableBuilder: (context, _) => contentBuilder(context),
+      );
+
+  /// Builds the picker with its coordinated scroll position and themed surface.
+  final WidgetBuilder _contentBuilder;
+
+  @override
+  Widget buildContent(BuildContext context) => MediaQuery.removePadding(
+    context: context,
+    removeTop: true,
+    child: Builder(builder: _contentBuilder),
+  );
 }
 
 /// {@template country_picker_options}
@@ -280,7 +276,7 @@ class CountryPickerOptions {
     )
     this.onDone,
     this.whenComplete,
-    this.expand = false,
+    this.expand = true,
     this.adaptive = false,
     this.autofocus = false,
     this.isDismissible = true,
@@ -331,7 +327,7 @@ class CountryPickerOptions {
   /// Callback when the picker is dismissed.
   final VoidCallback? whenComplete;
 
-  /// Expand to full height?
+  /// Whether to open at full height. Defaults to `true`.
   final bool expand;
 
   /// Adaptive style?
@@ -391,35 +387,4 @@ class CountryPickerOptions {
 
   /// {@macro country_picker_surface_builder}
   final CountryPickerSurfaceBuilder? surfaceBuilder;
-}
-
-class _SheetBackgroundPainter extends CustomPainter {
-  const _SheetBackgroundPainter(this.color);
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    const radius = kIOS26SheetRadius;
-    canvas
-      ..save()
-      // Leave the upper antialiased edge outside the foreground's rect clip.
-      ..clipRect(
-        Rect.fromLTRB(0, -radius, size.width, size.height),
-        doAntiAlias: true,
-      )
-      // The lower rounded corners start below the sheet's bottom edge.
-      ..drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(0, 0, size.width, size.height + radius),
-          const Radius.circular(radius),
-        ),
-        Paint()..color = color,
-      )
-      ..restore();
-  }
-
-  @override
-  bool shouldRepaint(_SheetBackgroundPainter oldDelegate) =>
-      color != oldDelegate.color;
 }

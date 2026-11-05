@@ -11,15 +11,15 @@ import 'package:flutter/widgets.dart';
 /// More kinds may be added in minor releases, so a `switch` over this enum
 /// should always have a fallback branch.
 enum CountryPickerSurfaceType {
-  /// The pill-shaped search field in the picker header.
+  /// The floating pill-shaped search field above the keyboard.
   searchField,
 
-  /// The round close button next to the search field.
+  /// A round close button in the header or next to the search field.
   closeButton,
 }
 
 /// {@template country_picker_surface}
-/// Describes a control surface of the iOS 26 styled country picker
+/// Describes a control surface of the country picker
 /// that is passed to [CountryPickerSurfaceBuilder].
 ///
 /// The builder receives the control content **without** the background,
@@ -48,7 +48,7 @@ class CountryPickerSurface {
 
   /// Whether the surface is currently pressed.
   ///
-  /// Always `false` for non-interactive surfaces.
+  /// Includes pointer presses handled by the search field's child.
   /// Useful to drive press animations of a custom surface.
   final ValueListenable<bool> pressed;
 
@@ -58,22 +58,24 @@ class CountryPickerSurface {
   /// so a builder does not have to call it. If the builder adds its own
   /// gesture detector that consumes taps, it must call [onPressed] itself.
   ///
-  /// `null` for non-interactive surfaces.
+  /// `null` for the search field, whose child handles text input itself.
   final VoidCallback? onPressed;
 
-  /// Whether the surface reacts to taps.
+  /// Whether the picker owns an activation callback for this surface.
+  ///
+  /// Search handles interaction in its text-field child and returns `false`.
   bool get isInteractive => onPressed != null;
 }
 
 /// {@template country_picker_surface_builder}
-/// Builds a control surface of the iOS 26 styled country picker.
+/// Builds a control surface of the country picker.
 ///
 /// `child` is the surface content without the background.
 ///
 /// Passed to `showCountryPicker` or `CountryPhoneInput`, like
-/// `TextField.contextMenuBuilder`. Used only in the iOS 26 style
-/// (`CountryPickerStyle.ios26`). When `null`, the picker paints
-/// [CountryPickerSurface.decoration] and dims the content on press.
+/// `TextField.contextMenuBuilder`. When `null`, the picker paints
+/// [CountryPickerSurface.decoration] with backdrop blur. Search and close
+/// controls share scale and content-opacity feedback on press.
 ///
 /// ```dart
 /// Widget glassSurface(

@@ -1,3 +1,8 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 25 October 2024
+ */
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart' show kPressTimeout;
@@ -37,7 +42,7 @@ void main() => group('showCountryPicker -', () {
     await tester.tap(find.text('Open adaptive picker'));
     await tester.pumpAndSettle();
     expect(find.byType(CountryListView), findsOneWidget);
-    await tester.tap(find.text('Russia'));
+    await tester.tap(find.bySemanticsLabel('Russia, +7'));
     await tester.pumpAndSettle();
     expect(selected!.countryCode, 'RU');
     expect(completed, 1);
@@ -118,7 +123,7 @@ void main() => group('showCountryPicker -', () {
       flagSize: 25,
       padding: 10,
       indent: 10,
-      radius: 15,
+      sheetCornerRadius: 15,
       inputDecoration: const InputDecoration(),
     );
 
@@ -144,7 +149,9 @@ void main() => group('showCountryPicker -', () {
     await tester.tap(find.text('Show Picker'));
     await tester.pumpAndSettle();
 
-    final modalSheet = tester.widget<ClipRRect>(find.byType(ClipRRect));
+    final modalSheet = tester.widget<ClipRSuperellipse>(
+      find.byType(ClipRSuperellipse).first,
+    );
     expect(
       modalSheet.borderRadius,
       const BorderRadius.only(
@@ -309,10 +316,9 @@ void main() => group('showCountryPicker -', () {
       await tester.pumpAndSettle();
       hapticFeedbackTriggered = false;
 
-      final cancelButton = CountryLocalizations.of(
-        tester.element(find.byType(CountryListView)),
-      ).cancelButton;
-      await tester.tap(find.text(cancelButton));
+      await tester.tap(
+        find.byKey(const ValueKey<String>('country_picker_close_button')),
+      );
       await tester.pumpAndSettle();
 
       expect(hapticFeedbackTriggered, isTrue);
@@ -473,7 +479,7 @@ void main() => group('showCountryPicker -', () {
   test('CountryPickerOptions constructs with default values', () {
     const options = CountryPickerOptions(onSelect: null);
 
-    expect(options.expand, isFalse);
+    expect(options.expand, isTrue);
     expect(options.adaptive, isFalse);
     expect(options.autofocus, isFalse);
     expect(options.isDismissible, isTrue);
@@ -489,195 +495,306 @@ void main() => group('showCountryPicker -', () {
     expect(options.whenComplete, isNull);
   });
 
-  group('CountryPickerStyle.ios26 -', () {
+  group('unified picker -', () {
     Future<void> pumpPicker(
       WidgetTester tester, {
-      bool ios26 = true,
-      bool? showGroup,
-      bool? showSearch,
+      CountryPickerTheme? theme,
+      bool dark = false,
+      bool adaptive = false,
+      bool expand = true,
+      double? initialSize,
+      bool showGroup = true,
+      bool showSearch = true,
+      List<String>? filter = const ['RU', 'US', 'GB'],
+      List<String>? favorites,
+      bool showWorldWide = false,
+      bool showPhoneCode = true,
       SelectedCountry? selected,
       SelectCountryCallback? onSelect,
     }) async {
       await tester.pumpWidget(
         createWidgetUnderTest(
-          builder: (context) => Scaffold(
-            body: InheritedCountryPickerTheme(
-              data: CountryPickerTheme(
-                style: ios26
-                    ? CountryPickerStyle.ios26
-                    : CountryPickerStyle.classic,
-              ),
-              child: Builder(
-                builder: (context) => ElevatedButton(
-                  onPressed: () => showCountryPicker(
-                    context: context,
-                    filter: const ['RU', 'US', 'GB'],
-                    showGroup: showGroup,
-                    showSearch: showSearch,
-                    selected: selected,
-                    onSelect: onSelect,
+          locale: const Locale('en'),
+          theme: dark ? ThemeData.dark() : ThemeData.light(),
+          builder: (context) => InheritedCountryPickerTheme(
+            data: theme ?? CountryPickerTheme(),
+            child: Builder(
+              builder: (context) => Scaffold(
+                body: Center(
+                  child: ElevatedButton(
+                    onPressed: () => showCountryPicker(
+                      context: context,
+                      adaptive: adaptive,
+                      expand: expand,
+                      initialChildSize: initialSize,
+                      showGroup: showGroup,
+                      showSearch: showSearch,
+                      filter: filter,
+                      favorites: favorites,
+                      showWorldWide: showWorldWide,
+                      showPhoneCode: showPhoneCode,
+                      selected: selected,
+                      onSelect: onSelect,
+                    ),
+                    child: const Text('Open picker'),
                   ),
-                  child: const Text('Show Picker'),
                 ),
               ),
             ),
           ),
         ),
       );
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Show Picker'));
+      await tester.tap(find.text('Open picker'));
       await tester.pumpAndSettle();
     }
 
-    const closeButton = ValueKey<String>('country_picker_close_button');
-    const selectedBadge = ValueKey<String>('country_picker_selected_badge');
+    Finder sheet() => find
+        .ancestor(
+          of: find.byType(CountryListView),
+          matching: find.byType(ClipRSuperellipse),
+        )
+        .first;
+    const headerClose = ValueKey<String>('country_picker_header_close_button');
+    const dockClose = ValueKey<String>('country_picker_close_button');
+    const badge = ValueKey<String>('country_picker_selected_badge');
 
-    testWidgets('shows round close button instead of cancel text', (
-      tester,
-    ) async {
-      await pumpPicker(tester, showSearch: true);
+    for (final adaptive in <bool>[false, true]) {
+      for (final radius in <double>[0, 24, 38]) {
+        testWidgets(
+          'theme overrides sheet corners in both presentations: adaptive=$adaptive radius=$radius',
+          (tester) async {
+            await pumpPicker(
+              tester,
+              adaptive: adaptive,
+              theme: CountryPickerTheme(
+                sheetCornerRadius: radius,
+                baseCornerRadius: 9,
+              ),
+            );
+            final clip = tester.widget<ClipRSuperellipse>(sheet());
+            expect(
+              clip.borderRadius.resolve(TextDirection.ltr).topLeft.x,
+              radius,
+            );
+            expect(clip.clipBehavior, Clip.antiAliasWithSaveLayer);
+            final context = tester.element(find.byType(CountryListView));
+            expect(CountryPickerTheme.resolve(context).baseCornerRadius, 9);
+            expect(tester.takeException(), isNull);
+          },
+          variant: TargetPlatformVariant.only(.iOS),
+        );
+      }
+    }
 
-      expect(find.byType(CupertinoSearchTextField), findsOneWidget);
-      expect(find.byKey(closeButton), findsOneWidget);
-      expect(find.text('Отмена'), findsNothing);
-    });
-
-    testWidgets('close button dismisses the picker', (tester) async {
-      await pumpPicker(tester, showSearch: true);
-
-      await tester.tap(find.byKey(closeButton));
-      await tester.pumpAndSettle();
-
-      expect(find.byType(CountryListView), findsNothing);
-    });
-
-    testWidgets('hides title when search is shown', (tester) async {
-      await pumpPicker(tester, showSearch: true);
-      expect(find.text('Выберите страну'), findsNothing);
-    });
-
-    testWidgets('keeps title and drag handle when search is hidden', (
-      tester,
-    ) async {
-      await pumpPicker(tester, showSearch: false);
-      expect(find.text('Выберите страну'), findsOneWidget);
-      expect(find.byKey(closeButton), findsNothing);
-    });
-
-    testWidgets('shows phone code and localized name in plain list', (
-      tester,
-    ) async {
-      await pumpPicker(tester, showSearch: true);
-
-      expect(find.text('+7'), findsOneWidget);
-      expect(find.text('+1'), findsOneWidget);
-      expect(find.text('+44'), findsOneWidget);
-      expect(find.text('Россия'), findsOneWidget);
-    });
-
-    testWidgets('marks selected country with a badge', (tester) async {
-      final selected = ValueNotifier<Country?>(Country.ru());
-      addTearDown(selected.dispose);
-
-      await pumpPicker(tester, showSearch: true, selected: selected);
-
-      expect(find.byKey(selectedBadge), findsOneWidget);
-    });
-
-    testWidgets('shows no badge without selection', (tester) async {
-      await pumpPicker(tester, showSearch: true);
-      expect(find.byKey(selectedBadge), findsNothing);
-    });
-
-    testWidgets('selecting a country calls onSelect and closes picker', (
-      tester,
-    ) async {
-      Country? result;
-      final selected = ValueNotifier<Country?>(null);
-      addTearDown(selected.dispose);
-
-      await pumpPicker(
-        tester,
-        showSearch: true,
-        selected: selected,
-        onSelect: (country) => result = country,
+    for (final dark in <bool>[false, true]) {
+      testWidgets(
+        'header title and glass controls coexist with search: dark=$dark',
+        (tester) async {
+          await pumpPicker(tester, dark: dark);
+          expect(find.text('Select country'), findsOneWidget);
+          expect(find.byKey(headerClose), findsOneWidget);
+          expect(find.byKey(dockClose), findsOneWidget);
+          expect(find.byType(CupertinoSearchTextField), findsOneWidget);
+          expect(find.text('Cancel'), findsNothing);
+          final close = tester.getRect(find.byKey(headerClose));
+          final bounds = tester.getRect(sheet());
+          expect(close.left - bounds.left, 16);
+          expect(close.top - bounds.top, 16);
+          expect(close.size, const Size(44, 44));
+        },
       );
 
-      await tester.tap(find.text('Россия'));
-      await tester.pumpAndSettle();
-
-      expect(result?.countryCode, 'RU');
-      expect(selected.value?.countryCode, 'RU');
-      expect(find.byType(CountryListView), findsNothing);
-    });
-
-    testWidgets('renders grouped list with section headers', (tester) async {
-      final selected = ValueNotifier<Country?>(Country.ru());
-      addTearDown(selected.dispose);
-
-      await pumpPicker(tester, showGroup: true, selected: selected);
-
-      expect(find.byType(CupertinoSearchTextField), findsOneWidget);
-      expect(find.text('Р'), findsOneWidget);
-      expect(find.text('Россия'), findsOneWidget);
-      expect(find.byKey(selectedBadge), findsOneWidget);
-    });
-
-    testWidgets('default style keeps cancel text button', (tester) async {
-      await pumpPicker(tester, ios26: false, showSearch: true);
-
-      expect(find.byKey(closeButton), findsNothing);
-      expect(find.text('Отмена'), findsOneWidget);
-      expect(find.byKey(selectedBadge), findsNothing);
-    });
-  });
-
-  group('spacing -', () {
-    for (final ios26 in <bool>[false, true]) {
-      testWidgets('gap between search field and close button is derived '
-          'from padding and ignores indent (ios26: $ios26)', (tester) async {
-        await tester.pumpWidget(
-          createWidgetUnderTest(
-            builder: (context) => Scaffold(
-              body: InheritedCountryPickerTheme(
-                data: CountryPickerTheme(
-                  style: ios26
-                      ? CountryPickerStyle.ios26
-                      : CountryPickerStyle.classic,
-                  padding: 24,
-                  // ignore: deprecated_member_use_from_same_package
-                  indent: 40,
-                ),
-                child: Builder(
-                  builder: (context) => ElevatedButton(
-                    onPressed: () =>
-                        showCountryPicker(context: context, showSearch: true),
-                    child: const Text('Show Picker'),
-                  ),
-                ),
-              ),
-            ),
-          ),
+      testWidgets('full list opens at full available height: dark=$dark', (
+        tester,
+      ) async {
+        await pumpPicker(tester, dark: dark);
+        expect(
+          tester.getRect(sheet()).height,
+          tester.view.physicalSize.height / tester.view.devicePixelRatio,
         );
-        await tester.pumpAndSettle();
-        await tester.tap(find.text('Show Picker'));
-        await tester.pumpAndSettle();
+      });
 
-        final fieldEnd = tester
-            .getTopRight(find.byType(CupertinoSearchTextField))
-            .dx;
-        final buttonStart = ios26
-            ? tester
-                  .getTopLeft(
-                    find.byKey(
-                      const ValueKey<String>('country_picker_close_button'),
-                    ),
-                  )
-                  .dx
-            : tester.getTopLeft(find.byType(CupertinoButton).last).dx;
-        expect(buttonStart - fieldEnd, 24 / 1.6);
+      testWidgets(
+        'selection is labelled, reported and dismisses the route: dark=$dark',
+        (tester) async {
+          final handle = tester.ensureSemantics();
+          final selected = ValueNotifier<Country?>(Country.ru());
+          addTearDown(selected.dispose);
+          Country? chosen;
+          await pumpPicker(
+            tester,
+            dark: dark,
+            selected: selected,
+            onSelect: (value) => chosen = value,
+          );
+          expect(find.byKey(badge), findsOneWidget);
+          expect(
+            tester.getSemantics(find.bySemanticsLabel('Russia, +7')),
+            isSemantics(isSelected: true, isButton: true),
+          );
+          await tester.tap(find.bySemanticsLabel('United States, +1'));
+          await tester.pumpAndSettle();
+          expect(chosen?.countryCode, 'US');
+          expect(selected.value?.countryCode, 'US');
+          expect(find.byType(CountryListView), findsNothing);
+          handle.dispose();
+        },
+      );
+    }
+
+    for (final closeKey in <ValueKey<String>>[headerClose, dockClose]) {
+      testWidgets('each close button dismisses the route: $closeKey', (
+        tester,
+      ) async {
+        await pumpPicker(tester);
+        await tester.tap(find.byKey(closeKey));
+        await tester.pumpAndSettle();
+        expect(find.byType(CountryListView), findsNothing);
       });
     }
+
+    testWidgets('hiding search retains header close and title', (tester) async {
+      await pumpPicker(tester, showSearch: false);
+      expect(find.byType(CupertinoSearchTextField), findsNothing);
+      expect(find.byKey(headerClose), findsOneWidget);
+      expect(find.byKey(dockClose), findsNothing);
+      expect(find.text('Select country'), findsOneWidget);
+    });
+
+    testWidgets(
+      'explicit partial opening retains a scrollable list and expands',
+      (tester) async {
+        await pumpPicker(tester, expand: false, initialSize: .6, filter: null);
+        final before = tester.getRect(sheet()).height;
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -200));
+        await tester.pumpAndSettle();
+        expect(tester.getRect(sheet()).height, greaterThan(before));
+        expect(find.byType(CustomScrollView), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'search focus expands a partial sheet without hiding the title',
+      (tester) async {
+        await pumpPicker(tester, expand: false, initialSize: .6);
+        final before = tester.getRect(sheet()).height;
+        await tester.tap(find.byType(CupertinoSearchTextField));
+        await tester.pumpAndSettle();
+        expect(tester.getRect(sheet()).height, greaterThan(before));
+        expect(find.text('Select country'), findsOneWidget);
+      },
+    );
+
+    testWidgets('content scrolls under the compact transparent app bar', (
+      tester,
+    ) async {
+      await pumpPicker(tester);
+      final scaffold = tester.widget<Scaffold>(
+        find
+            .ancestor(
+              of: find.byType(CustomScrollView),
+              matching: find.byType(Scaffold),
+            )
+            .first,
+      );
+      expect(scaffold.extendBodyBehindAppBar, isTrue);
+      expect(
+        tester.getTopLeft(find.byType(CustomScrollView)).dy,
+        tester.getTopLeft(sheet()).dy,
+      );
+    });
+
+    testWidgets('favorites precede non-repeated scrolling letter headers', (
+      tester,
+    ) async {
+      await pumpPicker(
+        tester,
+        filter: const ['RU', 'RO', 'AU'],
+        favorites: const ['RU'],
+      );
+      final favorite = find.byKey(ValueKey<String>(Country.ru().e164Key)).first;
+      final a = find.byKey(const ValueKey<String>('header_A'));
+      final r = find.byKey(const ValueKey<String>('header_R'));
+      expect(a, findsOneWidget);
+      expect(r, findsOneWidget);
+      expect(tester.getTopLeft(favorite).dy, lessThan(tester.getTopLeft(a).dy));
+      expect(find.byKey(const ValueKey<String>('header_')), findsNothing);
+    });
+
+    testWidgets('focusing search in an already full sheet is safe', (
+      tester,
+    ) async {
+      await pumpPicker(tester);
+      await tester.tap(find.byType(CupertinoSearchTextField));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(tester.testTextInput.isVisible, isTrue);
+    });
+
+    testWidgets('empty search hides groups and clearing restores them', (
+      tester,
+    ) async {
+      await pumpPicker(tester);
+      await tester.enterText(find.byType(CupertinoSearchTextField), 'zzzzzz');
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey<String>('header_R')), findsNothing);
+      expect(find.text('Russia'), findsNothing);
+      await tester.tap(find.byIcon(CupertinoIcons.xmark_circle_fill));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey<String>('header_R')), findsOneWidget);
+    });
+
+    for (final grouped in <bool>[false, true]) {
+      testWidgets(
+        'worldwide is first and has no calling code: grouped=$grouped',
+        (tester) async {
+          await pumpPicker(
+            tester,
+            filter: const ['RU'],
+            showGroup: grouped,
+            showWorldWide: true,
+          );
+          expect(find.bySemanticsLabel('Worldwide'), findsOneWidget);
+          expect(
+            tester.getTopLeft(find.text('Worldwide')).dy,
+            lessThan(tester.getTopLeft(find.text('Russia').first).dy),
+          );
+          expect(find.text('+'), findsNothing);
+        },
+      );
+    }
+
+    testWidgets(
+      'search-to-close gap follows padding rather than deprecated indent',
+      (tester) async {
+        await pumpPicker(
+          tester,
+          theme: CountryPickerTheme(
+            padding: 24,
+            // ignore: deprecated_member_use_from_same_package
+            indent: 40,
+          ),
+        );
+        expect(
+          tester.getTopLeft(find.byKey(dockClose)).dx -
+              tester.getTopRight(find.byType(CupertinoSearchTextField)).dx,
+          24 / 1.6,
+        );
+      },
+    );
+
+    testWidgets('flags retain native glyphs without a circular crop', (
+      tester,
+    ) async {
+      await pumpPicker(tester, filter: const ['RU']);
+      final flag = find.text(Country.ru().flagEmoji);
+      expect(flag, findsOneWidget);
+      expect(
+        find.ancestor(of: flag, matching: find.byType(ClipOval)),
+        findsNothing,
+      );
+      expect(tester.widget<Text>(flag).style?.fontSize, 22);
+    }, variant: TargetPlatformVariant.all());
   });
 
   group('diacritics -', () {
@@ -720,192 +837,6 @@ void main() => group('showCountryPicker -', () {
     });
   });
 
-  group('grouping -', () {
-    Future<void> pumpPicker(
-      WidgetTester tester, {
-      required List<String> filter,
-      List<String>? favorites,
-      bool ios26 = false,
-      bool showPhoneCode = false,
-      bool showWorldWide = false,
-      bool? showGroup = true,
-      List<String>? exclude,
-    }) async {
-      await tester.pumpWidget(
-        createWidgetUnderTest(
-          builder: (context) => Scaffold(
-            body: InheritedCountryPickerTheme(
-              data: CountryPickerTheme(
-                style: ios26
-                    ? CountryPickerStyle.ios26
-                    : CountryPickerStyle.classic,
-              ),
-              child: Builder(
-                builder: (context) => ElevatedButton(
-                  onPressed: () => showCountryPicker(
-                    context: context,
-                    filter: exclude == null ? filter : null,
-                    exclude: exclude,
-                    favorites: favorites,
-                    showGroup: showGroup,
-                    showPhoneCode: showPhoneCode,
-                    showWorldWide: showWorldWide,
-                  ),
-                  child: const Text('Show Picker'),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Show Picker'));
-      await tester.pumpAndSettle();
-    }
-
-    Finder header(String letter) =>
-        find.byKey(ValueKey<String>('header_$letter'), skipOffstage: false);
-
-    for (final ios26 in <bool>[false, true]) {
-      for (final showPhoneCode in <bool>[false, true]) {
-        testWidgets('favorites get their own section without a header and '
-            'letters are not repeated (ios26: $ios26, '
-            'showPhoneCode: $showPhoneCode)', (tester) async {
-          await pumpPicker(
-            tester,
-            filter: const ['RU', 'RO', 'AU'],
-            favorites: const ['RU'],
-            ios26: ios26,
-            showPhoneCode: showPhoneCode,
-          );
-
-          expect(header('Р'), findsOneWidget);
-          expect(header('А'), findsOneWidget);
-          expect(header(''), findsNothing);
-
-          // The favorite is listed above every letter header.
-          final favoriteTop = tester.getTopLeft(find.text('Россия').first).dy;
-          expect(favoriteTop, lessThan(tester.getTopLeft(find.text('А')).dy));
-          expect(
-            find.text('Россия'),
-            showPhoneCode ? findsNWidgets(2) : findsOneWidget,
-          );
-        });
-      }
-    }
-
-    testWidgets('search without results clears the groups', (tester) async {
-      await pumpPicker(tester, filter: const ['RU', 'AU']);
-      expect(header('Р'), findsOneWidget);
-
-      await tester.enterText(find.byType(CupertinoSearchTextField), 'zzz');
-      await tester.pumpAndSettle();
-
-      expect(header('Р'), findsNothing);
-      expect(find.text('Россия'), findsNothing);
-    });
-
-    for (final ios26 in <bool>[false, true]) {
-      for (final showGroup in <bool>[false, true]) {
-        testWidgets('showWorldWide adds the option on top without a phone '
-            'code (ios26: $ios26, showGroup: $showGroup)', (tester) async {
-          await pumpPicker(
-            tester,
-            filter: const ['RU'],
-            showWorldWide: true,
-            ios26: ios26,
-            showGroup: showGroup,
-          );
-
-          expect(find.text('Мировой'), findsOneWidget);
-          expect(
-            tester.getTopLeft(find.text('Мировой')).dy,
-            lessThan(tester.getTopLeft(find.text('Россия')).dy),
-          );
-          expect(find.text('+'), findsNothing);
-          expect(find.textContaining('(+)'), findsNothing);
-        });
-      }
-    }
-
-    testWidgets('showWorldWide respects exclude', (tester) async {
-      await pumpPicker(
-        tester,
-        filter: const [],
-        exclude: const ['WW'],
-        showWorldWide: true,
-      );
-      expect(find.text('Мировой'), findsNothing);
-    });
-  });
-
-  group('iOS 26 sheet behavior -', () {
-    Future<void> pumpPicker(WidgetTester tester, {required bool ios26}) async {
-      await tester.pumpWidget(
-        createWidgetUnderTest(
-          builder: (context) => Scaffold(
-            body: InheritedCountryPickerTheme(
-              data: CountryPickerTheme(
-                style: ios26
-                    ? CountryPickerStyle.ios26
-                    : CountryPickerStyle.classic,
-              ),
-              child: Builder(
-                builder: (context) => ElevatedButton(
-                  onPressed: () =>
-                      showCountryPicker(context: context, showSearch: true),
-                  child: const Text('Show Picker'),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Show Picker'));
-      await tester.pumpAndSettle();
-    }
-
-    for (final ios26 in <bool>[false, true]) {
-      testWidgets('scrolling the list ${ios26 ? 'expands' : 'keeps'} '
-          'the sheet (ios26: $ios26)', (tester) async {
-        await pumpPicker(tester, ios26: ios26);
-        final search = find.byType(CupertinoSearchTextField);
-        final before = tester.getTopLeft(search).dy;
-
-        await tester.drag(find.byType(CustomScrollView), const Offset(0, -200));
-        await tester.pumpAndSettle();
-
-        final after = tester.getTopLeft(search).dy;
-        if (ios26) {
-          expect(after, lessThan(before));
-        } else {
-          expect(after, before);
-        }
-      });
-    }
-
-    testWidgets('list is clipped below a solid header', (tester) async {
-      await pumpPicker(tester, ios26: true);
-
-      final scaffold = tester.widget<Scaffold>(
-        find
-            .ancestor(
-              of: find.byType(CustomScrollView),
-              matching: find.byType(Scaffold),
-            )
-            .first,
-      );
-      expect(scaffold.extendBodyBehindAppBar, isFalse);
-      expect(
-        tester.getTopLeft(find.byType(CustomScrollView)).dy,
-        greaterThan(
-          tester.getBottomLeft(find.byType(CupertinoSearchTextField)).dy,
-        ),
-      );
-    });
-  });
-
   group('surfaceBuilder -', () {
     Future<void> pumpPicker(
       WidgetTester tester,
@@ -915,7 +846,7 @@ void main() => group('showCountryPicker -', () {
         createWidgetUnderTest(
           builder: (context) => Scaffold(
             body: InheritedCountryPickerTheme(
-              data: CountryPickerTheme(style: CountryPickerStyle.ios26),
+              data: CountryPickerTheme(),
               child: Builder(
                 builder: (context) => ElevatedButton(
                   onPressed: () => showCountryPicker(
@@ -989,7 +920,7 @@ void main() => group('showCountryPicker -', () {
             valueListenable: surface.pressed,
             builder: (_, pressed, child) {
               pressedValues.add(pressed);
-              return child!;
+              return child ?? const SizedBox.shrink();
             },
             child: child,
           );
@@ -1024,10 +955,10 @@ void main() => group('showCountryPicker -', () {
           tester.getCenter(find.byKey(closeButton)),
         );
         await tester.pump(kPressTimeout);
-        expect(pressed!.value, isTrue);
+        expect(pressed?.value, isTrue);
         await gesture.cancel();
         await tester.pumpAndSettle();
-        expect(pressed!.value, isFalse);
+        expect(pressed?.value, isFalse);
         expect(find.byType(CountryListView), findsOneWidget);
       },
     );
@@ -1047,245 +978,9 @@ void main() => group('showCountryPicker -', () {
     });
   });
 
-  group('semantics -', () {
-    Future<void> pumpPicker(
-      WidgetTester tester, {
-      bool ios26 = false,
-      bool? showGroup,
-      bool? showSearch,
-      bool showPhoneCode = false,
-      SelectedCountry? selected,
-    }) async {
-      await tester.pumpWidget(
-        createWidgetUnderTest(
-          builder: (context) => Scaffold(
-            body: InheritedCountryPickerTheme(
-              data: CountryPickerTheme(
-                style: ios26
-                    ? CountryPickerStyle.ios26
-                    : CountryPickerStyle.classic,
-              ),
-              child: Builder(
-                builder: (context) => ElevatedButton(
-                  onPressed: () => showCountryPicker(
-                    context: context,
-                    filter: const ['RU', 'US'],
-                    showGroup: showGroup,
-                    showSearch: showSearch,
-                    showPhoneCode: showPhoneCode,
-                    selected: selected,
-                  ),
-                  child: const Text('Show Picker'),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Show Picker'));
-      await tester.pumpAndSettle();
-    }
-
-    for (final ios26 in <bool>[false, true]) {
-      testWidgets('tile is one button labelled with name and phone code '
-          '(ios26: $ios26)', (tester) async {
-        final handle = tester.ensureSemantics();
-        await pumpPicker(tester, ios26: ios26, showGroup: true);
-
-        expect(
-          tester.getSemantics(find.bySemanticsLabel('Россия, +7')),
-          isSemantics(label: 'Россия, +7', isButton: true, hasTapAction: true),
-        );
-        // The emoji flag and the separate texts are not announced.
-        expect(find.bySemanticsLabel('🇷🇺'), findsNothing);
-        expect(find.bySemanticsLabel('Russia'), findsNothing);
-        handle.dispose();
-      });
-
-      testWidgets('group letters are headers (ios26: $ios26)', (tester) async {
-        final handle = tester.ensureSemantics();
-        await pumpPicker(tester, ios26: ios26, showGroup: true);
-
-        expect(
-          tester.getSemantics(find.bySemanticsLabel('Р')),
-          isSemantics(label: 'Р', isHeader: true),
-        );
-        handle.dispose();
-      });
-    }
-
-    testWidgets('simple tile exposes selected state', (tester) async {
-      final handle = tester.ensureSemantics();
-      final selected = ValueNotifier<Country?>(Country.ru());
-      addTearDown(selected.dispose);
-      await pumpPicker(tester, selected: selected);
-
-      expect(
-        tester.getSemantics(find.bySemanticsLabel('Россия, +7')),
-        isSemantics(isSelected: true),
-      );
-      expect(
-        tester.getSemantics(find.bySemanticsLabel('Соединенные Штаты, +1')),
-        isSemantics(isSelected: false),
-      );
-      handle.dispose();
-    });
-
-    testWidgets('iOS 26 tile exposes selected state', (tester) async {
-      final handle = tester.ensureSemantics();
-      final selected = ValueNotifier<Country?>(Country.ru());
-      addTearDown(selected.dispose);
-      await pumpPicker(
-        tester,
-        ios26: true,
-        showSearch: true,
-        selected: selected,
-      );
-
-      expect(
-        tester.getSemantics(find.bySemanticsLabel('Россия, +7')),
-        isSemantics(isSelected: true, isButton: true),
-      );
-      handle.dispose();
-    });
-
-    testWidgets('iOS 26 close button is labelled', (tester) async {
-      final handle = tester.ensureSemantics();
-      await pumpPicker(tester, ios26: true, showSearch: true);
-
-      expect(
-        tester.getSemantics(find.bySemanticsLabel('Отмена')),
-        isSemantics(isButton: true, hasTapAction: true),
-      );
-      handle.dispose();
-    });
-
-    testWidgets('drag handle is excluded from semantics', (tester) async {
-      final handle = tester.ensureSemantics();
-      await pumpPicker(tester, showSearch: false);
-
-      // Title and tiles are still reachable, nothing else is added.
-      expect(find.bySemanticsLabel('Выберите страну'), findsOneWidget);
-      handle.dispose();
-    });
-  });
-
-  group('classic flag rendering -', () {
-    testWidgets('uses the bundled flag font only on Windows', (tester) async {
-      await tester.pumpWidget(
-        createWidgetUnderTest(
-          builder: (context) => Scaffold(
-            body: Builder(
-              builder: (context) => ElevatedButton(
-                onPressed: () => showCountryPicker(
-                  context: context,
-                  filter: const ['RU'],
-                  showGroup: true,
-                ),
-                child: const Text('Show Picker'),
-              ),
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Show Picker'));
-      await tester.pumpAndSettle();
-
-      final flag = tester.widget<RichText>(
-        find.descendant(
-          of: find.text(Country.ru().flagEmoji),
-          matching: find.byType(RichText),
-        ),
-      );
-      expect(
-        flag.text
-            .getSpanForPosition(const TextPosition(offset: 0))
-            ?.style
-            ?.fontFamily,
-        defaultTargetPlatform == TargetPlatform.windows
-            ? 'TwemojiCountryFlags'
-            : isNot('TwemojiCountryFlags'),
-      );
-    }, variant: TargetPlatformVariant.all());
-  });
-
-  group('iOS 26 flag rendering -', () {
-    const regionalRU = '\u{1F1F7}\u{1F1FA}';
-
-    Future<void> pumpPicker(WidgetTester tester) async {
-      await tester.pumpWidget(
-        createWidgetUnderTest(
-          builder: (context) => Scaffold(
-            body: InheritedCountryPickerTheme(
-              data: CountryPickerTheme(style: CountryPickerStyle.ios26),
-              child: Builder(
-                builder: (context) => ElevatedButton(
-                  onPressed: () => showCountryPicker(
-                    context: context,
-                    filter: const ['RU'],
-                    showSearch: true,
-                  ),
-                  child: const Text('Show Picker'),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Show Picker'));
-      await tester.pumpAndSettle();
-    }
-
-    double fontSizeOf(WidgetTester tester, String text) =>
-        tester.widget<Text>(find.text(text)).style!.fontSize!;
-
-    testWidgets(
-      'renders emoji flag clipped to a circle with a platform scale',
-      (tester) async {
-        await pumpPicker(tester);
-
-        final expectedScale = switch (defaultTargetPlatform) {
-          TargetPlatform.iOS || TargetPlatform.macOS => 2.0,
-          _ => 1.6,
-        };
-
-        expect(
-          find.ancestor(
-            of: find.text(regionalRU),
-            matching: find.byType(ClipOval),
-          ),
-          findsOneWidget,
-        );
-        expect(fontSizeOf(tester, regionalRU), 40 * expectedScale);
-
-        // Windows has no flag glyphs: the bundled Twemoji font is used.
-        final flag = tester.widget<RichText>(
-          find.descendant(
-            of: find.text(regionalRU),
-            matching: find.byType(RichText),
-          ),
-        );
-        final fontFamily = flag.text
-            .getSpanForPosition(const TextPosition(offset: 0))
-            ?.style
-            ?.fontFamily;
-        expect(
-          fontFamily,
-          defaultTargetPlatform == TargetPlatform.windows
-              ? 'TwemojiCountryFlags'
-              : isNot('TwemojiCountryFlags'),
-        );
-      },
-      variant: TargetPlatformVariant.all(),
-    );
-  });
-
   group('flag rendering with a package font -', () {
-    for (final style in CountryPickerStyle.values) {
-      testWidgets('preserves inherited package fonts in $style', (
+    for (final brightness in Brightness.values) {
+      testWidgets('preserves inherited package fonts in ${brightness.name}', (
         tester,
       ) async {
         const textStyle = TextStyle(
@@ -1298,13 +993,14 @@ void main() => group('showCountryPicker -', () {
             locale: const Locale('en'),
             builder: (context) => Theme(
               data: ThemeData(
+                brightness: brightness,
                 fontFamily: 'Body',
                 package: 'theme_fonts',
                 fontFamilyFallback: const <String>['Fallback'],
               ),
               child: Scaffold(
                 body: InheritedCountryPickerTheme(
-                  data: CountryPickerTheme(style: style),
+                  data: CountryPickerTheme(),
                   child: Builder(
                     builder: (context) => ElevatedButton(
                       onPressed: () => showCountryPicker(
@@ -1341,7 +1037,7 @@ void main() => group('showCountryPicker -', () {
         );
         final name = tester.widget<RichText>(
           find.descendant(
-            of: find.text('Russia'),
+            of: find.text('Russia').first,
             matching: find.byType(RichText),
           ),
         );

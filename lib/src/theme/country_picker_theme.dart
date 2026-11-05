@@ -8,7 +8,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_simple_country_picker/src/theme/country_picker_style.dart';
 
 /// Default height for [CountryPhoneInput].
 const double _kDefaultInputHeight = 56.0;
@@ -22,8 +21,11 @@ const double _kDefaultPadding = 16.0;
 /// Default indent
 const double _kDefaultIndent = 10.0;
 
-/// Default radius
-const double _kDefaultRadius = 12.0;
+/// Default corner radius for phone input fields.
+const double _kDefaultBaseCornerRadius = 12.0;
+
+/// Matches the measured native UIKit sheet corners on iOS 26.5.
+const double _kDefaultSheetCornerRadius = 38.0;
 
 /// {@template country_picker_theme}
 /// Visual configuration for all `flutter_simple_country_picker` widgets.
@@ -37,8 +39,8 @@ const double _kDefaultRadius = 12.0;
 ///       CountryPickerTheme(
 ///         backgroundColor: Colors.white,
 ///         accentColor: Colors.blue,
-///         radius: 16,
-///         flagSize: 24,
+///         baseCornerRadius: 16,
+///         flagSize: 22,
 ///         textStyle: const TextStyle(fontSize: 16),
 ///       ),
 ///     ],
@@ -54,6 +56,10 @@ const double _kDefaultRadius = 12.0;
 ///
 /// All properties are optional — omitted values fall back to the ambient
 /// [Theme]'s color scheme and text styles.
+///
+/// [baseCornerRadius] controls input fields; [sheetCornerRadius] controls sheets.
+/// The deprecated `radius` argument is an alias for [baseCornerRadius].
+/// If both arguments are supplied, [baseCornerRadius] takes precedence.
 /// {@endtemplate}
 @immutable
 class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
@@ -74,20 +80,22 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       'This property will be removed in v1.0.0 releases.',
     )
     double? indent,
-    double? radius,
+    @Deprecated('Use baseCornerRadius instead.') double? radius,
+    double? baseCornerRadius,
+    double? sheetCornerRadius,
     double? inputHeight,
     @Deprecated('This property will be removed in v1.0.0 releases.')
     InputDecoration? inputDecoration,
     TextStyle? textStyle,
     TextStyle? secondaryTextStyle,
     TextStyle? searchTextStyle,
-    CountryPickerStyle? style,
   }) {
     inputHeight ??= _kDefaultInputHeight;
     flagSize ??= _kDefaultFlagSize;
     padding ??= _kDefaultPadding;
     indent ??= _kDefaultIndent;
-    radius ??= _kDefaultRadius;
+    baseCornerRadius ??= radius ?? _kDefaultBaseCornerRadius;
+    sheetCornerRadius ??= _kDefaultSheetCornerRadius;
     return CountryPickerTheme.raw(
       accentColor: accentColor,
       backgroundColor: backgroundColor,
@@ -104,8 +112,8 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       flagSize: flagSize,
       padding: padding,
       indent: indent,
-      radius: radius,
-      style: style ?? CountryPickerStyle.classic,
+      baseCornerRadius: baseCornerRadius,
+      sheetCornerRadius: sheetCornerRadius,
     );
   }
 
@@ -126,14 +134,16 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     required this.textStyle,
     required this.flagSize,
     required this.padding,
-    required this.radius,
+    @Deprecated('Use baseCornerRadius instead.') double? radius,
+    double? baseCornerRadius,
+    this.sheetCornerRadius = _kDefaultSheetCornerRadius,
     @Deprecated(
       'No longer used: spacing is derived from padding. '
       'This property will be removed in v1.0.0 releases.',
     )
     this.indent = _kDefaultIndent,
-    this.style = CountryPickerStyle.classic,
-  });
+  }) : baseCornerRadius =
+           baseCornerRadius ?? radius ?? _kDefaultBaseCornerRadius;
 
   /// The state from the closest instance of this class
   /// that encloses the given context.
@@ -147,8 +157,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   factory CountryPickerTheme.defaults(BuildContext context) =
       _CountryPickerTheme$Default;
 
-  /// The helper method to quickly resolve [PullDownMenuItemTheme] from
-  /// various sources.
+  /// Resolves overrides, the inherited picker theme and platform defaults.
   @internal
   factory CountryPickerTheme.resolve(
     BuildContext context, [
@@ -197,8 +206,14 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       flagSize: other?.flagSize ?? theme?.flagSize ?? defaults.flagSize,
       padding: other?.padding ?? theme?.padding ?? defaults.padding,
       indent: other?.indent ?? theme?.indent ?? defaults.indent,
-      radius: other?.radius ?? theme?.radius ?? defaults.radius,
-      style: other?.style ?? theme?.style ?? defaults.style,
+      baseCornerRadius:
+          other?.baseCornerRadius ??
+          theme?.baseCornerRadius ??
+          defaults.baseCornerRadius,
+      sheetCornerRadius:
+          other?.sheetCornerRadius ??
+          theme?.sheetCornerRadius ??
+          defaults.sheetCornerRadius,
     );
   }
 
@@ -208,7 +223,10 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   /// property of the ambient [Theme].
   static CountryPickerTheme? maybeOf(BuildContext context) =>
       InheritedCountryPickerTheme.maybeOf(context) ??
-      Theme.of(context).extensions[CountryPickerTheme] as CountryPickerTheme?;
+      switch (Theme.of(context).extensions[CountryPickerTheme]) {
+        CountryPickerTheme theme => theme,
+        _ => null,
+      };
 
   /// The accent color.
   final Color? accentColor;
@@ -265,14 +283,19 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   )
   final double indent;
 
-  /// The border radius of elements.
-  /// If null, set to `12.0`
-  final double radius;
+  /// The corner radius of phone input fields. Defaults to `12.0`.
+  final double baseCornerRadius;
 
-  /// The visual style of the country picker.
+  /// An alias for [baseCornerRadius], retained for compatibility.
+  @Deprecated('Use baseCornerRadius instead.')
+  double get radius => baseCornerRadius;
+
+  /// The corner radius of picker sheets in both modal presentations.
   ///
-  /// Default is [CountryPickerStyle.classic].
-  final CountryPickerStyle style;
+  /// Defaults to `38.0`, matching the native UIKit sheet measured on iOS 26.5.
+  /// Sheets use a superellipse; set this to zero for square corners.
+  /// This property does not change the phone input [baseCornerRadius].
+  final double sheetCornerRadius;
 
   @override
   CountryPickerTheme copyWith({
@@ -293,11 +316,12 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       'This property will be removed in v1.0.0 releases.',
     )
     double? indent,
-    double? radius,
+    @Deprecated('Use baseCornerRadius instead.') double? radius,
+    double? baseCornerRadius,
+    double? sheetCornerRadius,
     TextStyle? secondaryTextStyle,
     TextStyle? searchTextStyle,
     TextStyle? textStyle,
-    CountryPickerStyle? style,
   }) => CountryPickerTheme(
     accentColor: accentColor ?? this.accentColor,
     backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -313,11 +337,11 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     flagSize: flagSize ?? this.flagSize,
     padding: padding ?? this.padding,
     indent: indent ?? this.indent,
-    radius: radius ?? this.radius,
+    baseCornerRadius: baseCornerRadius ?? radius ?? this.baseCornerRadius,
+    sheetCornerRadius: sheetCornerRadius ?? this.sheetCornerRadius,
     secondaryTextStyle: secondaryTextStyle ?? this.secondaryTextStyle,
     searchTextStyle: searchTextStyle ?? this.searchTextStyle,
     textStyle: textStyle ?? this.textStyle,
-    style: style ?? this.style,
   );
 
   /// Controls how the properties change on theme changes
@@ -362,8 +386,16 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       flagSize: ui.lerpDouble(flagSize, other.flagSize, t),
       padding: ui.lerpDouble(padding, other.padding, t),
       indent: ui.lerpDouble(indent, other.indent, t),
-      radius: ui.lerpDouble(radius, other.radius, t),
-      style: t < .5 ? style : other.style,
+      baseCornerRadius: ui.lerpDouble(
+        baseCornerRadius,
+        other.baseCornerRadius,
+        t,
+      ),
+      sheetCornerRadius: ui.lerpDouble(
+        sheetCornerRadius,
+        other.sheetCornerRadius,
+        t,
+      ),
     );
   }
 
@@ -384,8 +416,8 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     flagSize,
     padding,
     indent,
-    radius,
-    style,
+    baseCornerRadius,
+    sheetCornerRadius,
   ]);
 
   @override
@@ -407,8 +439,8 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         other.flagSize == flagSize &&
         other.padding == padding &&
         other.indent == indent &&
-        other.radius == radius &&
-        other.style == style;
+        other.baseCornerRadius == baseCornerRadius &&
+        other.sheetCornerRadius == sheetCornerRadius;
   }
 
   @override
@@ -522,16 +554,16 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       )
       ..add(
         DiagnosticsProperty<double>(
-          'radius',
-          radius,
-          defaultValue: _kDefaultRadius,
+          'baseCornerRadius',
+          baseCornerRadius,
+          defaultValue: _kDefaultBaseCornerRadius,
         ),
       )
       ..add(
-        EnumProperty<CountryPickerStyle>(
-          'style',
-          style,
-          defaultValue: CountryPickerStyle.classic,
+        DiagnosticsProperty<double>(
+          'sheetCornerRadius',
+          sheetCornerRadius,
+          defaultValue: _kDefaultSheetCornerRadius,
         ),
       );
   }
@@ -597,7 +629,8 @@ final class _CountryPickerTheme$Default extends CountryPickerTheme {
     Color? onSecondaryBackgroundColor,
     InputDecoration? inputDecoration,
     double? inputHeight,
-    double? radius,
+    double? baseCornerRadius,
+    double? sheetCornerRadius,
     double? padding,
     double? indent,
     double? flagSize,
@@ -643,7 +676,8 @@ final class _CountryPickerTheme$Default extends CountryPickerTheme {
              ),
          inputDecoration: inputDecoration ?? const InputDecoration(),
          inputHeight: inputHeight ?? _kDefaultInputHeight,
-         radius: radius ?? _kDefaultRadius,
+         baseCornerRadius: baseCornerRadius ?? _kDefaultBaseCornerRadius,
+         sheetCornerRadius: sheetCornerRadius ?? _kDefaultSheetCornerRadius,
          indent: indent ?? _kDefaultIndent,
          padding: padding ?? _kDefaultPadding,
          flagSize: flagSize ?? _kDefaultFlagSize,

@@ -63,6 +63,8 @@ dev_dependencies:
 
   # Code generation
   build_runner: ^2.4.15
+  crypto: ^3.0.5
+  xml: ^6.6.1
 
   # Test utilities
   mockito: ^5.4.5
@@ -71,10 +73,15 @@ dev_dependencies:
   l: ^5.0.1
 
 flutter:
-  licenses:
-    - assets/fonts/TwemojiCountryFlags.LICENSE.md
   assets:
     # Flag glyphs for Windows, whose emoji font has no country flags.
     # Bundled only into Windows builds.
     - path: assets/fonts/TwemojiCountryFlags.ttf
       platforms: [windows]
+  licenses:
+    - assets/fonts/TwemojiCountryFlags.LICENSE.md
+    - assets/licenses/libphonenumber-LICENSE.txt
+    - assets/licenses/libphonenumber-NOTICE.md
+  shaders:
+    - assets/shaders/scroll_edge.frag
+    - assets/shaders/scroll_edge_contribution.frag

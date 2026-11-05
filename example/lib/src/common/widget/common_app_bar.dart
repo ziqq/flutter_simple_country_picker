@@ -1,3 +1,8 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 11 October 2024
+ */
+
 import 'package:example/src/common/constant/pubspec.yaml.g.dart';
 import 'package:example/src/common/widget/app.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +46,10 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
     centerTitle: true,
     bottom: bottom,
     backgroundColor: backgroundColor,
-    title: title != null && title!.isNotEmpty ? _Header(title!) : null,
+    title: switch (title) {
+      String title when title.isNotEmpty => _Header(title),
+      _ => null,
+    },
     leading: Row(
       children: [
         SizedBox(width: CountryPickerTheme.of(context).padding),

@@ -1,3 +1,8 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 14 October 2026
+ */
+
 import 'dart:developer' as developer;
 import 'dart:io';
 import 'dart:ui' show FramePhase, FrameTiming;
@@ -17,7 +22,7 @@ void main() {
     'source_revision': const String.fromEnvironment('BENCHMARK_REVISION'),
     'mode': 'profile',
     'frame_policy': binding.framePolicy.name,
-    'protocol_version': 3,
+    'protocol_version': 4,
     'first_open_timing_flush_ms': 1100,
     'first_open_measured': true,
     'semantics_enabled': const bool.fromEnvironment(
@@ -32,11 +37,12 @@ void main() {
     'show_phone_code': true,
   };
 
-  for (final style in CountryPickerStyle.values) {
+  for (final brightness in Brightness.values) {
     for (final language in ['en', 'tr', 'ru']) {
-      const requestedStyle = String.fromEnvironment('BENCHMARK_STYLE');
-      if (requestedStyle.isNotEmpty && style.name != requestedStyle) continue;
-      final scenario = '${style.name}_$language';
+      const requestedTheme = String.fromEnvironment('BENCHMARK_THEME');
+      if (requestedTheme.isNotEmpty && brightness.name != requestedTheme)
+        continue;
+      final scenario = '${brightness.name}_$language';
       testWidgets(
         'grouped picker performance: $scenario',
         (tester) async {
@@ -52,7 +58,10 @@ void main() {
                 GlobalCupertinoLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
               ],
-              theme: ThemeData(extensions: [CountryPickerTheme(style: style)]),
+              theme: ThemeData(
+                brightness: brightness,
+                extensions: [CountryPickerTheme()],
+              ),
               home: Scaffold(
                 body: Builder(
                   builder: (context) => Center(
@@ -78,7 +87,13 @@ void main() {
           await tester.pumpAndSettle();
 
           final headersFinder = find.byWidgetPredicate(
-            (widget) => widget is Semantics && widget.properties.header == true,
+            (widget) =>
+                widget is Semantics &&
+                widget.properties.header == true &&
+                switch (widget.key) {
+                  ValueKey<String> key => key.value.startsWith('header_'),
+                  _ => false,
+                },
           );
           final phases = <({String name, int start, int end})>[];
           final frameTimings = <FrameTiming>[];

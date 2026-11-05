@@ -12,11 +12,31 @@ behavior-changing API updates.
 
 ## To 0.12.0
 
+The picker now has one interface. Remove `CountryPickerStyle` and the `style:`
+argument from `CountryPickerTheme`. Groups have scrolling letter headers;
+the alphabet index and floating search remain available through `showGroup`
+and `showSearch`. Light mode uses inset white groups and dark mode uses a
+continuous dark list. Flags retain their native, uncropped glyphs.
+
+`CountryPickerTheme.radius` is deprecated. Use `baseCornerRadius` for input
+fields and `sheetCornerRadius` for picker sheets:
+
+```dart
+CountryPickerTheme(baseCornerRadius: 12, sheetCornerRadius: 38);
+```
+
+The deprecated `radius` parameter remains an alias for `baseCornerRadius`,
+including in `raw` and `copyWith`; the new parameter wins when both are set.
+An explicit `sheetCornerRadius: 0` permits square sheet corners.
+
+Pickers open at full available height by default. Use `expand: false` for
+partial nonadaptive presentation, or supply an explicit `initialChildSize`.
+Both phone input variants forward their `expand` setting to the picker.
+
 `CountryPickerTheme.indent` is deprecated and no longer has an effect. The
 spacings it used to control are derived from `padding` (`padding / 1.6` for
-gaps between controls and vertical padding, `padding / 3.2` for the classic
-search clear icon inset). With the default `padding: 16` the layout is
-unchanged. Remove `indent` from your theme and adjust `padding` instead.
+gaps between controls and vertical padding). Remove `indent` from your theme
+and adjust `padding` instead.
 
 Before 0.12.0:
 

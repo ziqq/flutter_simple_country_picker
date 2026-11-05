@@ -1,3 +1,8 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 7 October 2024
+ */
+
 import 'dart:developer' show log;
 
 import 'package:example/src/common/constant/constant.dart';
@@ -52,6 +57,7 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
       mainAxisAlignment: .center,
       children: <Widget>[
         CountryPhoneInput(
+          useCountryFormatting: true,
           key: const ValueKey<String>('country_phone_input'),
           controller: countryPhoneController,
           favorites: kFavoritesCountries,
@@ -62,7 +68,7 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
         // --- Password input --- //
         DecoratedBox(
           decoration: BoxDecoration(
-            borderRadius: .all(.circular(pickerTheme.radius)),
+            borderRadius: .all(.circular(pickerTheme.baseCornerRadius)),
             color: pickerTheme.onBackgroundColor,
           ),
           child: ConstrainedBox(
@@ -109,6 +115,7 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
       spacing: pickerTheme.padding,
       children: <Widget>[
         CountryPhoneInput.extended(
+          useCountryFormatting: true,
           onChanged: (phone) => log('Phone changed: $phone'),
           filter: kFilteredCountries,
           // isScrollControlled: true,
@@ -189,25 +196,19 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
                 ),
                 child: const Text('Show picker (adaptive)'),
               ),
-              InheritedCountryPickerTheme(
-                // Only `style` is set, so colors still resolve
-                // from the ambient theme.
-                data: CountryPickerTheme(style: CountryPickerStyle.ios26),
-                child: Builder(
-                  builder: (context) => CupertinoButton(
-                    key: const ValueKey<String>('ios26_picker_button'),
-                    padding: .symmetric(horizontal: pickerTheme.padding),
-                    sizeStyle: .medium,
-                    onPressed: () => showCountryPicker(
-                      context: context,
-                      favorites: const ['GB', 'FR', 'US', 'IN', 'AU'],
-                      showSearch: true,
-                      onSelect: onSelect,
-                      selected: selected,
-                    ),
-                    child: const Text('Show picker (iOS 26)'),
-                  ),
+              CupertinoButton(
+                key: const ValueKey<String>('country_picker_button'),
+                padding: .symmetric(horizontal: pickerTheme.padding),
+                sizeStyle: .medium,
+                onPressed: () => showCountryPicker(
+                  context: context,
+                  showGroup: true,
+                  showSearch: true,
+                  shouldCloseOnSwipeDown: true,
+                  onSelect: onSelect,
+                  selected: selected,
                 ),
+                child: const Text('Show grouped picker'),
               ),
             ],
           ),
