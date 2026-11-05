@@ -173,6 +173,39 @@ void main() {
     }
   }
 
+  testWidgets('progressive header renders under ancestor opacity', (
+    tester,
+  ) async {
+    var dismissed = false;
+    await tester.pumpWidget(
+      Opacity(
+        opacity: .85,
+        child: _Host(
+          adaptive: false,
+          canDismiss: true,
+          onDismiss: () => dismissed = true,
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    // The renderer loads the generic shader only for this compositing case.
+    // Allow the native asynchronous asset preparation to finish before checking
+    // both the rendered list and dismissal of the effect's owning route.
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 900)),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(CustomScrollView), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.tap(
+      find.byKey(const ValueKey<String>('country_picker_header_close_button')),
+    );
+    await tester.pumpAndSettle();
+    expect(dismissed, isTrue);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('search expands the partial sheet', (tester) async {
     await tester.pumpWidget(
       _Host(adaptive: false, canDismiss: true, expand: false, onDismiss: () {}),

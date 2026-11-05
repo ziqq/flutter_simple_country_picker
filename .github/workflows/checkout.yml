@@ -308,16 +308,43 @@ jobs:
             throw 'Windows flag font differs from the source asset'
           }
 
+      - name: Capture native renderer crash diagnostics
+        shell: pwsh
+        run: |
+          $dumpFolder = Join-Path $env:GITHUB_WORKSPACE 'example/build/windows-flags/dumps'
+          New-Item -ItemType Directory -Path $dumpFolder -Force | Out-Null
+          $key = 'HKCU:\Software\Microsoft\Windows\Windows Error Reporting\LocalDumps\example.exe'
+          New-Item -Path $key -Force | Out-Null
+          New-ItemProperty -Path $key -Name DumpFolder -PropertyType ExpandString -Value $dumpFolder -Force | Out-Null
+          New-ItemProperty -Path $key -Name DumpType -PropertyType DWord -Value 1 -Force | Out-Null
+          New-ItemProperty -Path $key -Name DumpCount -PropertyType DWord -Value 2 -Force | Out-Null
+
       - name: Check native flag rendering
         working-directory: example
         run: mise exec -- flutter test integration_test/windows_flags_test.dart -d windows --reporter expanded --verbose
+
+      - name: Read native renderer crash events
+        if: failure()
+        shell: pwsh
+        run: |
+          $events = Get-WinEvent -FilterHashtable @{
+            LogName = 'Application'
+            Id = 1000, 1001
+            StartTime = (Get-Date).AddMinutes(-10)
+          } -ErrorAction SilentlyContinue | Where-Object { $_.Message -match 'example\.exe' }
+          $events | Select-Object TimeCreated, Id, ProviderName, Message |
+            ConvertTo-Json -Depth 4 | Set-Content example/build/windows-flags/native-crashes.json
+          $events | Format-List TimeCreated, Id, ProviderName, Message
 
       - name: Upload flag screenshots
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: windows-flags-${{ matrix.architecture }}-${{ matrix.flutter }}
-          path: example/build/windows-flags/*.png
+          path: |
+            example/build/windows-flags/*.png
+            example/build/windows-flags/native-crashes.json
+            example/build/windows-flags/dumps/*.dmp
           if-no-files-found: ignore
 
   notify:
