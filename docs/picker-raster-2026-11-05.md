@@ -118,8 +118,9 @@ opening and final-source 7 Plus first opening remain unresolved. Native Windows
 success is not a substitute for it. Native exception logging identified an
 access violation (`0xC0000005`) inside `d3dcompiler_47.dll` on both x64 and ARM64
 while the progressive header is being prepared through Impeller/OpenGLES.
-A Windows-only uniform-loop-bound variant preserves the sampling arithmetic
-and uniform layout; native verification is pending. The original non-Windows
+A Windows-only uniform-loop-bound experiment did not fix the access violation
+and was removed. The next variant uses the original Gaussian sum without
+indexed sample pairing; native verification is pending. The original non-Windows
 generic and separable IPLR programs remain byte-identical, respectively
 `0a186c8eef3efe08eff25e23079f0a4ba9c571a915c353f9a677b2a86889ca81` and
 `5dad1c6171c7de66a76d462cd4ffaa099b921ad72e4ca18855d2b6be9e618db0`.

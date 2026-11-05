@@ -5,7 +5,7 @@
 
 #version 460 core
 
-// Keep separable kernels and their uniform bounds in the Windows compiler.
+// Keep separable kernels without indexed sample pairing in D3D.
 #define SCROLL_EDGE_SEPARATED
-#define SCROLL_EDGE_DYNAMIC_LOOPS
+#define SCROLL_EDGE_UNPAIRED
 #include "scroll_edge.glsl"

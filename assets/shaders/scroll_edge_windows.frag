@@ -5,6 +5,6 @@
 
 #version 460 core
 
-// Preserve the generic filter while keeping texture loops dynamic in D3D.
-#define SCROLL_EDGE_DYNAMIC_LOOPS
+// Use the original Gaussian sum without indexed sample pairing in D3D.
+#define SCROLL_EDGE_UNPAIRED
 #include "scroll_edge.glsl"
