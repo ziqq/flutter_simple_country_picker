@@ -308,40 +308,58 @@ jobs:
             throw 'Windows flag font differs from the source asset'
           }
 
-      - name: Capture native renderer crash diagnostics
+      - name: Capture native engine stderr
         shell: pwsh
         run: |
-          $dumpFolder = Join-Path $env:GITHUB_WORKSPACE 'example/build/windows-flags/dumps'
-          New-Item -ItemType Directory -Path $dumpFolder -Force | Out-Null
-          $key = 'HKCU:\Software\Microsoft\Windows\Windows Error Reporting\LocalDumps\example.exe'
-          New-Item -Path $key -Force | Out-Null
-          New-ItemProperty -Path $key -Name DumpFolder -PropertyType ExpandString -Value $dumpFolder -Force | Out-Null
-          New-ItemProperty -Path $key -Name DumpType -PropertyType DWord -Value 1 -Force | Out-Null
-          New-ItemProperty -Path $key -Name DumpCount -PropertyType DWord -Value 2 -Force | Out-Null
+          New-Item -ItemType Directory -Path example/build/windows-flags -Force | Out-Null
+          # GUI processes have no console on this runner. Route the engine's
+          # release CRT stream directly to a file, without touching rendering.
+          $path = 'example/windows/runner/main.cpp'
+          $source = Get-Content $path -Raw
+          $source = $source.Replace('#include <windows.h>', "#include <windows.h>`n#include <cstdio>")
+          $diagnostic = @'
+            wchar_t engine_log[32768] = {};
+            const DWORD log_length = ::GetEnvironmentVariableW(L"PICKER_ENGINE_LOG", engine_log, 32768);
+            if (log_length > 0 && log_length < 32768) {
+              const HMODULE crt = ::GetModuleHandleW(L"ucrtbase.dll");
+              if (crt != nullptr) {
+                using StreamGetter = FILE* (__cdecl*)(unsigned);
+                using StreamRedirect = int (__cdecl*)(FILE**, const wchar_t*, const wchar_t*, FILE*);
+          #pragma warning(push)
+          #pragma warning(disable: 4191)
+                const auto stream = reinterpret_cast<StreamGetter>(::GetProcAddress(crt, "__acrt_iob_func"));
+                const auto redirect = reinterpret_cast<StreamRedirect>(::GetProcAddress(crt, "_wfreopen_s"));
+          #pragma warning(pop)
+                if (stream != nullptr && redirect != nullptr) {
+                  FILE* output = nullptr;
+                  redirect(&output, engine_log, L"w", stream(2));
+                }
+              }
+            }
+          '@
+          $needle = '  // Initialize COM,'
+          if (!$source.Contains($needle)) { throw 'Windows runner log hook not found' }
+          $source.Replace($needle, "$diagnostic`n$needle") | Set-Content $path
 
       - name: Check native flag rendering
         working-directory: example
         shell: pwsh
+        env:
+          PICKER_ENGINE_LOG: ${{ github.workspace }}\example\build\windows-flags\engine-stderr.log
         run: |
-          # The native test needs no credentials; keep them out of crash dumps.
+          # The native test needs no credentials in its process environment.
           Get-ChildItem Env: | Where-Object {
             $_.Name -match 'TOKEN|SECRET|PASSWORD|WEBHOOK|CREDENTIAL|PRIVATE_KEY'
           } | ForEach-Object { Remove-Item "Env:$($_.Name)" }
           mise exec -- flutter drive --target=integration_test/windows_flags_test.dart --driver=test_driver/native_flags.dart -d windows --verbose
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Read native renderer crash events
-        if: failure()
+      - name: Read native engine stderr
+        if: always()
         shell: pwsh
         run: |
-          $events = Get-WinEvent -FilterHashtable @{
-            LogName = 'Application'
-            Id = 1000, 1001
-            StartTime = (Get-Date).AddMinutes(-10)
-          } -ErrorAction SilentlyContinue | Where-Object { $_.Message -match 'example\.exe' }
-          $events | Select-Object TimeCreated, Id, ProviderName, Message |
-            ConvertTo-Json -Depth 4 | Set-Content example/build/windows-flags/native-crashes.json
-          $events | Format-List TimeCreated, Id, ProviderName, Message
+          $path = 'example/build/windows-flags/engine-stderr.log'
+          if (Test-Path $path) { Get-Content $path }
 
       - name: Upload flag screenshots
         if: always()
@@ -350,8 +368,7 @@ jobs:
           name: windows-flags-${{ matrix.architecture }}-${{ matrix.flutter }}
           path: |
             example/build/windows-flags/*.png
-            example/build/windows-flags/native-crashes.json
-            example/build/windows-flags/dumps/*.dmp
+            example/build/windows-flags/engine-stderr.log
           if-no-files-found: ignore
 
   notify:
