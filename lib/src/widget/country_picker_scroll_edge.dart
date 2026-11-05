@@ -9,7 +9,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart'
-    show debugPrint, defaultTargetPlatform, internal, kReleaseMode;
+    show defaultTargetPlatform, internal, kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart'
     show
@@ -821,7 +821,6 @@ class _ScrollEdgeBackdropLayer extends BackdropFilterLayer {
   Rect? _gaussianCrop;
   bool _gaussianFirst = false;
   bool _restoresBackdrop = false;
-  bool _reportedConfiguration = false;
 
   void _clearGaussian() {
     _gaussianLayer.layer = null;
@@ -989,18 +988,6 @@ class _ScrollEdgeBackdropLayer extends BackdropFilterLayer {
             }
           }
         }
-        assert(() {
-          if (!_reportedConfiguration) {
-            _reportedConfiguration = true;
-            debugPrint(
-              'Scroll edge component=${configuration.component} '
-              'dpr=${configuration.devicePixelRatio} '
-              'size=${target.size} translation=$translation '
-              'singlePass=$singlePass bounded=$boundedParent',
-            );
-          }
-          return true;
-        }(), 'Report each debug layer configuration once.');
         if (configuration.component == 5) {
           if (singlePass || !boundedParent) {
             engineLayer = null;
@@ -1126,17 +1113,9 @@ final class _ScrollEdgeShaderLoader {
 
   Future<bool> _load() async {
     try {
-      assert(() {
-        debugPrint('Scroll edge shader loading: $_asset');
-        return true;
-      }(), 'Report the start of debug shader loading.');
       _program = await ui.FragmentProgram.fromAsset(
         _asset,
       ).timeout(const Duration(seconds: 5));
-      assert(() {
-        debugPrint('Scroll edge shader loaded: $_asset');
-        return true;
-      }(), 'Report completion of debug shader loading.');
       return true;
     } on Object catch (error, stackTrace) {
       if (!kReleaseMode && error is! UnsupportedError) {
