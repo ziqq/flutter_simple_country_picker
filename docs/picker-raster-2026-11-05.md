@@ -173,7 +173,7 @@ The adverse first repetition is retained in the aggregate. Later repetitions
 return near the earlier warm range; that does not erase the adverse sample.
 Its cause is not established. Shader-filter support is false in both runs, so
 the candidate native Gaussian path is inactive. This fact does not override the
-observed performance result. A reverse control is being checked separately.
+observed performance result. The reverse control stopped before installation because A8 disappeared from ADB; no reverse timing data exists.
 
 Before battery temperature is 25.3→25.8°C, after 25.8→26.4°C; brightness,
 low-power setting, OS and USB level match. An earlier after attempt failed the
@@ -211,3 +211,5 @@ additional stripe-order assertion. The original non-Windows
 generic and separable IPLR programs remain byte-identical, respectively
 `0a186c8eef3efe08eff25e23079f0a4ba9c571a915c353f9a677b2a86889ca81` and
 `5dad1c6171c7de66a76d462cd4ffaa099b921ad72e4ca18855d2b6be9e618db0`.
+
+Candidate patches are retained as review evidence: [F1](performance-data/picker-2026-11-05/f1-candidate.patch) applies to `7d569d8`; [F2](performance-data/picker-2026-11-05/f2-candidate.patch) applies to the runtime code at `5829015`/`0102193`. They are not active package code. F2 runtime SHA is `4d93d93824366578ea4b05d2938fab056fae50fd3802f9b20d67613a88e72997`; its physical quality and adverse-sample gates remain open.

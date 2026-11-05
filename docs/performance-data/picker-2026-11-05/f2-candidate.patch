@@ -1,0 +1,109 @@
+--- a/lib/src/widget/country_picker_scroll_edge.dart
++++ b/lib/src/widget/country_picker_scroll_edge.dart
+@@ -788,9 +788,15 @@
+       needsCompositing,
+       'An enabled scroll edge backdrop requires compositing.',
+     );
+-    final retained = (layer ??= _ScrollEdgeBackdropLayer(this))
++    final retained = switch (layer) {
++      _ScrollEdgeBackdropLayer retained => retained,
++      _ => _ScrollEdgeBackdropLayer(this),
++    };
++    layer = retained;
++    retained
+       ..blendMode = blendMode
+-      ..backdropKey = backdropKey;
++      ..backdropKey = backdropKey
++      ..paintOffset = offset;
+     context.pushLayer(
+       retained,
+       (context, offset) => context.paintChild(child, offset),
+@@ -815,6 +821,7 @@
+   _ScrollEdgeBackdropLayer(this.renderObject);
+ 
+   _RenderScrollEdgeBackdropFilter? renderObject;
++  Offset paintOffset = Offset.zero;
+   final LayerHandle<_ScrollEdgeGaussianLayer> _gaussianLayer =
+       LayerHandle<_ScrollEdgeGaussianLayer>();
+   ui.ClipRectEngineLayer? _gaussianClip;
+@@ -988,6 +995,41 @@
+             }
+           }
+         }
++        // The sheet's save layer gives its backdrop a local origin. Restrict
++        // native Gaussian snapshots to a visible source halo inside that
++        // isolated surface. Partial sheets keep their original sampling phase;
++        // transformed and unverified Windows surfaces also keep the fallback.
++        final ratio = configuration.devicePixelRatio;
++        final viewport = configuration.view?.physicalSize;
++        if (!singlePass &&
++            opacity == 1 &&
++            defaultTargetPlatform != TargetPlatform.windows &&
++            ratio == 3 &&
++            requiredBottom != null &&
++            translation != null &&
++            translation.dx == 0 &&
++            translation.dy >= 0 &&
++            viewport != null &&
++            translation.dy * ratio + requiredBottom <= viewport.height) {
++          if (configuration.context
++                  .findAncestorRenderObjectOfType<RenderClipRSuperellipse>()
++              case RenderClipRSuperellipse clip
++              when clip.clipBehavior == Clip.antiAliasWithSaveLayer &&
++                  clip.size.width == target.size.width &&
++                  target.size.width == viewport.width / ratio &&
++                  clip.size.height * ratio >= requiredBottom &&
++                  MatrixUtils.getAsTranslation(target.getTransformTo(clip)) ==
++                      Offset.zero) {
++            final height = clip.size.height * ratio;
++            final availableHeight =
++                viewport.height - (configuration.view?.viewPadding.top ?? 0);
++            if ((height - viewport.height).abs() < .001 ||
++                (height - availableHeight).abs() < .001) {
++              boundedParent = true;
++              fullParent = true;
++            }
++          }
++        }
+         if (configuration.component == 5) {
+           if (singlePass || !boundedParent) {
+             engineLayer = null;
+@@ -1017,10 +1059,10 @@
+             if (bottom.isOdd != fullHeight.toInt().isOdd) bottom++;
+             if (bottom > 0 && bottom < fullHeight) {
+               _gaussianCrop = Rect.fromLTRB(
+-                0,
+-                0,
+-                target.size.width,
+-                bottom / 3,
++                paintOffset.dx,
++                paintOffset.dy,
++                paintOffset.dx + target.size.width,
++                paintOffset.dy + bottom / 3,
+               );
+             }
+           }
+@@ -1198,12 +1240,21 @@
+         !renderBox.hasSize ||
+         !renderBox.size.height.isFinite)
+       return null;
++    final origin = switch (context
++        .findAncestorRenderObjectOfType<RenderClipRSuperellipse>()) {
++      RenderClipRSuperellipse clip
++          when clip.clipBehavior == Clip.antiAliasWithSaveLayer =>
++        clip.localToGlobal(Offset.zero).dy,
++      _ => 0.0,
++    };
+     final headerHeight = renderBox.size.height.clamp(0.0, size.height);
+     final top =
+-        renderBox.localToGlobal(Offset(0, headerHeight - extent * 1.6)).dy *
++        (renderBox.localToGlobal(Offset(0, headerHeight - extent * 1.6)).dy -
++            origin) *
+         devicePixelRatio;
+     final trailing =
+-        renderBox.localToGlobal(Offset(0, headerHeight + extent * .2)).dy *
++        (renderBox.localToGlobal(Offset(0, headerHeight + extent * .2)).dy -
++            origin) *
+         devicePixelRatio;
+     final height = math.max(trailing - top, 1.0);
+     final sigma = 1.85 * devicePixelRatio * math.sqrt(opacity);
