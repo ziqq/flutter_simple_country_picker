@@ -180,9 +180,9 @@ low-power setting, OS and USB level match. An earlier after attempt failed the
 temperature preflight before installation or timing and is excluded. Battery
 temperature does not establish the unavailable SoC thermal state.
 
-The [detailed summary](../reports/performance/picker-2026-11-05/7plus-summary.json)
+The [detailed summary](performance-data/picker-2026-11-05/7plus-summary.json)
 contains UI, raster, queue and total-span n/p50/p95/max for every phase and the
-exact action windows. The [manifest](../reports/performance/picker-2026-11-05/manifest.json)
+exact action windows. The [manifest](performance-data/picker-2026-11-05/manifest.json)
 links all four raw FrameTiming JSON files and their hashes. These report files
 are tracked for review and excluded from the published package by `.pubignore`.
 
