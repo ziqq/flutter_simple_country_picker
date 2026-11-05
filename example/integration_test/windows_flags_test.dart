@@ -77,36 +77,43 @@ void main() {
     );
   }
 
-  for (final brightness in Brightness.values) {
-    testWidgets('renders a colored flag in the ${brightness.name} picker', (
-      tester,
-    ) async {
+  for (final (Brightness brightness, double opacity)
+      in const <(Brightness, double)>[
+        (Brightness.dark, 1),
+        (Brightness.light, 1),
+        (Brightness.light, .85),
+      ]) {
+    final name = opacity == 1 ? brightness.name : '${brightness.name}-opacity';
+    testWidgets('renders a colored flag in the $name picker', (tester) async {
       final boundaryKey = GlobalKey();
-      await tester.pumpWidget(
-        _app(
-          boundaryKey,
-          Builder(
-            builder: (context) => Center(
-              child: TextButton(
-                onPressed: () => showCountryPicker(
-                  context: context,
-                  filter: const <String>['RU'],
-                  showSearch: false,
-                  showGroup: false,
-                  onSelect: (_) {},
-                ),
-                child: const Text('Show picker'),
+      final app = _app(
+        boundaryKey,
+        Builder(
+          builder: (context) => Center(
+            child: TextButton(
+              onPressed: () => showCountryPicker(
+                context: context,
+                filter: const <String>['RU'],
+                showSearch: false,
+                showGroup: false,
+                onSelect: (_) {},
               ),
+              child: const Text('Show picker'),
             ),
           ),
-          brightness: brightness,
         ),
+        brightness: brightness,
+      );
+      // An ancestor opacity layer selects the generic shader rather than the
+      // separate contributions, so its native compiler path needs coverage too.
+      await tester.pumpWidget(
+        opacity == 1 ? app : Opacity(opacity: opacity, child: app),
       );
       await tester.tap(find.text('Show picker'));
-      debugPrint('Windows ${brightness.name} picker: opening');
+      debugPrint('Windows $name picker: opening');
       await tester.pumpAndSettle();
-      debugPrint('Windows ${brightness.name} picker: settled');
-      await _checkFlag(tester, boundaryKey, brightness.name);
+      debugPrint('Windows $name picker: settled');
+      await _checkFlag(tester, boundaryKey, name);
     });
   }
 }
