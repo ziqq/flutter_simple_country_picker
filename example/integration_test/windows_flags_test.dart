@@ -188,13 +188,22 @@ Future<void> _checkFlag(
     if (pixels == null) throw StateError('RGBA extraction failed.');
     var red = 0;
     var blue = 0;
+    var redY = 0.0;
+    var blueY = 0.0;
     for (var i = 0; i < pixels.lengthInBytes; i += 4) {
       final r = pixels.getUint8(i);
       final g = pixels.getUint8(i + 1);
       final b = pixels.getUint8(i + 2);
       if (pixels.getUint8(i + 3) < 200) continue;
-      if (r > 120 && r > g * 1.5 && r > b * 1.5) red++;
-      if (b > 80 && b > r * 1.5 && b > g * 1.2) blue++;
+      final y = (i ~/ 4) ~/ image.width;
+      if (r > 120 && r > g * 1.5 && r > b * 1.5) {
+        red++;
+        redY += y;
+      }
+      if (b > 80 && b > r * 1.5 && b > g * 1.2) {
+        blue++;
+        blueY += y;
+      }
     }
     expect(
       red,
@@ -205,6 +214,11 @@ Future<void> _checkFlag(
       blue,
       greaterThan(10),
       reason: '$name must render the blue flag stripe',
+    );
+    expect(
+      redY / red,
+      greaterThan(blueY / blue),
+      reason: '$name must keep the red stripe below the blue stripe',
     );
   } finally {
     image.dispose();

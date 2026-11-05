@@ -308,160 +308,19 @@ jobs:
             throw 'Windows flag font differs from the source asset'
           }
 
-      - name: Capture native engine stderr
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Path example/build/windows-flags -Force | Out-Null
-          # GUI processes have no console on this runner. Route the engine's
-          # release CRT stream directly to a file, without touching rendering.
-          $path = 'example/windows/runner/main.cpp'
-          $source = Get-Content $path -Raw
-          $source = $source.Replace('#include <windows.h>', "#include <windows.h>`n#include <cstdio>")
-          $diagnostic = @'
-            wchar_t engine_log[32768] = {};
-            const DWORD log_length = ::GetEnvironmentVariableW(L"PICKER_ENGINE_LOG", engine_log, 32768);
-            if (log_length > 0 && log_length < 32768) {
-              const HMODULE crt = ::GetModuleHandleW(L"ucrtbase.dll");
-              if (crt != nullptr) {
-                using StreamGetter = FILE* (__cdecl*)(unsigned);
-                using StreamRedirect = int (__cdecl*)(FILE**, const wchar_t*, const wchar_t*, FILE*);
-          #pragma warning(push)
-          #pragma warning(disable: 4191)
-                const auto stream = reinterpret_cast<StreamGetter>(::GetProcAddress(crt, "__acrt_iob_func"));
-                const auto redirect = reinterpret_cast<StreamRedirect>(::GetProcAddress(crt, "_wfreopen_s"));
-          #pragma warning(pop)
-                if (stream != nullptr && redirect != nullptr) {
-                  FILE* output = nullptr;
-                  redirect(&output, engine_log, L"w", stream(2));
-                }
-              }
-            }
-          '@
-          $needle = '  // Initialize COM,'
-          if (!$source.Contains($needle)) { throw 'Windows runner log hook not found' }
-          $source = $source.Replace($needle, "$diagnostic`n  ::AddVectoredExceptionHandler(1, LogNativeException);`n$needle")
-          # WER does not receive this access violation. Observe its module and
-          # stack without handling it or changing the original exit behavior.
-          $handler = @'
-          LONG CALLBACK LogNativeException(EXCEPTION_POINTERS* details) {
-            if (details->ExceptionRecord->ExceptionCode != EXCEPTION_ACCESS_VIOLATION) {
-              return EXCEPTION_CONTINUE_SEARCH;
-            }
-            char path[32768] = {};
-            const DWORD length = ::GetEnvironmentVariableA("PICKER_NATIVE_EXCEPTION_LOG", path, 32768);
-            if (length == 0 || length >= 32768) return EXCEPTION_CONTINUE_SEARCH;
-            const HANDLE output = ::CreateFileA(path, FILE_APPEND_DATA, FILE_SHARE_READ | FILE_SHARE_WRITE,
-                                               nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-            if (output == INVALID_HANDLE_VALUE) return EXCEPTION_CONTINUE_SEARCH;
-            void* frames[17] = {};
-            frames[0] = details->ExceptionRecord->ExceptionAddress;
-            const USHORT count = ::CaptureStackBackTrace(0, 16, frames + 1, nullptr);
-            for (USHORT index = 0; index <= count; index++) {
-              MEMORY_BASIC_INFORMATION memory = {};
-              char module[1024] = {};
-              if (::VirtualQuery(frames[index], &memory, sizeof(memory)) != 0) {
-                ::GetModuleFileNameA(static_cast<HMODULE>(memory.AllocationBase), module, sizeof(module));
-              }
-              char line[2048] = {};
-              const int bytes = std::snprintf(line, sizeof(line), "%lu frame=%u address=%p module=%s offset=0x%zx\n",
-                  details->ExceptionRecord->ExceptionCode, static_cast<unsigned>(index), frames[index], module,
-                  static_cast<SIZE_T>(reinterpret_cast<ULONG_PTR>(frames[index]) - reinterpret_cast<ULONG_PTR>(memory.AllocationBase)));
-              if (bytes > 0 && bytes < static_cast<int>(sizeof(line))) {
-                DWORD written = 0;
-                ::WriteFile(output, line, static_cast<DWORD>(bytes), &written, nullptr);
-              }
-            }
-            ::CloseHandle(output);
-            return EXCEPTION_CONTINUE_SEARCH;
-          }
-
-          '@
-          $source.Replace('int APIENTRY wWinMain', "$handler`nint APIENTRY wWinMain") | Set-Content $path
-
-      - name: Collect own-process native crash metadata
-        if: matrix.flutter == '3.47.5'
-        shell: pwsh
-        run: |
-          $folder = Join-Path $env:GITHUB_WORKSPACE 'example/build/windows-flags/dumps'
-          New-Item -ItemType Directory -Path $folder -Force | Out-Null
-          $key = 'HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\example.exe'
-          New-Item -Path $key -Force | Out-Null
-          New-ItemProperty -Path $key -Name DumpFolder -PropertyType ExpandString -Value $folder -Force | Out-Null
-          New-ItemProperty -Path $key -Name DumpType -PropertyType DWord -Value 1 -Force | Out-Null
-          New-ItemProperty -Path $key -Name DumpCount -PropertyType DWord -Value 1 -Force | Out-Null
-
       - name: Check native flag rendering
         working-directory: example
         shell: pwsh
-        env:
-          PICKER_ENGINE_LOG: ${{ github.workspace }}\example\build\windows-flags\engine-stderr.log
-          PICKER_NATIVE_EXCEPTION_LOG: ${{ github.workspace }}\example\build\windows-flags\native-exception.log
         run: |
-          # The native test needs no credentials in its process environment.
-          Get-ChildItem Env: | Where-Object {
-            $_.Name -match 'TOKEN|SECRET|PASSWORD|WEBHOOK|CREDENTIAL|PRIVATE_KEY'
-          } | ForEach-Object { Remove-Item "Env:$($_.Name)" }
-          $exitLog = Join-Path $env:GITHUB_WORKSPACE 'example/build/windows-flags/native-exit.json'
-          $monitor = Start-Job -ArgumentList $exitLog -ScriptBlock {
-            param($path)
-            $deadline = (Get-Date).AddMinutes(5)
-            do {
-              $native = Get-Process -Name example -ErrorAction SilentlyContinue | Select-Object -First 1
-              if ($native) {
-                # Retain the handle before exit; reopening an exited PID loses its status.
-                $null = $native.Handle
-                $native.WaitForExit()
-                @{ pid = $native.Id; exitCode = $native.ExitCode } |
-                  ConvertTo-Json | Set-Content $path
-                break
-              }
-              Start-Sleep -Milliseconds 250
-            } while ((Get-Date) -lt $deadline)
-          }
-          mise exec -- flutter drive --target=integration_test/windows_flags_test.dart --driver=test_driver/native_flags.dart -d windows --verbose
-          $result = $LASTEXITCODE
-          Wait-Job $monitor -Timeout 5 | Out-Null
-          Receive-Job $monitor
-          Stop-Job $monitor
-          Remove-Job $monitor
-          if (Test-Path $exitLog) { Get-Content $exitLog }
-          if ($result -ne 0) { exit $result }
-
-      - name: Read native engine stderr
-        if: always()
-        shell: pwsh
-        run: |
-          $path = 'example/build/windows-flags/engine-stderr.log'
-          if (Test-Path $path) { Get-Content $path }
-          $path = 'example/build/windows-flags/native-exception.log'
-          if (Test-Path $path) { Get-Content $path }
-
-      - name: Read native crash module
-        if: failure()
-        shell: pwsh
-        run: |
-          Start-Sleep -Seconds 5
-          Get-WinEvent -FilterHashtable @{
-            LogName = 'Application'
-            Id = 1000, 1001
-            StartTime = (Get-Date).AddMinutes(-10)
-          } -ErrorAction SilentlyContinue |
-            Select-Object TimeCreated, Id, ProviderName, Message |
-            ConvertTo-Json -Depth 4 |
-            Tee-Object -FilePath example/build/windows-flags/native-crash-events.json
+          mise exec -- flutter drive --target=integration_test/windows_flags_test.dart --driver=test_driver/native_flags.dart -d windows
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Upload flag screenshots
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: windows-flags-${{ matrix.architecture }}-${{ matrix.flutter }}
-          path: |
-            example/build/windows-flags/*.png
-            example/build/windows-flags/engine-stderr.log
-            example/build/windows-flags/native-crash-events.json
-            example/build/windows-flags/native-exit.json
-            example/build/windows-flags/native-exception.log
-            example/build/windows-flags/dumps/*.dmp
+          path: example/build/windows-flags/*.png
           if-no-files-found: ignore
 
   notify:

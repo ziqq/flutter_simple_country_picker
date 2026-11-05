@@ -113,14 +113,20 @@ removal of only the temporary test bundle and release of the device lease.
 Before claiming a shipped improvement: freeze the final package source, rerun
 matched before/after sessions on both devices, complete the partial-sheet image
 matrix, and report UI, raster and total-span distributions together. A8 first
-opening and final-source 7 Plus first opening remain unresolved. Native Windows
-3.47.5 rendering CI also remains a separate unresolved gate; minimum-SDK 3.44
-success is not a substitute for it. Native exception logging identified an
+opening and final-source 7 Plus first opening remain unresolved. Native exception
+logging identified an
 access violation (`0xC0000005`) inside `d3dcompiler_47.dll` on both x64 and ARM64
 while the progressive header is being prepared through Impeller/OpenGLES.
 A Windows-only uniform-loop-bound experiment did not fix the access violation
-and was removed. The next variant uses the original Gaussian sum without
-indexed sample pairing; native verification is pending. The original non-Windows
+and was removed. The original Gaussian sum without indexed sample pairing stops
+the compiler crash. Correcting Windows backdrop texture orientation also restores
+the country row, which otherwise sampled blank background. Light, dark and
+ancestor-opacity native cases pass on Windows x64 and ARM64 with Flutter 3.47.5;
+the Flutter 3.44.0 minimum-SDK job also passes in
+[run 42029537763](https://github.com/ziqq/flutter_simple_country_picker/actions/runs/42029537763).
+Temporary native exception instrumentation is removed from the workflow after
+the diagnosis. Final CI still needs to verify that clean configuration and the
+additional stripe-order assertion. The original non-Windows
 generic and separable IPLR programs remain byte-identical, respectively
 `0a186c8eef3efe08eff25e23079f0a4ba9c571a915c353f9a677b2a86889ca81` and
 `5dad1c6171c7de66a76d462cd4ffaa099b921ad72e4ca18855d2b6be9e618db0`.
