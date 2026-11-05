@@ -363,8 +363,29 @@ jobs:
           Get-ChildItem Env: | Where-Object {
             $_.Name -match 'TOKEN|SECRET|PASSWORD|WEBHOOK|CREDENTIAL|PRIVATE_KEY'
           } | ForEach-Object { Remove-Item "Env:$($_.Name)" }
+          $exitLog = Join-Path $env:GITHUB_WORKSPACE 'example/build/windows-flags/native-exit.json'
+          $monitor = Start-Job -ArgumentList $exitLog -ScriptBlock {
+            param($path)
+            $deadline = (Get-Date).AddMinutes(5)
+            do {
+              $native = Get-Process -Name example -ErrorAction SilentlyContinue | Select-Object -First 1
+              if ($native) {
+                $native.WaitForExit()
+                @{ pid = $native.Id; exitCode = $native.ExitCode } |
+                  ConvertTo-Json | Set-Content $path
+                break
+              }
+              Start-Sleep -Milliseconds 250
+            } while ((Get-Date) -lt $deadline)
+          }
           mise exec -- flutter drive --target=integration_test/windows_flags_test.dart --driver=test_driver/native_flags.dart -d windows --verbose
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $result = $LASTEXITCODE
+          Wait-Job $monitor -Timeout 5 | Out-Null
+          Receive-Job $monitor
+          Stop-Job $monitor
+          Remove-Job $monitor
+          if (Test-Path $exitLog) { Get-Content $exitLog }
+          if ($result -ne 0) { exit $result }
 
       - name: Read native engine stderr
         if: always()
@@ -396,6 +417,7 @@ jobs:
             example/build/windows-flags/*.png
             example/build/windows-flags/engine-stderr.log
             example/build/windows-flags/native-crash-events.json
+            example/build/windows-flags/native-exit.json
             example/build/windows-flags/dumps/*.dmp
           if-no-files-found: ignore
 
