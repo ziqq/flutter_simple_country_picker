@@ -23,6 +23,10 @@ void main() {
     expect(Platform.isWindows, isTrue);
     expect(kIsWeb, isFalse);
     expect(defaultTargetPlatform, TargetPlatform.windows);
+    debugPrint(
+      'Windows native flags: shader filters supported='
+      '${ui.ImageFilter.isShaderFilterSupported}',
+    );
     await (FontLoader('packages/theme_fonts/Body')..addFont(
           rootBundle.load('assets/fonts/SF-Pro/SF-Pro-Rounded-Regular.otf'),
         ))
@@ -99,7 +103,9 @@ void main() {
         ),
       );
       await tester.tap(find.text('Show picker'));
+      debugPrint('Windows ${brightness.name} picker: opening');
       await tester.pumpAndSettle();
+      debugPrint('Windows ${brightness.name} picker: settled');
       await _checkFlag(tester, boundaryKey, brightness.name);
     });
   }
@@ -161,6 +167,7 @@ Future<void> _checkFlag(
     _ => throw StateError('Flag capture boundary is missing.'),
   };
   final image = await boundary.toImage();
+  debugPrint('Windows $name flag: image captured');
   try {
     final png = await image.toByteData(format: ui.ImageByteFormat.png);
     if (png == null) throw StateError('PNG encoding failed.');

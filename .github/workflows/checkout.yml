@@ -306,7 +306,7 @@ jobs:
 
       - name: Check native flag rendering
         working-directory: example
-        run: mise exec -- flutter test integration_test/windows_flags_test.dart -d windows
+        run: mise exec -- flutter test integration_test/windows_flags_test.dart -d windows --reporter expanded --verbose
 
       - name: Upload flag screenshots
         if: always()
