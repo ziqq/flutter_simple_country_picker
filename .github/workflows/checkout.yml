@@ -341,6 +341,18 @@ jobs:
           if (!$source.Contains($needle)) { throw 'Windows runner log hook not found' }
           $source.Replace($needle, "$diagnostic`n$needle") | Set-Content $path
 
+      - name: Collect own-process native crash metadata
+        if: matrix.flutter == '3.47.5'
+        shell: pwsh
+        run: |
+          $folder = Join-Path $env:GITHUB_WORKSPACE 'example/build/windows-flags/dumps'
+          New-Item -ItemType Directory -Path $folder -Force | Out-Null
+          $key = 'HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\example.exe'
+          New-Item -Path $key -Force | Out-Null
+          New-ItemProperty -Path $key -Name DumpFolder -PropertyType ExpandString -Value $folder -Force | Out-Null
+          New-ItemProperty -Path $key -Name DumpType -PropertyType DWord -Value 1 -Force | Out-Null
+          New-ItemProperty -Path $key -Name DumpCount -PropertyType DWord -Value 1 -Force | Out-Null
+
       - name: Check native flag rendering
         working-directory: example
         shell: pwsh
@@ -361,6 +373,20 @@ jobs:
           $path = 'example/build/windows-flags/engine-stderr.log'
           if (Test-Path $path) { Get-Content $path }
 
+      - name: Read native crash module
+        if: failure()
+        shell: pwsh
+        run: |
+          Start-Sleep -Seconds 5
+          Get-WinEvent -FilterHashtable @{
+            LogName = 'Application'
+            Id = 1000, 1001
+            StartTime = (Get-Date).AddMinutes(-10)
+          } -ErrorAction SilentlyContinue |
+            Select-Object TimeCreated, Id, ProviderName, Message |
+            ConvertTo-Json -Depth 4 |
+            Tee-Object -FilePath example/build/windows-flags/native-crash-events.json
+
       - name: Upload flag screenshots
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -369,6 +395,8 @@ jobs:
           path: |
             example/build/windows-flags/*.png
             example/build/windows-flags/engine-stderr.log
+            example/build/windows-flags/native-crash-events.json
+            example/build/windows-flags/dumps/*.dmp
           if-no-files-found: ignore
 
   notify:
