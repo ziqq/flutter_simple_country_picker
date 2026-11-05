@@ -85,3 +85,4 @@ flutter:
   shaders:
     - assets/shaders/scroll_edge.frag
     - assets/shaders/scroll_edge_contribution.frag
+    - assets/shaders/scroll_edge_separated.frag

@@ -65,6 +65,8 @@ jobs:
     env:
       pub-cache-name: pub
       threshold: 50
+      # Avoid downloading every desktop SDK when mise refreshes checksums.
+      MISE_LOCKFILE_PLATFORMS: linux-x64
     timeout-minutes: 15
     concurrency:
       group: checkout-${{ github.workflow }}-${{ github.ref_name }}
@@ -236,6 +238,8 @@ jobs:
             architecture: arm64
             flutter: '3.47.5'
     timeout-minutes: 25
+    env:
+      MISE_LOCKFILE_PLATFORMS: windows-${{ matrix.architecture }}
     permissions:
       contents: read
     steps:

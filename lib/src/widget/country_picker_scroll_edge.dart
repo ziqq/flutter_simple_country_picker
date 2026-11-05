@@ -66,6 +66,8 @@ class CountryPickerScrollEdgeEffect extends StatefulWidget {
       'packages/flutter_simple_country_picker/assets/shaders/scroll_edge.frag';
   static const String _contributionShaderAsset =
       'packages/flutter_simple_country_picker/assets/shaders/scroll_edge_contribution.frag';
+  static const String _separatedShaderAsset =
+      'packages/flutter_simple_country_picker/assets/shaders/scroll_edge_separated.frag';
 
   @override
   State<CountryPickerScrollEdgeEffect> createState() =>
@@ -426,6 +428,8 @@ final class _ScrollEdgeShaders extends ChangeNotifier {
   final List<ui.FragmentShader> sdkContributions = <ui.FragmentShader>[];
   bool _disposed = false;
   Future<void>? _$initialization;
+  Future<void>? _$genericInitialization;
+  bool _genericReady = false;
 
   double? _kernelSigma;
 
@@ -514,7 +518,7 @@ final class _ScrollEdgeShaders extends ChangeNotifier {
     _kernelSigma = sigma;
   }
 
-  /// Whether every shader needed for the generic contribution path is ready.
+  /// Whether every shader needed for separable contributions is ready.
   bool get isReady =>
       horizontal != null && vertical != null && contributions.length == 10;
 
@@ -522,8 +526,9 @@ final class _ScrollEdgeShaders extends ChangeNotifier {
   void initialize() => unawaited(_$initialization ??= _initialize());
 
   Future<void> _initialize() async {
-    if (!await _scrollEdgeShader.ensureLoaded() || _disposed || isReady) return;
-    final program = _scrollEdgeShader.program;
+    if (!await _separatedShader.ensureLoaded() || _disposed) return;
+    if (isReady) return;
+    final program = _separatedShader.program;
     if (program == null) return;
     ui.FragmentShader? horizontalShader;
     ui.FragmentShader? verticalShader;
@@ -554,6 +559,9 @@ final class _ScrollEdgeShaders extends ChangeNotifier {
         filterQuality: ui.FilterQuality.low,
       );
       for (var index = 0; index < 10; index++) {
+        // The two-dimensional fallback belongs only to the generic pass. A
+        // smaller contribution program avoids compiling its nested loops in
+        // the OpenGL driver while retaining identical separable arithmetic.
         final shader = program.fragmentShader();
         loadedContributions.add(shader);
         shader.setImageSampler(0, image, filterQuality: ui.FilterQuality.low);
@@ -581,7 +589,47 @@ final class _ScrollEdgeShaders extends ChangeNotifier {
     await _initializeSdkContributions();
   }
 
-  /// Adds the reference native-Gaussian path after the generic path is ready.
+  /// Loads the two-dimensional fallback only when a transform or opacity layer
+  /// prevents separate contributions. Until then, the same shader paints the
+  /// ordinary loading shade without introducing a large unused GPU program.
+  void ensureGeneric() =>
+      unawaited(_$genericInitialization ??= _initializeGeneric());
+
+  Future<void> _initializeGeneric() async {
+    if (!await _scrollEdgeShader.ensureLoaded() || _disposed) return;
+    final program = _scrollEdgeShader.program;
+    final image = _sampling;
+    if (program == null || image == null) return;
+    ui.FragmentShader? nextHorizontal;
+    ui.FragmentShader? nextVertical;
+    try {
+      nextHorizontal = program.fragmentShader()
+        ..setImageSampler(0, image, filterQuality: ui.FilterQuality.low);
+      nextVertical = program.fragmentShader()
+        ..setImageSampler(0, image, filterQuality: ui.FilterQuality.low);
+    } on Object catch (error, stackTrace) {
+      nextHorizontal?.dispose();
+      nextVertical?.dispose();
+      if (!kReleaseMode) {
+        dev.log(
+          'Failed to initialize fallback shader: $error',
+          error: error,
+          stackTrace: stackTrace,
+          name: 'CountryPickerScrollEdgeEffect',
+        );
+      }
+      return;
+    }
+    horizontal?.dispose();
+    vertical?.dispose();
+    horizontal = nextHorizontal;
+    vertical = nextVertical;
+    _kernelSigma = null;
+    _genericReady = true;
+    notifyListeners();
+  }
+
+  /// Adds native-Gaussian contributions after the separable path is ready.
   Future<void> _initializeSdkContributions() async {
     if (_disposed || !await _contributionShader.ensureLoaded() || _disposed)
       return;
@@ -948,7 +996,7 @@ class _ScrollEdgeBackdropLayer extends BackdropFilterLayer {
             );
           }
           return true;
-        }());
+        }(), 'Report each debug layer configuration once.');
         if (configuration.component == 5) {
           if (singlePass || !boundedParent) {
             engineLayer = null;
@@ -1077,14 +1125,14 @@ final class _ScrollEdgeShaderLoader {
       assert(() {
         debugPrint('Scroll edge shader loading: $_asset');
         return true;
-      }());
+      }(), 'Report the start of debug shader loading.');
       _program = await ui.FragmentProgram.fromAsset(
         _asset,
       ).timeout(const Duration(seconds: 5));
       assert(() {
         debugPrint('Scroll edge shader loaded: $_asset');
         return true;
-      }());
+      }(), 'Report completion of debug shader loading.');
       return true;
     } on Object catch (error, stackTrace) {
       if (!kReleaseMode && error is! UnsupportedError) {
@@ -1105,6 +1153,10 @@ final _ScrollEdgeShaderLoader _scrollEdgeShader = _ScrollEdgeShaderLoader(
 );
 final _ScrollEdgeShaderLoader _contributionShader = _ScrollEdgeShaderLoader(
   CountryPickerScrollEdgeEffect._contributionShaderAsset,
+);
+
+final _ScrollEdgeShaderLoader _separatedShader = _ScrollEdgeShaderLoader(
+  CountryPickerScrollEdgeEffect._separatedShaderAsset,
 );
 
 /// Resolves the blur bounds at paint time, including the status bar and trailing edge.
@@ -1255,7 +1307,13 @@ class _ScrollEdgeFilter implements ImageFilterConfig {
       ..setFloat(204, 0)
       ..setFloat(205, 0);
     shaders.configureKernels(sigma);
-    if (singlePass || opacity == 0) return ui.ImageFilter.shader(vertical);
+    if (singlePass || opacity == 0) {
+      if (!shaders._genericReady) {
+        shaders.ensureGeneric();
+        vertical.setFloat(205, 7);
+      }
+      return ui.ImageFilter.shader(vertical);
+    }
     if (component >= 4) {
       if (sdkGaussian && devicePixelRatio == 3) {
         return ui.ImageFilter.blur(
