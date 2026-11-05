@@ -19,6 +19,16 @@ uniform vec3 u_kernel_counts;
 uniform float u_component;
 uniform float u_stage;
 
+#if defined(SCROLL_EDGE_DYNAMIC_LOOPS) && defined(IMPELLER_GRAPHICS_BACKEND)
+// Keep the same samples with uniform loop bounds. The Windows D3D compiler
+// must not expand every branch of the nested texture-sampling loops.
+#define SCROLL_EDGE_PAIR_LIMIT(count) (count)
+#define SCROLL_EDGE_RAW_TEST(tap) (tap < int(31.0 * (u_direction.x + u_direction.y)) - 15)
+#else
+#define SCROLL_EDGE_PAIR_LIMIT(count) 31
+#define SCROLL_EDGE_RAW_TEST(tap) (tap <= 15)
+#endif
+
 out vec4 frag_color;
 
 float glassShadeOpacity(float t) {
@@ -112,10 +122,10 @@ vec4 sampleGaussian(vec2 position, int start, int count) {
   float margin = max(3.0 * u_sigma + 1.0, 2.0);
   if (all(equal(fract(position), vec2(0.5))) && position.x >= 0.5 + margin && position.x <= u_size.x - 0.5 - margin) {
     vec4 interior = vec4(0.0);
-    for (int y = 0; y < 31; y++) {
+    for (int y = 0; y < SCROLL_EDGE_PAIR_LIMIT(count); y++) {
       if (y >= count) break;
       vec2 vertical = u_kernel_pairs[start + y];
-      for (int x = 0; x < 31; x++) {
+      for (int x = 0; x < SCROLL_EDGE_PAIR_LIMIT(count); x++) {
         if (x >= count) break;
         vec2 horizontal = u_kernel_pairs[start + x];
         vec2 uv = (position + vec2(horizontal.x, vertical.x)) / u_size;
@@ -136,8 +146,8 @@ vec4 sampleGaussian(vec2 position, int start, int count) {
   if (any(notEqual(fract(position), vec2(0.5)))) {
 #endif
     float weightSum = 0.0;
-    for (int y = -15; y <= 15; y++) {
-      for (int x = -15; x <= 15; x++) {
+    for (int y = -15; SCROLL_EDGE_RAW_TEST(y); y++) {
+      for (int x = -15; SCROLL_EDGE_RAW_TEST(x); x++) {
         vec2 offset = vec2(float(x), float(y)) * 0.2;
         float weight = exp(-0.5 * dot(offset, offset));
         vec2 displacement = start == 62 ? offset * u_sigma : offset * (u_sigma / 5.55) * (start == 0 ? 2.0 : 4.0);
@@ -148,10 +158,10 @@ vec4 sampleGaussian(vec2 position, int start, int count) {
     return result / weightSum;
 #if defined(IMPELLER_GRAPHICS_BACKEND)
   }
-  for (int y = 0; y < 31; y++) {
+  for (int y = 0; y < SCROLL_EDGE_PAIR_LIMIT(count); y++) {
     if (y >= count) break;
     vec2 vertical = u_kernel_pairs[start + y];
-    for (int x = 0; x < 31; x++) {
+    for (int x = 0; x < SCROLL_EDGE_PAIR_LIMIT(count); x++) {
       if (x >= count) break;
       vec2 horizontal = u_kernel_pairs[start + x];
       result += sampleBackdrop(position + vec2(horizontal.x, vertical.x)) * horizontal.y * vertical.y;
@@ -177,7 +187,7 @@ vec4 sampleGaussianAxis(vec2 position, vec2 axis) {
     int count = component == 0 ? int(u_kernel_counts.x)
         : component == 1 ? int(u_kernel_counts.y) : int(u_kernel_counts.z);
     vec4 paired = vec4(0.0);
-    for (int tap = 0; tap < 31; tap++) {
+    for (int tap = 0; tap < SCROLL_EDGE_PAIR_LIMIT(count); tap++) {
       if (tap >= count) break;
       vec2 pair = u_kernel_pairs[component * 31 + tap];
       paired += sampleBackdrop(position + axis * pair.x) * pair.y;
@@ -187,7 +197,7 @@ vec4 sampleGaussianAxis(vec2 position, vec2 axis) {
 #endif
   vec4 result = vec4(0.0);
   float weightSum = 0.0;
-  for (int tap = -15; tap <= 15; tap++) {
+  for (int tap = -15; SCROLL_EDGE_RAW_TEST(tap); tap++) {
     float offset = float(tap) * 0.2;
     float weight = exp(-0.5 * offset * offset);
     vec2 displacement = u_component > 1.5

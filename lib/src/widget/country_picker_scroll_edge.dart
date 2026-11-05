@@ -9,7 +9,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart'
-    show debugPrint, internal, kReleaseMode;
+    show debugPrint, defaultTargetPlatform, internal, kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart'
     show
@@ -68,6 +68,10 @@ class CountryPickerScrollEdgeEffect extends StatefulWidget {
       'packages/flutter_simple_country_picker/assets/shaders/scroll_edge_contribution.frag';
   static const String _separatedShaderAsset =
       'packages/flutter_simple_country_picker/assets/shaders/scroll_edge_separated.frag';
+  static const String _windowsShaderAsset =
+      'packages/flutter_simple_country_picker/assets/shaders/scroll_edge_windows.frag';
+  static const String _windowsSeparatedShaderAsset =
+      'packages/flutter_simple_country_picker/assets/shaders/scroll_edge_windows_separated.frag';
 
   @override
   State<CountryPickerScrollEdgeEffect> createState() =>
@@ -1149,14 +1153,18 @@ final class _ScrollEdgeShaderLoader {
 }
 
 final _ScrollEdgeShaderLoader _scrollEdgeShader = _ScrollEdgeShaderLoader(
-  CountryPickerScrollEdgeEffect._shaderAsset,
+  defaultTargetPlatform == TargetPlatform.windows
+      ? CountryPickerScrollEdgeEffect._windowsShaderAsset
+      : CountryPickerScrollEdgeEffect._shaderAsset,
 );
 final _ScrollEdgeShaderLoader _contributionShader = _ScrollEdgeShaderLoader(
   CountryPickerScrollEdgeEffect._contributionShaderAsset,
 );
 
 final _ScrollEdgeShaderLoader _separatedShader = _ScrollEdgeShaderLoader(
-  CountryPickerScrollEdgeEffect._separatedShaderAsset,
+  defaultTargetPlatform == TargetPlatform.windows
+      ? CountryPickerScrollEdgeEffect._windowsSeparatedShaderAsset
+      : CountryPickerScrollEdgeEffect._separatedShaderAsset,
 );
 
 /// Resolves the blur bounds at paint time, including the status bar and trailing edge.
