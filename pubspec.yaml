@@ -2,7 +2,7 @@ name: flutter_simple_country_picker
 
 description: An easy-to-use country selection widget for Flutter. Allows users to select a country from a comprehensive list. Supports Android, iOS, web, Windows and Linux platforms.
 
-version: 0.11.1
+version: 0.12.0-pre.1
 
 homepage: https://github.com/ziqq/flutter_simple_country_picker
 
@@ -34,7 +34,8 @@ platforms:
 
 environment:
   sdk: '>=3.10.0 <4.0.0'
-  flutter: ">=3.38.0"
+  # CupertinoSheet scrollableBuilder requires Flutter 3.44.0.
+  flutter: ">=3.44.0"
 
 dependencies:
   flutter:
@@ -62,9 +63,28 @@ dev_dependencies:
 
   # Code generation
   build_runner: ^2.4.15
+  crypto: ^3.0.5
+  xml: ^6.6.1
 
   # Test utilities
   mockito: ^5.4.5
 
   # Logging
   l: ^5.0.1
+
+flutter:
+  assets:
+    # Flag glyphs for Windows, whose emoji font has no country flags.
+    # Bundled only into Windows builds.
+    - path: assets/fonts/TwemojiCountryFlags.ttf
+      platforms: [windows]
+  licenses:
+    - assets/fonts/TwemojiCountryFlags.LICENSE.md
+    - assets/licenses/libphonenumber-LICENSE.txt
+    - assets/licenses/libphonenumber-NOTICE.md
+  shaders:
+    - assets/shaders/scroll_edge.frag
+    - assets/shaders/scroll_edge_contribution.frag
+    - assets/shaders/scroll_edge_separated.frag
+    - assets/shaders/scroll_edge_windows.frag
+    - assets/shaders/scroll_edge_windows_separated.frag

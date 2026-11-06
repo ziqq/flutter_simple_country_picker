@@ -1,0 +1,56 @@
+{
+  "protocol": "single-ui-baseline-20261105-v3-native-waits-six-quality",
+  "sequence": [
+    "before-1",
+    "after-1",
+    "after-2",
+    "before-2"
+  ],
+  "runs": {
+    "before-1": {
+      "run": "final-before-timing-7plus-1",
+      "sha256": "960fa8e709f414f615f38e6845d3b16cbedce3c4c2eaeb44a6bff2098c7e4cc6",
+      "source_fingerprint": "c296122f4c0763c87e54b22f9576c1c7c83859d65a7a04130867b197047403f3",
+      "frame_count": 765,
+      "file": "7plus-before-1.json"
+    },
+    "after-1": {
+      "run": "final-after-timing-7plus-1",
+      "sha256": "9292463d4d88ddd362f942d1726d7ac8dc0b5c69e0a8ac551e061056960e43fc",
+      "source_fingerprint": "da4ddec6775c6aa683e9de57775b29dbaa100e55bc63dacc756af077911d2ff7",
+      "frame_count": 1462,
+      "file": "7plus-after-1.json"
+    },
+    "after-2": {
+      "run": "final-after-timing-7plus-2",
+      "sha256": "bc1dfd387e1ec8f0065179e027ab3be7f662446fb9e1c15e54d80d872dd57c36",
+      "source_fingerprint": "da4ddec6775c6aa683e9de57775b29dbaa100e55bc63dacc756af077911d2ff7",
+      "frame_count": 1483,
+      "file": "7plus-after-2.json"
+    },
+    "before-2": {
+      "run": "final-before-timing-7plus-2",
+      "sha256": "6becc536b76f307afb17620b6e6412f2ade668b02c8b7fd45d31dda28b196109",
+      "source_fingerprint": "c296122f4c0763c87e54b22f9576c1c7c83859d65a7a04130867b197047403f3",
+      "frame_count": 759,
+      "file": "7plus-before-2.json"
+    },
+    "a8-before": {
+      "file": "a8-before.json",
+      "sha256": "6bec22b0a096d486ba91ff841f974e03d660f087f5b712d0dbd201a86ca6c408",
+      "source_fingerprint": "c296122f4c0763c87e54b22f9576c1c7c83859d65a7a04130867b197047403f3",
+      "frame_count": 1766
+    },
+    "a8-after-f2": {
+      "file": "a8-after-f2.json",
+      "sha256": "a588f8cfe4206253f980a06fced6ffbe1de86fd9aee50ea6f547fd0b142e1452",
+      "source_fingerprint": "56ba3e2b39e978e924a3fae75645d10a6b0d742599276e5e01665460b2a9f0c8",
+      "frame_count": 1682
+    }
+  },
+  "a8_sequence": [
+    "a8-before",
+    "a8-after-f2"
+  ],
+  "candidate_shipping_status": "F1 rejected for partial header appearance; F2 awaits physical validation and is not committed"
+}

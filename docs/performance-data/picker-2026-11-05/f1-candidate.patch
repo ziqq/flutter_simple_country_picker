@@ -1,0 +1,69 @@
+--- a/lib/src/widget/country_picker_scroll_edge.dart
++++ b/lib/src/widget/country_picker_scroll_edge.dart
+@@ -787 +787,6 @@
+-    final retained = (layer ??= _ScrollEdgeBackdropLayer(this))
++    final retained = switch (layer) {
++      _ScrollEdgeBackdropLayer retained => retained,
++      _ => _ScrollEdgeBackdropLayer(this),
++    };
++    layer = retained;
++    retained
+@@ -789 +794,2 @@
+-      ..backdropKey = backdropKey;
++      ..backdropKey = backdropKey
++      ..paintOffset = offset;
+@@ -813,0 +820 @@
++  Offset paintOffset = Offset.zero;
+@@ -987,0 +995,27 @@
++        // The sheet's save layer gives its backdrop a local origin. Restrict
++        // native Gaussian snapshots to a visible source halo inside that
++        // isolated surface; transformed or smaller surfaces keep the fallback.
++        final ratio = configuration.devicePixelRatio;
++        final viewport = configuration.view?.physicalSize;
++        if (!singlePass &&
++            opacity == 1 &&
++            ratio == 3 &&
++            requiredBottom != null &&
++            translation != null &&
++            translation.dx == 0 &&
++            translation.dy >= 0 &&
++            viewport != null &&
++            translation.dy * ratio + requiredBottom <= viewport.height) {
++          if (configuration.context
++                  .findAncestorRenderObjectOfType<RenderClipRSuperellipse>()
++              case RenderClipRSuperellipse clip
++              when clip.clipBehavior == Clip.antiAliasWithSaveLayer &&
++                  clip.size.width == target.size.width &&
++                  target.size.width == viewport.width / ratio &&
++                  clip.size.height * ratio >= requiredBottom &&
++                  MatrixUtils.getAsTranslation(target.getTransformTo(clip)) ==
++                      Offset.zero) {
++            boundedParent = true;
++            fullParent = true;
++          }
++        }
+@@ -1029,4 +1063,4 @@
+-                0,
+-                0,
+-                target.size.width,
+-                bottom / 3,
++                paintOffset.dx,
++                paintOffset.dy,
++                paintOffset.dx + target.size.width,
++                paintOffset.dy + bottom / 3,
+@@ -1213,0 +1248,7 @@
++    final origin = switch (context
++        .findAncestorRenderObjectOfType<RenderClipRSuperellipse>()) {
++      RenderClipRSuperellipse clip
++          when clip.clipBehavior == Clip.antiAliasWithSaveLayer =>
++        clip.localToGlobal(Offset.zero).dy,
++      _ => 0.0,
++    };
+@@ -1216 +1257,2 @@
+-        renderBox.localToGlobal(Offset(0, headerHeight - extent * 1.6)).dy *
++        (renderBox.localToGlobal(Offset(0, headerHeight - extent * 1.6)).dy -
++            origin) *
+@@ -1219 +1261,2 @@
+-        renderBox.localToGlobal(Offset(0, headerHeight + extent * .2)).dy *
++        (renderBox.localToGlobal(Offset(0, headerHeight + extent * .2)).dy -
++            origin) *

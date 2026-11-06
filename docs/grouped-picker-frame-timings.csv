@@ -1,0 +1,13 @@
+run,device,revision,scenario,frames,build_p90_ms,raster_p90_ms,build_over_16ms,raster_over_16ms
+before,Samsung SM-A530F,5523a6b271955ad45fbadcb9c8c450e466dff30d,classic_en,400,18.335,11.576,44,20
+before,Samsung SM-A530F,5523a6b271955ad45fbadcb9c8c450e466dff30d,classic_tr,395,20.674,12.903,45,17
+before,Samsung SM-A530F,5523a6b271955ad45fbadcb9c8c450e466dff30d,classic_ru,390,18.856,12.973,44,25
+before,Samsung SM-A530F,5523a6b271955ad45fbadcb9c8c450e466dff30d,ios26_en,379,11.734,17.319,32,43
+before,Samsung SM-A530F,5523a6b271955ad45fbadcb9c8c450e466dff30d,ios26_tr,386,11.108,15.746,28,35
+before,Samsung SM-A530F,5523a6b271955ad45fbadcb9c8c450e466dff30d,ios26_ru,380,11.467,17.678,32,49
+after,Samsung SM-A530F,0bcc4bb466b73b26504177375d41cde4f4357696,classic_en,399,18.585,10.845,44,7
+after,Samsung SM-A530F,0bcc4bb466b73b26504177375d41cde4f4357696,classic_tr,398,14.902,12.543,39,22
+after,Samsung SM-A530F,0bcc4bb466b73b26504177375d41cde4f4357696,classic_ru,388,19.977,13.675,46,28
+after,Samsung SM-A530F,0bcc4bb466b73b26504177375d41cde4f4357696,ios26_en,383,13.333,16.369,32,43
+after,Samsung SM-A530F,0bcc4bb466b73b26504177375d41cde4f4357696,ios26_tr,380,13.673,16.594,34,43
+after,Samsung SM-A530F,0bcc4bb466b73b26504177375d41cde4f4357696,ios26_ru,380,11.837,15.933,30,38

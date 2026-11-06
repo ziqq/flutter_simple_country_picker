@@ -1,3 +1,8 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 14 October 2024
+ */
+
 // Anton Ustinoff <a.a.ustinoff@gmail.com>, 14 October 2024
 
 import 'dart:developer' as dev;
@@ -65,9 +70,9 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
     selected.addListener(_onSelectedChanged);
 
     // If the controller has an initial value
-    if (_phone != null && _phone!.isNotEmpty) {
+    if (_phone case String phone when phone.isNotEmpty) {
       final oldValue = controller.value;
-      var text = _phone ?? '';
+      var text = phone;
 
       // Check if the phone code is not removed from the text
       if (text.startsWith('+')) {

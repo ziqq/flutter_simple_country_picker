@@ -16,6 +16,7 @@
 /// | [CountryInputFormatter] | Masks phone input according to a dial-format. |
 /// | [CountryScope] | Pre-loads the country list into the widget tree. |
 /// | [CountryPickerTheme] | Visual customization via `ThemeExtension`. |
+/// | [CountryPickerSurface] | Custom surfaces (e.g. liquid glass) for picker controls. |
 /// | [CountryLocalizations] | Localization delegate — 36 built-in locales. |
 ///
 /// ## Minimal setup
@@ -54,5 +55,6 @@ export 'src/model/country.dart';
 export 'src/theme/country_picker_theme.dart';
 export 'src/util/country_input_formatter.dart';
 export 'src/widget/country_phone_input.dart' hide CountryPhoneInput$Extended;
+export 'src/widget/country_picker_surface.dart';
 export 'src/widget/country_scope.dart' show CountryScope;
 export 'src/widget/show_country_picker.dart' show showCountryPicker;

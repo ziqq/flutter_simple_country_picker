@@ -13,19 +13,19 @@ before adding or changing entries in
 After changing the Dart dataset, regenerate the JSON mirror:
 
 ```shell
-fvm dart --disable-analytics run tool/generate_json.dart
+mise exec -- dart --disable-analytics run tool/generate_json.dart
 ```
 
 Then run at least:
 
 ```shell
-fvm flutter test test/unit_test/country_codes_test.dart
+mise exec -- flutter test test/unit_test/country_codes_test.dart
 ```
 
 If the change can affect phone resolution, also run:
 
 ```shell
-fvm flutter test test/unit_test/country_phone_controller_test.dart
+mise exec -- flutter test test/unit_test/country_phone_controller_test.dart
 ```
 
 ## Where data should come from

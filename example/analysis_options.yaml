@@ -29,7 +29,6 @@ analyzer:
     - "**.pbenum.dart"
     - "**.pbjson.dart"
     # Flutter Version Manager
-    - ".fvm/**"
     # Tools
     - ".dart_tool/**"
     - "scripts/**"
