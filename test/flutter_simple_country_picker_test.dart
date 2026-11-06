@@ -23,6 +23,8 @@ import 'unit_test/country_picker_theme_test.dart'
 import 'unit_test/country_provider_test.dart' as unit_country_provider_test;
 import 'unit_test/country_test.dart' as unit_country_test;
 import 'unit_test/country_util_test.dart' as unit_country_util_test;
+import 'widget_test/country_accessibility_test.dart'
+    as widget_country_accessibility_test;
 import 'widget_test/country_automatic_phone_input_test.dart'
     as widget_country_automatic_phone_input_test;
 import 'widget_test/country_flag_cache_test.dart'
@@ -60,6 +62,7 @@ void main() {
       unit_country_util_test.main();
     });
     group('widget_test -', () {
+      widget_country_accessibility_test.main();
       widget_country_automatic_phone_input_test.main();
       widget_country_flag_cache_test.main();
       widget_country_input_formater_test.main();

@@ -30,6 +30,20 @@ double _ios26TextHeight(BuildContext context, TextStyle? style) {
   return height;
 }
 
+/// Whether enlarged text needs the calling code below the country names.
+/// This keeps the flag and name usable when a trailing code consumes the row.
+@internal
+bool countryPickerUsesLargeRows(
+  BuildContext context,
+  CountryPickerTheme theme,
+) {
+  final style = theme.textStyle ?? DefaultTextStyle.of(context).style;
+  final fontSize = style.fontSize ?? 14;
+  return MediaQuery.textScalerOf(context).scale(fontSize) *
+          (style.height ?? 1.2) >
+      kMinInteractiveDimension;
+}
+
 /// Measures a country row at the current text scale.
 @internal
 double countryPickerCountryHeight(
@@ -41,6 +55,9 @@ double countryPickerCountryHeight(
       _ios26TextHeight(context, theme.textStyle?.copyWith(height: 1.2)),
     ) +
     _ios26TextHeight(context, theme.secondaryTextStyle) +
+    (countryPickerUsesLargeRows(context, theme)
+        ? _ios26TextHeight(context, theme.textStyle?.copyWith(height: 1.2))
+        : 0) +
     theme.padding * 1.25;
 
 /// Measures a scrolling letter header.
@@ -76,13 +93,20 @@ double countryPickerListInset(CountryPickerTheme theme) => theme.padding * 2;
 EdgeInsets countryPickerHeaderPadding(CountryPickerTheme theme) =>
     EdgeInsets.only(top: theme.padding, bottom: theme.padding / 2);
 
+/// Minimum touch target from the platform's SDK control convention.
+@internal
+double countryPickerMinimumControlHeight(BuildContext context) =>
+    Theme.of(context).platform == TargetPlatform.android
+    ? kMinInteractiveDimension
+    : kCountryPickerControlHeight;
+
 /// Measures a search or close control at the current text scale.
 @internal
 double countryPickerControlHeight(
   BuildContext context,
   CountryPickerTheme theme,
 ) => math.max(
-  kCountryPickerControlHeight,
+  countryPickerMinimumControlHeight(context),
   _ios26TextHeight(context, theme.textStyle?.copyWith(height: 1.3)) +
       theme.padding,
 );
@@ -446,10 +470,17 @@ class CountryPickerHeader extends StatelessWidget {
         ),
         GestureDetector(
           behavior: HitTestBehavior.opaque,
+          excludeFromSemantics: true,
           onTap: onScrollToTop,
           child: Padding(
             padding: padding,
             child: CupertinoNavigationBar(
+              bottom: Theme.of(context).platform == TargetPlatform.android
+                  ? const PreferredSize(
+                      preferredSize: Size.fromHeight(4),
+                      child: SizedBox(height: 4),
+                    )
+                  : null,
               backgroundColor: background.withValues(alpha: 0),
               border: null,
               automaticBackgroundVisibility: false,
@@ -462,11 +493,12 @@ class CountryPickerHeader extends StatelessWidget {
               ),
               // Reserve the original leading width; the control paints outside
               // CupertinoNavigationBar's unconditional background ClipRect.
-              leading: SizedBox.square(
-                dimension: countryPickerControlHeight(context, theme),
+              leading: const SizedBox.square(
+                dimension: kCountryPickerControlHeight,
               ),
               middle: GestureDetector(
                 behavior: HitTestBehavior.opaque,
+                excludeFromSemantics: true,
                 onTap: onScrollToTop,
                 child: Text(
                   CountryLocalizations.of(context).selectCountryLabel,
@@ -488,12 +520,15 @@ class CountryPickerHeader extends StatelessWidget {
                 alignment: AlignmentDirectional.centerStart,
                 child: Padding(
                   padding: EdgeInsetsDirectional.only(start: theme.padding),
-                  child: _CountryPickerCloseButton(
-                    onClose: onClose,
-                    surfaceBuilder: surfaceBuilder,
-                    pressAlignment: Alignment.topCenter,
-                    key: const ValueKey<String>(
-                      'country_picker_header_close_button',
+                  child: SizedBox.square(
+                    dimension: countryPickerMinimumControlHeight(context),
+                    child: _CountryPickerCloseButton(
+                      onClose: onClose,
+                      surfaceBuilder: surfaceBuilder,
+                      pressAlignment: Alignment.topCenter,
+                      key: const ValueKey<String>(
+                        'country_picker_header_close_button',
+                      ),
                     ),
                   ),
                 ),
@@ -552,28 +587,35 @@ class CountryPickerSearchDock extends StatelessWidget {
               builder: surfaceBuilder,
               type: .searchField,
               shape: shape,
-              child: CupertinoSearchTextField(
-                autofocus: autofocus,
-                focusNode: focusNode,
-                controller: controller,
-                onSuffixTap: controller.clear,
-                onSubmitted: (_) => focusNode.unfocus(),
-                style: theme.textStyle?.copyWith(height: 1.3),
-                placeholderStyle: theme.searchTextStyle?.copyWith(
-                  color: theme.searchTextStyle?.color?.withValues(alpha: .5),
-                  height: 1.3,
+              child: Semantics(
+                label: CountryLocalizations.of(context).searchPlaceholder,
+                child: CupertinoSearchTextField(
+                  autofocus: autofocus,
+                  focusNode: focusNode,
+                  controller: controller,
+                  onSuffixTap: controller.clear,
+                  onSubmitted: (_) => focusNode.unfocus(),
+                  style: theme.textStyle?.copyWith(height: 1.3),
+                  placeholderStyle: theme.searchTextStyle?.copyWith(
+                    color: theme.searchTextStyle?.color?.withValues(alpha: .5),
+                    height: 1.3,
+                  ),
+                  placeholder: CountryLocalizations.of(
+                    context,
+                  ).searchPlaceholder,
+                  prefixInsets: EdgeInsetsDirectional.only(
+                    start: theme.padding,
+                  ),
+                  padding: EdgeInsetsDirectional.symmetric(
+                    horizontal: theme.padding / 2,
+                  ),
+                  suffixInsets: EdgeInsetsDirectional.only(
+                    end: theme.padding / 1.6,
+                  ),
+                  decoration: const BoxDecoration(),
+                  itemColor: color,
+                  itemSize: 22,
                 ),
-                placeholder: CountryLocalizations.of(context).searchPlaceholder,
-                prefixInsets: EdgeInsetsDirectional.only(start: theme.padding),
-                padding: EdgeInsetsDirectional.symmetric(
-                  horizontal: theme.padding / 2,
-                ),
-                suffixInsets: EdgeInsetsDirectional.only(
-                  end: theme.padding / 1.6,
-                ),
-                decoration: const BoxDecoration(),
-                itemColor: color,
-                itemSize: 22,
               ),
             ),
           ),
@@ -590,7 +632,7 @@ class CountryPickerSearchDock extends StatelessWidget {
 
 /// Provides tap and drag navigation through the currently available letters.
 @internal
-class CountryPickerAlphabet extends StatelessWidget {
+class CountryPickerAlphabet extends StatefulWidget {
   /// Creates a rail that derives its labels from the displayed groups.
   const CountryPickerAlphabet({
     required this.groups,
@@ -608,50 +650,78 @@ class CountryPickerAlphabet extends StatelessWidget {
   final ValueChanged<String> onSelect;
 
   @override
+  State<CountryPickerAlphabet> createState() => _CountryPickerAlphabetState();
+}
+
+/// Keeps the adjustable accessibility value in sync with direct rail gestures.
+class _CountryPickerAlphabetState extends State<CountryPickerAlphabet> {
+  String? _selected;
+  int? _previousGestureIndex;
+
+  @override
   Widget build(BuildContext context) {
     final letters = <String>[
-      for (final (letter, _) in groups)
+      for (final (letter, _) in widget.groups)
         if (letter.isNotEmpty) letter,
     ];
     if (letters.isEmpty) return const SizedBox.shrink();
     final theme = CountryPickerTheme.resolve(context);
     // The hit target stays wide while glyphs center in the outer list padding.
-    final shift = (width - theme.padding) / 2;
+    final shift = (CountryPickerAlphabet.width - theme.padding) / 2;
     final letterOffset = Offset(
       Directionality.of(context) == TextDirection.rtl ? -shift : shift,
       0,
     );
+    final selected = math.max(0, letters.indexOf(_selected ?? ''));
+    void selectIndex(int index) {
+      if (_selected != letters[index]) {
+        setState(() => _selected = letters[index]);
+      }
+      widget.onSelect(letters[index]);
+    }
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final height = math.min(constraints.maxHeight, letters.length * 14.0);
-        var previous = -1;
         void select(Offset point) {
           final index = (point.dy / height * letters.length).floor().clamp(
             0,
             letters.length - 1,
           );
-          if (index == previous) return;
-          previous = index;
-          onSelect(letters[index]);
+          if (index == _previousGestureIndex) return;
+          _previousGestureIndex = index;
+          selectIndex(index);
         }
 
-        return Center(
-          child: SizedBox(
-            width: width,
-            height: height,
-            child: GestureDetector(
-              key: const ValueKey<String>('country_picker_alphabet'),
-              onPanUpdate: (details) => select(details.localPosition),
-              onPanDown: (details) => select(details.localPosition),
-              behavior: .opaque,
-              child: Column(
-                children: <Widget>[
-                  for (final letter in letters)
-                    Expanded(
-                      child: Semantics(
-                        button: true,
-                        label: letter,
-                        onTap: () => onSelect(letter),
+        return Semantics(
+          slider: true,
+          label: CountryLocalizations.of(context).selectCountryLabel,
+          value: letters[selected],
+          increasedValue: selected < letters.length - 1
+              ? letters[selected + 1]
+              : null,
+          decreasedValue: selected > 0 ? letters[selected - 1] : null,
+          onIncrease: selected < letters.length - 1
+              ? () => selectIndex(selected + 1)
+              : null,
+          onDecrease: selected > 0 ? () => selectIndex(selected - 1) : null,
+          excludeSemantics: true,
+          child: Center(
+            child: SizedBox(
+              width: CountryPickerAlphabet.width,
+              height: height,
+              child: GestureDetector(
+                key: const ValueKey<String>('country_picker_alphabet'),
+                onPanUpdate: (details) => select(details.localPosition),
+                onPanDown: (details) {
+                  _previousGestureIndex = null;
+                  select(details.localPosition);
+                },
+                behavior: .opaque,
+                child: Column(
+                  children: <Widget>[
+                    for (final letter in letters)
+                      Expanded(
                         child: ExcludeSemantics(
                           child: Transform.translate(
                             offset: letterOffset,
@@ -673,8 +743,8 @@ class CountryPickerAlphabet extends StatelessWidget {
                           ),
                         ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

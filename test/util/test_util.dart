@@ -13,7 +13,9 @@ Widget createWidgetUnderTest({
   required WidgetBuilder builder,
   Locale locale = const Locale('ru'),
   ThemeData? theme,
+  TransitionBuilder? appBuilder,
 }) => MaterialApp(
+  builder: appBuilder,
   locale: locale,
   supportedLocales: CountryLocalizations.supportedLocales,
   theme:

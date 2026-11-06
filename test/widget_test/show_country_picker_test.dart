@@ -600,7 +600,12 @@ void main() => group('showCountryPicker -', () {
           final bounds = tester.getRect(sheet());
           expect(close.left - bounds.left, 16);
           expect(close.top - bounds.top, 16);
-          expect(close.size, const Size(44, 44));
+          expect(
+            close.size,
+            defaultTargetPlatform == TargetPlatform.android
+                ? const Size(48, 48)
+                : const Size(44, 44),
+          );
         },
       );
 

@@ -4,11 +4,7 @@
  */
 
 import 'package:flutter/cupertino.dart'
-    show
-        CupertinoDynamicColor,
-        CupertinoNavigationBar,
-        CupertinoColors,
-        CupertinoIcons;
+    show CupertinoDynamicColor, CupertinoColors, CupertinoIcons;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -197,7 +193,7 @@ class _CountriesListViewState extends State<CountryListView>
     final theme = CountryPickerTheme.resolve(context);
     final controls = countryPickerControlHeight(context, theme);
     final headerHeight =
-        const CupertinoNavigationBar().preferredSize.height +
+        countryPickerMinimumControlHeight(context) +
         countryPickerHeaderPadding(theme).vertical;
     final headerExtent = MediaQuery.paddingOf(context).top + headerHeight;
     final showSearch = widget.showSearch ?? widget.showGroup ?? false;
@@ -228,6 +224,7 @@ class _CountriesListViewState extends State<CountryListView>
         ),
         body: GestureDetector(
           onTap: _unfocus,
+          excludeFromSemantics: true,
           child: Stack(
             clipBehavior: Clip.none,
             children: <Widget>[
@@ -524,9 +521,7 @@ class _CountriesListState extends State<_CountriesList> {
                       height: 1,
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: theme.secondaryTextStyle?.color?.withValues(
-                        alpha: .6,
-                      ),
+                      color: theme.secondaryTextStyle?.color,
                     ),
                   ),
                 ),
@@ -716,6 +711,7 @@ class _CountryListTile extends StatelessWidget {
         ? country.name
         : localized;
     final titleStyle = theme.textStyle?.copyWith(height: 1.2);
+    final large = countryPickerUsesLargeRows(context, theme);
     final phone = Directionality.of(context) == TextDirection.rtl
         ? '${country.phoneCode}+'
         : '+${country.phoneCode}';
@@ -757,10 +753,19 @@ class _CountryListTile extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
+                    if (large && country.phoneCode.isNotEmpty)
+                      Text(
+                        phone,
+                        style: titleStyle?.copyWith(
+                          color: theme.secondaryTextStyle?.color,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                   ],
                 ),
               ),
-              if (country.phoneCode.isNotEmpty)
+              if (!large && country.phoneCode.isNotEmpty)
                 Text(
                   phone,
                   style: titleStyle?.copyWith(

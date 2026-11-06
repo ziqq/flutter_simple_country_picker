@@ -299,6 +299,12 @@ void main() => group('CountryListView -', () {
     );
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey<String>('header_A')), findsOneWidget);
+    // A new gesture on the same letter must still return a manually scrolled list.
+    scroll.jumpTo(200);
+    await tester.pumpAndSettle();
+    await tester.tap(find.descendant(of: rail, matching: find.text('A')));
+    await tester.pumpAndSettle();
+    expect(scroll.offset, 0);
   });
 
   testWidgets('the final country remains reachable and selectable', (
