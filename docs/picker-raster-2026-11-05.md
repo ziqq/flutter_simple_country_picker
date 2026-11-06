@@ -206,10 +206,10 @@ ancestor-opacity native cases pass on Windows x64 and ARM64 with Flutter 3.47.5;
 the Flutter 3.44.0 minimum-SDK job also passes in
 [run 42029537763](https://github.com/ziqq/flutter_simple_country_picker/actions/runs/42029537763).
 Temporary native exception instrumentation is removed from the workflow after
-the diagnosis. Final CI still needs to verify that clean configuration and the
-additional stripe-order assertion. The original non-Windows
+the diagnosis. The clean configuration and additional stripe-order assertion also pass in
+[run 42031594463](https://github.com/ziqq/flutter_simple_country_picker/actions/runs/42031594463). The original non-Windows
 generic and separable IPLR programs remain byte-identical, respectively
 `0a186c8eef3efe08eff25e23079f0a4ba9c571a915c353f9a677b2a86889ca81` and
 `5dad1c6171c7de66a76d462cd4ffaa099b921ad72e4ca18855d2b6be9e618db0`.
 
-Candidate patches are retained as review evidence: [F1](performance-data/picker-2026-11-05/f1-candidate.patch) applies to `7d569d8`; [F2](performance-data/picker-2026-11-05/f2-candidate.patch) applies to the runtime code at `5829015`/`0102193`. They are not active package code. F2 runtime SHA is `4d93d93824366578ea4b05d2938fab056fae50fd3802f9b20d67613a88e72997`; its physical quality and adverse-sample gates remain open.
+Candidate patches are retained as review evidence: [F1](performance-data/picker-2026-11-05/f1-candidate.patch) applies to `7d569d8`; [F2](performance-data/picker-2026-11-05/f2-candidate.patch) applies to the runtime code at `5829015`/`0102193`. Apply these zero-context review patches on their pinned bases with `git apply --unidiff-zero`. They are not active package code. F2 runtime SHA is `4d93d93824366578ea4b05d2938fab056fae50fd3802f9b20d67613a88e72997`; its physical quality and adverse-sample gates remain open.

@@ -1,11 +1,6 @@
-diff --git a/lib/src/widget/country_picker_scroll_edge.dart b/lib/src/widget/country_picker_scroll_edge.dart
-index bbc1b14..0ec82d8 100644
 --- a/lib/src/widget/country_picker_scroll_edge.dart
 +++ b/lib/src/widget/country_picker_scroll_edge.dart
-@@ -784,9 +784,15 @@ class _RenderScrollEdgeBackdropFilter extends RenderBackdropFilter {
-       needsCompositing,
-       'An enabled scroll edge backdrop requires compositing.',
-     );
+@@ -787 +787,6 @@
 -    final retained = (layer ??= _ScrollEdgeBackdropLayer(this))
 +    final retained = switch (layer) {
 +      _ScrollEdgeBackdropLayer retained => retained,
@@ -13,25 +8,13 @@ index bbc1b14..0ec82d8 100644
 +    };
 +    layer = retained;
 +    retained
-       ..blendMode = blendMode
+@@ -789 +794,2 @@
 -      ..backdropKey = backdropKey;
 +      ..backdropKey = backdropKey
 +      ..paintOffset = offset;
-     context.pushLayer(
-       retained,
-       (context, offset) => context.paintChild(child, offset),
-@@ -811,6 +817,7 @@ class _ScrollEdgeBackdropLayer extends BackdropFilterLayer {
-   _ScrollEdgeBackdropLayer(this.renderObject);
- 
-   _RenderScrollEdgeBackdropFilter? renderObject;
+@@ -813,0 +820 @@
 +  Offset paintOffset = Offset.zero;
-   final LayerHandle<_ScrollEdgeGaussianLayer> _gaussianLayer =
-       LayerHandle<_ScrollEdgeGaussianLayer>();
-   ui.ClipRectEngineLayer? _gaussianClip;
-@@ -985,6 +992,33 @@ class _ScrollEdgeBackdropLayer extends BackdropFilterLayer {
-             }
-           }
-         }
+@@ -987,0 +995,27 @@
 +        // The sheet's save layer gives its backdrop a local origin. Restrict
 +        // native Gaussian snapshots to a visible source halo inside that
 +        // isolated surface; transformed or smaller surfaces keep the fallback.
@@ -59,13 +42,7 @@ index bbc1b14..0ec82d8 100644
 +            fullParent = true;
 +          }
 +        }
-         assert(() {
-           if (!_reportedConfiguration) {
-             _reportedConfiguration = true;
-@@ -1026,10 +1060,10 @@ class _ScrollEdgeBackdropLayer extends BackdropFilterLayer {
-             if (bottom.isOdd != fullHeight.toInt().isOdd) bottom++;
-             if (bottom > 0 && bottom < fullHeight) {
-               _gaussianCrop = Rect.fromLTRB(
+@@ -1029,4 +1063,4 @@
 -                0,
 -                0,
 -                target.size.width,
@@ -74,13 +51,7 @@ index bbc1b14..0ec82d8 100644
 +                paintOffset.dy,
 +                paintOffset.dx + target.size.width,
 +                paintOffset.dy + bottom / 3,
-               );
-             }
-           }
-@@ -1211,12 +1245,21 @@ class _ScrollEdgeFilter implements ImageFilterConfig {
-         !renderBox.hasSize ||
-         !renderBox.size.height.isFinite)
-       return null;
+@@ -1213,0 +1248,7 @@
 +    final origin = switch (context
 +        .findAncestorRenderObjectOfType<RenderClipRSuperellipse>()) {
 +      RenderClipRSuperellipse clip
@@ -88,16 +59,11 @@ index bbc1b14..0ec82d8 100644
 +        clip.localToGlobal(Offset.zero).dy,
 +      _ => 0.0,
 +    };
-     final headerHeight = renderBox.size.height.clamp(0.0, size.height);
-     final top =
+@@ -1216 +1257,2 @@
 -        renderBox.localToGlobal(Offset(0, headerHeight - extent * 1.6)).dy *
 +        (renderBox.localToGlobal(Offset(0, headerHeight - extent * 1.6)).dy -
 +            origin) *
-         devicePixelRatio;
-     final trailing =
+@@ -1219 +1261,2 @@
 -        renderBox.localToGlobal(Offset(0, headerHeight + extent * .2)).dy *
 +        (renderBox.localToGlobal(Offset(0, headerHeight + extent * .2)).dy -
 +            origin) *
-         devicePixelRatio;
-     final height = math.max(trailing - top, 1.0);
-     final sigma = 1.85 * devicePixelRatio * math.sqrt(opacity);

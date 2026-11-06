@@ -1,9 +1,6 @@
 --- a/lib/src/widget/country_picker_scroll_edge.dart
 +++ b/lib/src/widget/country_picker_scroll_edge.dart
-@@ -788,9 +788,15 @@
-       needsCompositing,
-       'An enabled scroll edge backdrop requires compositing.',
-     );
+@@ -791 +791,6 @@
 -    final retained = (layer ??= _ScrollEdgeBackdropLayer(this))
 +    final retained = switch (layer) {
 +      _ScrollEdgeBackdropLayer retained => retained,
@@ -11,25 +8,13 @@
 +    };
 +    layer = retained;
 +    retained
-       ..blendMode = blendMode
+@@ -793 +798,2 @@
 -      ..backdropKey = backdropKey;
 +      ..backdropKey = backdropKey
 +      ..paintOffset = offset;
-     context.pushLayer(
-       retained,
-       (context, offset) => context.paintChild(child, offset),
-@@ -815,6 +821,7 @@
-   _ScrollEdgeBackdropLayer(this.renderObject);
- 
-   _RenderScrollEdgeBackdropFilter? renderObject;
+@@ -817,0 +824 @@
 +  Offset paintOffset = Offset.zero;
-   final LayerHandle<_ScrollEdgeGaussianLayer> _gaussianLayer =
-       LayerHandle<_ScrollEdgeGaussianLayer>();
-   ui.ClipRectEngineLayer? _gaussianClip;
-@@ -988,6 +995,41 @@
-             }
-           }
-         }
+@@ -990,0 +998,35 @@
 +        // The sheet's save layer gives its backdrop a local origin. Restrict
 +        // native Gaussian snapshots to a visible source halo inside that
 +        // isolated surface. Partial sheets keep their original sampling phase;
@@ -65,13 +50,7 @@
 +            }
 +          }
 +        }
-         if (configuration.component == 5) {
-           if (singlePass || !boundedParent) {
-             engineLayer = null;
-@@ -1017,10 +1059,10 @@
-             if (bottom.isOdd != fullHeight.toInt().isOdd) bottom++;
-             if (bottom > 0 && bottom < fullHeight) {
-               _gaussianCrop = Rect.fromLTRB(
+@@ -1020,4 +1062,4 @@
 -                0,
 -                0,
 -                target.size.width,
@@ -80,13 +59,7 @@
 +                paintOffset.dy,
 +                paintOffset.dx + target.size.width,
 +                paintOffset.dy + bottom / 3,
-               );
-             }
-           }
-@@ -1198,12 +1240,21 @@
-         !renderBox.hasSize ||
-         !renderBox.size.height.isFinite)
-       return null;
+@@ -1200,0 +1243,7 @@
 +    final origin = switch (context
 +        .findAncestorRenderObjectOfType<RenderClipRSuperellipse>()) {
 +      RenderClipRSuperellipse clip
@@ -94,16 +67,11 @@
 +        clip.localToGlobal(Offset.zero).dy,
 +      _ => 0.0,
 +    };
-     final headerHeight = renderBox.size.height.clamp(0.0, size.height);
-     final top =
+@@ -1203 +1252,2 @@
 -        renderBox.localToGlobal(Offset(0, headerHeight - extent * 1.6)).dy *
 +        (renderBox.localToGlobal(Offset(0, headerHeight - extent * 1.6)).dy -
 +            origin) *
-         devicePixelRatio;
-     final trailing =
+@@ -1206 +1256,2 @@
 -        renderBox.localToGlobal(Offset(0, headerHeight + extent * .2)).dy *
 +        (renderBox.localToGlobal(Offset(0, headerHeight + extent * .2)).dy -
 +            origin) *
-         devicePixelRatio;
-     final height = math.max(trailing - top, 1.0);
-     final sigma = 1.85 * devicePixelRatio * math.sqrt(opacity);
