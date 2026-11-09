@@ -1,0 +1,54 @@
+{
+  "samples_after_timing": {
+    "rest-dark-raster-cache.json": {
+      "exit_code": 0,
+      "after_timing_windows": true,
+      "result": {
+        "ok": true,
+        "timestampUtc": "2026-11-06T09:20:41.485152Z",
+        "viewId": "_flutterView/0x7d960d9220",
+        "type": "EstimateRasterCacheMemory",
+        "layerBytes": 0,
+        "pictureBytes": 6748504
+      }
+    },
+    "rest-light-raster-cache.json": {
+      "exit_code": 0,
+      "after_timing_windows": true,
+      "result": {
+        "ok": true,
+        "timestampUtc": "2026-11-06T09:20:26.229716Z",
+        "viewId": "_flutterView/0x7d960d9220",
+        "type": "EstimateRasterCacheMemory",
+        "layerBytes": 0,
+        "pictureBytes": 8279928
+      }
+    },
+    "scrolled-light-raster-cache.json": {
+      "exit_code": 0,
+      "after_timing_windows": true,
+      "result": {
+        "ok": true,
+        "timestampUtc": "2026-11-06T09:20:33.083995Z",
+        "viewId": "_flutterView/0x7d960d9220",
+        "type": "EstimateRasterCacheMemory",
+        "layerBytes": 0,
+        "pictureBytes": 8990832
+      }
+    },
+    "scrolled-dark-raster-cache.json": {
+      "exit_code": 0,
+      "after_timing_windows": true,
+      "result": {
+        "ok": true,
+        "timestampUtc": "2026-11-06T09:20:48.095996Z",
+        "viewId": "_flutterView/0x7d960d9220",
+        "type": "EstimateRasterCacheMemory",
+        "layerBytes": 0,
+        "pictureBytes": 7444032
+      }
+    }
+  },
+  "peak_measurement": false,
+  "native_screenshot_collection_delayed": true
+}

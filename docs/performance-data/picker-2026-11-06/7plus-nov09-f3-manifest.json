@@ -1,0 +1,106 @@
+{
+  "device": "iPhone 7 Plus (iPhone9,4), iOS 15.8.8",
+  "protocol": "Two opposite-order pairs at different battery temperatures. Analyze within each pair. Fresh processes with stock renderer and no prewarming.",
+  "runs": [
+    {
+      "order": "b1",
+      "run": "f3-before-timing-7plus-1",
+      "file": "7plus-nov09-f3-b1-raw.json",
+      "source_fingerprint": "72eb8c326764b58ebeae7a813770236310708d38387a8793b0e4ef1a6f86a1b7",
+      "sha256": "5b9034c858a808a90994a651888438584338348a595415b4227758f9794812ef",
+      "start": {
+        "battery_celsius": 33.6,
+        "charge_percent": 70,
+        "external_power": true,
+        "charging": true
+      },
+      "end": {
+        "battery_celsius": 34.1,
+        "charge_percent": 70,
+        "external_power": true,
+        "charging": true
+      },
+      "native_png_count": 6,
+      "test_complete": true,
+      "exit_code": 0,
+      "lease_released": true,
+      "user_bundle_inventory_restored": true,
+      "own_bundle_removed": true
+    },
+    {
+      "order": "a1",
+      "run": "f3-after-timing-7plus-1",
+      "file": "7plus-nov09-f3-a1-raw.json",
+      "source_fingerprint": "f9c33f64bd2a90def4b6864b44326b03e3653a848a19e78c4894967d66163b20",
+      "sha256": "74eb92a4c8426d1c851999dbb5428944596bf9d9b2ed6220550324b815c7d6f1",
+      "start": {
+        "battery_celsius": 34.1,
+        "charge_percent": 70,
+        "external_power": true,
+        "charging": true
+      },
+      "end": {
+        "battery_celsius": 35.1,
+        "charge_percent": 71,
+        "external_power": true,
+        "charging": true
+      },
+      "native_png_count": 6,
+      "test_complete": true,
+      "exit_code": 0,
+      "lease_released": true,
+      "user_bundle_inventory_restored": true,
+      "own_bundle_removed": true
+    },
+    {
+      "order": "a2",
+      "run": "f3-after-timing-7plus-2",
+      "file": "7plus-nov09-f3-a2-raw.json",
+      "source_fingerprint": "f9c33f64bd2a90def4b6864b44326b03e3653a848a19e78c4894967d66163b20",
+      "sha256": "1fcbdd6fc3873ff48675bdb0e5372a67016f31f9238cba411bb08f1673c5697d",
+      "start": {
+        "battery_celsius": 36.0,
+        "charge_percent": 74,
+        "external_power": true,
+        "charging": true
+      },
+      "end": {
+        "battery_celsius": 35.5,
+        "charge_percent": 74,
+        "external_power": true,
+        "charging": true
+      },
+      "native_png_count": 6,
+      "test_complete": true,
+      "exit_code": 0,
+      "lease_released": true,
+      "user_bundle_inventory_restored": true,
+      "own_bundle_removed": true
+    },
+    {
+      "order": "b2",
+      "run": "f3-before-timing-7plus-2",
+      "file": "7plus-nov09-f3-b2-raw.json",
+      "source_fingerprint": "72eb8c326764b58ebeae7a813770236310708d38387a8793b0e4ef1a6f86a1b7",
+      "sha256": "9d21df121eeb47ddf8365cb5f50d298522df167022fd39de172d95a40c050ab7",
+      "start": {
+        "battery_celsius": 35.6,
+        "charge_percent": 74,
+        "external_power": true,
+        "charging": true
+      },
+      "end": {
+        "battery_celsius": 36.2,
+        "charge_percent": 75,
+        "external_power": true,
+        "charging": true
+      },
+      "native_png_count": 6,
+      "test_complete": true,
+      "exit_code": 0,
+      "lease_released": true,
+      "user_bundle_inventory_restored": true,
+      "own_bundle_removed": true
+    }
+  ]
+}

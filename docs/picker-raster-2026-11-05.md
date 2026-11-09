@@ -1,5 +1,7 @@
 # Single picker UI: physical-device investigation, 5 November 2026
 
+Current status: [6 November follow-up](picker-raster-2026-11-06.md). F2 has now been measured against the current shipping UI: first opening regresses and it remains unshipped. The figures below retain their original 5 November source bases.
+
 This investigation covers the newly approved single picker UI. The October
 measurements in [the earlier report](ios26-raster-performance.md) cover a different
 design and are not a before/after comparison for this UI.

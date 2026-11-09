@@ -1,0 +1,20 @@
+{
+  "quality_summary": {
+    "scene_count": 24,
+    "all_geometry_exact": true,
+    "all_icc_equal": true,
+    "outside_header_nonzero_scenes": [],
+    "corner_mask_nonzero_scenes": [],
+    "glyph_mask_nonzero_scenes": []
+  },
+  "partial_rest_scrolled_header_max_delta": 0,
+  "expanded_keyboard_header_max_delta_light_dark": [
+    9,
+    8
+  ],
+  "expanded_keyboard_header_mse_range": [
+    0.0959096069249326,
+    0.16033804085611517
+  ],
+  "own_device_lease_absent": true
+}
