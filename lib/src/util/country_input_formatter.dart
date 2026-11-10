@@ -83,7 +83,7 @@ class CountryInputFormatter implements TextInputFormatter {
     );
   }
 
-  /// Creates an automatic country/prefix formatter with a non-truncating tail.
+  /// Creates a country-aware formatter with a non-truncating tail.
   ///
   /// The regular constructors remain manual, including a null mask.
   factory CountryInputFormatter.forCountry({
@@ -355,7 +355,7 @@ class CountryInputFormatter implements TextInputFormatter {
   CountryPhoneValueStatus get valueStatus => CountryPhoneValueStatus(
     currentLength: _resultTextArray.length,
     expectedLength: _expectedPhoneLength(),
-    isOverflow: _automaticOverflow(_resultTextArray.length),
+    isOverflow: _isOverflow(_resultTextArray.length),
   );
 
   /// Clear the masked text.
@@ -508,8 +508,8 @@ class CountryInputFormatter implements TextInputFormatter {
     return exampleLength > _maskLength ? exampleLength : _maskLength;
   }
 
-  /// Overflow describes numbering lengths, independently from mask capacity.
-  bool _automaticOverflow(int length) {
+  /// Checks the supported lengths or the manual mask capacity.
+  bool _isOverflow(int length) {
     final lengths =
         _formatResolver?.lengths(getUnmaskedText()) ?? const <int>[];
     if (lengths.isNotEmpty) return length > lengths.last;
@@ -521,7 +521,7 @@ class CountryInputFormatter implements TextInputFormatter {
   bool _computeIncompleteValue(int inputLength) => CountryPhoneValueStatus(
     currentLength: inputLength,
     expectedLength: _expectedPhoneLength(),
-    isOverflow: _automaticOverflow(inputLength),
+    isOverflow: _isOverflow(inputLength),
   ).isIncomplete;
 
   void _syncIncompleteState(int inputLength) {
@@ -606,7 +606,7 @@ class CountryInputFormatter implements TextInputFormatter {
     if (_formatResolver case CountryPhoneFormatResolver resolver) {
       if (newValue.composing.isValid && !newValue.composing.isCollapsed)
         return newValue;
-      return _formatAutomatic(resolver, oldValue, newValue);
+      return _formatWithResolver(resolver, oldValue, newValue);
     }
     final normalizedValue = _normalizePhoneEdit(oldValue, newValue);
 
@@ -933,7 +933,7 @@ class CountryInputFormatter implements TextInputFormatter {
   }
 
   /// Remaps both selection endpoints by digit index after prefix normalization.
-  TextEditingValue _formatAutomatic(
+  TextEditingValue _formatWithResolver(
     CountryPhoneFormatResolver resolver,
     TextEditingValue oldValue,
     TextEditingValue newValue,
