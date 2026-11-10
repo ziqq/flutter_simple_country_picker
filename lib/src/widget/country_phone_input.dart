@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:flutter_simple_country_picker/src/constant/country_phone_rules.dart';
 import 'package:meta/meta.dart';
 
 /// {@template country_phone_input}
@@ -29,6 +30,7 @@ class CountryPhoneInput extends StatefulWidget {
     this.showPhoneCode = false,
     this.showWorldWide = false,
     this.shouldReplace8 = true,
+    this.useCountryFormatting = false,
     this.useAutofocus = false,
     @Deprecated(
       'Use useHapticFeedback instead. This parameter will be removed in '
@@ -65,6 +67,7 @@ class CountryPhoneInput extends StatefulWidget {
     bool showPhoneCode,
     bool showWorldWide,
     bool shouldReplace8,
+    bool useCountryFormatting,
     bool shouldCloseOnSwipeDown,
     bool? showGroup,
     bool? showSearch,
@@ -109,10 +112,16 @@ class CountryPhoneInput extends StatefulWidget {
   /// Normalize a leading national prefix for pasted or preset numbers.
   ///
   /// Historically this flag handled Russian numbers that start with `8` before
-  /// `+7`. It now applies a generic normalization rule: when the inserted
-  /// number is longer than the selected country's local example by one digit,
-  /// the leading national prefix is removed before the mask is applied.
+  /// `+7`. Prefixes now come from the selected country's numbering rules.
+  /// Automatic formatting removes a trunk only when the remaining local length
+  /// is supported; manual formatting retains its fixed-length normalization.
   final bool shouldReplace8;
+
+  /// Enables country/prefix pattern selection and a non-truncating soft tail.
+  ///
+  /// False preserves manual Country.mask/null behavior. In automatic mode,
+  /// completion uses all supported lengths rather than mask capacity.
+  final bool useCountryFormatting;
 
   /// Should close the bottom sheet on swipe down gesture.
   final bool shouldCloseOnSwipeDown;
@@ -195,14 +204,22 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
         widget.countryController ?? ValueNotifier<Country>(_initialCountry);
     _countryController.addListener(_onCountryChanged);
 
-    _formater = CountryInputFormatter(
-      filter: {'0': RegExp('[0-9]')},
-      mask: _countryController.value.mask,
-      phoneCode: _countryController.value.phoneCode,
-      example: _countryController.value.example,
-      shouldTryStripPhoneCode: true,
-      shouldTryStripLeadingPrefix: widget.shouldReplace8,
-    );
+    _formater = widget.useCountryFormatting
+        ? CountryInputFormatter.forCountry(
+            country: _countryController.value,
+            shouldTryStripLeadingPrefix: widget.shouldReplace8,
+          )
+        : CountryInputFormatter(
+            filter: {'0': RegExp('[0-9]')},
+            mask: _countryController.value.mask,
+            phoneCode: _countryController.value.phoneCode,
+            example: _countryController.value.example,
+            shouldTryStripPhoneCode: true,
+            shouldTryStripLeadingPrefix:
+                widget.shouldReplace8 &&
+                _nationalPrefix(_countryController.value) != null,
+            leadingPrefixes: {_nationalPrefix(_countryController.value) ?? ''},
+          );
 
     _syncControllerValue(text: _controller.text);
 
@@ -260,7 +277,8 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     }
 
     // Check if the shouldReplace8 has changed
-    if (widget.shouldReplace8 != oldWidget.shouldReplace8) {
+    if (widget.shouldReplace8 != oldWidget.shouldReplace8 ||
+        widget.useCountryFormatting != oldWidget.useCountryFormatting) {
       _updateFormatter();
       _applyPhoneText(
         _phoneController.text,
@@ -269,14 +287,29 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     }
   }
 
+  /// Uses only a country-declared literal trunk in the legacy manual mode.
+  String? _nationalPrefix(Country country) =>
+      countryPhoneRules[country.countryCode.toUpperCase()]?.trunkPrefix;
+
   void _updateFormatter() {
     final country = _countryController.value;
+    if (widget.useCountryFormatting) {
+      _phoneController.value = _formater.updateCountry(
+        country,
+        newValue: _phoneController.value,
+        shouldTryStripLeadingPrefix: widget.shouldReplace8,
+      );
+      _syncControllerValue();
+      return;
+    }
     _formater.updateMask(
       mask: country.mask,
       example: country.example,
       phoneCode: country.phoneCode,
       shouldTryStripPhoneCode: true,
-      shouldTryStripLeadingPrefix: widget.shouldReplace8,
+      shouldTryStripLeadingPrefix:
+          widget.shouldReplace8 && _nationalPrefix(country) != null,
+      leadingPrefixes: {_nationalPrefix(country) ?? ''},
     );
     _syncControllerValue();
   }
@@ -345,8 +378,8 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     // Update the formatter mask
     _updateFormatter();
 
-    // Format the current text in the controller after changing the mask
-    _applyPhoneText(_phoneController.text);
+    // Manual formatting applies the new mask after changing countries.
+    if (!widget.useCountryFormatting) _applyPhoneText(_phoneController.text);
   }
 
   void _onSelect(Country country) {
@@ -497,6 +530,7 @@ class CountryPhoneInput$Extended extends CountryPhoneInput {
     super.isScrollControlled,
     super.placeholder,
     super.shouldReplace8,
+    super.useCountryFormatting,
     super.shouldCloseOnSwipeDown,
     super.showPhoneCode,
     super.showWorldWide,
