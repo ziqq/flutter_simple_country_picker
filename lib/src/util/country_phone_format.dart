@@ -3,7 +3,7 @@
  * Date: 4 November 2026
  */
 
-import 'package:flutter_simple_country_picker/src/constant/country_phone_rules.dart';
+import 'package:flutter_simple_country_picker/src/constant/country_phone_rules.g.dart';
 import 'package:flutter_simple_country_picker/src/model/country.dart';
 import 'package:meta/meta.dart';
 

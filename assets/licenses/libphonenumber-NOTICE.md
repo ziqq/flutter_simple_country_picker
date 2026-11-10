@@ -1,7 +1,7 @@
 # Google libphonenumber metadata
 
 The generated phone formatting rules in
-`lib/src/constant/country_phone_rules.dart` are derived from
+`lib/src/constant/country_phone_rules.g.dart` are derived from
 [Google libphonenumber](https://github.com/google/libphonenumber).
 
 Copyright (C) 2009 The Libphonenumber Authors
@@ -14,6 +14,9 @@ Source:
 
 Source XML SHA-256:
 `b6491939ddaeb9d585a34fe0f0ebd096e83c5ac9a1c5d6dddf38ba4b162b28ca`
+
+The gzip-compressed test fixture at
+`test/fixtures/libphonenumber-metadata.xml.gz` contains the original pinned XML.
 
 The metadata was transformed on 4 November 2026 by
 `tool/generate_phone_rules.dart`. The generated subset:
