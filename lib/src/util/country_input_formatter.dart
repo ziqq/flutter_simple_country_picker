@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/src/controller/country_phone_controller.dart'
     show CountryPhoneValueStatus;
 import 'package:flutter_simple_country_picker/src/model/country.dart';
-import 'package:flutter_simple_country_picker/src/util/country_phone_format.dart';
+import 'package:flutter_simple_country_picker/src/util/country_phone_format_resolver.dart';
 
 /// Default filter for country input formatter.
 final _kDefaultFilter = <String, RegExp>{

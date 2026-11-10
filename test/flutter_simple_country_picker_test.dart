@@ -11,6 +11,8 @@ import 'unit_test/country_localizations_test.dart'
 import 'unit_test/country_parser_test.dart' as unit_country_parser_test;
 import 'unit_test/country_phone_controller_test.dart'
     as unit_country_phone_controller_test;
+import 'unit_test/country_phone_format_resolver_test.dart'
+    as unit_country_phone_format_resolver_test;
 import 'unit_test/country_picker_theme_test.dart'
     as unit_country_picker_theme_test;
 import 'unit_test/country_provider_test.dart' as unit_country_provider_test;
@@ -43,6 +45,7 @@ void main() {
       unit_country_localizations_test.main();
       unit_country_parser_test.main();
       unit_country_phone_controller_test.main();
+      unit_country_phone_format_resolver_test.main();
       unit_country_picker_theme_test.main();
       unit_country_provider_test.main();
       unit_country_test.main();
