@@ -7,7 +7,7 @@ import 'package:meta/meta.dart';
 
 /// Source-of-truth bundled country dataset.
 ///
-/// Keep [countries] and `country_codes.json` in sync. After editing this file,
+/// Keep [countries] and `country_codes.g.json` in sync. After editing this file,
 /// regenerate the JSON mirror with `fvm dart --disable-analytics run
 /// tool/generate_json.dart`.
 @internal

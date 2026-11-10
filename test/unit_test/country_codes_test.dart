@@ -119,7 +119,7 @@ void main() => group('country_codes_test -', () {
   });
 
   test('json matches dart (all keys/values)', () {
-    final jsonFile = File('lib/src/constant/country_codes.json');
+    final jsonFile = File('lib/src/constant/country_codes.g.json');
     expect(
       jsonFile.existsSync(),
       isTrue,
