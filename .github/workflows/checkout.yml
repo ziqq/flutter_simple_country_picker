@@ -73,6 +73,7 @@ jobs:
             pubspec.yaml
             lib
             test
+            tool
             analysis_options.yaml
             CHANGELOG.md
 
