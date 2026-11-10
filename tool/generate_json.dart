@@ -125,7 +125,7 @@ final class _Options {
     stderr
       ..writeln('Usage:')
       ..writeln(
-        '  dart run tool/generate_country_codes_json.dart '
+        '  dart run tool/generate_json.dart '
         '[--input <path>] [--output <path>] [--minify] [--validate-only]',
       )
       ..writeln('')

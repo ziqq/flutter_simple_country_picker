@@ -25,7 +25,7 @@ class CountryPhoneFormatResolver {
   static final RegExp _digit = RegExp(r'\d');
 
   /// Matches prefix rules without compiling expressions on every keystroke.
-  int _match(CountryPhoneFormat format, String digits) {
+  int _leadingDigitsMatchLength(CountryPhoneFormat format, String digits) {
     if (format.leadingDigits.isEmpty) return 0;
     final expression = _prefixes.putIfAbsent(
       format.leadingDigits,
@@ -35,7 +35,7 @@ class CountryPhoneFormatResolver {
   }
 
   /// Supported local lengths; presentation capacity does not limit the input.
-  List<int> lengths(String digits) {
+  List<int> supportedLengths(String digits) {
     final data = rules;
     if (data == null) return const <int>[];
     final national = '${data.regionPrefix}$digits';
@@ -43,7 +43,7 @@ class CountryPhoneFormatResolver {
     final covered = <int>{};
     for (final format in data.formats) {
       covered.addAll(format.groupLengths.keys);
-      if (_match(format, national) >= 0)
+      if (_leadingDigitsMatchLength(format, national) >= 0)
         matched.addAll(format.groupLengths.keys);
     }
     final result = <int>[
@@ -59,13 +59,15 @@ class CountryPhoneFormatResolver {
   }
 
   /// Whether a full local input has a supported length and recognized prefix.
-  bool _possible(String digits) {
+  bool _hasSupportedPrefixAndLength(String digits) {
     final data = rules;
     if (data == null) return false;
     final national = '${data.regionPrefix}$digits';
-    return lengths(digits).contains(digits.length) &&
+    return supportedLengths(digits).contains(digits.length) &&
         (data.formats.isEmpty ||
-            data.formats.any((f) => _match(f, national) >= 0));
+            data.formats.any(
+              (f) => _leadingDigitsMatchLength(f, national) >= 0,
+            ));
   }
 
   /// Removes calling/trunk prefixes only when their interpretation is supported.
@@ -88,18 +90,22 @@ class CountryPhoneFormatResolver {
     if (stripCode && digits.startsWith(code) && digits.length > code.length) {
       final candidate = digits.substring(code.length);
       if (international ||
-          (allowImplicitCode && !_possible(digits) && _possible(candidate))) {
+          (allowImplicitCode &&
+              !_hasSupportedPrefixAndLength(digits) &&
+              _hasSupportedPrefixAndLength(candidate))) {
         digits = candidate;
       }
     }
-    final prefix = rules?.nationalPrefix;
+    final prefix = rules?.nationalPrefixPattern;
     if (stripTrunk && prefix != null && prefix.isNotEmpty) {
       final match = _prefixes
           .putIfAbsent(prefix, () => RegExp('^(?:$prefix)'))
           .matchAsPrefix(digits);
       if (match != null && match.end > 0) {
         final candidate = digits.substring(match.end);
-        if (!_possible(digits) && _possible(candidate)) digits = candidate;
+        if (!_hasSupportedPrefixAndLength(digits) &&
+            _hasSupportedPrefixAndLength(candidate))
+          digits = candidate;
       }
     }
     return digits;
@@ -110,17 +116,16 @@ class CountryPhoneFormatResolver {
     final data = rules;
     if (digits.isEmpty) return '';
     if (data == null || data.formats.isEmpty)
-      return _apply(country.mask, digits);
+      return _applyMask(country.mask, digits);
     final national = '${data.regionPrefix}$digits';
     CountryPhoneFormat? selected;
-    var score = -1;
-    var lengthScore = -1;
-    var capacity = 0;
+    var bestPrefixMatchLength = -1;
+    var bestLengthFit = -1;
+    var bestCapacity = 0;
     for (final candidate in data.formats) {
-      final matched = _match(candidate, national);
-      if (matched < 0) continue;
-      final candidateLengthScore =
-          candidate.groupLengths.containsKey(national.length)
+      final prefixMatchLength = _leadingDigitsMatchLength(candidate, national);
+      if (prefixMatchLength < 0) continue;
+      final lengthFit = candidate.groupLengths.containsKey(national.length)
           ? 2
           : candidate.groupLengths.keys.any((n) => n >= national.length)
           ? 1
@@ -129,31 +134,34 @@ class CountryPhoneFormatResolver {
         0,
         (largest, length) => length > largest ? length : largest,
       );
-      if (candidateLengthScore > lengthScore ||
-          (candidateLengthScore == lengthScore &&
-              (candidateLengthScore == 0
-                  ? candidateCapacity > capacity ||
-                        (candidateCapacity == capacity && matched > score)
-                  : matched > score))) {
+      if (lengthFit > bestLengthFit ||
+          (lengthFit == bestLengthFit &&
+              (lengthFit == 0
+                  ? candidateCapacity > bestCapacity ||
+                        (candidateCapacity == bestCapacity &&
+                            prefixMatchLength > bestPrefixMatchLength)
+                  : prefixMatchLength > bestPrefixMatchLength))) {
         selected = candidate;
-        score = matched;
-        lengthScore = candidateLengthScore;
-        capacity = candidateCapacity;
+        bestPrefixMatchLength = prefixMatchLength;
+        bestLengthFit = lengthFit;
+        bestCapacity = candidateCapacity;
       }
     }
-    if (selected == null) return _apply(country.mask, digits);
+    if (selected == null) return _applyMask(country.mask, digits);
     final sizes = selected.groupLengths.keys.toList()..sort();
-    if (sizes.isEmpty) return _apply(country.mask, digits);
+    if (sizes.isEmpty) return _applyMask(country.mask, digits);
     final length = sizes.firstWhere(
       (n) => n >= national.length,
       orElse: () => sizes.last,
     );
     final groups = selected.groupLengths[length] ?? const <int>[];
-    final mask = selected.format.replaceAllMapped(RegExp(r'\$(\d+)'), (match) {
+    final mask = selected.replacement.replaceAllMapped(RegExp(r'\$(\d+)'), (
+      match,
+    ) {
       final index = int.tryParse(match.group(1) ?? '') ?? 0;
       return index > 0 && index <= groups.length ? '#' * groups[index - 1] : '';
     });
-    var result = _apply(mask, national);
+    var result = _applyMask(mask, national);
     if (data.regionPrefix.isEmpty) return result;
     var removed = 0;
     var offset = 0;
@@ -166,7 +174,7 @@ class CountryPhoneFormatResolver {
   }
 
   /// Emits literals lazily and appends all digits beyond the template.
-  static String _apply(String? mask, String digits) {
+  static String _applyMask(String? mask, String digits) {
     if (mask == null || mask.isEmpty) return digits;
     final result = StringBuffer();
     var index = 0;

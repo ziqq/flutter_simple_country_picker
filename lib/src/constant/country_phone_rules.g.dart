@@ -15,8 +15,8 @@ final class CountryPhoneRules {
   const CountryPhoneRules({
     required this.callingCode,
     required this.regionPrefix,
-    required this.nationalPrefix,
-    required this.trunkPrefix,
+    required this.nationalPrefixPattern,
+    required this.literalTrunkPrefix,
     required this.possibleLengths,
     required this.formats,
   });
@@ -34,13 +34,13 @@ final class CountryPhoneRules {
   /// Apply only when the original number is unsupported and the remaining
   /// national number has a supported prefix and length. Transform rules that
   /// add or rewrite digits are intentionally excluded.
-  final String? nationalPrefix;
+  final String? nationalPrefixPattern;
 
   /// Literal national trunk prefix for the legacy manual formatter.
   ///
   /// Only the source territory's numeric nationalPrefix is retained here;
   /// carrier regexes and transformations are never inferred as a literal.
-  final String? trunkPrefix;
+  final String? literalTrunkPrefix;
 
   /// Supported fixed/mobile national lengths, including [regionPrefix].
   ///
@@ -60,7 +60,7 @@ final class CountryPhoneFormat {
   const CountryPhoneFormat({
     required this.leadingDigits,
     required this.pattern,
-    required this.format,
+    required this.replacement,
     required this.groupLengths,
   });
 
@@ -71,7 +71,7 @@ final class CountryPhoneFormat {
   final String pattern;
 
   /// International replacement containing ordered capture references.
-  final String format;
+  final String replacement;
 
   /// Greedy capture sizes by supported full national length.
   ///
@@ -92,22 +92,22 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'AC': CountryPhoneRules(
     callingCode: '247',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[5],
     formats: <CountryPhoneFormat>[],
   ),
   'AD': CountryPhoneRules(
     callingCode: '376',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[6, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[135-9]',
         pattern: r'(\d{3})(\d{3})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[3, 3],
         },
@@ -115,7 +115,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '6',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -125,14 +125,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'AE': CountryPhoneRules(
     callingCode: '971',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '60|8',
         pattern: r'(\d{3})(\d{2,9})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
           9: <int>[3, 6],
@@ -141,7 +141,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[236]|[479][2-8]',
         pattern: r'(\d)(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
         },
@@ -149,7 +149,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[479]',
         pattern: r'(\d{3})(\d)(\d{5})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 1, 5],
         },
@@ -157,7 +157,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '5',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -167,14 +167,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'AF': CountryPhoneRules(
     callingCode: '93',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-7]',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -184,14 +184,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'AG': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '268',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -201,14 +201,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'AI': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '264',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -218,14 +218,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'AL': CountryPhoneRules(
     callingCode: '355',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '4[2-6]',
         pattern: r'(\d)(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
         },
@@ -233,7 +233,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2358][2-5]|4',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -241,7 +241,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[23578]',
         pattern: r'(\d{3})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
         },
@@ -249,7 +249,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '6',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -259,14 +259,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'AM': CountryPhoneRules(
     callingCode: '374',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[89]0',
         pattern: r'(\d{3})(\d{2})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[3, 2, 3],
         },
@@ -274,7 +274,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2|3[12]',
         pattern: r'(\d{3})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
         },
@@ -282,7 +282,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1|47',
         pattern: r'(\d{2})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[2, 6],
         },
@@ -290,7 +290,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[3-9]',
         pattern: r'(\d{2})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[2, 6],
         },
@@ -300,14 +300,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'AO': CountryPhoneRules(
     callingCode: '244',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[29]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -317,15 +317,15 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'AR': CountryPhoneRules(
     callingCode: '54',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[10, 11],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits:
             '2(?:[23]02|6(?:[25]|4(?:64|[78]))|9(?:[02356]|4(?:[0268]|5[2-6])|72|8[23]))|3(?:3[28]|4(?:[04679]|3(?:5(?:4[0-25689]|[56])|[78])|58|8[2379])|5(?:[2467]|3[237]|8(?:[23]|4(?:[45]|60)|5(?:4[0-39]|5|64)))|7[1-578]|8(?:[2469]|3[278]|54(?:4|5[13-7]|6[89])|86[3-6]))|2(?:2[24-9]|3[1-59]|47)|38(?:[58][78]|7[378])|3(?:454|85[56])[46]|3(?:4(?:36|5[56])|8(?:[38]5|76))[4-6]',
         pattern: r'(\d{4})(\d{2})(\d{4})',
-        format: r'$1 $2-$3',
+        replacement: r'$1 $2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[4, 2, 4],
         },
@@ -333,7 +333,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1',
         pattern: r'(\d{2})(\d{4})(\d{4})',
-        format: r'$1 $2-$3',
+        replacement: r'$1 $2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[2, 4, 4],
         },
@@ -341,7 +341,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[68]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -349,7 +349,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[23]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2-$3',
+        replacement: r'$1 $2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -358,7 +358,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '9(?:2(?:[23]02|6(?:[25]|4(?:64|[78]))|9(?:[02356]|4(?:[0268]|5[2-6])|72|8[23]))|3(?:3[28]|4(?:[04679]|3(?:5(?:4[0-25689]|[56])|[78])|5(?:4[46]|8)|8[2379])|5(?:[2467]|3[237]|8(?:[23]|4(?:[45]|60)|5(?:4[0-39]|5|64)))|7[1-578]|8(?:[2469]|3[278]|5(?:4(?:4|5[13-7]|6[89])|[56][46]|[78])|7[378]|8(?:6[3-6]|[78]))))|92(?:2[24-9]|3[1-59]|47)|93(?:4(?:36|5[56])|8(?:[38]5|76))[4-6]',
         pattern: r'(\d)(\d{4})(\d{2})(\d{4})',
-        format: r'$1 $2 $3-$4',
+        replacement: r'$1 $2 $3-$4',
         groupLengths: <int, List<int>>{
           11: <int>[1, 4, 2, 4],
         },
@@ -366,7 +366,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '91',
         pattern: r'(\d)(\d{2})(\d{4})(\d{4})',
-        format: r'$1 $2 $3-$4',
+        replacement: r'$1 $2 $3-$4',
         groupLengths: <int, List<int>>{
           11: <int>[1, 2, 4, 4],
         },
@@ -374,7 +374,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{3})(\d{5})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           11: <int>[3, 3, 5],
         },
@@ -382,7 +382,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '9',
         pattern: r'(\d)(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3-$4',
+        replacement: r'$1 $2 $3-$4',
         groupLengths: <int, List<int>>{
           11: <int>[1, 3, 3, 4],
         },
@@ -392,14 +392,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'AS': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '684',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -409,14 +409,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'AT': CountryPhoneRules(
     callingCode: '43',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '1(?:11|[2-9])',
         pattern: r'(\d)(\d{3,12})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           4: <int>[1, 3],
           5: <int>[1, 4],
@@ -433,7 +433,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '517',
         pattern: r'(\d{3})(\d{2})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           5: <int>[3, 2],
         },
@@ -441,7 +441,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '5[079]',
         pattern: r'(\d{2})(\d{3,5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           5: <int>[2, 3],
           6: <int>[2, 4],
@@ -452,7 +452,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '(?:31|4)6|51|6(?:485|5[0-3579]|[6-9])|7(?:20|32|8)|[89]',
         pattern: r'(\d{3})(\d{3,10})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[3, 3],
           7: <int>[3, 4],
@@ -467,7 +467,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2-467]|5[2-6]',
         pattern: r'(\d{4})(\d{3,9})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[4, 3],
           8: <int>[4, 4],
@@ -481,7 +481,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '5',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
           9: <int>[2, 3, 4],
@@ -490,7 +490,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '5',
         pattern: r'(\d{2})(\d{4})(\d{4,7})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[2, 4, 4],
           11: <int>[2, 4, 5],
@@ -503,14 +503,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'AU': CountryPhoneRules(
     callingCode: '61',
     regionPrefix: '',
-    nationalPrefix: '(183[12])|0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '(183[12])|0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '16',
         pattern: r'(\d{2})(\d{3})(\d{2,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -518,7 +518,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '14|4',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -526,7 +526,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2378]',
         pattern: r'(\d)(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[1, 4, 4],
         },
@@ -536,14 +536,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'AW': CountryPhoneRules(
     callingCode: '297',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[25-9]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -553,14 +553,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'AX': CountryPhoneRules(
     callingCode: '358',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[6, 7, 8, 9, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '(?:[1-3]0|[68])0|70[07-9]',
         pattern: r'(\d{3})(\d{3,7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[3, 3],
           7: <int>[3, 4],
@@ -572,7 +572,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[14]|2[09]|50|7[135]',
         pattern: r'(\d{2})(\d{4,8})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[2, 4],
           7: <int>[2, 5],
@@ -584,7 +584,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{2})(\d{6,10})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[2, 6],
           9: <int>[2, 7],
@@ -594,7 +594,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '(?:19|[2568])[1-8]|3(?:0[1-9]|[1-9])|9',
         pattern: r'(\d)(\d{4,9})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[1, 5],
           7: <int>[1, 6],
@@ -608,14 +608,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'AZ': CountryPhoneRules(
     callingCode: '994',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '90',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -623,7 +623,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1[28]|2|365(?:4|5[02])|46',
         pattern: r'(\d{2})(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 2, 2],
         },
@@ -631,7 +631,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[13-9]',
         pattern: r'(\d{2})(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 2, 2],
         },
@@ -641,14 +641,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BA': CountryPhoneRules(
     callingCode: '387',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '6[1-3]|[7-9]',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -656,7 +656,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[3-5]|6[56]',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2-$3',
+        replacement: r'$1 $2-$3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -664,7 +664,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '6',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{3})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[2, 2, 2, 3],
         },
@@ -674,14 +674,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BB': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -691,14 +691,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BD': CountryPhoneRules(
     callingCode: '880',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[6, 7, 8, 9, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '31[5-8]|[459]1',
         pattern: r'(\d{2})(\d{4,6})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           6: <int>[2, 4],
           7: <int>[2, 5],
@@ -709,7 +709,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '3(?:[67]|8[013-9])|4(?:6[168]|7|[89][18])|5(?:6[128]|9)|6(?:[15]|28)|7[2-589]|8(?:0[014-9]|[12])|9[358]|(?:3[2-5]|4[235]|5[2-578]|6[0389]|76|8[3-7]|9[24])1|(?:44|66)[01346-9]',
         pattern: r'(\d{3})(\d{3,7})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           6: <int>[3, 3],
           7: <int>[3, 4],
@@ -721,7 +721,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[13-9]|2[23]',
         pattern: r'(\d{4})(\d{3,6})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           7: <int>[4, 3],
           8: <int>[4, 4],
@@ -732,7 +732,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2',
         pattern: r'(\d)(\d{7,8})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           8: <int>[1, 7],
           9: <int>[1, 8],
@@ -743,14 +743,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BE': CountryPhoneRules(
     callingCode: '32',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '(?:80|9)0',
         pattern: r'(\d{3})(\d{2})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[3, 2, 3],
         },
@@ -758,7 +758,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[239]|4[23]',
         pattern: r'(\d)(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 2, 2],
         },
@@ -766,7 +766,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[15-8]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -774,7 +774,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '4',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -784,14 +784,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BF': CountryPhoneRules(
     callingCode: '226',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[024-7]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -801,14 +801,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BG': CountryPhoneRules(
     callingCode: '359',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[6, 7, 8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '2',
         pattern: r'(\d)(\d)(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           6: <int>[1, 1, 2, 2],
         },
@@ -816,7 +816,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '43[1-6]|70[1-9]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -824,7 +824,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2',
         pattern: r'(\d)(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[1, 3, 3],
           8: <int>[1, 3, 4],
@@ -833,7 +833,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[356]|4[124-7]|7[1-9]|8[1-6]|9[1-7]',
         pattern: r'(\d{2})(\d{3})(\d{2,3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[2, 3, 2],
           8: <int>[2, 3, 3],
@@ -842,7 +842,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '(?:70|8)0',
         pattern: r'(\d{3})(\d{2})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[3, 2, 3],
         },
@@ -850,7 +850,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '43[1-7]|7',
         pattern: r'(\d{3})(\d{3})(\d{2})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[3, 3, 2],
         },
@@ -858,7 +858,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[48]|9[08]',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
           9: <int>[2, 3, 4],
@@ -867,7 +867,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '9',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -877,14 +877,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BH': CountryPhoneRules(
     callingCode: '973',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[13679]|8[02-4679]',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -894,14 +894,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BI': CountryPhoneRules(
     callingCode: '257',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2367]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -911,14 +911,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BJ': CountryPhoneRules(
     callingCode: '229',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '0',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4 $5',
+        replacement: r'$1 $2 $3 $4 $5',
         groupLengths: <int, List<int>>{
           10: <int>[2, 2, 2, 2, 2],
         },
@@ -928,14 +928,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BM': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '441',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -945,14 +945,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BN': CountryPhoneRules(
     callingCode: '673',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-578]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -962,14 +962,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BO': CountryPhoneRules(
     callingCode: '591',
     regionPrefix: '',
-    nationalPrefix: r'0(1\d)?',
-    trunkPrefix: '0',
+    nationalPrefixPattern: r'0(1\d)?',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[23]|4[46]|50',
         pattern: r'(\d)(\d{7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[1, 7],
         },
@@ -977,7 +977,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[5-7]',
         pattern: r'(\d{8})',
-        format: r'$1',
+        replacement: r'$1',
         groupLengths: <int, List<int>>{
           8: <int>[8],
         },
@@ -987,14 +987,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BQ': CountryPhoneRules(
     callingCode: '599',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[3467]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -1004,14 +1004,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BR': CountryPhoneRules(
     callingCode: '55',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[10, 11],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '(?:[358]|90)0',
         pattern: r'(\d{3})(\d{2,3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -1020,7 +1020,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '(?:[14689][1-9]|2[12478]|3[1-578]|5[13-5]|7[13-579])[2-57]',
         pattern: r'(\d{2})(\d{4})(\d{4})',
-        format: r'$1 $2-$3',
+        replacement: r'$1 $2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[2, 4, 4],
         },
@@ -1028,7 +1028,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[16][1-9]|[2-57-9]',
         pattern: r'(\d{2})(\d{5})(\d{4})',
-        format: r'$1 $2-$3',
+        replacement: r'$1 $2-$3',
         groupLengths: <int, List<int>>{
           11: <int>[2, 5, 4],
         },
@@ -1038,14 +1038,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BS': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '242',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -1055,14 +1055,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BT': CountryPhoneRules(
     callingCode: '975',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7, 8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-6]|7[246]|8[2-4]',
         pattern: r'(\d)(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[1, 3, 3],
         },
@@ -1070,7 +1070,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1[67]|[78]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -1080,14 +1080,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BW': CountryPhoneRules(
     callingCode: '267',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7, 8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '90',
         pattern: r'(\d{2})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[2, 5],
         },
@@ -1095,7 +1095,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2-6]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -1103,7 +1103,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -1113,14 +1113,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BY': CountryPhoneRules(
     callingCode: '375',
     regionPrefix: '',
-    nationalPrefix: '0|80?',
-    trunkPrefix: '8',
+    nationalPrefixPattern: '0|80?',
+    literalTrunkPrefix: '8',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '800',
         pattern: r'(\d{3})(\d{2})(\d{2,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 4],
         },
@@ -1129,7 +1129,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '1(?:5[169]|6(?:3[1-3]|4|5[125])|7(?:1[3-9]|7[0-24-6]|9[2-7]))|2(?:1[35]|2[34]|3[3-5])',
         pattern: r'(\d{4})(\d{2})(\d{3})',
-        format: r'$1 $2-$3',
+        replacement: r'$1 $2-$3',
         groupLengths: <int, List<int>>{
           9: <int>[4, 2, 3],
         },
@@ -1137,7 +1137,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1(?:[56]|7[467])|2[1-3]',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2-$3-$4',
+        replacement: r'$1 $2-$3-$4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -1145,7 +1145,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[1-4]',
         pattern: r'(\d{2})(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2-$3-$4',
+        replacement: r'$1 $2-$3-$4',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 2, 2],
         },
@@ -1155,14 +1155,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'BZ': CountryPhoneRules(
     callingCode: '501',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-8]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -1172,14 +1172,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'CA': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -1189,14 +1189,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'CD': CountryPhoneRules(
     callingCode: '243',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[7, 8, 9, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '88',
         pattern: r'(\d{2})(\d{2})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[2, 2, 3],
         },
@@ -1204,7 +1204,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[1-6]',
         pattern: r'(\d{2})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[2, 5],
         },
@@ -1212,7 +1212,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2',
         pattern: r'(\d{2})(\d{2})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 4],
         },
@@ -1220,7 +1220,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -1228,7 +1228,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[89]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -1236,7 +1236,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '5',
         pattern: r'(\d{2})(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           10: <int>[2, 2, 3, 3],
         },
@@ -1246,14 +1246,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'CF': CountryPhoneRules(
     callingCode: '236',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[26-8]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -1263,14 +1263,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'CG': CountryPhoneRules(
     callingCode: '242',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d)(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[1, 4, 4],
         },
@@ -1278,7 +1278,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[02]',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -1288,14 +1288,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'CH': CountryPhoneRules(
     callingCode: '41',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '8[047]|90',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -1303,7 +1303,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2-79]|81',
         pattern: r'(\d{2})(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 2, 2],
         },
@@ -1313,14 +1313,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'CI': CountryPhoneRules(
     callingCode: '225',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '2',
         pattern: r'(\d{2})(\d{2})(\d)(\d{5})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           10: <int>[2, 2, 1, 5],
         },
@@ -1328,7 +1328,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '0',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{4})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           10: <int>[2, 2, 2, 4],
         },
@@ -1338,14 +1338,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'CK': CountryPhoneRules(
     callingCode: '682',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[5],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-578]',
         pattern: r'(\d{2})(\d{3})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           5: <int>[2, 3],
         },
@@ -1355,14 +1355,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'CL': CountryPhoneRules(
     callingCode: '56',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '2196',
         pattern: r'(\d{5})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[5, 4],
         },
@@ -1370,7 +1370,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '60|809',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -1378,7 +1378,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '44',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -1386,7 +1386,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2[1-36]',
         pattern: r'(\d)(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[1, 4, 4],
         },
@@ -1394,7 +1394,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '9(?:10|[2-9])',
         pattern: r'(\d)(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[1, 4, 4],
         },
@@ -1402,7 +1402,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '3[2-5]|[47]|5[1-3578]|6[13-57]|8(?:0[1-8]|[1-9])',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -1410,7 +1410,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '60|8',
         pattern: r'(\d{3})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -1420,14 +1420,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'CM': CountryPhoneRules(
     callingCode: '237',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[26]|88',
         pattern: r'(\d)(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4 $5',
+        replacement: r'$1 $2 $3 $4 $5',
         groupLengths: <int, List<int>>{
           9: <int>[1, 2, 2, 2, 2],
         },
@@ -1437,14 +1437,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'CN': CountryPhoneRules(
     callingCode: '86',
     regionPrefix: '',
-    nationalPrefix: r'(1(?:[12]\d|79)\d\d)|0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: r'(1(?:[12]\d|79)\d\d)|0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[7, 8, 9, 10, 11],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '1010',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -1453,7 +1453,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             r'(?:3(?:[15]\d|35|49|7[0-79]|9[1-68])|4(?:1[125-9]|2[179]|[35][1-9]|6[47-9]|7\d|8[23])|5(?:[1357]\d|2[37]|4[36]|6[1-46]|80|9[1-9])|6(?:3[1-35]|6[0238]|9[12])|7(?:01|[1579]\d|2[248]|3[014-9]|4[3-6]|6[023689])|8(?:1[236-8]|2[5-7]|[37]\d|5[14-9]|8[36-8]|9[1-8])|9(?:0[1-3689]|1[1-79]|[379]\d|4[13]|5[1-5]))(?:100|9[56])',
         pattern: r'(\d{3})(\d{5,6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
           9: <int>[3, 6],
@@ -1462,7 +1462,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[48]00',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -1471,7 +1471,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '10[02-79]|2(?:[02-57-9]|1[2-79])|(?:10|21)[18](?:0[1-9]|[1-9])',
         pattern: r'(\d{2})(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[2, 4, 4],
         },
@@ -1480,7 +1480,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '3(?:35|49|5|7[02-6]|9[1-68])|4(?:1[25-9]|2[179]|3[3-9]|5[2-9]|6[47-9]|7|8[23])|5(?:3[03-9]|4[36]|6[1-46]|7[028]|80|9[2-46-9])|6(?:3[1-35]|6[0238]|9[12])|7(?:01|[17]|2[248]|3[04-9]|4[3-6]|5[0-4689]|6[2368])|8(?:1[236-8]|2[5-7]|3|5[14-9]|8[36-8]|9[1-7])|9(?:0[1-3689]|1[1-79]|[379]|4[13]|5[1-5])|(?:31|55|79|87)[02-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -1488,7 +1488,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '950',
         pattern: r'(\d{3})(\d{7,8})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[3, 7],
           11: <int>[3, 8],
@@ -1498,7 +1498,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '37[179]|43[1-35]|5(?:1|2[37]|3[12]|7[13-79]|9[15])|7(?:5[457]|6[09])|898|(?:31|4[15]|55|7[39]|8[57])1',
         pattern: r'(\d{3})(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           11: <int>[3, 4, 4],
         },
@@ -1507,7 +1507,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '1(?:[38]|4[57]|[59][0-35-9]|6(?:10|[25-7])|7(?:[0-35-8]|40[0-5]))',
         pattern: r'(\d{3})(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           11: <int>[3, 4, 4],
         },
@@ -1516,7 +1516,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             r'(?:10|2[0-57-9])(?:1(?:00|23)|9[56])|(?:3(?:[15]\d|35|49|7[0-79]|9[1-68])|4(?:1[125-9]|2[179]|[35][1-9]|6[47-9]|7\d|8[23])|5(?:[1357]\d|2[37]|4[36]|6[1-46]|80|9[1-9])|6(?:3[1-35]|6[0238]|9[12])|7(?:01|[1579]\d|2[248]|3[014-9]|4[3-6]|6[023689])|8(?:1[236-8]|2[5-7]|[37]\d|5[14-9]|8[36-8]|9[1-8])|9(?:0[1-3689]|1[1-79]|3\d|4[13]|5[1-5]|7[0-79]|9[0-35-9]))123',
         pattern: r'(\d{2})(\d{5,6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[2, 5],
           8: <int>[2, 6],
@@ -1527,14 +1527,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'CO': CountryPhoneRules(
     callingCode: '57',
     regionPrefix: '',
-    nationalPrefix: '0([3579]|4(?:[14]4|56))?',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0([3579]|4(?:[14]4|56))?',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '46',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -1542,7 +1542,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '6|90',
         pattern: r'(\d{3})(\d{7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[3, 7],
         },
@@ -1550,7 +1550,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '3[0-357]|94',
         pattern: r'(\d{3})(\d{7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[3, 7],
         },
@@ -1560,14 +1560,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'CR': CountryPhoneRules(
     callingCode: '506',
     regionPrefix: '',
-    nationalPrefix: '(19(?:0[0-2468]|1[09]|20|66|77|99))',
-    trunkPrefix: null,
+    nationalPrefixPattern: '(19(?:0[0-2468]|1[09]|20|66|77|99))',
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-7]|8[3-9]',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -1577,14 +1577,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'CU': CountryPhoneRules(
     callingCode: '53',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[6, 7, 8, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '2[1-4]|[34]',
         pattern: r'(\d{2})(\d{4,6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[2, 4],
           7: <int>[2, 5],
@@ -1594,7 +1594,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d)(\d{6,7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[1, 6],
           8: <int>[1, 7],
@@ -1603,7 +1603,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[56]',
         pattern: r'(\d)(\d{7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[1, 7],
         },
@@ -1611,7 +1611,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[3, 7],
         },
@@ -1621,14 +1621,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'CV': CountryPhoneRules(
     callingCode: '238',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-589]',
         pattern: r'(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[3, 2, 2],
         },
@@ -1638,14 +1638,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'CW': CountryPhoneRules(
     callingCode: '599',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '9[4-8]',
         pattern: r'(\d)(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
         },
@@ -1655,14 +1655,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'CY': CountryPhoneRules(
     callingCode: '357',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[257-9]',
         pattern: r'(\d{2})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[2, 6],
         },
@@ -1672,14 +1672,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'CZ': CountryPhoneRules(
     callingCode: '420',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-8]|9[015-7]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -1689,14 +1689,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'DE': CountryPhoneRules(
     callingCode: '49',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '3[02]|40|[68]9',
         pattern: r'(\d{2})(\d{3,13})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           5: <int>[2, 3],
           6: <int>[2, 4],
@@ -1715,7 +1715,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '2(?:0[1-389]|12[0-8])|3(?:[35-9][15]|4[015])|906|2(?:[13][14]|2[18])|(?:2[4-9]|4[2-9]|[579][1-9]|[68][1-8])1',
         pattern: r'(\d{3})(\d{3,12})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[3, 3],
           7: <int>[3, 4],
@@ -1733,7 +1733,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '[24-6]|3(?:3(?:0[1-467]|2[127-9]|3[124578]|7[1257-9]|8[1256]|9[145])|4(?:2[135]|4[13578]|9[1346])|5(?:0[14]|2[1-3589]|6[1-4]|7[13468]|8[13568])|6(?:2[1-489]|3[124-6]|6[13]|7[12579]|8[1-356]|9[135])|7(?:2[1-7]|4[145]|6[1-5]|7[1-4])|8(?:21|3[1468]|6|7[1467]|8[136])|9(?:0[12479]|2[1358]|4[134679]|6[1-9]|7[136]|8[147]|9[1468]))|70[2-8]|8(?:0[2-9]|[1-8])|90[7-9]|[79][1-9]|3[68]4[1347]|3(?:47|60)[1356]|3(?:3[46]|46|5[49])[1246]|3[4579]3[1357]',
         pattern: r'(\d{4})(\d{2,11})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[4, 2],
           7: <int>[4, 3],
@@ -1750,7 +1750,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '138',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -1758,7 +1758,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '3',
         pattern: r'(\d{5})(\d{2,10})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[5, 2],
           8: <int>[5, 3],
@@ -1774,7 +1774,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '181',
         pattern: r'(\d{3})(\d{5,11})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
           9: <int>[3, 6],
@@ -1788,7 +1788,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1(?:3|80)|9',
         pattern: r'(\d{3})(\d)(\d{4,10})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[3, 1, 4],
           9: <int>[3, 1, 5],
@@ -1802,7 +1802,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1[67]',
         pattern: r'(\d{3})(\d{7,8})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[3, 7],
           11: <int>[3, 8],
@@ -1811,7 +1811,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{7,12})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[3, 7],
           11: <int>[3, 8],
@@ -1824,7 +1824,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '18500',
         pattern: r'(\d{5})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           11: <int>[5, 6],
         },
@@ -1832,7 +1832,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{3})(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           11: <int>[3, 4, 4],
         },
@@ -1840,7 +1840,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '18[68]',
         pattern: r'(\d{4})(\d{7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           11: <int>[4, 7],
         },
@@ -1848,7 +1848,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '15[1279]',
         pattern: r'(\d{4})(\d{7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           11: <int>[4, 7],
         },
@@ -1856,7 +1856,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '15(?:[0568]|3[13])',
         pattern: r'(\d{5})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           11: <int>[5, 6],
         },
@@ -1864,7 +1864,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '18',
         pattern: r'(\d{3})(\d{8})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           11: <int>[3, 8],
         },
@@ -1872,7 +1872,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1(?:6[023]|7)',
         pattern: r'(\d{3})(\d{2})(\d{7,8})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           12: <int>[3, 2, 7],
           13: <int>[3, 2, 8],
@@ -1881,7 +1881,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '15[279]',
         pattern: r'(\d{4})(\d{2})(\d{7})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           13: <int>[4, 2, 7],
         },
@@ -1889,7 +1889,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '15',
         pattern: r'(\d{3})(\d{2})(\d{8})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           13: <int>[3, 2, 8],
         },
@@ -1899,14 +1899,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'DJ': CountryPhoneRules(
     callingCode: '253',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[27]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -1916,14 +1916,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'DK': CountryPhoneRules(
     callingCode: '45',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -1933,14 +1933,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'DM': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -1950,14 +1950,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'DO': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -1967,14 +1967,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'DZ': CountryPhoneRules(
     callingCode: '213',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[1-4]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -1982,7 +1982,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '9',
         pattern: r'(\d{2})(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 2, 2],
         },
@@ -1990,7 +1990,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[5-8]',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -2000,14 +2000,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'EC': CountryPhoneRules(
     callingCode: '593',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-7]',
         pattern: r'(\d)(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
         },
@@ -2015,7 +2015,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '9',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -2025,15 +2025,15 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'EE': CountryPhoneRules(
     callingCode: '372',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7, 8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits:
             '[369]|4[3-8]|5(?:[02]|1(?:[0-8]|95)|5[0-478]|6(?:4[0-4]|5[1-589]))|7[1-9]|88',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -2041,7 +2041,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[45]|8(?:00[1-9]|[1-49])',
         pattern: r'(\d{4})(\d{3,4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[4, 3],
           8: <int>[4, 4],
@@ -2050,7 +2050,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{2})(\d{2})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 4],
         },
@@ -2060,14 +2060,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'EG': CountryPhoneRules(
     callingCode: '20',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[23]',
         pattern: r'(\d)(\d{7,8})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[1, 7],
           9: <int>[1, 8],
@@ -2076,7 +2076,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1[35]|[4-6]|8[2468]|9[235-7]',
         pattern: r'(\d{2})(\d{6,7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[2, 6],
           9: <int>[2, 7],
@@ -2085,7 +2085,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[89]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -2093,7 +2093,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1',
         pattern: r'(\d{2})(\d{8})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[2, 8],
         },
@@ -2103,14 +2103,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'ER': CountryPhoneRules(
     callingCode: '291',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[178]',
         pattern: r'(\d)(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[1, 3, 3],
         },
@@ -2120,14 +2120,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'ES': CountryPhoneRules(
     callingCode: '34',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[89]00',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -2135,7 +2135,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[4-9]',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -2145,14 +2145,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'ET': CountryPhoneRules(
     callingCode: '251',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[1-57-9]',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -2162,14 +2162,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'FI': CountryPhoneRules(
     callingCode: '358',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[5, 6, 7, 8, 9, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '20[2-59]',
         pattern: r'(\d{5})',
-        format: r'$1',
+        replacement: r'$1',
         groupLengths: <int, List<int>>{
           5: <int>[5],
         },
@@ -2177,7 +2177,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '(?:[1-3]0|[68])0|70[07-9]',
         pattern: r'(\d{3})(\d{3,7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[3, 3],
           7: <int>[3, 4],
@@ -2189,7 +2189,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[14]|2[09]|50|7[135]',
         pattern: r'(\d{2})(\d{4,8})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[2, 4],
           7: <int>[2, 5],
@@ -2201,7 +2201,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{2})(\d{6,10})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[2, 6],
           9: <int>[2, 7],
@@ -2211,7 +2211,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '(?:19|[2568])[1-8]|3(?:0[1-9]|[1-9])|9',
         pattern: r'(\d)(\d{4,9})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           5: <int>[1, 4],
           6: <int>[1, 5],
@@ -2226,14 +2226,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'FJ': CountryPhoneRules(
     callingCode: '679',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[235-9]|45',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -2243,22 +2243,22 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'FK': CountryPhoneRules(
     callingCode: '500',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[5],
     formats: <CountryPhoneFormat>[],
   ),
   'FM': CountryPhoneRules(
     callingCode: '691',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[389]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -2268,14 +2268,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'FO': CountryPhoneRules(
     callingCode: '298',
     regionPrefix: '',
-    nationalPrefix: '(10(?:01|[12]0|88))',
-    trunkPrefix: null,
+    nationalPrefixPattern: '(10(?:01|[12]0|88))',
+    literalTrunkPrefix: null,
     possibleLengths: <int>[6],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           6: <int>[2, 2, 2],
         },
@@ -2285,14 +2285,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'FR': CountryPhoneRules(
     callingCode: '33',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -2300,7 +2300,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[1-79]',
         pattern: r'(\d)(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4 $5',
+        replacement: r'$1 $2 $3 $4 $5',
         groupLengths: <int, List<int>>{
           9: <int>[1, 2, 2, 2, 2],
         },
@@ -2310,14 +2310,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'GA': CountryPhoneRules(
     callingCode: '241',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7, 8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-7]',
         pattern: r'(\d)(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           7: <int>[1, 2, 2, 2],
         },
@@ -2325,7 +2325,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '0',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -2333,7 +2333,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '11|[67]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -2343,14 +2343,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'GB': CountryPhoneRules(
     callingCode: '44',
     regionPrefix: '',
-    nationalPrefix: '0|180020',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0|180020',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '800',
         pattern: r'(\d{3})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[3, 6],
         },
@@ -2358,7 +2358,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1(?:3873|5(?:242|39[4-6])|(?:697|768)[347]|9467)',
         pattern: r'(\d{5})(\d{4,5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[5, 4],
           10: <int>[5, 5],
@@ -2367,7 +2367,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1(?:[2-69][02-9]|[78])',
         pattern: r'(\d{4})(\d{5,6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[4, 5],
           10: <int>[4, 6],
@@ -2376,7 +2376,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[25]|7(?:0|6(?:[03-9]|2[356]))',
         pattern: r'(\d{2})(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[2, 4, 4],
         },
@@ -2384,7 +2384,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{4})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[4, 6],
         },
@@ -2392,7 +2392,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[1389]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -2402,14 +2402,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'GD': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '473',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -2419,14 +2419,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'GE': CountryPhoneRules(
     callingCode: '995',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '70',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -2434,7 +2434,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '32',
         pattern: r'(\d{2})(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 2, 2],
         },
@@ -2442,7 +2442,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[57]',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -2450,7 +2450,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[348]',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -2460,14 +2460,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'GF': CountryPhoneRules(
     callingCode: '594',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[5-7]|80[6-9]|9[47]',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -2475,7 +2475,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[89]',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -2485,14 +2485,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'GG': CountryPhoneRules(
     callingCode: '44',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '1(?:3873|5(?:242|39[4-6])|(?:697|768)[347]|9467)',
         pattern: r'(\d{5})(\d{4,5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[5, 5],
         },
@@ -2500,7 +2500,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1(?:[2-69][02-9]|[78])',
         pattern: r'(\d{4})(\d{5,6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[4, 6],
         },
@@ -2508,7 +2508,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[25]|7(?:0|6(?:[03-9]|2[356]))',
         pattern: r'(\d{2})(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[2, 4, 4],
         },
@@ -2516,7 +2516,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{4})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[4, 6],
         },
@@ -2524,7 +2524,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[1389]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -2534,14 +2534,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'GH': CountryPhoneRules(
     callingCode: '233',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2358]',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -2551,14 +2551,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'GI': CountryPhoneRules(
     callingCode: '350',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '2',
         pattern: r'(\d{3})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
         },
@@ -2568,14 +2568,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'GL': CountryPhoneRules(
     callingCode: '299',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[6],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '19|[2-9]',
         pattern: r'(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           6: <int>[2, 2, 2],
         },
@@ -2585,14 +2585,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'GM': CountryPhoneRules(
     callingCode: '220',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[235-9]|4(?:[0-35]|4[16-9])',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -2600,7 +2600,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[48]',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -2610,14 +2610,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'GN': CountryPhoneRules(
     callingCode: '224',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '3',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -2625,7 +2625,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[67]',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -2635,14 +2635,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'GP': CountryPhoneRules(
     callingCode: '590',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[5-79]|80[6-9]',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -2650,7 +2650,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -2660,14 +2660,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'GQ': CountryPhoneRules(
     callingCode: '240',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[235]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -2675,7 +2675,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[89]',
         pattern: r'(\d{3})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[3, 6],
         },
@@ -2685,14 +2685,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'GR': CountryPhoneRules(
     callingCode: '30',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '21|7',
         pattern: r'(\d{2})(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[2, 4, 4],
         },
@@ -2701,7 +2701,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '2(?:2|3[2-57-9]|4[2-469]|5[2-59]|6[2-9]|7[2-69]|8[2-49])|5',
         pattern: r'(\d{4})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[4, 6],
         },
@@ -2709,7 +2709,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2689]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -2719,14 +2719,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'GT': CountryPhoneRules(
     callingCode: '502',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-8]',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -2736,14 +2736,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'GU': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '671',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -2753,14 +2753,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'GW': CountryPhoneRules(
     callingCode: '245',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[49]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -2770,14 +2770,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'GY': CountryPhoneRules(
     callingCode: '592',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -2787,14 +2787,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'HK': CountryPhoneRules(
     callingCode: '852',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '9003',
         pattern: r'(\d{3})(\d{2,5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
         },
@@ -2802,7 +2802,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2-7]|8[1-4]|9(?:0[1-9]|[1-8])',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -2812,14 +2812,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'HN': CountryPhoneRules(
     callingCode: '504',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[237-9]',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -2829,14 +2829,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'HR': CountryPhoneRules(
     callingCode: '385',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{2})(\d{2,3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[3, 2, 3],
         },
@@ -2844,7 +2844,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1',
         pattern: r'(\d)(\d{4})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 4, 3],
         },
@@ -2852,7 +2852,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '6|7[245]',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
           9: <int>[2, 3, 4],
@@ -2861,7 +2861,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '9',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
           9: <int>[2, 3, 4],
@@ -2870,7 +2870,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2-57]',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
           9: <int>[2, 3, 4],
@@ -2879,7 +2879,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -2889,14 +2889,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'HT': CountryPhoneRules(
     callingCode: '509',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-589]',
         pattern: r'(\d{2})(\d{2})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 4],
         },
@@ -2906,14 +2906,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'HU': CountryPhoneRules(
     callingCode: '36',
     regionPrefix: '',
-    nationalPrefix: '06',
-    trunkPrefix: '06',
+    nationalPrefixPattern: '06',
+    literalTrunkPrefix: '06',
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '1',
         pattern: r'(\d)(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
         },
@@ -2921,7 +2921,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[27][2-9]|3[2-7]|4[24-9]|5[2-79]|6|8[2-57-9]|9[2-69]',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -2929,7 +2929,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
           9: <int>[2, 3, 4],
@@ -2940,14 +2940,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'ID': CountryPhoneRules(
     callingCode: '62',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[7, 8, 9, 10, 11, 12],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '15',
         pattern: r'(\d)(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[1, 3, 3],
         },
@@ -2955,7 +2955,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2[124]|[36]1',
         pattern: r'(\d{2})(\d{5,9})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[2, 5],
           8: <int>[2, 6],
@@ -2967,7 +2967,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '800',
         pattern: r'(\d{3})(\d{5,7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
           9: <int>[3, 6],
@@ -2977,7 +2977,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2-79]',
         pattern: r'(\d{3})(\d{5,8})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
           9: <int>[3, 6],
@@ -2988,7 +2988,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8[1-35-9]',
         pattern: r'(\d{3})(\d{3,4})(\d{3})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
           10: <int>[3, 4, 3],
@@ -2997,7 +2997,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1',
         pattern: r'(\d{3})(\d{6,8})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[3, 6],
           10: <int>[3, 7],
@@ -3007,7 +3007,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '804',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -3015,7 +3015,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '80',
         pattern: r'(\d{3})(\d)(\d{3})(\d{3})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           10: <int>[3, 1, 3, 3],
         },
@@ -3023,7 +3023,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{4})(\d{4,5})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           11: <int>[3, 4, 4],
           12: <int>[3, 4, 5],
@@ -3034,14 +3034,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'IE': CountryPhoneRules(
     callingCode: '353',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[7, 8, 9, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '2[24-9]|47|58|6[237-9]|9[35-9]',
         pattern: r'(\d{2})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[2, 5],
         },
@@ -3049,7 +3049,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[45]0',
         pattern: r'(\d{3})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
         },
@@ -3057,7 +3057,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1',
         pattern: r'(\d)(\d{3,4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
           9: <int>[1, 4, 4],
@@ -3066,7 +3066,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2569]|4[1-69]|7[14]',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
           9: <int>[2, 3, 4],
@@ -3075,7 +3075,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '70',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -3083,7 +3083,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '81',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -3091,7 +3091,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[78]',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -3099,7 +3099,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1',
         pattern: r'(\d{4})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[4, 3, 3],
         },
@@ -3107,7 +3107,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '4',
         pattern: r'(\d{2})(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[2, 4, 4],
         },
@@ -3115,7 +3115,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{2})(\d)(\d{3})(\d{4})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           10: <int>[2, 1, 3, 4],
         },
@@ -3125,14 +3125,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'IL': CountryPhoneRules(
     callingCode: '972',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9, 11, 12],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '121',
         pattern: r'(\d{4})(\d{2})(\d{2})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           8: <int>[4, 2, 2],
         },
@@ -3140,7 +3140,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2-489]',
         pattern: r'(\d)(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
         },
@@ -3148,7 +3148,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[57]',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -3156,7 +3156,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '15',
         pattern: r'(\d{3})(\d{1,2})(\d{3})(\d{4})',
-        format: r'$1-$2 $3-$4',
+        replacement: r'$1-$2 $3-$4',
         groupLengths: <int, List<int>>{
           11: <int>[3, 1, 3, 4],
           12: <int>[3, 2, 3, 4],
@@ -3167,14 +3167,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'IM': CountryPhoneRules(
     callingCode: '44',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '1(?:3873|5(?:242|39[4-6])|(?:697|768)[347]|9467)',
         pattern: r'(\d{5})(\d{4,5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[5, 5],
         },
@@ -3182,7 +3182,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1(?:[2-69][02-9]|[78])',
         pattern: r'(\d{4})(\d{5,6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[4, 6],
         },
@@ -3190,7 +3190,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[25]|7(?:0|6(?:[03-9]|2[356]))',
         pattern: r'(\d{2})(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[2, 4, 4],
         },
@@ -3198,7 +3198,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{4})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[4, 6],
         },
@@ -3206,7 +3206,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[1389]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -3216,14 +3216,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'IN': CountryPhoneRules(
     callingCode: '91',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '140',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -3232,7 +3232,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '11|2[02]|33|4[04]|79(?:[1245]|3(?:[02-9]|1[0-24-9]))|80(?:[2-4]|6[0-589])',
         pattern: r'(\d{2})(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[2, 4, 4],
         },
@@ -3241,7 +3241,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '1(?:2[0-24]|3[0-25]|4[145]|[59][14]|6[1-9]|7[1257]|8[1-57-9])|2(?:1[257]|3[013]|4[01]|5[0137]|6[058]|78|8[1568]|9[14])|3(?:26|4[1-3]|5[34]|6[01489]|7[02-46]|8[159])|4(?:1[36]|2[1-47]|3[15]|5[12]|6[0-26-9]|7[0-24-9]|8[013-57]|9[014-7])|5(?:1[025]|22|[36][25]|4[28]|[578]1|9[15])|6(?:12(?:[2-6]|7[0-8])|74[2-7])|7(?:3171|5[15][2-6]|61[346]|88(?:[2-7]|82))|8(?:70[2-6]|84(?:[2356]|7[19])|91(?:[3-6]|7[19]))|73[134][2-6]|8(?:16|2[014]|3[126]|6[136]|7[78]|83)(?:[2-6]|7[19])|(?:1(?:29|60|8[06])|261|552|6(?:[2-4]1|5[17]|6[13]|7(?:1|4[0189])|80)|7(?:12|88[01]))[2-7]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -3250,7 +3250,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             r'1(?:[2-479]|5(?:[0236-9]|5[013-9]))|[2-5]|6(?:2(?:84|95)|355|8(?:28[235-7]|3))|73179|807(?:1|9[1-3])|(?:1552|6(?:(?:1[1358]|2[2457]|3[2-4]|4[235-7]|5[2-689]|6[24578])\d|7(?:[23569]\d|8[0-57-9])|8(?:[14-6]\d|2[0-79]))|7(?:1(?:[013-8]\d|9[6-9])|3(?:2[0-49]|9[2-57])|5(?:2[1-3]|9[0-6])|6(?:0[5689]|2[5-9]|3[02-8]|4\d|5[0-367])|70[13-7]))[2-7]',
         pattern: r'(\d{4})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[4, 3, 3],
         },
@@ -3258,7 +3258,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '16|[6-9]',
         pattern: r'(\d{5})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[5, 5],
         },
@@ -3266,7 +3266,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '18[06]0',
         pattern: r'(\d{4})(\d{2,4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[4, 2, 4],
         },
@@ -3276,14 +3276,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'IO': CountryPhoneRules(
     callingCode: '246',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '3',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -3293,14 +3293,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'IQ': CountryPhoneRules(
     callingCode: '964',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '1',
         pattern: r'(\d)(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
         },
@@ -3308,7 +3308,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2-6]',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
           9: <int>[2, 3, 4],
@@ -3317,7 +3317,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -3327,15 +3327,15 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'IR': CountryPhoneRules(
     callingCode: '98',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[6, 7, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits:
             '(?:1[137]|2[13-68]|3[1458]|4[145]|5[1468]|6[16]|7[1467]|8[13467])[12689]',
         pattern: r'(\d{2})(\d{4,5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[2, 4],
           7: <int>[2, 5],
@@ -3344,7 +3344,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '9',
         pattern: r'(\d{3})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -3352,7 +3352,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[1-8]',
         pattern: r'(\d{2})(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[2, 4, 4],
         },
@@ -3362,14 +3362,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'IS': CountryPhoneRules(
     callingCode: '354',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[4-9]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -3377,7 +3377,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '3',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -3387,14 +3387,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'IT': CountryPhoneRules(
     callingCode: '39',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[6, 7, 8, 9, 10, 11, 12],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '0[26]',
         pattern: r'(\d{2})(\d{4,6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[2, 4],
           7: <int>[2, 5],
@@ -3404,7 +3404,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '0[13-57-9][0159]|8(?:03|4[17]|9(?:2|3[04]|[45][0-4]))',
         pattern: r'(\d{3})(\d{3,6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[3, 3],
           7: <int>[3, 4],
@@ -3415,7 +3415,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '0(?:[13-579][2-46-8]|8[236-8])',
         pattern: r'(\d{4})(\d{2,6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[4, 2],
           7: <int>[4, 3],
@@ -3427,7 +3427,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '894',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -3435,7 +3435,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '0[26]|5',
         pattern: r'(\d{2})(\d{3,4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
           10: <int>[2, 4, 4],
@@ -3444,7 +3444,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1(?:44|[679])|[378]|43',
         pattern: r'(\d{3})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
           10: <int>[3, 3, 4],
@@ -3453,7 +3453,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '0[13-57-9][0159]|14',
         pattern: r'(\d{3})(\d{3,4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
           11: <int>[3, 4, 4],
@@ -3462,7 +3462,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '0[26]',
         pattern: r'(\d{2})(\d{4})(\d{5})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           11: <int>[2, 4, 5],
         },
@@ -3470,7 +3470,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '0',
         pattern: r'(\d{4})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           11: <int>[4, 3, 4],
         },
@@ -3478,7 +3478,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[03]',
         pattern: r'(\d{3})(\d{4})(\d{4,5})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           11: <int>[3, 4, 4],
           12: <int>[3, 4, 5],
@@ -3489,14 +3489,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'JE': CountryPhoneRules(
     callingCode: '44',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '1(?:3873|5(?:242|39[4-6])|(?:697|768)[347]|9467)',
         pattern: r'(\d{5})(\d{4,5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[5, 5],
         },
@@ -3504,7 +3504,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1(?:[2-69][02-9]|[78])',
         pattern: r'(\d{4})(\d{5,6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[4, 6],
         },
@@ -3512,7 +3512,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[25]|7(?:0|6(?:[03-9]|2[356]))',
         pattern: r'(\d{2})(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[2, 4, 4],
         },
@@ -3520,7 +3520,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{4})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[4, 6],
         },
@@ -3528,7 +3528,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[1389]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -3538,14 +3538,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'JM': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -3555,14 +3555,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'JO': CountryPhoneRules(
     callingCode: '962',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2356]|87',
         pattern: r'(\d)(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
         },
@@ -3570,7 +3570,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[89]',
         pattern: r'(\d{3})(\d{5,6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
           9: <int>[3, 6],
@@ -3579,7 +3579,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '70',
         pattern: r'(\d{2})(\d{7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[2, 7],
         },
@@ -3587,7 +3587,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[47]',
         pattern: r'(\d)(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[1, 4, 4],
         },
@@ -3597,14 +3597,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'JP': CountryPhoneRules(
     callingCode: '81',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '(?:12|57|99)0',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -3613,7 +3613,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '1(?:267|3(?:7[247]|9[278])|466|5(?:47|58|64)|6(?:3[245]|48|5[4-68]))|499[2468]|5(?:769|979[2-69])|7468|8(?:3(?:8[7-9]|96[2457-9])|477|51[2-9])|9(?:802|9(?:1[23]|69))|1(?:45|58)[67]',
         pattern: r'(\d{4})(\d)(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           9: <int>[4, 1, 4],
         },
@@ -3621,7 +3621,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '60',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -3629,7 +3629,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '3|4(?:2(?:0|9[02-69])|7(?:0[019]|1))|6[1-9]',
         pattern: r'(\d)(\d{4})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           9: <int>[1, 4, 4],
         },
@@ -3638,7 +3638,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '1(?:1|5(?:4[018]|5[017])|77|88|9[69])|2(?:2[127]|3[0-269]|4[59]|5(?:[1-3]|5[0-69]|9(?:17|99))|6(?:2|4[016-9])|7(?:[1-35]|8[0189])|8(?:[16]|3[0134]|9[0-5])|9(?:[028]|17))|4(?:2(?:[13-79]|8[014-6])|3[0-57]|[45]|6[248]|7[2-47]|9[29])|5(?:2|3(?:[045]|9(?:[0-58]|6[4-9]|7[0-35689]))|4[0-369]|5[29]|8[02389]|9[0-3])|7(?:2[02-46-9]|34|[58]|6[0249]|7[57]|9(?:[23]|4[0-59]|5[01569]|6[0167]))|8(?:2(?:[1258]|4[0-39]|9[0169])|3(?:[29]|60|7(?:[017-9]|6[6-8]))|49|51|6(?:[0-24]|36[2-57-9]|5(?:[0-389]|5[23])|6(?:[01]|9[178])|7(?:2[2-468]|3[78])|9[0145])|7[0-468]|8[68])|9(?:4[15]|5[138]|7[156]|8[189]|9(?:[1289]|3(?:31|4[357])|4[0178]))|(?:8294|96)[1-3]|2(?:57|93)[015-9]|(?:223|8699)[014-9]|(?:25[0468]|422|838)[01]|(?:48|8292|9[23])[1-9]|(?:47[59]|59[89]|8(?:68|9))[019]',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -3646,7 +3646,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[14]|[289][2-9]|5[3-9]|7[2-4679]',
         pattern: r'(\d{3})(\d{2})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 4],
         },
@@ -3654,7 +3654,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '800',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -3662,7 +3662,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[25-9]',
         pattern: r'(\d{2})(\d{4})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[2, 4, 4],
         },
@@ -3672,14 +3672,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'KE': CountryPhoneRules(
     callingCode: '254',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[7, 8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[24-6]',
         pattern: r'(\d{2})(\d{5,7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[2, 5],
           8: <int>[2, 6],
@@ -3689,7 +3689,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[17]',
         pattern: r'(\d{3})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[3, 6],
         },
@@ -3697,7 +3697,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[89]',
         pattern: r'(\d{3})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -3707,14 +3707,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'KG': CountryPhoneRules(
     callingCode: '996',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '3(?:1[346]|[24-79])',
         pattern: r'(\d{4})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[4, 5],
         },
@@ -3722,7 +3722,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[235-79]|88',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -3730,7 +3730,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{3})(\d)(\d{2,3})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 1, 2],
         },
@@ -3740,14 +3740,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'KH': CountryPhoneRules(
     callingCode: '855',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[1-9]',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
           9: <int>[2, 3, 4],
@@ -3758,22 +3758,22 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'KI': CountryPhoneRules(
     callingCode: '686',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[5, 8],
     formats: <CountryPhoneFormat>[],
   ),
   'KM': CountryPhoneRules(
     callingCode: '269',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[3478]',
         pattern: r'(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[3, 2, 2],
         },
@@ -3783,14 +3783,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'KN': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -3800,14 +3800,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'KP': CountryPhoneRules(
     callingCode: '850',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -3815,7 +3815,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2-7]',
         pattern: r'(\d)(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
         },
@@ -3823,7 +3823,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -3833,14 +3833,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'KR': CountryPhoneRules(
     callingCode: '82',
     regionPrefix: '',
-    nationalPrefix: r'0(8(?:[1-46-8]|5\d\d))?',
-    trunkPrefix: '0',
+    nationalPrefixPattern: r'0(8(?:[1-46-8]|5\d\d))?',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[5, 6, 8, 9, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '(?:3[1-3]|[46][1-4]|5[1-5])1',
         pattern: r'(\d{2})(\d{3,4})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           5: <int>[2, 3],
           6: <int>[2, 4],
@@ -3849,7 +3849,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -3857,7 +3857,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2',
         pattern: r'(\d)(\d{3,4})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
           9: <int>[1, 4, 4],
@@ -3866,7 +3866,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[36]0|8',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -3874,7 +3874,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[1346]|5[1-5]',
         pattern: r'(\d{2})(\d{3,4})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
           10: <int>[2, 4, 4],
@@ -3883,7 +3883,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[57]',
         pattern: r'(\d{2})(\d{4})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[2, 4, 4],
         },
@@ -3893,14 +3893,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'KW': CountryPhoneRules(
     callingCode: '965',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[169]|2(?:[235]|4[1-35-9])|52',
         pattern: r'(\d{4})(\d{3,4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -3908,7 +3908,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[245]',
         pattern: r'(\d{3})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
         },
@@ -3918,14 +3918,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'KY': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -3935,15 +3935,15 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'KZ': CountryPhoneRules(
     callingCode: '7',
     regionPrefix: '',
-    nationalPrefix: '8',
-    trunkPrefix: '8',
+    nationalPrefixPattern: '8',
+    literalTrunkPrefix: '8',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits:
             '7(?:1(?:[0-356]2|4[29]|7|8[27])|2(?:13[03-69]|62[013-9]))|72[1-57-9]2',
         pattern: r'(\d{4})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           10: <int>[4, 2, 2, 2],
         },
@@ -3952,7 +3952,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '7(?:1(?:0(?:[356]|4[023])|[18]|2(?:3[013-9]|5)|3[45]|43[013-79]|5(?:3[1-8]|4[1-7]|5)|6(?:3[0-35-9]|[4-6]))|2(?:1(?:3[178]|[45])|[24-689]|3[35]|7[457]))|7(?:14|23)4[0-8]|71(?:33|45)[1-79]',
         pattern: r'(\d{5})(\d)(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           10: <int>[5, 1, 2, 2],
         },
@@ -3960,7 +3960,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -3968,7 +3968,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[349]|8(?:[02-7]|1[1-8])',
         pattern: r'(\d{3})(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2-$3-$4',
+        replacement: r'$1 $2-$3-$4',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 2, 2],
         },
@@ -3978,14 +3978,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'LA': CountryPhoneRules(
     callingCode: '856',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '2[13]|3[14]|[4-8]',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -3993,7 +3993,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '3',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{3})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[2, 2, 2, 3],
         },
@@ -4001,7 +4001,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[23]',
         pattern: r'(\d{2})(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           10: <int>[2, 2, 3, 3],
         },
@@ -4011,14 +4011,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'LB': CountryPhoneRules(
     callingCode: '961',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[7, 8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[13-69]|7(?:[2-57]|62|8[0-6]|9[04-9])|8[02-9]',
         pattern: r'(\d)(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[1, 3, 3],
         },
@@ -4026,7 +4026,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[27-9]',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -4036,14 +4036,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'LC': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -4053,14 +4053,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'LI': CountryPhoneRules(
     callingCode: '423',
     regionPrefix: '',
-    nationalPrefix: '(1001)|0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '(1001)|0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[7, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2379]|8(?:0(?:02|9)|7)',
         pattern: r'(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[3, 2, 2],
         },
@@ -4068,7 +4068,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -4076,7 +4076,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '69',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -4084,7 +4084,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '6',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -4094,14 +4094,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'LK': CountryPhoneRules(
     callingCode: '94',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -4109,7 +4109,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[1-689]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -4119,14 +4119,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'LR': CountryPhoneRules(
     callingCode: '231',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[7, 8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '4[67]|[56]',
         pattern: r'(\d)(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[1, 3, 3],
         },
@@ -4134,7 +4134,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -4142,7 +4142,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2-578]',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -4152,14 +4152,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'LS': CountryPhoneRules(
     callingCode: '266',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2568]',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -4169,14 +4169,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'LT': CountryPhoneRules(
     callingCode: '370',
     regionPrefix: '',
-    nationalPrefix: '[08]',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '[08]',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '52[0-7]',
         pattern: r'(\d)(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
         },
@@ -4184,7 +4184,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[7-9]',
         pattern: r'(\d{3})(\d{2})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[3, 2, 3],
         },
@@ -4192,7 +4192,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '37|4(?:[15]|6[1-8])',
         pattern: r'(\d{2})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[2, 6],
         },
@@ -4200,7 +4200,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[3-6]',
         pattern: r'(\d{3})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
         },
@@ -4210,15 +4210,15 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'LU': CountryPhoneRules(
     callingCode: '352',
     regionPrefix: '',
-    nationalPrefix: r'(15(?:0[06]|1[12]|[35]5|4[04]|6[26]|77|88|99)\d)',
-    trunkPrefix: null,
+    nationalPrefixPattern: r'(15(?:0[06]|1[12]|[35]5|4[04]|6[26]|77|88|99)\d)',
+    literalTrunkPrefix: null,
     possibleLengths: <int>[4, 5, 6, 7, 8, 9, 10, 11],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits:
             '2(?:0[2-689]|[2-9])|[3-57]|8(?:0[2-9]|[13-9])|9(?:0[89]|[2-579])',
         pattern: r'(\d{2})(\d{3})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           5: <int>[2, 3],
         },
@@ -4227,7 +4227,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '2(?:0[2-689]|[2-9])|[3-57]|8(?:0[2-9]|[13-9])|9(?:0[89]|[2-579])',
         pattern: r'(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           6: <int>[2, 2, 2],
         },
@@ -4235,7 +4235,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '20[2-689]',
         pattern: r'(\d{2})(\d{2})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[2, 2, 3],
         },
@@ -4243,7 +4243,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '20',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{1,2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           7: <int>[2, 2, 2, 1],
           8: <int>[2, 2, 2, 2],
@@ -4252,7 +4252,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[3-57]|8[13-9]|9(?:0[89]|[2-579])|(?:2|80)[2-9]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{1,5})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           7: <int>[2, 2, 2, 1],
           8: <int>[2, 2, 2, 2],
@@ -4264,7 +4264,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '80[01]|90[015]',
         pattern: r'(\d{3})(\d{2})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[3, 2, 3],
         },
@@ -4272,7 +4272,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '20',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{3})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[2, 2, 2, 3],
         },
@@ -4280,7 +4280,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '6',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -4288,7 +4288,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '20',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})(\d{1,2})',
-        format: r'$1 $2 $3 $4 $5',
+        replacement: r'$1 $2 $3 $4 $5',
         groupLengths: <int, List<int>>{
           9: <int>[2, 2, 2, 2, 1],
           10: <int>[2, 2, 2, 2, 2],
@@ -4299,14 +4299,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'LV': CountryPhoneRules(
     callingCode: '371',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2679]|8[01]',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -4316,14 +4316,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'LY': CountryPhoneRules(
     callingCode: '218',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{2})(\d{7})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           9: <int>[2, 7],
         },
@@ -4333,14 +4333,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MA': CountryPhoneRules(
     callingCode: '212',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '892',
         pattern: r'(\d{4})(\d{5})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           9: <int>[4, 5],
         },
@@ -4348,7 +4348,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8(?:0[0-7]|9)',
         pattern: r'(\d{2})(\d{7})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           9: <int>[2, 7],
         },
@@ -4356,7 +4356,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[5-8]',
         pattern: r'(\d)(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4 $5',
+        replacement: r'$1 $2 $3 $4 $5',
         groupLengths: <int, List<int>>{
           9: <int>[1, 2, 2, 2, 2],
         },
@@ -4366,14 +4366,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MC': CountryPhoneRules(
     callingCode: '377',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '4',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -4381,7 +4381,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[389]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -4389,7 +4389,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[67]',
         pattern: r'(\d)(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4 $5',
+        replacement: r'$1 $2 $3 $4 $5',
         groupLengths: <int, List<int>>{
           9: <int>[1, 2, 2, 2, 2],
         },
@@ -4399,14 +4399,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MD': CountryPhoneRules(
     callingCode: '373',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[89]',
         pattern: r'(\d{3})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
         },
@@ -4414,7 +4414,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '22|3',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -4422,7 +4422,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[25-7]',
         pattern: r'(\d{3})(\d{2})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[3, 2, 3],
         },
@@ -4432,14 +4432,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'ME': CountryPhoneRules(
     callingCode: '382',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -4449,14 +4449,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MG': CountryPhoneRules(
     callingCode: '261',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[23]',
         pattern: r'(\d{2})(\d{2})(\d{3})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[2, 2, 3, 2],
         },
@@ -4466,14 +4466,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MH': CountryPhoneRules(
     callingCode: '692',
     regionPrefix: '',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-6]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -4483,14 +4483,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MK': CountryPhoneRules(
     callingCode: '389',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '2|34[47]|4(?:[37]7|5[47]|64)',
         pattern: r'(\d)(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
         },
@@ -4498,7 +4498,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[347]',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -4506,7 +4506,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[58]',
         pattern: r'(\d{3})(\d)(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[3, 1, 2, 2],
         },
@@ -4516,14 +4516,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'ML': CountryPhoneRules(
     callingCode: '223',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[24-9]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -4533,14 +4533,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MM': CountryPhoneRules(
     callingCode: '95',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[6, 7, 8, 9, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '16|2',
         pattern: r'(\d)(\d{2})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           6: <int>[1, 2, 3],
         },
@@ -4549,7 +4549,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '4(?:[2-46]|5[3-5])|5|6(?:[1-689]|7[235-7])|7(?:[0-4]|5[2-7])|8[1-5]|(?:60|86)[23]',
         pattern: r'(\d{2})(\d{2})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[2, 2, 3],
         },
@@ -4557,7 +4557,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[12]|452|6788|86',
         pattern: r'(\d)(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[1, 3, 3],
           8: <int>[1, 3, 4],
@@ -4566,7 +4566,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[4-7]|8[1-35]',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
           9: <int>[2, 3, 4],
@@ -4575,7 +4575,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '9(?:2[0-4]|[35-9]|4[137-9])',
         pattern: r'(\d)(\d{3})(\d{4,6})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
           9: <int>[1, 3, 5],
@@ -4585,7 +4585,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2',
         pattern: r'(\d)(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[1, 4, 4],
         },
@@ -4593,7 +4593,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -4601,7 +4601,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '92',
         pattern: r'(\d)(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           10: <int>[1, 3, 3, 3],
         },
@@ -4609,7 +4609,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '9',
         pattern: r'(\d)(\d{5})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[1, 5, 4],
         },
@@ -4619,14 +4619,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MN': CountryPhoneRules(
     callingCode: '976',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '11|2[16]',
         pattern: r'(\d{2})(\d{2})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 4],
         },
@@ -4634,7 +4634,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[5-9]',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -4642,7 +4642,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[12]2[1-3]',
         pattern: r'(\d{3})(\d{5,6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
           9: <int>[3, 6],
@@ -4651,7 +4651,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[12](?:27|3[2-8]|4[2-68]|5[1-4689])[0-3]',
         pattern: r'(\d{4})(\d{5,6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[4, 5],
           10: <int>[4, 6],
@@ -4660,7 +4660,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[12]',
         pattern: r'(\d{5})(\d{4,5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[5, 4],
           10: <int>[5, 5],
@@ -4671,14 +4671,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MO': CountryPhoneRules(
     callingCode: '853',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[268]',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -4688,14 +4688,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MP': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -4705,14 +4705,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MQ': CountryPhoneRules(
     callingCode: '596',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[5-79]|8(?:0[6-9]|[36])',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -4720,7 +4720,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -4730,14 +4730,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MR': CountryPhoneRules(
     callingCode: '222',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-48]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -4747,14 +4747,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MS': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -4764,14 +4764,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MT': CountryPhoneRules(
     callingCode: '356',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2357-9]',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -4781,14 +4781,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MU': CountryPhoneRules(
     callingCode: '230',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7, 8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-46]|8[013]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -4796,7 +4796,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[57]',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -4806,14 +4806,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MV': CountryPhoneRules(
     callingCode: '960',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[34679]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -4823,14 +4823,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MW': CountryPhoneRules(
     callingCode: '265',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[7, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '1[2-9]',
         pattern: r'(\d)(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[1, 3, 3],
         },
@@ -4838,7 +4838,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[1-37-9]',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -4848,14 +4848,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MX': CountryPhoneRules(
     callingCode: '52',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '33|5[56]|81',
         pattern: r'(\d{2})(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[2, 4, 4],
         },
@@ -4863,7 +4863,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -4873,14 +4873,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MY': CountryPhoneRules(
     callingCode: '60',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[4-79]',
         pattern: r'(\d)(\d{3})(\d{4})',
-        format: r'$1-$2 $3',
+        replacement: r'$1-$2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
         },
@@ -4888,7 +4888,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1(?:[02469]|[37][1-9]|53|8(?:[1-46-9]|5[7-9]))|8',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1-$2 $3',
+        replacement: r'$1-$2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
           9: <int>[2, 3, 4],
@@ -4897,7 +4897,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '3',
         pattern: r'(\d)(\d{4})(\d{4})',
-        format: r'$1-$2 $3',
+        replacement: r'$1-$2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[1, 4, 4],
         },
@@ -4905,7 +4905,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1(?:[367]|80)',
         pattern: r'(\d)(\d{3})(\d{2})(\d{4})',
-        format: r'$1-$2-$3-$4',
+        replacement: r'$1-$2-$3-$4',
         groupLengths: <int, List<int>>{
           10: <int>[1, 3, 2, 4],
         },
@@ -4913,7 +4913,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '15',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2 $3',
+        replacement: r'$1-$2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -4921,7 +4921,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1',
         pattern: r'(\d{2})(\d{4})(\d{4})',
-        format: r'$1-$2 $3',
+        replacement: r'$1-$2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[2, 4, 4],
         },
@@ -4931,14 +4931,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'MZ': CountryPhoneRules(
     callingCode: '258',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '2|8[2-9]',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
           9: <int>[2, 3, 4],
@@ -4947,7 +4947,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -4957,14 +4957,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'NA': CountryPhoneRules(
     callingCode: '264',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '88',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -4972,7 +4972,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '6',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
           9: <int>[2, 3, 4],
@@ -4981,7 +4981,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '87',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -4989,7 +4989,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -4999,14 +4999,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'NC': CountryPhoneRules(
     callingCode: '687',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[6],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[02-57-9]',
         pattern: r'(\d{2})(\d{2})(\d{2})',
-        format: r'$1.$2.$3',
+        replacement: r'$1.$2.$3',
         groupLengths: <int, List<int>>{
           6: <int>[2, 2, 2],
         },
@@ -5016,14 +5016,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'NE': CountryPhoneRules(
     callingCode: '227',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '08',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -5031,7 +5031,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[089]|2[013]|7[0467]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -5041,14 +5041,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'NF': CountryPhoneRules(
     callingCode: '672',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[6],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '1[0-3]',
         pattern: r'(\d{2})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[2, 4],
         },
@@ -5056,7 +5056,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[13]',
         pattern: r'(\d)(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[1, 5],
         },
@@ -5066,14 +5066,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'NG': CountryPhoneRules(
     callingCode: '234',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[7-9]',
         pattern: r'(\d{3})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -5081,7 +5081,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '20[129]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -5089,7 +5089,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2',
         pattern: r'(\d{4})(\d{2})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[4, 2, 4],
         },
@@ -5099,14 +5099,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'NI': CountryPhoneRules(
     callingCode: '505',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[125-8]',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -5116,14 +5116,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'NL': CountryPhoneRules(
     callingCode: '31',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9, 11],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[89]0',
         pattern: r'(\d{3})(\d{4,7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[3, 6],
         },
@@ -5131,7 +5131,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '66',
         pattern: r'(\d{2})(\d{7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[2, 7],
         },
@@ -5139,7 +5139,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '6',
         pattern: r'(\d)(\d{8})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[1, 8],
         },
@@ -5147,7 +5147,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1[16-8]|2[259]|3[124]|4[17-9]|5[124679]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -5155,7 +5155,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[1-578]|91',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -5163,7 +5163,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '9',
         pattern: r'(\d{3})(\d{3})(\d{5})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           11: <int>[3, 3, 5],
         },
@@ -5173,14 +5173,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'NO': CountryPhoneRules(
     callingCode: '47',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{2})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[3, 2, 3],
         },
@@ -5188,7 +5188,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2-79]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -5198,14 +5198,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'NP': CountryPhoneRules(
     callingCode: '977',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '1[2-6]',
         pattern: r'(\d)(\d{7})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           8: <int>[1, 7],
         },
@@ -5213,7 +5213,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1[01]|[2-8]|9(?:[1-59]|[67][2-6])',
         pattern: r'(\d{2})(\d{6})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           8: <int>[2, 6],
         },
@@ -5221,7 +5221,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '9',
         pattern: r'(\d{3})(\d{7})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           10: <int>[3, 7],
         },
@@ -5231,14 +5231,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'NR': CountryPhoneRules(
     callingCode: '674',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[24-9]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -5248,14 +5248,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'NU': CountryPhoneRules(
     callingCode: '683',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[4, 7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -5265,14 +5265,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'NZ': CountryPhoneRules(
     callingCode: '64',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '8[1-79]',
         pattern: r'(\d{2})(\d{3,8})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[2, 6],
           9: <int>[2, 7],
@@ -5282,7 +5282,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '50(?:[0367]|88)|8|90',
         pattern: r'(\d{3})(\d{2})(\d{2,3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[3, 2, 3],
         },
@@ -5290,7 +5290,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '24|[346]|7[2-57-9]|9[2-9]',
         pattern: r'(\d)(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
         },
@@ -5298,7 +5298,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2(?:10|74)|[589]',
         pattern: r'(\d{3})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
           10: <int>[3, 3, 4],
@@ -5307,7 +5307,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1|2[028]',
         pattern: r'(\d{2})(\d{3,4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
           10: <int>[2, 4, 4],
@@ -5316,7 +5316,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2(?:[169]|7[0-35-9])|7',
         pattern: r'(\d{2})(\d{3})(\d{3,5})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
           9: <int>[2, 3, 4],
@@ -5328,14 +5328,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'OM': CountryPhoneRules(
     callingCode: '968',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[58]',
         pattern: r'(\d{3})(\d{4,6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
         },
@@ -5343,7 +5343,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2',
         pattern: r'(\d{2})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[2, 6],
         },
@@ -5351,7 +5351,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[179]',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -5361,14 +5361,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'PA': CountryPhoneRules(
     callingCode: '507',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7, 8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[1-57-9]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -5376,7 +5376,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[68]',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -5386,14 +5386,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'PE': CountryPhoneRules(
     callingCode: '51',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '80',
         pattern: r'(\d{3})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
         },
@@ -5401,7 +5401,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1',
         pattern: r'(\d)(\d{7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[1, 7],
         },
@@ -5409,7 +5409,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[4-8]',
         pattern: r'(\d{2})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[2, 6],
         },
@@ -5417,7 +5417,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '9',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -5427,14 +5427,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'PF': CountryPhoneRules(
     callingCode: '689',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '4|8[7-9]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -5444,14 +5444,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'PG': CountryPhoneRules(
     callingCode: '675',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7, 8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '18|[2-69]|85[02-46-9]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -5459,7 +5459,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[78]',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -5469,14 +5469,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'PH': CountryPhoneRules(
     callingCode: '63',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[6, 8, 9, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '2',
         pattern: r'(\d)(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[1, 5],
         },
@@ -5485,7 +5485,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '3(?:230|397|461)|4(?:2(?:35|[46]4|51)|396|4(?:22|63)|59[347]|76[15])|5(?:221|446)|642[23]|8(?:622|8(?:[24]2|5[13]))',
         pattern: r'(\d{4})(\d{4,6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
           9: <int>[4, 5],
@@ -5495,7 +5495,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '3469|4(?:279|9(?:30|56))|8834',
         pattern: r'(\d{5})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[5, 4],
         },
@@ -5503,7 +5503,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2',
         pattern: r'(\d)(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[1, 4, 4],
         },
@@ -5511,7 +5511,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[3-7]|8[2-8]',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -5519,7 +5519,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[89]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -5529,14 +5529,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'PK': CountryPhoneRules(
     callingCode: '92',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[89]0',
         pattern: r'(\d{3})(\d{3})(\d{2,7})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
           10: <int>[3, 3, 4],
@@ -5545,7 +5545,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1',
         pattern: r'(\d{4})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[4, 5],
         },
@@ -5554,7 +5554,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '9(?:2[3-8]|98)|(?:2(?:3[2358]|4[2-4]|9[2-8])|45[3479]|54[2-467]|60[468]|72[236]|8(?:2[2-689]|3[23578]|4[3478]|5[2356])|9(?:22|3[27-9]|4[2-6]|6[3569]|9[25-7]))[2-9]',
         pattern: r'(\d{3})(\d{6,7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[3, 6],
           10: <int>[3, 7],
@@ -5564,7 +5564,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '(?:2[125]|4[0-246-9]|5[1-35-7]|6[1-8]|7[14]|8[16]|91)[2-9]',
         pattern: r'(\d{2})(\d{7,8})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[2, 7],
           10: <int>[2, 8],
@@ -5573,7 +5573,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '58',
         pattern: r'(\d{5})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[5, 5],
         },
@@ -5581,7 +5581,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '3',
         pattern: r'(\d{3})(\d{7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[3, 7],
         },
@@ -5591,15 +5591,15 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'PL': CountryPhoneRules(
     callingCode: '48',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits:
             '30|(?:1[2-8]|2[2-69]|3[2-4]|4[1-468]|5[24-689]|6[1-3578]|7[14-7]|8[1-79]|9[145])19',
         pattern: r'(\d{2})(\d{2})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[2, 2, 3],
         },
@@ -5607,7 +5607,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '64',
         pattern: r'(\d{3})(\d{2})(\d{2,3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[3, 2, 2],
         },
@@ -5615,7 +5615,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '21|39|45|5[0137]|6[0469]|7[02389]|8(?:0[14]|8)',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -5623,7 +5623,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1[2-8]|[2-7]|8[1-79]|9[145]',
         pattern: r'(\d{2})(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 2, 2],
         },
@@ -5631,7 +5631,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -5641,14 +5641,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'PM': CountryPhoneRules(
     callingCode: '508',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[6, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           6: <int>[2, 2, 2],
         },
@@ -5656,7 +5656,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -5664,7 +5664,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -5674,14 +5674,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'PR': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -5691,14 +5691,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'PS': CountryPhoneRules(
     callingCode: '970',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2489]',
         pattern: r'(\d)(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
         },
@@ -5706,7 +5706,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '5',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -5716,14 +5716,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'PT': CountryPhoneRules(
     callingCode: '351',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '2[12]',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -5731,7 +5731,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '16|[236-9]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -5741,14 +5741,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'PW': CountryPhoneRules(
     callingCode: '680',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -5758,14 +5758,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'PY': CountryPhoneRules(
     callingCode: '595',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[7, 8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]0',
         pattern: r'(\d{3})(\d{3,6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
           8: <int>[3, 5],
@@ -5775,7 +5775,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '3[289]|4[246-8]|61|7[1-3]|8[1-36]',
         pattern: r'(\d{2})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[2, 5],
         },
@@ -5783,7 +5783,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2[279]|3[13-5]|4[359]|5|6(?:[34]|7[1-46-8])|7[46-8]|85',
         pattern: r'(\d{3})(\d{4,5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
           8: <int>[3, 5],
@@ -5792,7 +5792,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2[14-68]|3[26-9]|4[1246-8]|6(?:1|75)|7[1-35]|8[1-36]',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
           9: <int>[2, 3, 4],
@@ -5801,7 +5801,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '87',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -5809,7 +5809,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '9(?:[5-79]|8[1-8])',
         pattern: r'(\d{3})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[3, 6],
         },
@@ -5817,7 +5817,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2-8]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -5827,14 +5827,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'QA': CountryPhoneRules(
     callingCode: '974',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[3-7]',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -5844,14 +5844,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'RE': CountryPhoneRules(
     callingCode: '262',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[26-9]',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -5861,14 +5861,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'RO': CountryPhoneRules(
     callingCode: '40',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[6, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: r'2[3-6]\d9',
         pattern: r'(\d{3})(\d{3})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[3, 3],
         },
@@ -5876,7 +5876,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '219|31',
         pattern: r'(\d{2})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[2, 4],
         },
@@ -5884,7 +5884,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[23]1',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -5892,7 +5892,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[236-9]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -5902,14 +5902,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'RS': CountryPhoneRules(
     callingCode: '381',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[7, 8, 9, 10, 11, 12],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '(?:2[389]|39)0|[7-9]',
         pattern: r'(\d{3})(\d{3,9})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
           8: <int>[3, 5],
@@ -5922,7 +5922,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[1-36]',
         pattern: r'(\d{2})(\d{5,10})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[2, 5],
           8: <int>[2, 6],
@@ -5937,15 +5937,15 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'RU': CountryPhoneRules(
     callingCode: '7',
     regionPrefix: '',
-    nationalPrefix: '8',
-    trunkPrefix: '8',
+    nationalPrefixPattern: '8',
+    literalTrunkPrefix: '8',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits:
             '7(?:1(?:[0-356]2|4[29]|7|8[27])|2(?:13[03-69]|62[013-9]))|72[1-57-9]2',
         pattern: r'(\d{4})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           10: <int>[4, 2, 2, 2],
         },
@@ -5954,7 +5954,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '7(?:1(?:0(?:[356]|4[023])|[18]|2(?:3[013-9]|5)|3[45]|43[013-79]|5(?:3[1-8]|4[1-7]|5)|6(?:3[0-35-9]|[4-6]))|2(?:1(?:3[178]|[45])|[24-689]|3[35]|7[457]))|7(?:14|23)4[0-8]|71(?:33|45)[1-79]',
         pattern: r'(\d{5})(\d)(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           10: <int>[5, 1, 2, 2],
         },
@@ -5962,7 +5962,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -5970,7 +5970,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[349]|8(?:[02-7]|1[1-8])',
         pattern: r'(\d{3})(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2-$3-$4',
+        replacement: r'$1 $2-$3-$4',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 2, 2],
         },
@@ -5980,14 +5980,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'RW': CountryPhoneRules(
     callingCode: '250',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '0',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -5995,7 +5995,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -6003,7 +6003,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[7-9]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -6013,14 +6013,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SA': CountryPhoneRules(
     callingCode: '966',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '9',
         pattern: r'(\d{4})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[4, 5],
         },
@@ -6028,7 +6028,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -6036,7 +6036,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '5',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -6046,14 +6046,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SB': CountryPhoneRules(
     callingCode: '677',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[5, 7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '6[89]|7|8[4-9]|9(?:[0-8]|9[0-8])',
         pattern: r'(\d{2})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[2, 5],
         },
@@ -6063,14 +6063,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SC': CountryPhoneRules(
     callingCode: '248',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[246]|9[57]',
         pattern: r'(\d)(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[1, 3, 3],
         },
@@ -6080,14 +6080,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SD': CountryPhoneRules(
     callingCode: '249',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[19]',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -6097,14 +6097,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SE': CountryPhoneRules(
     callingCode: '46',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[7, 8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '20',
         pattern: r'(\d{2})(\d{2,3})(\d{2})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[2, 3, 2],
         },
@@ -6112,7 +6112,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '9(?:00|39|44|9)',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -6120,7 +6120,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[12][136]|3[356]|4[0246]|6[03]|90[1-9]',
         pattern: r'(\d{2})(\d{3})(\d{2})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[2, 3, 2],
         },
@@ -6128,7 +6128,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d)(\d{2,3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           7: <int>[1, 2, 2, 2],
           8: <int>[1, 3, 2, 2],
@@ -6138,7 +6138,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '1[2457]|2(?:[247-9]|5[0138])|3[0247-9]|4[1357-9]|5[0-35-9]|6(?:[125689]|4[02-57]|7[0-2])|9(?:[125-8]|3[02-5]|4[0-3])',
         pattern: r'(\d{3})(\d{2,3})(\d{2})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[3, 2, 2],
           8: <int>[3, 3, 2],
@@ -6147,7 +6147,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '9(?:00|39|44)',
         pattern: r'(\d{3})(\d{2,3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[3, 2, 3],
           9: <int>[3, 3, 3],
@@ -6156,7 +6156,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1[13689]|2[0136]|3[1356]|4[0246]|54|6[03]|90[1-9]',
         pattern: r'(\d{2})(\d{2,3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
           9: <int>[2, 3, 2, 2],
@@ -6165,7 +6165,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '10|7',
         pattern: r'(\d{2})(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 2, 2],
         },
@@ -6173,7 +6173,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d)(\d{3})(\d{3})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[1, 3, 3, 2],
         },
@@ -6182,7 +6182,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '[13-5]|2(?:[247-9]|5[0138])|6(?:[124-689]|7[0-2])|9(?:[125-8]|3[02-5]|4[0-3])',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -6192,14 +6192,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SG': CountryPhoneRules(
     callingCode: '65',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[369]|8(?:0[1-9]|[1-9])',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -6209,22 +6209,22 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SH': CountryPhoneRules(
     callingCode: '290',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[5],
     formats: <CountryPhoneFormat>[],
   ),
   'SI': CountryPhoneRules(
     callingCode: '386',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '8[09]|9',
         pattern: r'(\d{2})(\d{3,6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[2, 6],
         },
@@ -6232,7 +6232,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '59|8',
         pattern: r'(\d{3})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
         },
@@ -6240,7 +6240,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[37][01]|4[013]|51|6',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -6248,7 +6248,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[1-57]',
         pattern: r'(\d)(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 2, 2],
         },
@@ -6258,14 +6258,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SJ': CountryPhoneRules(
     callingCode: '47',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{2})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[3, 2, 3],
         },
@@ -6273,7 +6273,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2-79]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -6283,14 +6283,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SK': CountryPhoneRules(
     callingCode: '421',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[6, 7, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '21',
         pattern: r'(\d)(\d{2})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           6: <int>[1, 2, 3],
           7: <int>[1, 2, 4],
@@ -6299,7 +6299,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[3-5][1-8]1[67]',
         pattern: r'(\d{2})(\d{2})(\d{2,3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           6: <int>[2, 2, 2],
           7: <int>[2, 2, 3],
@@ -6308,7 +6308,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2',
         pattern: r'(\d)(\d{3})(\d{3})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[1, 3, 3, 2],
         },
@@ -6316,7 +6316,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[689]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -6324,7 +6324,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[3-5]',
         pattern: r'(\d{2})(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 2, 2],
         },
@@ -6334,14 +6334,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SL': CountryPhoneRules(
     callingCode: '232',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[236-9]',
         pattern: r'(\d{2})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[2, 6],
         },
@@ -6351,14 +6351,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SM': CountryPhoneRules(
     callingCode: '378',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[5-7]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -6366,7 +6366,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '0',
         pattern: r'(\d{4})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           10: <int>[4, 6],
         },
@@ -6376,14 +6376,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SN': CountryPhoneRules(
     callingCode: '221',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '8',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -6391,7 +6391,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[379]',
         pattern: r'(\d{2})(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 2, 2],
         },
@@ -6401,14 +6401,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SO': CountryPhoneRules(
     callingCode: '252',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[6, 7, 8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '8[125]',
         pattern: r'(\d{2})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[2, 4],
         },
@@ -6416,7 +6416,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[134]',
         pattern: r'(\d{6})',
-        format: r'$1',
+        replacement: r'$1',
         groupLengths: <int, List<int>>{
           6: <int>[6],
         },
@@ -6424,7 +6424,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[15]|2[0-79]|3[0-46-8]|4[0-7]',
         pattern: r'(\d)(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[1, 6],
         },
@@ -6432,7 +6432,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1|28|9[2-9]',
         pattern: r'(\d{2})(\d{5,7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[2, 5],
           8: <int>[2, 6],
@@ -6442,7 +6442,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[267]|904',
         pattern: r'(\d)(\d{7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[1, 7],
         },
@@ -6450,7 +6450,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[346-9]',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -6460,14 +6460,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SR': CountryPhoneRules(
     callingCode: '597',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[6, 7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '56',
         pattern: r'(\d{2})(\d{2})(\d{2})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           6: <int>[2, 2, 2],
         },
@@ -6475,7 +6475,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2-5]',
         pattern: r'(\d{3})(\d{3})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           6: <int>[3, 3],
         },
@@ -6483,7 +6483,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[6-9]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -6493,14 +6493,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SS': CountryPhoneRules(
     callingCode: '211',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[19]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -6510,14 +6510,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'ST': CountryPhoneRules(
     callingCode: '239',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[29]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -6527,14 +6527,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SV': CountryPhoneRules(
     callingCode: '503',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[25-7]',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -6544,14 +6544,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SX': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -6561,14 +6561,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SY': CountryPhoneRules(
     callingCode: '963',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[1-4]|5[1-3]',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
           9: <int>[2, 3, 4],
@@ -6577,7 +6577,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[59]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -6587,14 +6587,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'SZ': CountryPhoneRules(
     callingCode: '268',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[0237]',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -6604,14 +6604,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'TC': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -6621,14 +6621,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'TD': CountryPhoneRules(
     callingCode: '235',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[236-9]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -6638,14 +6638,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'TG': CountryPhoneRules(
     callingCode: '228',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[279]',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -6655,14 +6655,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'TH': CountryPhoneRules(
     callingCode: '66',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '2',
         pattern: r'(\d)(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
         },
@@ -6670,7 +6670,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[13-9]',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
           9: <int>[2, 3, 4],
@@ -6681,14 +6681,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'TJ': CountryPhoneRules(
     callingCode: '992',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '3317',
         pattern: r'(\d{6})(\d)(\d{2})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[6, 1, 2],
         },
@@ -6696,7 +6696,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '44[02-479]|[34]7',
         pattern: r'(\d{3})(\d{2})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 4],
         },
@@ -6704,7 +6704,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '3(?:[1245]|3[12])',
         pattern: r'(\d{4})(\d)(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[4, 1, 4],
         },
@@ -6712,7 +6712,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: r'\d',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -6722,22 +6722,22 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'TK': CountryPhoneRules(
     callingCode: '690',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[4, 5, 6, 7],
     formats: <CountryPhoneFormat>[],
   ),
   'TL': CountryPhoneRules(
     callingCode: '670',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[7, 8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-489]|70',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -6745,7 +6745,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -6755,14 +6755,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'TM': CountryPhoneRules(
     callingCode: '993',
     regionPrefix: '',
-    nationalPrefix: '8',
-    trunkPrefix: '8',
+    nationalPrefixPattern: '8',
+    literalTrunkPrefix: '8',
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '12',
         pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2-$3-$4',
+        replacement: r'$1 $2-$3-$4',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 2, 2],
         },
@@ -6770,7 +6770,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[1-5]',
         pattern: r'(\d{3})(\d)(\d{2})(\d{2})',
-        format: r'$1 $2-$3-$4',
+        replacement: r'$1 $2-$3-$4',
         groupLengths: <int, List<int>>{
           8: <int>[3, 1, 2, 2],
         },
@@ -6778,7 +6778,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[67]',
         pattern: r'(\d{2})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[2, 6],
         },
@@ -6788,14 +6788,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'TN': CountryPhoneRules(
     callingCode: '216',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-57-9]',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -6805,14 +6805,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'TO': CountryPhoneRules(
     callingCode: '676',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[5, 7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-4]|50|6[09]|7[0-24-69]|8[05]',
         pattern: r'(\d{2})(\d{3})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           5: <int>[2, 3],
         },
@@ -6820,7 +6820,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '0',
         pattern: r'(\d{4})(\d{3})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[4, 3],
         },
@@ -6828,7 +6828,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[5-9]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -6838,14 +6838,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'TR': CountryPhoneRules(
     callingCode: '90',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '512|8[01589]|90',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -6853,7 +6853,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '5',
         pattern: r'(\d{3})(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 2, 2],
         },
@@ -6861,7 +6861,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[24][1-8]|3[1-9]',
         pattern: r'(\d{3})(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 2, 2],
         },
@@ -6871,14 +6871,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'TT': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -6888,14 +6888,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'TV': CountryPhoneRules(
     callingCode: '688',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[5, 6, 7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '2',
         pattern: r'(\d{2})(\d{3})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           5: <int>[2, 3],
         },
@@ -6903,7 +6903,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '90',
         pattern: r'(\d{2})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[2, 4],
         },
@@ -6911,7 +6911,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{2})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[2, 5],
         },
@@ -6921,14 +6921,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'TW': CountryPhoneRules(
     callingCode: '886',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '826',
         pattern: r'(\d{3})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
         },
@@ -6936,7 +6936,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '83',
         pattern: r'(\d{3})(\d{2})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[3, 2, 3],
         },
@@ -6944,7 +6944,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '82',
         pattern: r'(\d{2})(\d{2})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 2, 4],
         },
@@ -6952,7 +6952,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[25]0|37|49|8[09]',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
           9: <int>[2, 3, 4],
@@ -6961,7 +6961,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[23568]|4(?:0[2-48]|[1-478])|(?:400|7)[1-9]',
         pattern: r'(\d)(\d{3,4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[1, 3, 4],
           9: <int>[1, 4, 4],
@@ -6970,7 +6970,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[49]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -6980,14 +6980,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'TZ': CountryPhoneRules(
     callingCode: '255',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[89]',
         pattern: r'(\d{3})(\d{2})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 4],
         },
@@ -6995,7 +6995,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[24]',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -7003,7 +7003,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '5',
         pattern: r'(\d{2})(\d{7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[2, 7],
         },
@@ -7011,7 +7011,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[67]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -7021,15 +7021,15 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'UA': CountryPhoneRules(
     callingCode: '380',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits:
             '6[12][29]|(?:35|4[1378]|5[12457]|6[49])2|(?:56|65)[24]|(?:3[1-46-8]|46)2[013-9]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -7038,7 +7038,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
         leadingDigits:
             '3[1-8]|4(?:[1367]|[45][6-9]|8[4-6])|5(?:[1-5]|6(?:[015689]|3[02389])|7[4-6])|6(?:[12][3-7]|[459])',
         pattern: r'(\d{4})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[4, 5],
         },
@@ -7046,7 +7046,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[3-7]|89|9[1-9]',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -7054,7 +7054,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[89]',
         pattern: r'(\d{3})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -7064,14 +7064,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'UG': CountryPhoneRules(
     callingCode: '256',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '20240',
         pattern: r'(\d{4})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[4, 5],
         },
@@ -7079,7 +7079,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '20(?:[0135-7]|2[5-9])|4(?:6[45]|[7-9])|[7-9]',
         pattern: r'(\d{3})(\d{6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[3, 6],
         },
@@ -7087,7 +7087,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2-4]',
         pattern: r'(\d{2})(\d{7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[2, 7],
         },
@@ -7097,14 +7097,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'US': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -7114,14 +7114,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'UY': CountryPhoneRules(
     callingCode: '598',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '9',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -7129,7 +7129,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[124]',
         pattern: r'(\d{4})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[4, 4],
         },
@@ -7137,7 +7137,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '0',
         pattern: r'(\d{3})(\d{3})(\d{2,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[3, 3, 2],
         },
@@ -7147,14 +7147,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'UZ': CountryPhoneRules(
     callingCode: '998',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[235-9]',
         pattern: r'(\d{2})(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 2, 2],
         },
@@ -7164,14 +7164,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'VC': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -7181,14 +7181,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'VE': CountryPhoneRules(
     callingCode: '58',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[24-689]',
         pattern: r'(\d{3})(\d{7})',
-        format: r'$1-$2',
+        replacement: r'$1-$2',
         groupLengths: <int, List<int>>{
           10: <int>[3, 7],
         },
@@ -7198,14 +7198,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'VG': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -7215,14 +7215,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'VI': CountryPhoneRules(
     callingCode: '1',
     regionPrefix: '340',
-    nationalPrefix: '1',
-    trunkPrefix: '1',
+    nationalPrefixPattern: '1',
+    literalTrunkPrefix: '1',
     possibleLengths: <int>[10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-9]',
         pattern: r'(\d{3})(\d{3})(\d{4})',
-        format: r'$1-$2-$3',
+        replacement: r'$1-$2-$3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 3, 4],
         },
@@ -7232,14 +7232,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'VN': CountryPhoneRules(
     callingCode: '84',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '1(?:2[02]|[89])',
         pattern: r'(\d{4})(\d{4,6})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[4, 5],
           10: <int>[4, 6],
@@ -7248,7 +7248,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '1[26]|6',
         pattern: r'(\d{2})(\d{3})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 2, 2],
         },
@@ -7256,7 +7256,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[1357-9]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -7264,7 +7264,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2[48]',
         pattern: r'(\d{2})(\d{4})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[2, 4, 4],
         },
@@ -7272,7 +7272,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2',
         pattern: r'(\d{3})(\d{4})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           10: <int>[3, 4, 3],
         },
@@ -7282,14 +7282,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'VU': CountryPhoneRules(
     callingCode: '678',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[5, 7],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[57-9]',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -7299,14 +7299,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'WF': CountryPhoneRules(
     callingCode: '681',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[6],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[47-9]',
         pattern: r'(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           6: <int>[2, 2, 2],
         },
@@ -7316,14 +7316,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'WS': CountryPhoneRules(
     callingCode: '685',
     regionPrefix: '',
-    nationalPrefix: null,
-    trunkPrefix: null,
+    nationalPrefixPattern: null,
+    literalTrunkPrefix: null,
     possibleLengths: <int>[5, 6, 7, 10],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[2-5]|6[1-9]',
         pattern: r'(\d{5})',
-        format: r'$1',
+        replacement: r'$1',
         groupLengths: <int, List<int>>{
           5: <int>[5],
         },
@@ -7331,7 +7331,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[68]',
         pattern: r'(\d{3})(\d{3,7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           6: <int>[3, 3],
           7: <int>[3, 4],
@@ -7341,7 +7341,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{2})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[2, 5],
         },
@@ -7351,14 +7351,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'XK': CountryPhoneRules(
     callingCode: '383',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[8, 9, 10, 11, 12],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[89]',
         pattern: r'(\d{3})(\d{5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           8: <int>[3, 5],
         },
@@ -7366,7 +7366,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[2-4]',
         pattern: r'(\d{2})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           8: <int>[2, 3, 3],
         },
@@ -7374,7 +7374,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2|39',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -7382,7 +7382,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '3',
         pattern: r'(\d{2})(\d{7,10})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[2, 7],
           10: <int>[2, 8],
@@ -7395,14 +7395,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'YE': CountryPhoneRules(
     callingCode: '967',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[7, 8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[1-6]|7(?:[24-6]|8[0-7])',
         pattern: r'(\d)(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[1, 3, 3],
           8: <int>[1, 3, 4],
@@ -7411,7 +7411,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -7421,14 +7421,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'YT': CountryPhoneRules(
     callingCode: '262',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[26-9]',
         pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
-        format: r'$1 $2 $3 $4',
+        replacement: r'$1 $2 $3 $4',
         groupLengths: <int, List<int>>{
           9: <int>[3, 2, 2, 2],
         },
@@ -7438,14 +7438,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'ZA': CountryPhoneRules(
     callingCode: '27',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[5, 6, 7, 8, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '8[1-4]',
         pattern: r'(\d{2})(\d{3,4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           5: <int>[2, 3],
           6: <int>[2, 4],
@@ -7454,7 +7454,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '8[1-4]',
         pattern: r'(\d{2})(\d{3})(\d{2,3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           7: <int>[2, 3, 2],
           8: <int>[2, 3, 3],
@@ -7463,7 +7463,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '860',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -7471,7 +7471,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[1-9]',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -7481,14 +7481,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'ZM': CountryPhoneRules(
     callingCode: '260',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '[28]',
         pattern: r'(\d{3})(\d{3})(\d{3})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },
@@ -7496,7 +7496,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[579]',
         pattern: r'(\d{2})(\d{7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[2, 7],
         },
@@ -7506,14 +7506,14 @@ countryPhoneRules = <String, CountryPhoneRules>{
   'ZW': CountryPhoneRules(
     callingCode: '263',
     regionPrefix: '',
-    nationalPrefix: '0',
-    trunkPrefix: '0',
+    nationalPrefixPattern: '0',
+    literalTrunkPrefix: '0',
     possibleLengths: <int>[7, 9],
     formats: <CountryPhoneFormat>[
       CountryPhoneFormat(
         leadingDigits: '1|2(?:0[0-36-9]|29|58)|67[0-46-9]|(?:55|68)[0-69]',
         pattern: r'(\d{2})(\d{3,5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[2, 5],
         },
@@ -7521,7 +7521,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '2(?:0[45]|[27]|48)|37|675|(?:55|68)[78]',
         pattern: r'(\d{3})(\d{3,5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -7529,7 +7529,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '80',
         pattern: r'(\d{3})(\d{4})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[3, 4],
         },
@@ -7537,7 +7537,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '548',
         pattern: r'(\d{4})(\d{3,5})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           7: <int>[4, 3],
           9: <int>[4, 5],
@@ -7546,7 +7546,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '29[013-9]',
         pattern: r'(\d{2})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -7554,7 +7554,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '[256]|39|8[13-59]',
         pattern: r'(\d{2})(\d{7})',
-        format: r'$1 $2',
+        replacement: r'$1 $2',
         groupLengths: <int, List<int>>{
           9: <int>[2, 7],
         },
@@ -7562,7 +7562,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '7',
         pattern: r'(\d{2})(\d{3})(\d{4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[2, 3, 4],
         },
@@ -7570,7 +7570,7 @@ countryPhoneRules = <String, CountryPhoneRules>{
       CountryPhoneFormat(
         leadingDigits: '3',
         pattern: r'(\d{3})(\d{3})(\d{3,4})',
-        format: r'$1 $2 $3',
+        replacement: r'$1 $2 $3',
         groupLengths: <int, List<int>>{
           9: <int>[3, 3, 3],
         },

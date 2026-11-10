@@ -40,32 +40,33 @@ void main() {
       (tester) async {
         final controller = CountryPhoneController.empty();
         addTearDown(controller.dispose);
-        Future<void> showInput({required bool automatic}) => tester.pumpWidget(
-          createWidgetUnderTest(
-            builder: (_) => Scaffold(
-              body: extended
-                  ? CountryPhoneInput.extended(
-                      initialCountry: Country.fromCountryCode('ID'),
-                      controller: controller,
-                      useCountryFormatting: automatic,
-                    )
-                  : CountryPhoneInput(
-                      initialCountry: Country.fromCountryCode('ID'),
-                      controller: controller,
-                      useCountryFormatting: automatic,
-                    ),
-            ),
-          ),
-        );
+        Future<void> showInput({required bool useCountryFormatting}) =>
+            tester.pumpWidget(
+              createWidgetUnderTest(
+                builder: (_) => Scaffold(
+                  body: extended
+                      ? CountryPhoneInput.extended(
+                          initialCountry: Country.fromCountryCode('ID'),
+                          controller: controller,
+                          useCountryFormatting: useCountryFormatting,
+                        )
+                      : CountryPhoneInput(
+                          initialCountry: Country.fromCountryCode('ID'),
+                          controller: controller,
+                          useCountryFormatting: useCountryFormatting,
+                        ),
+                ),
+              ),
+            );
         final field = find.byKey(
           ValueKey<String>(
             extended ? 'country_phone_input_extended' : 'country_phone_number',
           ),
         );
-        await showInput(automatic: false);
+        await showInput(useCountryFormatting: false);
         await tester.enterText(field, '81234567');
         await tester.pump();
-        await showInput(automatic: true);
+        await showInput(useCountryFormatting: true);
         await tester.pump();
         expect(
           controller.phone.replaceAll(RegExp('[^+0-9]'), ''),

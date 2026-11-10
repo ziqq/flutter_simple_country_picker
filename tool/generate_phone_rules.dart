@@ -10,11 +10,11 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:xml/xml.dart';
 
-const _commit = '8593ab70fa4fadffc042b2714034f4c52bef7daf';
-const _checksum =
+const _metadataCommit = '8593ab70fa4fadffc042b2714034f4c52bef7daf';
+const _metadataSha256 =
     'b6491939ddaeb9d585a34fe0f0ebd096e83c5ac9a1c5d6dddf38ba4b162b28ca';
-const _download =
-    'https://raw.githubusercontent.com/google/libphonenumber/$_commit/resources/PhoneNumberMetadata.xml';
+const _metadataUrl =
+    'https://raw.githubusercontent.com/google/libphonenumber/$_metadataCommit/resources/PhoneNumberMetadata.xml';
 const _typeTags = <String>[
   'fixedLine',
   'mobile',
@@ -43,16 +43,16 @@ Future<void> main(List<String> arguments) async {
   }
   final root = File.fromUri(Platform.script).parent.parent;
   final output = File(
-    options.output ??
+    options.outputPath ??
         '${root.path}/lib/src/constant/country_phone_rules.g.dart',
   );
-  _checkReportDestination(output, options.report);
-  final metadata = switch (options.metadata) {
+  _checkReportDestination(output, options.reportPath);
+  final metadata = switch (options.metadataPath) {
     String path => await File(path).readAsBytes(),
     null => await _fetchMetadata(),
   };
   final digest = sha256.convert(metadata).toString();
-  if (digest != _checksum) {
+  if (digest != _metadataSha256) {
     throw FormatException('Pinned XML checksum mismatch: $digest');
   }
   final generated = _generate(XmlDocument.parse(utf8.decode(metadata)));
@@ -98,7 +98,7 @@ Future<void> main(List<String> arguments) async {
   }
   final report =
       '${const JsonEncoder.withIndent('  ').convert(generated.report)}\n';
-  if (options.report case String path) {
+  if (options.reportPath case String path) {
     // Recheck after normal generation creates a previously missing output.
     _checkReportDestination(output, path);
     await File(path).writeAsString(report);
@@ -149,11 +149,11 @@ final class _Options {
           final value = arguments[index];
           switch (argument) {
             case '--metadata':
-              metadata = value;
+              metadataPath = value;
             case '--output':
-              output = value;
+              outputPath = value;
             case '--report':
-              report = value;
+              reportPath = value;
           }
         default:
           throw FormatException('Unknown argument: $argument');
@@ -162,13 +162,13 @@ final class _Options {
   }
 
   /// Offline copy of the pinned XML; null selects the verified download.
-  String? metadata;
+  String? metadataPath;
 
   /// Optional destination instead of the bundled rules file.
-  String? output;
+  String? outputPath;
 
   /// Optional machine-readable provenance report destination.
-  String? report;
+  String? reportPath;
 
   /// Compares formatted bytes without replacing the destination.
   bool check = false;
@@ -181,7 +181,7 @@ final class _Options {
 Future<List<int>> _fetchMetadata() async {
   final client = HttpClient()..connectionTimeout = const Duration(seconds: 60);
   try {
-    final request = await client.getUrl(Uri.parse(_download));
+    final request = await client.getUrl(Uri.parse(_metadataUrl));
     final response = await request.close().timeout(const Duration(seconds: 60));
     if (response.statusCode != HttpStatus.ok) {
       throw HttpException('Metadata download returned ${response.statusCode}');
@@ -203,8 +203,9 @@ bool _sameBytes(List<int> left, List<int> right) {
   return true;
 }
 
-/// Removes upstream formatting whitespace from regular expressions.
-String _compact(String? value) => (value ?? '').replaceAll(RegExp(r'\s+'), '');
+/// Removes formatting whitespace from metadata patterns and examples.
+String _removeWhitespace(String? value) =>
+    (value ?? '').replaceAll(RegExp(r'\s+'), '');
 
 /// Expands finite length ranges from the pinned metadata.
 Set<int> _declaredLengths(String? value) {
@@ -342,7 +343,7 @@ final class _PatternLengths {
 }
 
 /// Resolves effective fixed/mobile lengths, including general-description limits.
-List<int> _possibleLengths(XmlElement territory) {
+List<int> _supportedNationalLengths(XmlElement territory) {
   final general = <int>{};
   for (final tag in _typeTags) {
     final description = territory.getElement(tag);
@@ -352,7 +353,7 @@ List<int> _possibleLengths(XmlElement territory) {
     }
   }
   general.remove(-1);
-  final generalPattern = _compact(
+  final generalPattern = _removeWhitespace(
     territory
         .getElement('generalDesc')
         ?.getElement('nationalNumberPattern')
@@ -367,14 +368,14 @@ List<int> _possibleLengths(XmlElement territory) {
     final declared = lengths == null
         ? general
         : _declaredLengths(lengths.getAttribute('national'));
-    final ownPattern = _compact(
+    final ownPattern = _removeWhitespace(
       description.getElement('nationalNumberPattern')?.innerText,
     );
     final pattern = ownPattern.isEmpty ? generalPattern : ownPattern;
     final effective = declared
         .intersection(_PatternLengths(pattern).parse())
         .intersection(accepted);
-    final example = _compact(
+    final example = _removeWhitespace(
       description.getElement('exampleNumber')?.innerText,
     );
     if (example.isNotEmpty &&
@@ -394,7 +395,7 @@ List<int> _possibleLengths(XmlElement territory) {
 }
 
 /// Computes greedy capture lengths exactly, retaining upstream format order.
-Map<int, List<int>> _partialGroups(String pattern, List<int> lengths) {
+Map<int, List<int>> _captureWidthsByLength(String pattern, List<int> lengths) {
   final capture = RegExp(r'\(\\d(?:\{(\d+)(?:,(\d+))?\})?\)');
   final tokens = capture.allMatches(pattern).toList();
   if (tokens.map((match) => match.group(0) ?? '').join() != pattern) {
@@ -441,7 +442,7 @@ Map<int, List<int>> _partialGroups(String pattern, List<int> lengths) {
 typedef _PhoneFormat = ({
   String leadingDigits,
   String pattern,
-  String format,
+  String replacement,
   Map<int, List<int>> groupLengths,
 });
 
@@ -449,8 +450,8 @@ typedef _PhoneFormat = ({
 typedef _PhoneRules = ({
   String callingCode,
   String regionPrefix,
-  String? nationalPrefix,
-  String? trunkPrefix,
+  String? nationalPrefixPattern,
+  String? literalTrunkPrefix,
   List<int> possibleLengths,
   List<_PhoneFormat> formats,
 });
@@ -489,7 +490,7 @@ List<_PhoneFormat> _formats(
     final international = rule.getElement('intlFormat')?.innerText;
     if (international == 'NA') continue;
     final pattern = _attribute(rule, 'pattern');
-    final groups = _partialGroups(pattern, lengths);
+    final groups = _captureWidthsByLength(pattern, lengths);
     if (groups.isEmpty) continue;
     final display = international ?? rule.getElement('format')?.innerText;
     if (display == null)
@@ -508,9 +509,11 @@ List<_PhoneFormat> _formats(
     }
     final leading = rule.findElements('leadingDigits').toList();
     output.add((
-      leadingDigits: leading.isEmpty ? '' : _compact(leading.last.innerText),
+      leadingDigits: leading.isEmpty
+          ? ''
+          : _removeWhitespace(leading.last.innerText),
       pattern: pattern,
-      format: display,
+      replacement: display,
       groupLengths: groups,
     ));
   }
@@ -523,12 +526,12 @@ String _attribute(XmlElement element, String name) =>
     (throw FormatException('Missing $name on ${element.name}'));
 
 /// Emits strip-only prefixes; digit-rewriting transforms remain excluded.
-String? _stripPrefix(XmlElement territory) {
+String? _nationalPrefixPattern(XmlElement territory) {
   if ((territory.getAttribute('nationalPrefixTransformRule') ?? '')
       .isNotEmpty) {
     return territory.getAttribute('nationalPrefix');
   }
-  final expression = _compact(
+  final expression = _removeWhitespace(
     territory.getAttribute('nationalPrefixForParsing'),
   );
   return expression.isEmpty
@@ -566,10 +569,10 @@ String? _stripPrefix(XmlElement territory) {
       fallback[iso] = 'bundled +$bundled differs from upstream +$code';
       continue;
     }
-    final lengths = _possibleLengths(territory);
+    final lengths = _supportedNationalLengths(territory);
     final prefix = bundled.substring(code.length);
     for (final tag in const <String>['fixedLine', 'mobile']) {
-      final example = _compact(
+      final example = _removeWhitespace(
         territory.getElement(tag)?.getElement('exampleNumber')?.innerText,
       );
       if (prefix.isNotEmpty &&
@@ -584,8 +587,8 @@ String? _stripPrefix(XmlElement territory) {
     rows[iso] = (
       callingCode: code,
       regionPrefix: prefix,
-      nationalPrefix: _stripPrefix(territory),
-      trunkPrefix: trunk != null && RegExp(r'^[0-9]+$').hasMatch(trunk)
+      nationalPrefixPattern: _nationalPrefixPattern(territory),
+      literalTrunkPrefix: trunk != null && RegExp(r'^[0-9]+$').hasMatch(trunk)
           ? trunk
           : null,
       possibleLengths: lengths,
@@ -598,8 +601,8 @@ String? _stripPrefix(XmlElement territory) {
   return (
     source: _render(rows),
     report: <String, Object?>{
-      'source_commit': _commit,
-      'xml_sha256': _checksum,
+      'source_commit': _metadataCommit,
+      'xml_sha256': _metadataSha256,
       'bundled_countries': countries.length,
       'generated_countries': rows.length,
       'formats': rows.values.fold<int>(
@@ -633,8 +636,12 @@ String _render(Map<String, _PhoneRules> rows) {
       ..writeln("  '$iso': CountryPhoneRules(")
       ..writeln('    callingCode: ${_dartString(row.callingCode)},')
       ..writeln('    regionPrefix: ${_dartString(row.regionPrefix)},')
-      ..writeln('    nationalPrefix: ${_dartString(row.nationalPrefix)},')
-      ..writeln('    trunkPrefix: ${_dartString(row.trunkPrefix)},')
+      ..writeln(
+        '    nationalPrefixPattern: ${_dartString(row.nationalPrefixPattern)},',
+      )
+      ..writeln(
+        '    literalTrunkPrefix: ${_dartString(row.literalTrunkPrefix)},',
+      )
       ..writeln(
         '    possibleLengths: <int>[${row.possibleLengths.join(', ')}],',
       )
@@ -646,7 +653,7 @@ String _render(Map<String, _PhoneRules> rows) {
           '        leadingDigits: ${_dartString(format.leadingDigits)},',
         )
         ..writeln('        pattern: ${_dartString(format.pattern)},')
-        ..writeln('        format: ${_dartString(format.format)},')
+        ..writeln('        replacement: ${_dartString(format.replacement)},')
         ..writeln('        groupLengths: <int, List<int>>{');
       for (final entry in format.groupLengths.entries) {
         output.writeln(
@@ -682,8 +689,8 @@ final class CountryPhoneRules {
   const CountryPhoneRules({
     required this.callingCode,
     required this.regionPrefix,
-    required this.nationalPrefix,
-    required this.trunkPrefix,
+    required this.nationalPrefixPattern,
+    required this.literalTrunkPrefix,
     required this.possibleLengths,
     required this.formats,
   });
@@ -701,13 +708,13 @@ final class CountryPhoneRules {
   /// Apply only when the original number is unsupported and the remaining
   /// national number has a supported prefix and length. Transform rules that
   /// add or rewrite digits are intentionally excluded.
-  final String? nationalPrefix;
+  final String? nationalPrefixPattern;
 
   /// Literal national trunk prefix for the legacy manual formatter.
   ///
   /// Only the source territory's numeric nationalPrefix is retained here;
   /// carrier regexes and transformations are never inferred as a literal.
-  final String? trunkPrefix;
+  final String? literalTrunkPrefix;
 
   /// Supported fixed/mobile national lengths, including [regionPrefix].
   ///
@@ -727,7 +734,7 @@ final class CountryPhoneFormat {
   const CountryPhoneFormat({
     required this.leadingDigits,
     required this.pattern,
-    required this.format,
+    required this.replacement,
     required this.groupLengths,
   });
 
@@ -738,7 +745,7 @@ final class CountryPhoneFormat {
   final String pattern;
 
   /// International replacement containing ordered capture references.
-  final String format;
+  final String replacement;
 
   /// Greedy capture sizes by supported full national length.
   ///

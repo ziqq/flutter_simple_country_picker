@@ -495,7 +495,7 @@ class CountryInputFormatter implements TextInputFormatter {
   /// Chooses the next supported length, so every supported length is complete.
   int _expectedPhoneLength() {
     final lengths =
-        _formatResolver?.lengths(getUnmaskedText()) ?? const <int>[];
+        _formatResolver?.supportedLengths(getUnmaskedText()) ?? const <int>[];
     if (lengths.isNotEmpty) {
       return lengths.firstWhere(
         (n) => n >= _resultTextArray.length,
@@ -511,7 +511,7 @@ class CountryInputFormatter implements TextInputFormatter {
   /// Checks the supported lengths or the manual mask capacity.
   bool _isOverflow(int length) {
     final lengths =
-        _formatResolver?.lengths(getUnmaskedText()) ?? const <int>[];
+        _formatResolver?.supportedLengths(getUnmaskedText()) ?? const <int>[];
     if (lengths.isNotEmpty) return length > lengths.last;
     if (_formatResolver == null) return _isFlatMode;
     final expected = _expectedPhoneLength();

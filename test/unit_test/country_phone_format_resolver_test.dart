@@ -15,17 +15,17 @@ void main() {
       indonesia = CountryPhoneFormatResolver(Country.fromCountryCode('ID'));
     });
 
-    group('lengths', () {
+    group('supportedLengths', () {
       test('uses the lengths supported by the mobile prefix', () {
-        expect(indonesia.lengths('812345678'), [9, 10, 11, 12]);
-        expect(indonesia.lengths('212345678'), contains(8));
+        expect(indonesia.supportedLengths('812345678'), [9, 10, 11, 12]);
+        expect(indonesia.supportedLengths('212345678'), contains(8));
       });
 
       test('includes lengths without a corresponding display template', () {
         final resolver = CountryPhoneFormatResolver(
           Country.fromCountryCode('LU'),
         );
-        expect(resolver.lengths('2712'), contains(4));
+        expect(resolver.supportedLengths('2712'), contains(4));
       });
     });
 
