@@ -16,6 +16,9 @@ on:
     paths:
       - "lib/**.dart"
       - "test/**.dart"
+      - "test/fixtures/**"
+      - "tool/**"
+      - "assets/**"
       - "example/**.dart"
       - .github/workflows/*.yml
       - "pubspec.yaml"
@@ -34,6 +37,9 @@ on:
     paths:
       - "lib/**.dart"
       - "test/**.dart"
+      - "test/fixtures/**"
+      - "tool/**"
+      - "assets/**"
       - "example/**.dart"
       - .github/workflows/*.yml
       - "pubspec.yaml"
@@ -74,6 +80,7 @@ jobs:
             lib
             test
             tool
+            assets
             analysis_options.yaml
             CHANGELOG.md
 
@@ -175,7 +182,7 @@ jobs:
         id: check-format
         timeout-minutes: 1
         run: |
-          find lib test \
+          find lib test tool/generate_json.dart tool/generate_phone_rules.dart \
           -path '*/generated/*' -prune -o \
           -type f -name '*.dart' \
           ! -name '*.*.dart' \
@@ -188,7 +195,7 @@ jobs:
         id: check-analyzer
         timeout-minutes: 1
         run: |
-          flutter analyze --fatal-warnings --no-fatal-infos lib/ test/
+          flutter analyze --fatal-warnings --no-fatal-infos lib/ test/ tool/generate_json.dart tool/generate_phone_rules.dart
 
       - name: Unit & Widget tests
         run: |

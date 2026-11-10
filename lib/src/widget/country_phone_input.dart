@@ -204,6 +204,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
         widget.countryController ?? ValueNotifier<Country>(_initialCountry);
     _countryController.addListener(_onCountryChanged);
 
+    final leadingPrefixes = _manualLeadingPrefixes(_countryController.value);
     _formatter = widget.useCountryFormatting
         ? CountryInputFormatter.forCountry(
             country: _countryController.value,
@@ -217,10 +218,8 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
             shouldTryStripPhoneCode: true,
             shouldTryStripLeadingPrefix:
                 widget.shouldReplace8 &&
-                _literalTrunkPrefix(_countryController.value) != null,
-            leadingPrefixes: {
-              _literalTrunkPrefix(_countryController.value) ?? '',
-            },
+                (leadingPrefixes == null || leadingPrefixes.isNotEmpty),
+            leadingPrefixes: leadingPrefixes ?? const {},
           );
 
     _syncControllerValue(text: _controller.text);
@@ -282,16 +281,23 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     if (widget.shouldReplace8 != oldWidget.shouldReplace8 ||
         widget.useCountryFormatting != oldWidget.useCountryFormatting) {
       _updateFormatter();
-      _applyPhoneText(
-        _phoneController.text,
-        allowLeadingPrefixStrip: widget.shouldReplace8,
-      );
+      if (!widget.useCountryFormatting) {
+        _applyPhoneText(
+          _phoneController.text,
+          allowLeadingPrefixStrip: widget.shouldReplace8,
+          selection: _phoneController.selection,
+        );
+      }
     }
   }
 
-  /// Uses only a country-declared literal trunk in the legacy manual mode.
-  String? _literalTrunkPrefix(Country country) =>
-      countryPhoneRules[country.countryCode.toUpperCase()]?.literalTrunkPrefix;
+  /// Returns null for countries that use the legacy prefix defaults.
+  Set<String>? _manualLeadingPrefixes(Country country) =>
+      switch (countryPhoneRules[country.countryCode.toUpperCase()]) {
+        null => null,
+        CountryPhoneRules(literalTrunkPrefix: String prefix) => {prefix},
+        _ => const {},
+      };
 
   void _updateFormatter() {
     final country = _countryController.value;
@@ -304,14 +310,16 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       _syncControllerValue();
       return;
     }
+    final leadingPrefixes = _manualLeadingPrefixes(country);
     _formatter.updateMask(
       mask: country.mask,
       example: country.example,
       phoneCode: country.phoneCode,
       shouldTryStripPhoneCode: true,
       shouldTryStripLeadingPrefix:
-          widget.shouldReplace8 && _literalTrunkPrefix(country) != null,
-      leadingPrefixes: {_literalTrunkPrefix(country) ?? ''},
+          widget.shouldReplace8 &&
+          (leadingPrefixes == null || leadingPrefixes.isNotEmpty),
+      leadingPrefixes: leadingPrefixes ?? const {},
     );
     _syncControllerValue();
   }
@@ -330,6 +338,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     String rawText, {
     bool allowImplicitCountryCodeStrip = false,
     bool allowLeadingPrefixStrip = false,
+    TextSelection? selection,
   }) {
     final normalized = _formatter.normalizePhoneText(
       rawText,
@@ -352,8 +361,40 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     );
 
     _phoneController.value = formattedValue.copyWith(
-      selection: TextSelection.collapsed(offset: formattedValue.text.length),
+      selection: _mapPhoneSelection(rawText, formattedValue.text, selection),
       composing: TextRange.empty,
+    );
+  }
+
+  /// Restores both selection endpoints by their position among the digits.
+  static TextSelection _mapPhoneSelection(
+    String rawText,
+    String formattedText,
+    TextSelection? selection,
+  ) {
+    if (selection == null || !selection.isValid) {
+      return TextSelection.collapsed(offset: formattedText.length);
+    }
+
+    final digit = RegExp(r'\d');
+    final originalDigits = digit.allMatches(rawText).toList();
+    final formattedDigits = digit.allMatches(formattedText).toList();
+    final strippedDigits = originalDigits.length - formattedDigits.length;
+
+    int offsetFor(int offset) {
+      final precedingDigits = originalDigits
+          .takeWhile((match) => match.end <= offset)
+          .length;
+      final digitIndex = (precedingDigits - strippedDigits).clamp(
+        0,
+        formattedDigits.length,
+      );
+      return digitIndex == 0 ? 0 : formattedDigits[digitIndex - 1].end;
+    }
+
+    return selection.copyWith(
+      baseOffset: offsetFor(selection.baseOffset),
+      extentOffset: offsetFor(selection.extentOffset),
     );
   }
 
