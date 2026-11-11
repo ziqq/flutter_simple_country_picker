@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-/// Generate `country_codes.json` from `country_codes.dart`.
+/// Generate `country_codes.g.json` from `country_codes.dart`.
 /// Usage: mise exec -- dart --disable-analytics run tool/generate_json.dart
 void main(List<String> args) {
   final options = _Options.parse(args);
@@ -80,7 +80,7 @@ final class _Options {
   // ignore: prefer_constructors_over_static_methods
   static _Options parse(List<String> args) {
     var inputPath = 'lib/src/constant/country_codes.dart';
-    var outputPath = 'lib/src/constant/country_codes.json';
+    var outputPath = 'lib/src/constant/country_codes.g.json';
     var minify = false;
     var validateOnly = false;
 
@@ -125,13 +125,13 @@ final class _Options {
     stderr
       ..writeln('Usage:')
       ..writeln(
-        '  dart run tool/generate_country_codes_json.dart '
+        '  dart run tool/generate_json.dart '
         '[--input <path>] [--output <path>] [--minify] [--validate-only]',
       )
       ..writeln('')
       ..writeln('Defaults:')
       ..writeln('  --input  lib/src/constant/country_codes.dart')
-      ..writeln('  --output lib/src/constant/country_codes.json');
+      ..writeln('  --output lib/src/constant/country_codes.g.json');
 
     exit(exitCode);
   }

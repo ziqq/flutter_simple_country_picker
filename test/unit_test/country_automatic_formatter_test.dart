@@ -95,7 +95,7 @@ void main() {
       },
     );
 
-    for (final prefix in <String>['', '0', '+62 ', '0062 ']) {
+    for (final prefix in <String>['', '0', '+62 ', '0062 ', '62 ']) {
       test(
         'ID normalizes paste prefix "$prefix" independently of mask capacity',
         () {
@@ -149,6 +149,14 @@ void main() {
       expect(full.text, '5123 4567');
       expect(overflow.text, '5123 45678');
       expect(formatter.valueStatus.isOverflow, isTrue);
+    });
+
+    test('AL overflow keeps the more specific of equal-capacity templates', () {
+      final formatter = CountryInputFormatter.forCountry(
+        country: Country.fromCountryCode('AL'),
+      );
+
+      expect(formatter.maskText('220123456'), '22 012 3456');
     });
 
     test('LU supports a national length without a display template', () {

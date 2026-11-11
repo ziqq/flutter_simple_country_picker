@@ -16,11 +16,13 @@ on:
     paths:
       - "lib/**.dart"
       - "test/**.dart"
+      - "test/fixtures/**"
+      - "tool/**"
+      - "assets/**"
       - "example/**.dart"
       - .github/workflows/*.yml
       - "pubspec.yaml"
       - "example/pubspec.yaml"
-      - "assets/**"
       - "mise.toml"
       - "mise.lock"
   pull_request:
@@ -37,11 +39,13 @@ on:
     paths:
       - "lib/**.dart"
       - "test/**.dart"
+      - "test/fixtures/**"
+      - "tool/**"
+      - "assets/**"
       - "example/**.dart"
       - .github/workflows/*.yml
       - "pubspec.yaml"
       - "example/pubspec.yaml"
-      - "assets/**"
       - "mise.toml"
       - "mise.lock"
 
@@ -187,7 +191,7 @@ jobs:
         id: check-format
         timeout-minutes: 1
         run: |
-          find lib test example/integration_test \
+          find lib test example/integration_test tool/generate_json.dart tool/generate_phone_rules.dart \
           -path '*/generated/*' -prune -o \
           -type f -name '*.dart' \
           ! -name '*.*.dart' \
@@ -200,7 +204,7 @@ jobs:
         id: check-analyzer
         timeout-minutes: 1
         run: |
-          flutter analyze --fatal-warnings --no-fatal-infos lib/ test/ example/integration_test/
+          flutter analyze --fatal-warnings --no-fatal-infos lib/ test/ example/integration_test/ tool/generate_json.dart tool/generate_phone_rules.dart
 
       - name: Unit & Widget tests
         run: |

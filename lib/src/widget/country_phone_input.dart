@@ -9,7 +9,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
-import 'package:flutter_simple_country_picker/src/constant/country_phone_rules.dart';
+import 'package:flutter_simple_country_picker/src/constant/country_phone_rules.g.dart';
 import 'package:flutter_simple_country_picker/src/util/country_flag_font_util.dart';
 import 'package:meta/meta.dart';
 
@@ -196,7 +196,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
   final ValueNotifier<CountryPickerTheme?> _pickerTheme = ValueNotifier(null);
   late final _painter = _BackgroundPainter(pickerTheme: _pickerTheme);
   late final TextEditingController _phoneController;
-  late final CountryInputFormatter _formater;
+  late final CountryInputFormatter _formatter;
   late CountryPhoneController _controller;
   late ValueNotifier<Country> _countryController;
 
@@ -215,7 +215,8 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
         widget.countryController ?? ValueNotifier<Country>(_initialCountry);
     _countryController.addListener(_onCountryChanged);
 
-    _formater = widget.useCountryFormatting
+    final leadingPrefixes = _manualLeadingPrefixes(_countryController.value);
+    _formatter = widget.useCountryFormatting
         ? CountryInputFormatter.forCountry(
             country: _countryController.value,
             shouldTryStripLeadingPrefix: widget.shouldReplace8,
@@ -228,8 +229,8 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
             shouldTryStripPhoneCode: true,
             shouldTryStripLeadingPrefix:
                 widget.shouldReplace8 &&
-                _nationalPrefix(_countryController.value) != null,
-            leadingPrefixes: {_nationalPrefix(_countryController.value) ?? ''},
+                (leadingPrefixes == null || leadingPrefixes.isNotEmpty),
+            leadingPrefixes: leadingPrefixes ?? const {},
           );
 
     _syncControllerValue(text: _controller.text);
@@ -287,25 +288,32 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       _updateFormatter();
     }
 
-    // Check if the shouldReplace8 has changed
+    // Reconfigure the formatter when its options change.
     if (widget.shouldReplace8 != oldWidget.shouldReplace8 ||
         widget.useCountryFormatting != oldWidget.useCountryFormatting) {
       _updateFormatter();
-      _applyPhoneText(
-        _phoneController.text,
-        allowLeadingPrefixStrip: widget.shouldReplace8,
-      );
+      if (!widget.useCountryFormatting) {
+        _applyPhoneText(
+          _phoneController.text,
+          allowLeadingPrefixStrip: widget.shouldReplace8,
+          selection: _phoneController.selection,
+        );
+      }
     }
   }
 
-  /// Uses only a country-declared literal trunk in the legacy manual mode.
-  String? _nationalPrefix(Country country) =>
-      countryPhoneRules[country.countryCode.toUpperCase()]?.trunkPrefix;
+  /// Returns null for countries that use the legacy prefix defaults.
+  Set<String>? _manualLeadingPrefixes(Country country) =>
+      switch (countryPhoneRules[country.countryCode.toUpperCase()]) {
+        null => null,
+        CountryPhoneRules(literalTrunkPrefix: String prefix) => {prefix},
+        _ => const {},
+      };
 
   void _updateFormatter() {
     final country = _countryController.value;
     if (widget.useCountryFormatting) {
-      _phoneController.value = _formater.updateCountry(
+      _phoneController.value = _formatter.updateCountry(
         country,
         newValue: _phoneController.value,
         shouldTryStripLeadingPrefix: widget.shouldReplace8,
@@ -313,14 +321,16 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       _syncControllerValue();
       return;
     }
-    _formater.updateMask(
+    final leadingPrefixes = _manualLeadingPrefixes(country);
+    _formatter.updateMask(
       mask: country.mask,
       example: country.example,
       phoneCode: country.phoneCode,
       shouldTryStripPhoneCode: true,
       shouldTryStripLeadingPrefix:
-          widget.shouldReplace8 && _nationalPrefix(country) != null,
-      leadingPrefixes: {_nationalPrefix(country) ?? ''},
+          widget.shouldReplace8 &&
+          (leadingPrefixes == null || leadingPrefixes.isNotEmpty),
+      leadingPrefixes: leadingPrefixes ?? const {},
     );
     _syncControllerValue();
   }
@@ -331,7 +341,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
         '+${_countryController.value.phoneCode} ${_phoneController.text}';
     _controller.value = _controller.value.copyWith(
       text: resolvedText,
-      valueStatus: _formater.valueStatus,
+      valueStatus: _formatter.valueStatus,
     );
   }
 
@@ -339,20 +349,21 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     String rawText, {
     bool allowImplicitCountryCodeStrip = false,
     bool allowLeadingPrefixStrip = false,
+    TextSelection? selection,
   }) {
-    final normalized = _formater.normalizePhoneText(
+    final normalized = _formatter.normalizePhoneText(
       rawText,
       allowImplicitPhoneCodeStrip: allowImplicitCountryCodeStrip,
       allowLeadingPrefixStrip: allowLeadingPrefixStrip,
     );
 
-    _formater.clear();
+    _formatter.clear();
     if (normalized.isEmpty) {
       _phoneController.clear();
       return;
     }
 
-    final formattedValue = _formater.formatEditUpdate(
+    final formattedValue = _formatter.formatEditUpdate(
       TextEditingValue.empty,
       TextEditingValue(
         text: normalized,
@@ -361,8 +372,40 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     );
 
     _phoneController.value = formattedValue.copyWith(
-      selection: TextSelection.collapsed(offset: formattedValue.text.length),
+      selection: _mapPhoneSelection(rawText, formattedValue.text, selection),
       composing: TextRange.empty,
+    );
+  }
+
+  /// Restores both selection endpoints by their position among the digits.
+  static TextSelection _mapPhoneSelection(
+    String rawText,
+    String formattedText,
+    TextSelection? selection,
+  ) {
+    if (selection == null || !selection.isValid) {
+      return TextSelection.collapsed(offset: formattedText.length);
+    }
+
+    final digit = RegExp(r'\d');
+    final originalDigits = digit.allMatches(rawText).toList();
+    final formattedDigits = digit.allMatches(formattedText).toList();
+    final strippedDigits = originalDigits.length - formattedDigits.length;
+
+    int offsetFor(int offset) {
+      final precedingDigits = originalDigits
+          .takeWhile((match) => match.end <= offset)
+          .length;
+      final digitIndex = (precedingDigits - strippedDigits).clamp(
+        0,
+        formattedDigits.length,
+      );
+      return digitIndex == 0 ? 0 : formattedDigits[digitIndex - 1].end;
+    }
+
+    return selection.copyWith(
+      baseOffset: offsetFor(selection.baseOffset),
+      extentOffset: offsetFor(selection.extentOffset),
     );
   }
 
@@ -389,14 +432,14 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     // Update the formatter mask
     _updateFormatter();
 
-    // Format the current text in the controller after changing the mask
+    // Manual formatting applies the new mask after changing countries.
     if (!widget.useCountryFormatting) _applyPhoneText(_phoneController.text);
   }
 
   void _onSelect(Country country) {
     if (!mounted) return;
     if (country == _countryController.value) return;
-    _formater.clear();
+    _formatter.clear();
     _phoneController.clear();
     _countryController.value = country;
     widget.onCountryChanged?.call(country);
@@ -535,7 +578,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                       key: const ValueKey<String>('country_phone_number'),
                       autofocus: widget.autofocus,
                       controller: _phoneController,
-                      inputFormatters: [_formater],
+                      inputFormatters: [_formatter],
                       keyboardType: TextInputType.number,
                       onChanged: (_) {
                         widget.onChanged?.call(_controller.text);
@@ -770,7 +813,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                           ),
                           autofocus: widget.autofocus,
                           controller: _phoneController,
-                          inputFormatters: [_formater],
+                          inputFormatters: [_formatter],
                           style: textStyle,
                           cursorColor: textStyle?.color,
                           onChanged: (_) {

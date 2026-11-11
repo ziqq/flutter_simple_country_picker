@@ -35,42 +35,110 @@ void main() {
     });
   }
   for (final extended in <bool>[false, true]) {
+    for (final (prefix, stripPrefix, expected) in <(String, bool, String)>[
+      ('8', true, '+79123456789'),
+      ('0', true, '+79123456789'),
+      ('8', false, '+789123456789'),
+    ]) {
+      testWidgets(
+        'manual custom country handles $prefix with stripping=$stripPrefix; '
+        'extended=$extended',
+        (tester) async {
+          final country = Country.ru().copyWith(countryCode: 'ZZ');
+          final controller = CountryPhoneController.apply(
+            '${prefix}9123456789',
+          );
+          addTearDown(controller.dispose);
+          await tester.pumpWidget(
+            createWidgetUnderTest(
+              builder: (_) => Scaffold(
+                body: extended
+                    ? CountryPhoneInput.extended(
+                        initialCountry: country,
+                        controller: controller,
+                        shouldReplace8: stripPrefix,
+                      )
+                    : CountryPhoneInput(
+                        initialCountry: country,
+                        controller: controller,
+                        shouldReplace8: stripPrefix,
+                      ),
+              ),
+            ),
+          );
+          await tester.pump();
+          expect(controller.text.replaceAll(RegExp('[^+0-9]'), ''), expected);
+          await tester.pumpWidget(const SizedBox.shrink());
+        },
+      );
+    }
+
     testWidgets(
-      'enabling automatic formatting preserves text; extended=$extended',
+      'switching formatting preserves text and selection; extended=$extended',
       (tester) async {
         final controller = CountryPhoneController.empty();
         addTearDown(controller.dispose);
-        Future<void> showInput({required bool automatic}) => tester.pumpWidget(
-          createWidgetUnderTest(
-            builder: (_) => Scaffold(
-              body: extended
-                  ? CountryPhoneInput.extended(
-                      initialCountry: Country.fromCountryCode('ID'),
-                      controller: controller,
-                      useCountryFormatting: automatic,
-                    )
-                  : CountryPhoneInput(
-                      initialCountry: Country.fromCountryCode('ID'),
-                      controller: controller,
-                      useCountryFormatting: automatic,
-                    ),
-            ),
-          ),
-        );
+        Future<void> showInput({required bool useCountryFormatting}) =>
+            tester.pumpWidget(
+              createWidgetUnderTest(
+                builder: (_) => Scaffold(
+                  body: extended
+                      ? CountryPhoneInput.extended(
+                          initialCountry: Country.fromCountryCode('ID'),
+                          controller: controller,
+                          useCountryFormatting: useCountryFormatting,
+                        )
+                      : CountryPhoneInput(
+                          initialCountry: Country.fromCountryCode('ID'),
+                          controller: controller,
+                          useCountryFormatting: useCountryFormatting,
+                        ),
+                ),
+              ),
+            );
         final field = find.byKey(
           ValueKey<String>(
             extended ? 'country_phone_input_extended' : 'country_phone_number',
           ),
         );
-        await showInput(automatic: false);
+        await showInput(useCountryFormatting: false);
         await tester.enterText(field, '81234567');
         await tester.pump();
-        await showInput(automatic: true);
+        final editable = tester.widget<EditableText>(find.byType(EditableText));
+        final editingController = editable.controller;
+        const manualSelection = TextSelection(
+          baseOffset: 8,
+          extentOffset: 2,
+          affinity: TextAffinity.upstream,
+          isDirectional: true,
+        );
+        editingController.selection = manualSelection;
         await tester.pump();
+
+        await showInput(useCountryFormatting: true);
+        await tester.pump();
+        expect(editingController.text, '812-345-67');
+        expect(
+          editingController.selection,
+          manualSelection.copyWith(baseOffset: 9),
+        );
         expect(
           controller.phone.replaceAll(RegExp('[^+0-9]'), ''),
           '+6281234567',
         );
+
+        await showInput(useCountryFormatting: false);
+        await tester.pump();
+        expect(editingController.text, '812 34567');
+        expect(editingController.selection, manualSelection);
+
+        const caret = TextSelection.collapsed(offset: 2);
+        editingController.selection = caret;
+        await tester.pump();
+        await showInput(useCountryFormatting: true);
+        await tester.pump();
+        expect(editingController.selection, caret);
+
         await tester.enterText(field, '812345678901');
         await tester.pump();
         expect(

@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/src/controller/country_phone_controller.dart'
     show CountryPhoneValueStatus;
 import 'package:flutter_simple_country_picker/src/model/country.dart';
-import 'package:flutter_simple_country_picker/src/util/country_phone_format.dart';
+import 'package:flutter_simple_country_picker/src/util/country_phone_format_resolver.dart';
 
 /// Default filter for country input formatter.
 final _kDefaultFilter = <String, RegExp>{
@@ -83,7 +83,7 @@ class CountryInputFormatter implements TextInputFormatter {
     );
   }
 
-  /// Creates an automatic country/prefix formatter with a non-truncating tail.
+  /// Creates a country-aware formatter with a non-truncating tail.
   ///
   /// The regular constructors remain manual, including a null mask.
   factory CountryInputFormatter.forCountry({
@@ -129,7 +129,8 @@ class CountryInputFormatter implements TextInputFormatter {
          type: CountryInputCompletionType.eager,
        );
 
-  CountryPhoneFormatResolver? _automatic;
+  /// The format resolver for the selected country, or null in manual mode.
+  CountryPhoneFormatResolver? _formatResolver;
 
   /// Changes the selected country while preserving explicit manual constructors.
   TextEditingValue updateCountry(
@@ -152,7 +153,7 @@ class CountryInputFormatter implements TextInputFormatter {
       shouldTryStripPhoneCode: shouldTryStripPhoneCode,
       shouldTryStripLeadingPrefix: shouldTryStripLeadingPrefix,
     );
-    _automatic = CountryPhoneFormatResolver(country);
+    _formatResolver = CountryPhoneFormatResolver(country);
     return formatEditUpdate(TextEditingValue.empty, value);
   }
 
@@ -271,7 +272,7 @@ class CountryInputFormatter implements TextInputFormatter {
     Set<String>? leadingPrefixes,
     TextEditingValue? newValue,
   }) {
-    _automatic = null;
+    _formatResolver = null;
     // Reset flat mode when mask updates.
     _setFlatMode(false);
 
@@ -343,7 +344,7 @@ class CountryInputFormatter implements TextInputFormatter {
   String getUnmaskedText() => _resultTextArray.toString();
 
   /// Check if the mask is fully filled.
-  bool get isFill => _automatic == null
+  bool get isFill => _formatResolver == null
       ? _resultTextArray.length == _maskLength
       : valueStatus.isComplete;
 
@@ -354,7 +355,7 @@ class CountryInputFormatter implements TextInputFormatter {
   CountryPhoneValueStatus get valueStatus => CountryPhoneValueStatus(
     currentLength: _resultTextArray.length,
     expectedLength: _expectedPhoneLength(),
-    isOverflow: _automaticOverflow(_resultTextArray.length),
+    isOverflow: _isOverflow(_resultTextArray.length),
   );
 
   /// Clear the masked text.
@@ -377,8 +378,8 @@ class CountryInputFormatter implements TextInputFormatter {
     bool allowImplicitPhoneCodeStrip = false,
     bool allowLeadingPrefixStrip = false,
   }) {
-    if (_automatic case CountryPhoneFormatResolver automatic) {
-      return automatic.normalize(
+    if (_formatResolver case CountryPhoneFormatResolver resolver) {
+      return resolver.normalize(
         text,
         stripCode: _shouldTryStripPhoneCode,
         stripTrunk: allowLeadingPrefixStrip && _shouldTryStripLeadingPrefix,
@@ -470,9 +471,9 @@ class CountryInputFormatter implements TextInputFormatter {
   String unmaskText(String text) => _copy(initialText: text).getUnmaskedText();
 
   CountryInputFormatter _copy({String? initialText}) {
-    if (_automatic case CountryPhoneFormatResolver automatic) {
+    if (_formatResolver case CountryPhoneFormatResolver resolver) {
       return CountryInputFormatter.forCountry(
-        country: automatic.country,
+        country: resolver.country,
         initialText: initialText,
         shouldTryStripPhoneCode: _shouldTryStripPhoneCode,
         shouldTryStripLeadingPrefix: _shouldTryStripLeadingPrefix,
@@ -493,7 +494,8 @@ class CountryInputFormatter implements TextInputFormatter {
 
   /// Chooses the next supported length, so every supported length is complete.
   int _expectedPhoneLength() {
-    final lengths = _automatic?.lengths(getUnmaskedText()) ?? const <int>[];
+    final lengths =
+        _formatResolver?.supportedLengths(getUnmaskedText()) ?? const <int>[];
     if (lengths.isNotEmpty) {
       return lengths.firstWhere(
         (n) => n >= _resultTextArray.length,
@@ -506,11 +508,12 @@ class CountryInputFormatter implements TextInputFormatter {
     return exampleLength > _maskLength ? exampleLength : _maskLength;
   }
 
-  /// Overflow describes numbering lengths, independently from mask capacity.
-  bool _automaticOverflow(int length) {
-    final lengths = _automatic?.lengths(getUnmaskedText()) ?? const <int>[];
+  /// Checks the supported lengths or the manual mask capacity.
+  bool _isOverflow(int length) {
+    final lengths =
+        _formatResolver?.supportedLengths(getUnmaskedText()) ?? const <int>[];
     if (lengths.isNotEmpty) return length > lengths.last;
-    if (_automatic == null) return _isFlatMode;
+    if (_formatResolver == null) return _isFlatMode;
     final expected = _expectedPhoneLength();
     return expected > 0 && length > expected;
   }
@@ -518,7 +521,7 @@ class CountryInputFormatter implements TextInputFormatter {
   bool _computeIncompleteValue(int inputLength) => CountryPhoneValueStatus(
     currentLength: inputLength,
     expectedLength: _expectedPhoneLength(),
-    isOverflow: _automaticOverflow(inputLength),
+    isOverflow: _isOverflow(inputLength),
   ).isIncomplete;
 
   void _syncIncompleteState(int inputLength) {
@@ -600,10 +603,10 @@ class CountryInputFormatter implements TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    if (_automatic case CountryPhoneFormatResolver automatic) {
+    if (_formatResolver case CountryPhoneFormatResolver resolver) {
       if (newValue.composing.isValid && !newValue.composing.isCollapsed)
         return newValue;
-      return _formatAutomatic(automatic, oldValue, newValue);
+      return _formatWithResolver(resolver, oldValue, newValue);
     }
     final normalizedValue = _normalizePhoneEdit(oldValue, newValue);
 
@@ -930,8 +933,8 @@ class CountryInputFormatter implements TextInputFormatter {
   }
 
   /// Remaps both selection endpoints by digit index after prefix normalization.
-  TextEditingValue _formatAutomatic(
-    CountryPhoneFormatResolver automatic,
+  TextEditingValue _formatWithResolver(
+    CountryPhoneFormatResolver resolver,
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
@@ -971,7 +974,7 @@ class CountryInputFormatter implements TextInputFormatter {
         }
       }
     }
-    final formatted = automatic.format(digits);
+    final formatted = resolver.format(digits);
     _resultTextArray.set(digits);
     _resultTextMasked = formatted;
     _setFlatMode(false);

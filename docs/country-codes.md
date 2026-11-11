@@ -7,8 +7,8 @@ before adding or changing entries in
 ## Source of truth
 
 - `lib/src/constant/country_codes.dart` is the canonical dataset.
-- `lib/src/constant/country_codes.json` is generated from the Dart file.
-- Never edit `country_codes.json` by hand.
+- `lib/src/constant/country_codes.g.json` is generated from the Dart file.
+- Never edit `country_codes.g.json` by hand.
 
 After changing the Dart dataset, regenerate the JSON mirror:
 
@@ -282,14 +282,14 @@ Keep new records consistent with the existing file structure.
 6. Build a unique `e164_key` using the existing convention.
 7. If the calling code already exists in the dataset, compare the new record
    against every existing sibling entry.
-8. Regenerate `country_codes.json`.
+8. Regenerate `country_codes.g.json`.
 9. Run dataset tests.
 10. Run controller tests if the change can affect resolution.
 
 ## Before opening a PR
 
 1. Re-read the edited group in `country_codes.dart`.
-2. Regenerate `country_codes.json`.
+2. Regenerate `country_codes.g.json`.
 3. Run `test/unit_test/country_codes_test.dart`.
 4. Run `test/unit_test/country_phone_controller_test.dart` if shared calling
   codes or examples changed.

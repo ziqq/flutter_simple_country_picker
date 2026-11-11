@@ -26,7 +26,7 @@ Treat this repository as a **published package**, not an app-first codebase.
 - `lib/src/widget/`: picker and input widgets
 - `lib/src/controller/`: state and phone parsing/resolution logic
 - `lib/src/constant/country_codes.dart`: bundled source-of-truth dataset
-- `lib/src/constant/country_codes.json`: generated JSON mirror of the dataset
+- `lib/src/constant/country_codes.g.json`: generated JSON mirror of the dataset
 - `lib/src/localization/`: localization delegate and translations
 - `example/`: example application that is published with sources but not platform/build artifacts
 - `tool/generate_json.dart`: regenerates the JSON mirror from the Dart dataset
@@ -70,7 +70,7 @@ The VM update script runs the dependency refresh steps above automatically.
 ### Country dataset rules
 
 - `lib/src/constant/country_codes.dart` is the authoritative bundled dataset.
-- `lib/src/constant/country_codes.json` must stay in sync with the Dart dataset.
+- `lib/src/constant/country_codes.g.json` must stay in sync with the Dart dataset.
 - After editing the Dart dataset, run:
 
 ```bash
