@@ -340,9 +340,12 @@ class _ScrollEdgeShadeLayer extends PictureLayer {
         final baseBottom = bottom - extent * .5;
         final gradient = switch (configuration.decoration) {
           BoxDecoration(gradient: LinearGradient gradient) => gradient,
+          // The shade's only constructor call supplies this gradient type.
+          // coverage:ignore-start
           _ => throw StateError(
             'The scroll edge shade requires a linear gradient.',
           ),
+          // coverage:ignore-end
         };
         final glass = <double>[
           1,
@@ -392,7 +395,10 @@ class _ScrollEdgeShadeLayer extends PictureLayer {
               stops,
             ),
         );
+        // The shade's only constructor call passes a null opacity callback,
+        // so the fallback visibility is always 1.
         if (configuration.isLight && opacity < 1) {
+          // coverage:ignore-start
           canvas.drawRect(
             paintOffset & target.size,
             Paint()
@@ -411,6 +417,7 @@ class _ScrollEdgeShadeLayer extends PictureLayer {
                 stops,
               ),
           );
+          // coverage:ignore-end
         }
         picture = recorder.endRecording();
         _snapshot = snapshot;
@@ -499,10 +506,14 @@ final class _ScrollEdgeShaders extends ChangeNotifier {
         }
         count++;
       }
+      // Each tap covers at most two adjacent pixels. Greedy pairing on each
+      // contiguous run uses the fewest samples, so 31 taps suffice to cover it.
       if (count > 31)
+        // coverage:ignore-start
         throw StateError(
           'A 31-tap kernel cannot require more than 31 linear samples.',
         );
+      // coverage:ignore-end
       for (var padding = count; padding < 31; padding++) {
         final pairIndex = index;
         shader
@@ -612,8 +623,13 @@ final class _ScrollEdgeShaders extends ChangeNotifier {
       nextVertical = program.fragmentShader()
         ..setImageSampler(0, image, filterQuality: ui.FilterQuality.low);
     } on Object catch (error, stackTrace) {
+      // Both fresh shaders bind the same sampler and image synchronously.
+      // Sampler validation fails before the first assignment. No operation
+      // follows the second assignment inside the try block.
+      // coverage:ignore-start
       nextHorizontal?.dispose();
       nextVertical?.dispose();
+      // coverage:ignore-end
       if (!kReleaseMode) {
         dev.log(
           'Failed to initialize fallback shader: $error',
@@ -741,6 +757,8 @@ class _RenderScrollEdgeBackdropFilter extends RenderBackdropFilter {
 
   set shaders(_ScrollEdgeShaders value) {
     if (identical(value, _shaders)) return;
+    // The effect state retains one final shader owner across every update.
+    // coverage:ignore-start
     if (attached) _shaders.removeListener(_onReady);
     _shaders = value;
     backdropKey = switch (filterConfig) {
@@ -749,6 +767,7 @@ class _RenderScrollEdgeBackdropFilter extends RenderBackdropFilter {
     };
     if (attached) _shaders.addListener(_onReady);
     _onReady();
+    // coverage:ignore-end
   }
 
   void _onReady() {
@@ -1247,7 +1266,10 @@ class _ScrollEdgeFilter implements ImageFilterConfig {
     };
     final renderBox = switch (context.findRenderObject()) {
       RenderBox renderBox => renderBox,
+      // The effect's context resolves to the IgnorePointer built by its state.
+      // coverage:ignore-start
       _ => throw FlutterError('The scroll edge filter requires a RenderBox.'),
+      // coverage:ignore-end
     };
     // An isolated sheet backdrop starts at its clipped surface, not the screen
     // origin. Keep the blur and shade aligned when the sheet moves or expands.

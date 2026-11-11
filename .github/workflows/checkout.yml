@@ -210,19 +210,26 @@ jobs:
         run: |
           flutter test --coverage --concurrency=40 test/flutter_simple_country_picker_test.dart
 
-      - name: Scroll edge rendering test
+      - name: Scroll edge rendering tests
         working-directory: example
         run: |
-          flutter test --no-pub --enable-impeller --dart-define=PICKER_TEST_SCROLL_EDGE=true \
-            --coverage --coverage-package '^flutter_simple_country_picker$' \
-            --coverage-path ../coverage/scroll-edge.lcov \
-            ../test/widget_test/country_picker_scroll_edge_test.dart
+          for assets in bundled missing incompatible-separation incompatible-contributions; do
+            flutter test --no-pub --enable-impeller --dart-define=PICKER_TEST_SCROLL_EDGE=true \
+              --dart-define="PICKER_TEST_SCROLL_EDGE_ASSETS=$assets" \
+              --coverage --coverage-package '^flutter_simple_country_picker$' \
+              --coverage-path "../coverage/scroll-edge-$assets.lcov" \
+              ../test/widget_test/country_picker_scroll_edge_test.dart
+          done
 
       - name: Merge scroll edge coverage
         run: |
-          sed 's#^SF:\.\./lib/#SF:lib/#' coverage/scroll-edge.lcov > coverage/scroll-edge-root.lcov
-          lcov --add-tracefile coverage/lcov.info --add-tracefile coverage/scroll-edge-root.lcov \
-            --output-file coverage/lcov.info
+          traces=(--add-tracefile coverage/lcov.info)
+          for report in coverage/scroll-edge-*.lcov; do
+            normalized="${report%.lcov}.info"
+            sed 's#^SF:\.\./lib/#SF:lib/#' "$report" > "$normalized"
+            traces+=(--add-tracefile "$normalized")
+          done
+          lcov "${traces[@]}" --output-file coverage/lcov.info
 
       - name: Upload coverage report
         uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
