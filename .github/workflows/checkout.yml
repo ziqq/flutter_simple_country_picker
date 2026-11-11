@@ -168,7 +168,7 @@ jobs:
         shell: bash
         run: |
           sudo apt-get update
-          sudo apt-get install -y lcov
+          sudo apt-get install -y lcov libvulkan1 mesa-vulkan-drivers
           echo /home/runner/.pub-cache/bin >> $GITHUB_PATH
           flutter config --no-cli-animations --no-analytics
           flutter pub get
@@ -209,6 +209,20 @@ jobs:
       - name: Unit & Widget tests
         run: |
           flutter test --coverage --concurrency=40 test/flutter_simple_country_picker_test.dart
+
+      - name: Scroll edge rendering test
+        working-directory: example
+        run: |
+          flutter test --no-pub --enable-impeller --dart-define=PICKER_TEST_SCROLL_EDGE=true \
+            --coverage --coverage-package '^flutter_simple_country_picker$' \
+            --coverage-path ../coverage/scroll-edge.lcov \
+            ../test/widget_test/country_picker_scroll_edge_test.dart
+
+      - name: Merge scroll edge coverage
+        run: |
+          sed 's#^SF:\.\./lib/#SF:lib/#' coverage/scroll-edge.lcov > coverage/scroll-edge-root.lcov
+          lcov --add-tracefile coverage/lcov.info --add-tracefile coverage/scroll-edge-root.lcov \
+            --output-file coverage/lcov.info
 
       - name: Upload coverage report
         uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
