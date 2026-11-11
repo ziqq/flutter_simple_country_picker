@@ -33,64 +33,59 @@ jobs:
     with:
       environment: release
 
-  notify:
-    name: Notify release result
+  release:
+    name: Create GitHub Release
     needs: deploy
-    if: always()
-    continue-on-error: true
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
-      contents: read
-    env:
-      NOTIFY_DISCORD_WEBHOOKS: ${{ secrets.DISCORD_WEBHOOKS }}
-      NOTIFY_TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-      NOTIFY_TELEGRAM_TARGETS: ${{ secrets.TELEGRAM_TARGETS }}
+      contents: write
     steps:
-      - name: Report missing notification secrets
-        if: >-
-          env.NOTIFY_DISCORD_WEBHOOKS == '' ||
-          env.NOTIFY_TELEGRAM_BOT_TOKEN == '' ||
-          env.NOTIFY_TELEGRAM_TARGETS == ''
-        shell: bash
-        run: >-
-          echo "::warning::Release notification skipped because one or more notification secrets are not configured."
-
-      - name: Checkout release notification template
-        if: >-
-          env.NOTIFY_DISCORD_WEBHOOKS != '' &&
-          env.NOTIFY_TELEGRAM_BOT_TOKEN != '' &&
-          env.NOTIFY_TELEGRAM_TARGETS != ''
+      - name: Checkout the release tag
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
 
-      - name: Read package version
-        id: package
-        if: hashFiles('pubspec.yaml') != ''
+      - name: Publish release notes
         shell: bash
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          awk '/^version:[[:blank:]]/ { print "version=" $2; exit }' pubspec.yaml >> "$GITHUB_OUTPUT"
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            echo "GitHub Release $GITHUB_REF_NAME already exists."
+            exit 0
+          fi
 
-      - name: Notify Discord and Telegram
-        if: >-
-          env.NOTIFY_DISCORD_WEBHOOKS != '' &&
-          env.NOTIFY_TELEGRAM_BOT_TOKEN != '' &&
-          env.NOTIFY_TELEGRAM_TARGETS != ''
-        uses: ziqq/actions/notify@ccd1a799683cd461a45d9303ac6fcb2792f8f5d2
-        with:
-          providers: discord,telegram
-          template-path: .github/notify/templates/release.md
-          variables: |
-            {
-              "status_label": ${{ toJSON(needs.deploy.result) }},
-              "package_version": ${{ toJSON(steps.package.outputs.version) }},
-              "pub_dev_url": ${{ toJSON(needs.deploy.result == 'success' && steps.package.outputs.version != '' && format('https://pub.dev/packages/flutter_simple_country_picker/versions/{0}', steps.package.outputs.version) || '') }}
-            }
-          failure-policy: best-effort
-          timeout-ms: "10000"
-          max-attempts: "5"
-          discord-webhooks: ${{ env.NOTIFY_DISCORD_WEBHOOKS }}
-          telegram-bot-token: ${{ env.NOTIFY_TELEGRAM_BOT_TOKEN }}
-          telegram-targets: ${{ env.NOTIFY_TELEGRAM_TARGETS }}
+          version=$(awk '$1 == "version:" { print $2; exit }' pubspec.yaml)
+          if [[ -z "$version" || "$GITHUB_REF_NAME" != "v$version" ]]; then
+            echo "::error::Release tag $GITHUB_REF_NAME does not match pubspec version $version."
+            exit 1
+          fi
+
+          notes="$RUNNER_TEMP/release-notes.md"
+          awk -v heading="## $version" '
+            $0 == heading { section = 1; next }
+            section && /^## / { exit }
+            section { print }
+          ' CHANGELOG.md > "$notes"
+
+          if ! grep -q '[^[:space:]]' "$notes"; then
+            echo "::error::CHANGELOG.md has no release notes for $version."
+            exit 1
+          fi
+
+          printf '\n[Published package on pub.dev](https://pub.dev/packages/flutter_simple_country_picker/versions/%s)\n' "$version" >> "$notes"
+
+          release_flags=()
+          if [[ "${version%%+*}" == *-* ]]; then
+            release_flags+=(--prerelease)
+          fi
+
+          gh release create "$GITHUB_REF_NAME" \
+            --verify-tag \
+            --title "$GITHUB_REF_NAME" \
+            --notes-file "$notes" \
+            "${release_flags[@]}"
