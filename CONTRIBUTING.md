@@ -16,7 +16,7 @@ Make sure that your code:
 ## Updating `country_codes`
 
 `lib/src/constant/country_codes.dart` is the source of truth for the bundled
-country dataset. `lib/src/constant/country_codes.json` is a generated mirror and
+country dataset. `lib/src/constant/country_codes.g.json` is a generated mirror and
 must never be edited manually.
 
 For a deeper maintainer guide with concrete shared-calling-code examples, see
@@ -74,7 +74,7 @@ dataset rules:
 - `iso2_cc` must match `^[A-Z]{2}$`.
 - `geographic` must be a non-null `bool`.
 - `e164_key` must be unique.
-- `country_codes.json` must match `country_codes.dart` exactly by `e164_key`,
+- `country_codes.g.json` must match `country_codes.dart` exactly by `e164_key`,
 	key set, and values.
 - When `full_example_with_plus_sign` is present, formatter normalization of the
 	full example must produce the same national number as `example`.
@@ -114,7 +114,7 @@ Before adding a new country under an existing `e164_cc`:
 
 ### Common mistakes
 
-- Editing `country_codes.json` by hand instead of regenerating it.
+- Editing `country_codes.g.json` by hand instead of regenerating it.
 - Adding `+` to `e164_cc`.
 - Using lowercase or non-ISO values in `iso2_cc`.
 - Reusing an example number from another country in the same calling-code group.

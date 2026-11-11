@@ -376,6 +376,41 @@ debugPrint('${formatter.valueStatus.currentLength}/${formatter.valueStatus.expec
 | `A`    | digit `[0-9]` |
 
 
+For automatic country and prefix rules with a soft tail, opt in explicitly:
+
+```dart
+CountryPhoneInput(
+  initialCountry: Country.fromCountryCode('ID'),
+  useCountryFormatting: true,
+);
+
+final formatter = CountryInputFormatter.forCountry(
+  country: Country.fromCountryCode('ID'),
+  shouldTryStripLeadingPrefix: true,
+);
+```
+
+The extended input accepts the same option. Automatic formatting chooses a
+country/prefix pattern and preserves all digits beyond its capacity, including
+separators. For Indonesian mobile inputs, all supported lengths from 9 to 12
+digits can be complete. `expectedLength` is the next supported length at or
+above the current input, or the maximum for overflow. This describes length,
+not assignment, reachability or SMS support. Both selection endpoints follow
+digit positions; active IME composition is left untouched until commit.
+
+The regular formatter constructors and the default input mode retain manual
+mask behavior, including custom filters and `mask: null`. `updateMask` selects
+manual formatting; `updateCountry` selects automatic rules. The bundled rules
+cover 238 countries. HM, GS and VA retain the bundled mask as a soft fallback;
+number-prefix transforms that add or rewrite digits are not implemented.
+Metadata comes from pinned Apache-2.0 libphonenumber data; generation is in
+`tool/generate_phone_rules.dart`, with attribution under `assets/licenses/`.
+Run `fvm dart run tool/generate_phone_rules.dart` to regenerate, or
+add `--metadata /path/PhoneNumberMetadata.xml --check` for an offline check.
+The generator verifies the pinned XML SHA-256 and runs the pinned Dart formatter
+before writing or comparing the output.
+
+
 ## Gotchas
 
 - `CountryPhoneController.resolution` is dataset-based, not full phone-number
@@ -384,7 +419,7 @@ debugPrint('${formatter.valueStatus.currentLength}/${formatter.valueStatus.expec
 - Shared calling codes such as `+1`, `+7`, and `+44` can legitimately produce
   multiple candidates.
 - `filter` and `exclude` should not be used together in `showCountryPicker`.
-- `CountryInputFormatter` switches to flat mode when input exceeds the mask.
+- The manual `CountryInputFormatter` switches to flat mode when input exceeds the mask.
 - `mask` describes the national number only. It should not include the calling
   code.
 

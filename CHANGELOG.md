@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.2
+- **ADDED**: opt-in phone formatting by country and prefix through `CountryInputFormatter.forCountry`, `updateCountry` and `CountryPhoneInput.useCountryFormatting` (including `extended`); pinned libphonenumber rules for 238 countries recognize every supported length and retain digits beyond the pattern
+- **FIXED**: pasted Indonesian numbers preserve their significant leading `8`; input widgets strip country-declared national prefixes, retain manual prefix normalization for custom countries and preserve selection when switching formatting modes
+- **CHANGED**: renamed the generated dataset mirror to `country_codes.g.json`
+
 ## 0.11.1
 - **DEPRECATED**: `useHaptickFeedback`; use `useHapticFeedback` instead. When both are provided, `useHapticFeedback` takes precedence
 - **ADDED**: `useHapticFeedback` to `showCountryPicker`, `CountryPickerOptions`, `CountryPhoneInput`, and `CountryPhoneInput.extended`

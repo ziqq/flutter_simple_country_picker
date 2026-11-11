@@ -8,6 +8,8 @@ import 'dart:math';
 import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/src/controller/country_phone_controller.dart'
     show CountryPhoneValueStatus;
+import 'package:flutter_simple_country_picker/src/model/country.dart';
+import 'package:flutter_simple_country_picker/src/util/country_phone_format_resolver.dart';
 
 /// Default filter for country input formatter.
 final _kDefaultFilter = <String, RegExp>{
@@ -81,6 +83,30 @@ class CountryInputFormatter implements TextInputFormatter {
     );
   }
 
+  /// Creates a country-aware formatter with a non-truncating tail.
+  ///
+  /// The regular constructors remain manual, including a null mask.
+  factory CountryInputFormatter.forCountry({
+    required Country country,
+    String? initialText,
+    bool shouldTryStripPhoneCode = true,
+    bool shouldTryStripLeadingPrefix = false,
+  }) {
+    final formatter = CountryInputFormatter()
+      ..updateCountry(
+        country,
+        shouldTryStripPhoneCode: shouldTryStripPhoneCode,
+        shouldTryStripLeadingPrefix: shouldTryStripLeadingPrefix,
+        newValue: initialText == null
+            ? TextEditingValue.empty
+            : TextEditingValue(
+                text: initialText,
+                selection: TextSelection.collapsed(offset: initialText.length),
+              ),
+      );
+    return formatter;
+  }
+
   /// Constructor for eager [mask] formatter.
   CountryInputFormatter.eager({
     String? mask,
@@ -102,6 +128,34 @@ class CountryInputFormatter implements TextInputFormatter {
          leadingPrefixes: leadingPrefixes,
          type: CountryInputCompletionType.eager,
        );
+
+  /// The format resolver for the selected country, or null in manual mode.
+  CountryPhoneFormatResolver? _formatResolver;
+
+  /// Changes the selected country while preserving explicit manual constructors.
+  TextEditingValue updateCountry(
+    Country country, {
+    TextEditingValue? newValue,
+    bool shouldTryStripPhoneCode = true,
+    bool shouldTryStripLeadingPrefix = false,
+  }) {
+    final value =
+        newValue ??
+        TextEditingValue(
+          text: getUnmaskedText(),
+          selection: TextSelection.collapsed(offset: getUnmaskedText().length),
+        );
+    updateMask(
+      mask: country.mask,
+      phoneCode: country.phoneCode,
+      example: country.example,
+      newValue: TextEditingValue.empty,
+      shouldTryStripPhoneCode: shouldTryStripPhoneCode,
+      shouldTryStripLeadingPrefix: shouldTryStripLeadingPrefix,
+    );
+    _formatResolver = CountryPhoneFormatResolver(country);
+    return formatEditUpdate(TextEditingValue.empty, value);
+  }
 
   /// Regexp to filter input characters for each mask symbol.
   static final RegExp _kDigit = RegExp(r'\d');
@@ -218,6 +272,7 @@ class CountryInputFormatter implements TextInputFormatter {
     Set<String>? leadingPrefixes,
     TextEditingValue? newValue,
   }) {
+    _formatResolver = null;
     // Reset flat mode when mask updates.
     _setFlatMode(false);
 
@@ -289,7 +344,9 @@ class CountryInputFormatter implements TextInputFormatter {
   String getUnmaskedText() => _resultTextArray.toString();
 
   /// Check if the mask is fully filled.
-  bool get isFill => _resultTextArray.length == _maskLength;
+  bool get isFill => _formatResolver == null
+      ? _resultTextArray.length == _maskLength
+      : valueStatus.isComplete;
 
   /// Check if the phone input is shorter than the expected length.
   bool get isIncomplete => _isIncomplete;
@@ -298,7 +355,7 @@ class CountryInputFormatter implements TextInputFormatter {
   CountryPhoneValueStatus get valueStatus => CountryPhoneValueStatus(
     currentLength: _resultTextArray.length,
     expectedLength: _expectedPhoneLength(),
-    isOverflow: _isFlatMode,
+    isOverflow: _isOverflow(_resultTextArray.length),
   );
 
   /// Clear the masked text.
@@ -321,6 +378,14 @@ class CountryInputFormatter implements TextInputFormatter {
     bool allowImplicitPhoneCodeStrip = false,
     bool allowLeadingPrefixStrip = false,
   }) {
+    if (_formatResolver case CountryPhoneFormatResolver resolver) {
+      return resolver.normalize(
+        text,
+        stripCode: _shouldTryStripPhoneCode,
+        stripTrunk: allowLeadingPrefixStrip && _shouldTryStripLeadingPrefix,
+        allowImplicitCode: allowImplicitPhoneCodeStrip,
+      );
+    }
     var digits = text.replaceAll(_kNonDigits, '');
     if (digits.isEmpty) return '';
 
@@ -405,29 +470,58 @@ class CountryInputFormatter implements TextInputFormatter {
   /// Unmask the provided [text].
   String unmaskText(String text) => _copy(initialText: text).getUnmaskedText();
 
-  CountryInputFormatter _copy({String? initialText}) => CountryInputFormatter(
-    mask: _savedMask ?? _mask,
-    initialText: initialText,
-    filter: _maskFilter,
-    type: _type,
-    phoneCode: _phoneCode,
-    example: _example,
-    shouldTryStripPhoneCode: _shouldTryStripPhoneCode,
-    shouldTryStripLeadingPrefix: _shouldTryStripLeadingPrefix,
-    leadingPrefixes: _leadingPrefixes,
-  );
+  CountryInputFormatter _copy({String? initialText}) {
+    if (_formatResolver case CountryPhoneFormatResolver resolver) {
+      return CountryInputFormatter.forCountry(
+        country: resolver.country,
+        initialText: initialText,
+        shouldTryStripPhoneCode: _shouldTryStripPhoneCode,
+        shouldTryStripLeadingPrefix: _shouldTryStripLeadingPrefix,
+      );
+    }
+    return CountryInputFormatter(
+      mask: _savedMask ?? _mask,
+      initialText: initialText,
+      filter: _maskFilter,
+      type: _type,
+      phoneCode: _phoneCode,
+      example: _example,
+      shouldTryStripPhoneCode: _shouldTryStripPhoneCode,
+      shouldTryStripLeadingPrefix: _shouldTryStripLeadingPrefix,
+      leadingPrefixes: _leadingPrefixes,
+    );
+  }
 
+  /// Chooses the next supported length, so every supported length is complete.
   int _expectedPhoneLength() {
+    final lengths =
+        _formatResolver?.supportedLengths(getUnmaskedText()) ?? const <int>[];
+    if (lengths.isNotEmpty) {
+      return lengths.firstWhere(
+        (n) => n >= _resultTextArray.length,
+        orElse: () => lengths.last,
+      );
+    }
     final exampleLength = _example.replaceAll(_kNonDigits, '').length;
     if (exampleLength == 0) return _maskLength;
     if (_maskLength == 0) return exampleLength;
     return exampleLength > _maskLength ? exampleLength : _maskLength;
   }
 
+  /// Checks the supported lengths or the manual mask capacity.
+  bool _isOverflow(int length) {
+    final lengths =
+        _formatResolver?.supportedLengths(getUnmaskedText()) ?? const <int>[];
+    if (lengths.isNotEmpty) return length > lengths.last;
+    if (_formatResolver == null) return _isFlatMode;
+    final expected = _expectedPhoneLength();
+    return expected > 0 && length > expected;
+  }
+
   bool _computeIncompleteValue(int inputLength) => CountryPhoneValueStatus(
     currentLength: inputLength,
     expectedLength: _expectedPhoneLength(),
-    isOverflow: _isFlatMode,
+    isOverflow: _isOverflow(inputLength),
   ).isIncomplete;
 
   void _syncIncompleteState(int inputLength) {
@@ -509,6 +603,11 @@ class CountryInputFormatter implements TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
+    if (_formatResolver case CountryPhoneFormatResolver resolver) {
+      if (newValue.composing.isValid && !newValue.composing.isCollapsed)
+        return newValue;
+      return _formatWithResolver(resolver, oldValue, newValue);
+    }
     final normalizedValue = _normalizePhoneEdit(oldValue, newValue);
 
     // Flat mode handling:
@@ -829,6 +928,64 @@ class CountryInputFormatter implements TextInputFormatter {
         extentOffset: finalCursorPosition,
         affinity: normalizedValue.selection.affinity,
         isDirectional: normalizedValue.selection.isDirectional,
+      ),
+    );
+  }
+
+  /// Remaps both selection endpoints by digit index after prefix normalization.
+  TextEditingValue _formatWithResolver(
+    CountryPhoneFormatResolver resolver,
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    var digits = _digitsOnly(newValue.text);
+    final rawDigits = digits;
+    var base = newValue.selection.isValid
+        ? _digitsCountBefore(newValue.text, newValue.selection.baseOffset)
+        : digits.length;
+    var extent = newValue.selection.isValid
+        ? _digitsCountBefore(newValue.text, newValue.selection.extentOffset)
+        : digits.length;
+    final paste = _looksLikePaste(oldValue, newValue);
+    if (paste || _shouldTryStripLeadingPrefix) {
+      final normalized = normalizePhoneText(
+        newValue.text,
+        allowImplicitPhoneCodeStrip: paste,
+        allowLeadingPrefixStrip: true,
+      );
+      final removed = digits.length - normalized.length;
+      base = (base - removed).clamp(0, normalized.length);
+      extent = (extent - removed).clamp(0, normalized.length);
+      digits = normalized;
+    }
+    // Deleting only an inserted separator must still remove the intended digit.
+    if (rawDigits == _digitsOnly(oldValue.text) &&
+        oldValue.selection.isCollapsed &&
+        newValue.selection.isCollapsed &&
+        oldValue.text.length - newValue.text.length == 1) {
+      final backward =
+          newValue.selection.extentOffset < oldValue.selection.extentOffset;
+      final index = backward ? extent - 1 : extent;
+      if (index >= 0 && index < digits.length) {
+        digits = digits.replaceRange(index, index + 1, '');
+        if (backward) {
+          base = index;
+          extent = index;
+        }
+      }
+    }
+    final formatted = resolver.format(digits);
+    _resultTextArray.set(digits);
+    _resultTextMasked = formatted;
+    _setFlatMode(false);
+    _syncIncompleteState(digits.length);
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection(
+        baseOffset: _offsetInMaskedForDigitIndex(formatted, base),
+        extentOffset: _offsetInMaskedForDigitIndex(formatted, extent),
+        affinity: newValue.selection.affinity,
+        isDirectional: newValue.selection.isDirectional,
       ),
     );
   }

@@ -104,6 +104,9 @@ final class CountryPhoneValueStatus {
   final int currentLength;
 
   /// Expected count of national digits for the selected country.
+  ///
+  /// Automatic country formatting chooses the next supported length at or
+  /// above the current input, or the maximum supported length for overflow.
   final int expectedLength;
 
   /// Whether the current input exceeds the expected length.
