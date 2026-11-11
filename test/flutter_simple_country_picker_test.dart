@@ -41,6 +41,8 @@ import 'widget_test/country_localizations_test.dart'
 import 'widget_test/country_parser_test.dart' as widget_countries_parser_test;
 import 'widget_test/country_phone_input_test.dart'
     as widget_country_phone_input_test;
+import 'widget_test/country_picker_scroll_edge_test.dart'
+    as widget_country_picker_scroll_edge_test;
 import 'widget_test/country_picker_theme_test.dart'
     as widget_country_picker_theme_test;
 import 'widget_test/country_scope_test.dart' as widget_countries_scope_test;
@@ -75,6 +77,7 @@ void main() {
       widget_country_localizations_test.main();
       widget_countries_parser_test.main();
       widget_country_phone_input_test.main();
+      widget_country_picker_scroll_edge_test.main();
       widget_country_picker_theme_test.main();
       widget_countries_scope_test.main();
       widget_country_test.main();

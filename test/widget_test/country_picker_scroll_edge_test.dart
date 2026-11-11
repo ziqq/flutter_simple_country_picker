@@ -11,11 +11,12 @@ import 'package:flutter_simple_country_picker/src/widget/country_picker_scroll_e
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  // Run from example so Flutter bundles the shaders as package assets.
+  // Run the shader variant from example to bundle shaders as package assets.
+  const shaderFilters = bool.fromEnvironment('PICKER_TEST_SCROLL_EDGE');
   testWidgets(
-    'renders the header fade with opaque, translucent and isolated layers',
+    'renders the header fade through opacity, transforms and isolated clips',
     (tester) async {
-      expect(ui.ImageFilter.isShaderFilterSupported, isTrue);
+      expect(ui.ImageFilter.isShaderFilterSupported, shaderFilters);
       tester.view
         ..devicePixelRatio = 3
         ..physicalSize = const Size(360, 540);
@@ -26,10 +27,11 @@ void main() {
         matching: find.byWidgetPredicate((widget) => widget is DecoratedBox),
       );
 
-      for (final (opacity, isolated, extent) in [
-        (1.0, false, 20.0),
-        (.85, false, 16.0),
-        (1.0, true, 20.0),
+      for (final (opacity, isolated, extent, scale) in [
+        (1.0, false, 20.0, 1.0),
+        (.85, false, 16.0, 1.0),
+        (1.0, false, 20.0, .95),
+        (1.0, true, 20.0, 1.0),
       ]) {
         await tester.pumpWidget(
           _scene(
@@ -37,10 +39,11 @@ void main() {
             opacity: opacity,
             isolated: isolated,
             extent: extent,
+            scale: scale,
           ),
         );
         await tester.pumpAndSettle();
-        expect(shade, findsNothing);
+        expect(shade, shaderFilters ? findsNothing : findsOneWidget);
 
         final boundary = tester.renderObject<RenderRepaintBoundary>(
           find.byKey(boundaryKey),
@@ -62,7 +65,6 @@ void main() {
         }
       }
     },
-    skip: !const bool.fromEnvironment('PICKER_TEST_SCROLL_EDGE'),
   );
 }
 
@@ -71,6 +73,7 @@ Widget _scene(
   required double opacity,
   required bool isolated,
   required double extent,
+  required double scale,
 }) {
   final content = Stack(
     fit: StackFit.expand,
@@ -83,9 +86,12 @@ Widget _scene(
         height: 40,
         child: Opacity(
           opacity: opacity,
-          child: CountryPickerScrollEdgeEffect(
-            color: Colors.white,
-            extent: extent,
+          child: Transform.scale(
+            scale: scale,
+            child: CountryPickerScrollEdgeEffect(
+              color: Colors.white,
+              extent: extent,
+            ),
           ),
         ),
       ),
