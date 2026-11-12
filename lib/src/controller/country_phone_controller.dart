@@ -5,7 +5,7 @@
 
 import 'package:flutter/foundation.dart' show ValueNotifier, listEquals;
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart'
-    show countries;
+    show kCountries;
 import 'package:meta/meta.dart';
 
 /// Resolution status for a parsed phone number.
@@ -319,7 +319,7 @@ final class CountryPhoneController
   /// Build a list of unique phone codes from the country codes.
   static List<String> _buildPhoneCodes() {
     final codes = <String>{};
-    for (final country in countries) {
+    for (final country in kCountries) {
       final code = country['e164_cc'];
       if (code case String _ when code.isNotEmpty) codes.add(code);
     }
@@ -498,7 +498,7 @@ final class CountryPhoneController
     final bestMatches = <_CountryCodeMatch>[];
     var bestPrefix = -1;
 
-    for (final country in countries) {
+    for (final country in kCountries) {
       final cc = country['e164_cc']?.toString();
       if (cc != callingCode) continue;
 

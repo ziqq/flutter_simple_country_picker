@@ -431,11 +431,11 @@ void _$defaultCountryPhoneInputTest() {
       ) async {
         // 1. Pump widget with initialCountry = RU (for example)
         final initialCountry = Country.fromJson(
-          countries.firstWhere((c) => c['e164_key'] == '7-RU-0'),
+          kCountries.firstWhere((c) => c['e164_key'] == '7-RU-0'),
         );
 
         final updatedCountry = Country.fromJson(
-          countries.firstWhere((c) => c['e164_key'] == '1-US-0'),
+          kCountries.firstWhere((c) => c['e164_key'] == '1-US-0'),
         );
 
         await tester.pumpWidget(
@@ -475,11 +475,11 @@ void _$defaultCountryPhoneInputTest() {
         final newController = CountryPhoneController.apply('+11234567890');
 
         final initialCountry = Country.fromJson(
-          countries.firstWhere((c) => c['e164_key'] == '7-RU-0'),
+          kCountries.firstWhere((c) => c['e164_key'] == '7-RU-0'),
         );
 
         final newInitialCountry = Country.fromJson(
-          countries.firstWhere((c) => c['e164_key'] == '1-US-0'),
+          kCountries.firstWhere((c) => c['e164_key'] == '1-US-0'),
         );
 
         // 2. Pump widget with oldController

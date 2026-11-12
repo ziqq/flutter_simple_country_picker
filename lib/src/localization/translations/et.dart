@@ -22,10 +22,10 @@ final class CountryLocalizationsEt extends CountryLocalizations {
   String get selectCountryLabel => 'Vali riik';
 
   @override
-  String? countryName(String code) => _names[code];
+  String? countryName(String code) => _kNames[code];
 }
 
-const Map<String, String> _names = {
+const Map<String, String> _kNames = {
   'AF': 'Afganistan',
   'AB': 'Abhaasia',
   'AX': 'Ahvenamaa',

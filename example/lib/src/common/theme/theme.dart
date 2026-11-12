@@ -34,7 +34,7 @@ MaterialColor _$getMaterialColor(Color color) {
 }
 
 /// App accent color.
-const _primaryColor = Color(0xFF4a5cec);
+const _kPrimaryColor = Color(0xFF4a5cec);
 
 /// App light theme.
 final ThemeData _appLightTheme = ThemeData.light().copyWith(
@@ -50,7 +50,7 @@ final ThemeData _appLightTheme = ThemeData.light().copyWith(
     // primarySwatch: _$getMaterialColor(const Color(0xFF8673e0)),
     // primarySwatch: _$getMaterialColor(const Color(0xFF66c5ff)),
     // primarySwatch: _$getMaterialColor(const Color(0xFF8fad43)),
-    primarySwatch: _$getMaterialColor(_primaryColor),
+    primarySwatch: _$getMaterialColor(_kPrimaryColor),
     // primarySwatch: _$getMaterialColor(const Color(0xFF16b5e4)),
     // primarySwatch: _$getMaterialColor(const Color(0xFF71f5cb)),
     accentColor: _$getMaterialColor(const Color(0xFF16b5e4)),
@@ -67,7 +67,7 @@ final ThemeData _appLightTheme = ThemeData.light().copyWith(
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
       elevation: WidgetStateProperty.all<double>(0),
-      backgroundColor: WidgetStateProperty.all<Color>(_primaryColor),
+      backgroundColor: WidgetStateProperty.all<Color>(_kPrimaryColor),
       foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
       shape: WidgetStateProperty.all<OutlinedBorder>(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -97,7 +97,7 @@ final ThemeData _appDarkTheme = ThemeData.dark().copyWith(
     // primarySwatch: _$getMaterialColor(const Color(0xFF8673e0)),
     // primarySwatch: _$getMaterialColor(const Color(0xFF66c5ff)),
     // primarySwatch: _$getMaterialColor(const Color(0xFF8fad43)),
-    primarySwatch: _$getMaterialColor(_primaryColor),
+    primarySwatch: _$getMaterialColor(_kPrimaryColor),
     // primarySwatch: _$getMaterialColor(const Color(0xFF16b5e4)),
     // primarySwatch: _$getMaterialColor(const Color(0xFF71f5cb)),
     accentColor: _$getMaterialColor(const Color(0xFF16b5e4)),
@@ -114,7 +114,7 @@ final ThemeData _appDarkTheme = ThemeData.dark().copyWith(
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
       elevation: WidgetStateProperty.all<double>(0),
-      backgroundColor: WidgetStateProperty.all<Color>(_primaryColor),
+      backgroundColor: WidgetStateProperty.all<Color>(_kPrimaryColor),
       foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
       shape: WidgetStateProperty.all<OutlinedBorder>(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

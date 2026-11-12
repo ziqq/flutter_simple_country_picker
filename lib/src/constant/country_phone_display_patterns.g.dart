@@ -8,7 +8,7 @@ import 'package:meta/meta.dart';
 /// Display templates in source order, keyed by the bundled country e164 key.
 /// An empty list means the source explicitly has no display template.
 @internal
-const countryPhoneDisplayPatterns = <String, List<String>>{
+const kCountryPhoneDisplayPatterns = <String, List<String>>{
   '1-AG-0': <String>['XXX XXXX'],
   '1-AI-0': <String>['XXX XXXX'],
   '1-AS-0': <String>['XXX XXXX'],

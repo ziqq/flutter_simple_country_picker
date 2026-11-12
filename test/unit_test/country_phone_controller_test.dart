@@ -5,12 +5,12 @@
 
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart'
-    show countries;
+    show kCountries;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() => group('CountryPhoneController -', () {
   final countryCodesByPhone = <String, Set<String>>{};
-  for (final entry in countries) {
+  for (final entry in kCountries) {
     final phoneFull = entry['full_example_with_plus_sign']?.toString();
     final countryCode = entry['iso2_cc']?.toString();
     if (phoneFull == null || phoneFull.isEmpty) continue;
@@ -325,7 +325,7 @@ void main() => group('CountryPhoneController -', () {
     });
   });
 
-  for (final entry in countries) {
+  for (final entry in kCountries) {
     final countryCode = entry['iso2_cc']?.toString();
     final phoneCode = entry['e164_cc']?.toString();
     final phoneFull = entry['full_example_with_plus_sign']?.toString();

@@ -13,8 +13,8 @@ import 'package:meta/meta.dart';
 class CountryPhoneFormatResolver {
   /// Creates a resolver for one explicitly selected country.
   CountryPhoneFormatResolver(this.country)
-    : rules = countryPhoneRules[country.countryCode.toUpperCase()],
-      _displayPatterns = countryPhoneDisplayPatterns[country.e164Key]
+    : rules = kCountryPhoneRules[country.countryCode.toUpperCase()],
+      _displayPatterns = kCountryPhoneDisplayPatterns[country.e164Key]
           ?.map(
             (pattern) =>
                 (prefix: pattern.replaceAll(_nonDigits, ''), pattern: pattern),

@@ -22,10 +22,10 @@ final class CountryLocalizationsNp extends CountryLocalizations {
   String get selectCountryLabel => 'देश चयन गर्नुहोस्';
 
   @override
-  String? countryName(String code) => _names[code];
+  String? countryName(String code) => _kNames[code];
 }
 
-const Map<String, String> _names = {
+const Map<String, String> _kNames = {
   'AF': 'अफगानिस्तान',
   'AB': 'अब्खाजिया',
   'AX': 'इल्यान्ड टापु',

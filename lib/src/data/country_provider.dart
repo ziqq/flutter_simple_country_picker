@@ -13,7 +13,7 @@ import 'package:meta/meta.dart';
 @internal
 class CountryProvider {
   /// {@macro country_provider}
-  CountryProvider() : _countries = countries.map(Country.fromJson).toList();
+  CountryProvider() : _countries = kCountries.map(Country.fromJson).toList();
 
   final List<Country> _countries;
 

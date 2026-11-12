@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() => group('country_codes_test -', () {
   group('dart -', () {
-    for (final country in countries) {
+    for (final country in kCountries) {
       final e164KEY = country['e164_key']; // e.g: 7-RU-0
       final e164cc = country['e164_cc']; // e.g: 7
       final iso2 = country['iso2_cc']; // e.g: RU
@@ -69,7 +69,7 @@ void main() => group('country_codes_test -', () {
   });
 
   group('phone formatter dataset coverage -', () {
-    for (final country in countries) {
+    for (final country in kCountries) {
       final name = country['name']?.toString();
       final mask = country['mask']?.toString();
       final e164Key = country['e164_key']?.toString();
@@ -136,12 +136,12 @@ void main() => group('country_codes_test -', () {
 
     expect(
       jsonList.length,
-      countries.length,
+      kCountries.length,
       reason: 'JSON list length must match Dart list length.',
     );
 
     final dartByKey = <String, Map<String, Object?>>{};
-    for (final country in countries) {
+    for (final country in kCountries) {
       final key = country['e164_key'];
       expect(key, isA<String>(), reason: 'Each Dart entry must have e164_key');
       final k = key as String;

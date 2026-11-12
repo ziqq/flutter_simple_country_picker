@@ -310,7 +310,7 @@ void main() {
     );
 
     test('all bundled country examples retain their digits', () {
-      for (final data in countries) {
+      for (final data in kCountries) {
         final country = Country.fromJson(data);
         final digits = country.example.replaceAll(RegExp(r'\D'), '');
         final formatter = CountryInputFormatter.forCountry(
