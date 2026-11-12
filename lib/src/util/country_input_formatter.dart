@@ -364,6 +364,9 @@ class CountryInputFormatter implements TextInputFormatter {
     currentLength: _resultTextArray.length,
     expectedLength: _expectedPhoneLength(),
     isOverflow: _isOverflow(_resultTextArray.length),
+    isAllZeros:
+        _resultTextArray.length > 0 &&
+        _resultTextArray.symbols.every((digit) => digit == '0'),
   );
 
   /// Clear the masked text.

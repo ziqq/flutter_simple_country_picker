@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- **FIXED**: phone input completion rejects national numbers made entirely of zeros, [#25](https://github.com/ziqq/flutter_simple_country_picker/issues/25)
 - **CHANGED**: automatic phone formatting uses country templates with the longest matching prefix, shows the unfilled template in gray in both input variants, and retains digits beyond the template without regrouping, [#25](https://github.com/ziqq/flutter_simple_country_picker/issues/25)
 
 ## 0.11.2

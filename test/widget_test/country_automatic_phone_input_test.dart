@@ -213,6 +213,48 @@ void main() {
     );
 
     testWidgets(
+      'automatic ID rejects a national number of zeros; extended=$extended',
+      (tester) async {
+        final controller = CountryPhoneController.empty();
+        addTearDown(controller.dispose);
+        final country = Country.fromCountryCode('ID');
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            builder: (_) => Scaffold(
+              body: extended
+                  ? CountryPhoneInput.extended(
+                      initialCountry: country,
+                      controller: controller,
+                      useCountryFormatting: true,
+                    )
+                  : CountryPhoneInput(
+                      initialCountry: country,
+                      controller: controller,
+                      useCountryFormatting: true,
+                    ),
+            ),
+          ),
+        );
+        final field = find.byType(TextFormField);
+        await tester.enterText(field, '000 000000');
+        await tester.pump();
+
+        expect(controller.valueStatus.currentLength, 9);
+        expect(controller.valueStatus.expectedLength, 9);
+        expect(controller.valueStatus.isAllZeros, isTrue);
+        expect(controller.valueStatus.isComplete, isFalse);
+        expect(controller.valueStatus.isOverflow, isFalse);
+
+        await tester.enterText(field, '812345678');
+        await tester.pump();
+
+        expect(controller.valueStatus.isAllZeros, isFalse);
+        expect(controller.valueStatus.isComplete, isTrue);
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+    );
+
+    testWidgets(
       'automatic ID hint shrinks, disappears, and returns; extended=$extended',
       (tester) async {
         final controller = CountryPhoneController.empty();

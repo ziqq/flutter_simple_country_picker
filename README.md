@@ -322,6 +322,9 @@ ValueListenableBuilder<CountryPhoneEditingValue>(
 )
 ```
 
+`isComplete` requires a supported length and at least one non-zero national
+digit. `isAllZeros` identifies a non-empty number made entirely of zeros.
+
 External updates should go through the immutable value API:
 
 ```dart
