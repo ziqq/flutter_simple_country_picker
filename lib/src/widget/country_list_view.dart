@@ -704,7 +704,7 @@ class _CountryListTile extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (effectiveTrailing != null) effectiveTrailing,
+                ?effectiveTrailing,
               ],
             ),
           ),
