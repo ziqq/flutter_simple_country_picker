@@ -62,22 +62,6 @@ flutter:
     - family: NotoColorEmoji
       fonts:
         - asset: assets/fonts/Noto-Color-Emoji-Regular.ttf
-    - family: SF-Pro-Rounded
-      fonts:
-        - asset: assets/fonts/SF-Pro/SF-Pro-Rounded-Black.otf
-          weight: 900
-        - asset: assets/fonts/SF-Pro/SF-Pro-Rounded-Heavy.otf
-          weight: 800
-        - asset: assets/fonts/SF-Pro/SF-Pro-Rounded-Bold.otf
-          weight: 700
-        - asset: assets/fonts/SF-Pro/SF-Pro-Rounded-Semibold.otf
-          weight: 600
-        - asset: assets/fonts/SF-Pro/SF-Pro-Rounded-Medium.otf
-          weight: 500
-        - asset: assets/fonts/SF-Pro/SF-Pro-Rounded-Regular.otf
-          weight: 400
-        - asset: assets/fonts/SF-Pro/SF-Pro-Rounded-Light.otf
-          weight: 300
 
 flutter_gen:
   output: lib/src/common/constant/

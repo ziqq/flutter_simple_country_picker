@@ -423,13 +423,24 @@ python3 tool/update_phone_display_patterns.py --snapshot /path/to/countries.json
 ```
 
 To fetch a snapshot, install `Telethon==1.45.0` in a virtual environment and
-provide your own [Telegram API credentials](https://core.telegram.org/api/obtaining_api_id/)
-as `TELEGRAM_API_ID` and `TELEGRAM_API_HASH`. The command uses an unauthenticated
-MTProto connection and reuses the saved response hash for the same language.
+get your own `api_id` and `api_hash` from **API development tools** at
+[my.telegram.org](https://my.telegram.org/apps). Save them once in a local
+`.env` file at the repository root.
 
 ```sh
+export TELEGRAM_API_ID=123456
+export TELEGRAM_API_HASH='your_api_hash'
+```
+
+Load the file in each new shell before refreshing the snapshot.
+
+```sh
+. ./.env
 python3 tool/update_phone_display_patterns.py --snapshot /path/to/countries.json --refresh
 ```
+
+The command uses an unauthenticated MTProto connection and reuses the saved
+response hash for the same language.
 
 The comparison prints a unified diff and exits with status 1 when the table
 differs. Review the diff, then pass `--write` to regenerate
