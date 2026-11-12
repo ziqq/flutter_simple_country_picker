@@ -390,9 +390,11 @@ final formatter = CountryInputFormatter.forCountry(
 );
 ```
 
-The extended input accepts the same option. Automatic formatting chooses a
-country/prefix pattern and preserves all digits beyond its capacity, including
-separators. For Indonesian mobile inputs, all supported lengths from 9 to 12
+The extended input accepts the same option. Automatic formatting chooses the
+longest matching prefix from the country's display templates and uses the first
+template when no prefix matches. The field shows the unfilled part of the
+template in gray. Digits beyond the template are appended without changing
+its separators. For Indonesian mobile inputs, all supported lengths from 9 to 12
 digits can be complete. `expectedLength` is the next supported length at or
 above the current input, or the maximum for overflow. This describes length,
 not assignment, reachability or SMS support. Both selection endpoints follow
@@ -410,6 +412,29 @@ add `--metadata /path/PhoneNumberMetadata.xml --check` for an offline check.
 The generator verifies the pinned XML SHA-256 and runs the pinned Dart formatter
 before writing or comparing the output.
 
+### Updating display templates
+
+`tool/update_phone_display_patterns.py` compares the bundled display templates
+with a saved [Telegram countries response](https://core.telegram.org/method/help.getCountriesList).
+The offline comparison uses Python's standard library.
+
+```sh
+python3 tool/update_phone_display_patterns.py --snapshot /path/to/countries.json
+```
+
+To fetch a snapshot, install `Telethon==1.45.0` in a virtual environment and
+provide your own [Telegram API credentials](https://core.telegram.org/api/obtaining_api_id/)
+as `TELEGRAM_API_ID` and `TELEGRAM_API_HASH`. The command uses an unauthenticated
+MTProto connection and reuses the saved response hash for the same language.
+
+```sh
+python3 tool/update_phone_display_patterns.py --snapshot /path/to/countries.json --refresh
+```
+
+The comparison prints a unified diff and exits with status 1 when the table
+differs. Review the diff, then pass `--write` to regenerate
+`country_phone_display_patterns.g.dart` from the saved snapshot. Apps use the
+bundled templates offline.
 
 ## Gotchas
 

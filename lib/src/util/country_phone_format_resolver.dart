@@ -3,6 +3,7 @@
  * Date: 4 November 2026
  */
 
+import 'package:flutter_simple_country_picker/src/constant/country_phone_display_patterns.g.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_phone_rules.g.dart';
 import 'package:flutter_simple_country_picker/src/model/country.dart';
 import 'package:meta/meta.dart';
@@ -20,6 +21,12 @@ class CountryPhoneFormatResolver {
   /// Pinned metadata, or null for a region without compatible numbering data.
   final CountryPhoneRules? rules;
 
+  late final _displayPatterns = countryPhoneDisplayPatterns[country.e164Key]
+      ?.map(
+        (pattern) =>
+            (prefix: pattern.replaceAll(_nonDigits, ''), pattern: pattern),
+      )
+      .toList(growable: false);
   final Map<String, RegExp> _prefixes = <String, RegExp>{};
   static final RegExp _nonDigits = RegExp(r'\D');
   static final RegExp _digit = RegExp(r'\d');
@@ -111,86 +118,55 @@ class CountryPhoneFormatResolver {
     return digits;
   }
 
-  /// Applies the most specific prefix pattern, leaving an unbounded soft tail.
-  String format(String digits) {
-    final data = rules;
-    if (digits.isEmpty) return '';
-    if (data == null || data.formats.isEmpty)
-      return _applyMask(country.mask, digits);
-    final national = '${data.regionPrefix}$digits';
-    CountryPhoneFormat? selected;
+  String? _selectDisplayPattern(String digits) {
+    final patterns = _displayPatterns;
+    if (patterns == null) return country.mask;
+    if (patterns.isEmpty) return null;
+    var selected = patterns.first.pattern;
     var bestPrefixMatchLength = -1;
-    var bestLengthFit = -1;
-    var bestCapacity = 0;
-    for (final candidate in data.formats) {
-      final prefixMatchLength = _leadingDigitsMatchLength(candidate, national);
-      if (prefixMatchLength < 0) continue;
-      final lengthFit = candidate.groupLengths.containsKey(national.length)
-          ? 2
-          : candidate.groupLengths.keys.any((n) => n >= national.length)
-          ? 1
-          : 0;
-      final candidateCapacity = candidate.groupLengths.keys.fold<int>(
-        0,
-        (largest, length) => length > largest ? length : largest,
-      );
-      if (lengthFit > bestLengthFit ||
-          (lengthFit == bestLengthFit &&
-              (lengthFit == 0
-                  ? candidateCapacity > bestCapacity ||
-                        (candidateCapacity == bestCapacity &&
-                            prefixMatchLength > bestPrefixMatchLength)
-                  : prefixMatchLength > bestPrefixMatchLength))) {
-        selected = candidate;
-        bestPrefixMatchLength = prefixMatchLength;
-        bestLengthFit = lengthFit;
-        bestCapacity = candidateCapacity;
+    for (final candidate in patterns) {
+      if (candidate.prefix.length >= bestPrefixMatchLength &&
+          digits.startsWith(candidate.prefix)) {
+        // The last template for a duplicate prefix takes precedence.
+        selected = candidate.pattern;
+        bestPrefixMatchLength = candidate.prefix.length;
       }
     }
-    if (selected == null) return _applyMask(country.mask, digits);
-    final sizes = selected.groupLengths.keys.toList()..sort();
-    if (sizes.isEmpty) return _applyMask(country.mask, digits);
-    final length = sizes.firstWhere(
-      (n) => n >= national.length,
-      orElse: () => sizes.last,
-    );
-    final groups = selected.groupLengths[length] ?? const <int>[];
-    final mask = selected.replacement.replaceAllMapped(RegExp(r'\$(\d+)'), (
-      match,
-    ) {
-      final index = int.tryParse(match.group(1) ?? '') ?? 0;
-      return index > 0 && index <= groups.length ? '#' * groups[index - 1] : '';
-    });
-    var result = _applyMask(mask, national);
-    if (data.regionPrefix.isEmpty) return result;
-    var removed = 0;
-    var offset = 0;
-    while (offset < result.length && removed < data.regionPrefix.length) {
-      if (_digit.hasMatch(result[offset])) removed++;
-      offset++;
-    }
-    while (offset < result.length && !_digit.hasMatch(result[offset])) offset++;
-    return result.substring(offset);
+    return selected;
   }
 
-  /// Emits literals lazily and appends all digits beyond the template.
-  static String _applyMask(String? mask, String digits) {
-    if (mask == null || mask.isEmpty) return digits;
+  /// Applies the selected pattern and appends all digits beyond the template.
+  String format(String digits) => formatWithHint(digits).text;
+
+  /// Returns the text and the unused part of its template.
+  ///
+  /// A null hint indicates that no template is available. An empty hint means
+  /// the template is full.
+  ({String text, String? hint}) formatWithHint(String digits) {
+    final pattern = _selectDisplayPattern(digits);
+    if (pattern == null || pattern.isEmpty) return (text: digits, hint: null);
+
+    final useLegacySlots = _displayPatterns == null;
     final result = StringBuffer();
-    var index = 0;
-    for (
-      var position = 0;
-      position < mask.length && index < digits.length;
-      position++
-    ) {
-      final character = mask[position];
-      if (character == '#' || character == '0' || character == 'A') {
-        result.write(digits[index++]);
+    var digitIndex = 0;
+    var position = 0;
+    while (position < pattern.length && digitIndex < digits.length) {
+      final character = pattern[position++];
+      final isSlot = useLegacySlots
+          ? '0#A'.contains(character)
+          : character == 'X' || _digit.hasMatch(character);
+      if (isSlot) {
+        result.write(digits[digitIndex++]);
       } else {
         result.write(character);
       }
     }
-    result.write(digits.substring(index));
-    return result.toString();
+    result.write(digits.substring(digitIndex));
+
+    final remaining = pattern.substring(position);
+    final hint = useLegacySlots
+        ? remaining.replaceAll('#', '0').replaceAll('A', '0')
+        : remaining.replaceAll('X', '0');
+    return (text: result.toString(), hint: hint);
   }
 }

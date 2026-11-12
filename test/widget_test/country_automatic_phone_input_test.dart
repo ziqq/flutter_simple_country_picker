@@ -3,6 +3,8 @@
  * Date: 4 November 2026
  */
 
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -117,11 +119,8 @@ void main() {
 
         await showInput(useCountryFormatting: true);
         await tester.pump();
-        expect(editingController.text, '812-345-67');
-        expect(
-          editingController.selection,
-          manualSelection.copyWith(baseOffset: 9),
-        );
+        expect(editingController.text, '812 34567');
+        expect(editingController.selection, manualSelection);
         expect(
           controller.phone.replaceAll(RegExp('[^+0-9]'), ''),
           '+6281234567',
@@ -214,6 +213,76 @@ void main() {
     );
 
     testWidgets(
+      'automatic ID hint shrinks, disappears, and returns; extended=$extended',
+      (tester) async {
+        final controller = CountryPhoneController.empty();
+        addTearDown(controller.dispose);
+        final country = Country.fromCountryCode('ID');
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            builder: (_) => Scaffold(
+              body: extended
+                  ? CountryPhoneInput.extended(
+                      initialCountry: country,
+                      controller: controller,
+                      useCountryFormatting: true,
+                    )
+                  : CountryPhoneInput(
+                      initialCountry: country,
+                      controller: controller,
+                      useCountryFormatting: true,
+                    ),
+            ),
+          ),
+        );
+        final field = find.byType(TextFormField);
+        await tester.showKeyboard(field);
+        final emptyHint = await _paintedHintPixels(tester, field);
+        expect(emptyHint, greaterThan(0));
+
+        Future<void> edit(String text) async {
+          tester.testTextInput.updateEditingValue(
+            TextEditingValue(
+              text: text,
+              selection: TextSelection.collapsed(offset: text.length),
+            ),
+          );
+          await tester.pump();
+        }
+
+        final editable = tester.widget<EditableText>(find.byType(EditableText));
+        await edit('240');
+        await edit('2404');
+        expect(editable.controller.text, '240 4');
+        expect(controller.number, '2404');
+        final partialHint = await _paintedHintPixels(tester, field);
+        expect(partialHint, inExclusiveRange(0, emptyHint));
+
+        await edit('240 412345');
+        expect(editable.controller.text, '240 412345');
+        expect(await _paintedHintPixels(tester, field), 0);
+
+        await edit('240 412345678');
+        expect(editable.controller.text, '240 412345678');
+        expect(controller.number, '240412345678');
+        expect(controller.valueStatus.isOverflow, isTrue);
+        expect(await _paintedHintPixels(tester, field), 0);
+
+        await edit('240 4');
+        expect(editable.controller.text, '240 4');
+        expect(controller.number, '2404');
+        expect(controller.valueStatus.isOverflow, isFalse);
+        expect(await _paintedHintPixels(tester, field), partialHint);
+
+        await edit('');
+        expect(editable.controller.text, isEmpty);
+        expect(controller.valueStatus.isEmpty, isTrue);
+        expect(await _paintedHintPixels(tester, field), emptyHint);
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+    );
+
+    testWidgets(
       'legacy widget paste keeps the significant ID 8; extended=$extended',
       (tester) async {
         final controller = CountryPhoneController.empty();
@@ -252,5 +321,39 @@ void main() {
         await tester.pumpWidget(const SizedBox.shrink());
       },
     );
+  }
+}
+
+/// Counts the pixels painted by the field's hint layer in isolation.
+Future<int> _paintedHintPixels(WidgetTester tester, Finder field) async {
+  final paint = tester
+      .widgetList<CustomPaint>(
+        find.ancestor(of: field, matching: find.byType(CustomPaint)),
+      )
+      .singleWhere((widget) => widget.child is TextFormField);
+  final size = tester.getSize(find.byWidget(paint));
+  final recorder = ui.PictureRecorder();
+  paint.foregroundPainter!.paint(Canvas(recorder), size);
+  final picture = recorder.endRecording();
+  try {
+    final pixels = await tester.runAsync(() async {
+      final image = await picture.toImage(
+        size.width.ceil(),
+        size.height.ceil(),
+      );
+      try {
+        final bytes = (await image.toByteData())!;
+        var count = 0;
+        for (var index = 3; index < bytes.lengthInBytes; index += 4) {
+          if (bytes.getUint8(index) != 0) count++;
+        }
+        return count;
+      } finally {
+        image.dispose();
+      }
+    });
+    return pixels!;
+  } finally {
+    picture.dispose();
   }
 }
