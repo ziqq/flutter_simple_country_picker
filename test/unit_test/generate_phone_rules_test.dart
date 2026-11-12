@@ -25,7 +25,7 @@ void main() {
     Future<ProcessResult> runGenerator(List<String> arguments) =>
         Process.run(dart, [
           '--packages=.dart_tool/package_config.json',
-          'tool/generate_phone_rules.dart',
+          'tool/dart/generate_phone_rules.dart',
           '--metadata',
           metadata.path,
           ...arguments,

@@ -409,20 +409,20 @@ manual formatting; `updateCountry` selects automatic rules. The bundled rules
 cover 238 countries. HM, GS and VA retain the bundled mask as a soft fallback;
 number-prefix transforms that add or rewrite digits are not implemented.
 Metadata comes from pinned Apache-2.0 libphonenumber data; generation is in
-`tool/generate_phone_rules.dart`, with attribution under `assets/licenses/`.
-Run `fvm dart run tool/generate_phone_rules.dart` to regenerate, or
+`tool/dart/generate_phone_rules.dart`, with attribution under `assets/licenses/`.
+Run `fvm dart run tool/dart/generate_phone_rules.dart` to regenerate, or
 add `--metadata /path/PhoneNumberMetadata.xml --check` for an offline check.
 The generator verifies the pinned XML SHA-256 and runs the pinned Dart formatter
 before writing or comparing the output.
 
 ### Updating display templates
 
-`tool/update_phone_display_patterns.py` compares the bundled display templates
+`tool/python/update_phone_display_patterns.py` compares the bundled display templates
 with a saved [Telegram countries response](https://core.telegram.org/method/help.getCountriesList).
 The offline comparison uses Python's standard library.
 
 ```sh
-python3 tool/update_phone_display_patterns.py --snapshot /path/to/countries.json
+python3 tool/python/update_phone_display_patterns.py --snapshot /path/to/countries.json
 ```
 
 To fetch a snapshot, install `Telethon==1.45.0` in a virtual environment and
@@ -439,7 +439,7 @@ Load the file in each new shell before refreshing the snapshot.
 
 ```sh
 . ./.env
-python3 tool/update_phone_display_patterns.py --snapshot /path/to/countries.json --refresh
+python3 tool/python/update_phone_display_patterns.py --snapshot /path/to/countries.json --refresh
 ```
 
 The command uses an unauthenticated MTProto connection and reuses the saved

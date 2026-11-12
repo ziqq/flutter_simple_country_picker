@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 /// Generate `country_codes.g.json` from `country_codes.dart`.
-/// Usage: fvm dart --disable-analytics run tool/generate_json.dart
+/// Usage: fvm dart --disable-analytics run tool/dart/generate_json.dart
 void main(List<String> args) {
   final options = _Options.parse(args);
 
@@ -125,7 +125,7 @@ final class _Options {
     stderr
       ..writeln('Usage:')
       ..writeln(
-        '  dart run tool/generate_json.dart '
+        '  dart run tool/dart/generate_json.dart '
         '[--input <path>] [--output <path>] [--minify] [--validate-only]',
       )
       ..writeln('')

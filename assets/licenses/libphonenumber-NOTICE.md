@@ -19,7 +19,7 @@ The gzip-compressed test fixture at
 `test/fixtures/libphonenumber-metadata.xml.gz` contains the original pinned XML.
 
 The metadata was transformed on 4 November 2026 by
-`tool/generate_phone_rules.dart`. The generated subset:
+`tool/dart/generate_phone_rules.dart`. The generated subset:
 
 - Selects compatible countries already present in the package's bundled data.
 - Excludes non-geographic `001` records, missing HM/GS metadata, and VA because
