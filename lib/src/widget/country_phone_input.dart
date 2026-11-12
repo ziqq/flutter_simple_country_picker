@@ -186,7 +186,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
   late final _painter = _BackgroundPainter(pickerTheme: _pickerTheme);
   late final TextEditingController _phoneController;
   late final CountryInputFormatter _formatter;
-  late final ScrollController _phoneScrollController = ScrollController();
+  final ScrollController _phoneScrollController = ScrollController();
   late CountryPhoneController _controller;
   late ValueNotifier<Country> _countryController;
 

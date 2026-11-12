@@ -13,7 +13,13 @@ import 'package:meta/meta.dart';
 class CountryPhoneFormatResolver {
   /// Creates a resolver for one explicitly selected country.
   CountryPhoneFormatResolver(this.country)
-    : rules = countryPhoneRules[country.countryCode.toUpperCase()];
+    : rules = countryPhoneRules[country.countryCode.toUpperCase()],
+      _displayPatterns = countryPhoneDisplayPatterns[country.e164Key]
+          ?.map(
+            (pattern) =>
+                (prefix: pattern.replaceAll(_nonDigits, ''), pattern: pattern),
+          )
+          .toList(growable: false);
 
   /// Selected country, including any region prefix embedded in its calling code.
   final Country country;
@@ -21,12 +27,7 @@ class CountryPhoneFormatResolver {
   /// Pinned metadata, or null for a region without compatible numbering data.
   final CountryPhoneRules? rules;
 
-  late final _displayPatterns = countryPhoneDisplayPatterns[country.e164Key]
-      ?.map(
-        (pattern) =>
-            (prefix: pattern.replaceAll(_nonDigits, ''), pattern: pattern),
-      )
-      .toList(growable: false);
+  final List<({String prefix, String pattern})>? _displayPatterns;
   final Map<String, RegExp> _prefixes = <String, RegExp>{};
   static final RegExp _nonDigits = RegExp(r'\D');
   static final RegExp _digit = RegExp(r'\d');
