@@ -283,6 +283,67 @@ void main() {
     );
 
     testWidgets(
+      'automatic hint survives rebuilds in Material 2; extended=$extended',
+      (tester) async {
+        final controller = CountryPhoneController.empty();
+        addTearDown(controller.dispose);
+        final country = Country.fromCountryCode('ID');
+        final theme = ThemeData.light(useMaterial3: false);
+        final inputTheme = theme.copyWith(
+          textTheme: theme.textTheme.copyWith(
+            bodyLarge: const TextStyle(fontSize: 16),
+            titleMedium: const TextStyle(fontSize: 16),
+          ),
+          inputDecorationTheme: const InputDecorationTheme(isDense: true),
+        );
+        Future<void> showInput(TextScaler textScaler) => tester.pumpWidget(
+          createWidgetUnderTest(
+            builder: (context) => Theme(
+              data: inputTheme,
+              child: MediaQuery(
+                data: MediaQuery.of(
+                  context,
+                ).copyWith(boldText: true, textScaler: textScaler),
+                child: Scaffold(
+                  body: extended
+                      ? CountryPhoneInput.extended(
+                          initialCountry: country,
+                          controller: controller,
+                          useCountryFormatting: true,
+                        )
+                      : CountryPhoneInput(
+                          initialCountry: country,
+                          controller: controller,
+                          useCountryFormatting: true,
+                        ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await showInput(TextScaler.noScaling);
+        final field = find.byType(TextFormField);
+        await tester.enterText(field, '2404');
+        await tester.pump();
+        final hintPixels = await _paintedHintPixels(tester, field);
+        expect(hintPixels, greaterThan(0));
+
+        await showInput(TextScaler.noScaling);
+        expect(await _paintedHintPixels(tester, field), hintPixels);
+
+        await showInput(const TextScaler.linear(1.4));
+        expect(
+          await _paintedHintPixels(tester, field),
+          greaterThan(hintPixels),
+        );
+        expect(controller.number, '2404');
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+    );
+
+    testWidgets(
       'legacy widget paste keeps the significant ID 8; extended=$extended',
       (tester) async {
         final controller = CountryPhoneController.empty();
