@@ -196,6 +196,19 @@ void main() => group('CountryPhoneController -', () {
       expect(controller.valueStatus.isAllZeros, isFalse);
       expect(controller.valueStatus.isEmpty, isTrue);
     });
+
+    test('distinguishes all-zero statuses in a set', () {
+      const status = CountryPhoneValueStatus(
+        currentLength: 9,
+        expectedLength: 9,
+        isOverflow: false,
+      );
+      final allZeros = status.copyWith(isAllZeros: true);
+      final statuses = {status, allZeros, allZeros.copyWith()};
+
+      expect(statuses, hasLength(2));
+      expect(statuses.contains(allZeros.copyWith()), isTrue);
+    });
   });
 
   group('resolution behavior -', () {
