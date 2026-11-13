@@ -1,0 +1,5166 @@
+{
+  "definitions": {
+    "sample_selection": "Frame build_start_us falls within explicit action [start_us,end_us) windows; raw values unchanged",
+    "ui": "FrameTiming.buildDuration",
+    "raster": "FrameTiming.rasterDuration; wall time, not GPU duration",
+    "queue": "rasterStart - buildFinish; no clipping of raw value",
+    "totalSpan": "FrameTiming.totalSpan",
+    "percentiles": "Nearest rank ceil(n*p), matching original analysis",
+    "sample_density": "Captured rendered FrameTiming samples divided by action-window duration; not presentedFPS/displaydrop measurement",
+    "causal_limit": "Different sample populations/frequency are reported; these data do not isolate Fqualification CPU overhead."
+  },
+  "runs": {
+    "current4fc-before-timing-7plus-1": {
+      "source_fingerprint": "72eb8c326764b58ebeae7a813770236310708d38387a8793b0e4ef1a6f86a1b7",
+      "frame_count": 758,
+      "unique_frame_numbers": 758,
+      "no_duplicate_frame_numbers": true,
+      "display_hz": 60.0,
+      "physical_size": [
+        1242.0,
+        2208.0
+      ],
+      "dpr": 3.0,
+      "aggregates": {
+        "first_open": {
+          "phase_names": [
+            "first_open"
+          ],
+          "window_duration_ms": 765.788,
+          "sample_n": 8,
+          "sample_density_per_s": 10.446755498910926,
+          "metrics": {
+            "UI": {
+              "n": 8,
+              "p50_ms": 1.319,
+              "p95_ms": 72.855,
+              "max_ms": 72.855
+            },
+            "raster": {
+              "n": 8,
+              "p50_ms": 72.071,
+              "p95_ms": 167.835,
+              "max_ms": 167.835
+            },
+            "queue": {
+              "n": 8,
+              "p50_ms": 58.689,
+              "p95_ms": 260.333,
+              "max_ms": 260.333
+            },
+            "totalSpan": {
+              "n": 8,
+              "p50_ms": 141.955,
+              "p95_ms": 324.141,
+              "max_ms": 324.141
+            }
+          }
+        },
+        "repeat_open": {
+          "phase_names": [
+            "open_0",
+            "open_1",
+            "open_2"
+          ],
+          "window_duration_ms": 1572.802,
+          "sample_n": 32,
+          "sample_density_per_s": 20.34585408716418,
+          "metrics": {
+            "UI": {
+              "n": 32,
+              "p50_ms": 1.32,
+              "p95_ms": 13.767,
+              "max_ms": 14.548
+            },
+            "raster": {
+              "n": 32,
+              "p50_ms": 9.694,
+              "p95_ms": 147.287,
+              "max_ms": 148.854
+            },
+            "queue": {
+              "n": 32,
+              "p50_ms": 1.427,
+              "p95_ms": 137.093,
+              "max_ms": 140.275
+            },
+            "totalSpan": {
+              "n": 32,
+              "p50_ms": 101.07,
+              "p95_ms": 192.145,
+              "max_ms": 216.953
+            }
+          }
+        },
+        "drag": {
+          "phase_names": [
+            "drag_0",
+            "drag_1",
+            "drag_2"
+          ],
+          "window_duration_ms": 9463.898,
+          "sample_n": 125,
+          "sample_density_per_s": 13.208088252853106,
+          "metrics": {
+            "UI": {
+              "n": 125,
+              "p50_ms": 1.902,
+              "p95_ms": 4.548,
+              "max_ms": 5.369
+            },
+            "raster": {
+              "n": 125,
+              "p50_ms": 74.412,
+              "p95_ms": 148.485,
+              "max_ms": 159.63
+            },
+            "queue": {
+              "n": 125,
+              "p50_ms": 66.363,
+              "p95_ms": 135.86,
+              "max_ms": 144.798
+            },
+            "totalSpan": {
+              "n": 125,
+              "p50_ms": 140.529,
+              "p95_ms": 203.009,
+              "max_ms": 218.465
+            }
+          }
+        },
+        "fling_down": {
+          "phase_names": [
+            "fling_down_0",
+            "fling_down_1",
+            "fling_down_2"
+          ],
+          "window_duration_ms": 11388.768,
+          "sample_n": 151,
+          "sample_density_per_s": 13.258677321374885,
+          "metrics": {
+            "UI": {
+              "n": 151,
+              "p50_ms": 2.335,
+              "p95_ms": 9.409,
+              "max_ms": 15.557
+            },
+            "raster": {
+              "n": 151,
+              "p50_ms": 75.306,
+              "p95_ms": 141.63,
+              "max_ms": 154.508
+            },
+            "queue": {
+              "n": 151,
+              "p50_ms": 62.058,
+              "p95_ms": 128.263,
+              "max_ms": 139.152
+            },
+            "totalSpan": {
+              "n": 151,
+              "p50_ms": 138.556,
+              "p95_ms": 203.596,
+              "max_ms": 219.303
+            }
+          }
+        },
+        "fling_up": {
+          "phase_names": [
+            "fling_up_0",
+            "fling_up_1",
+            "fling_up_2"
+          ],
+          "window_duration_ms": 11586.533,
+          "sample_n": 154,
+          "sample_density_per_s": 13.291292572161145,
+          "metrics": {
+            "UI": {
+              "n": 154,
+              "p50_ms": 2.12,
+              "p95_ms": 8.764,
+              "max_ms": 12.061
+            },
+            "raster": {
+              "n": 154,
+              "p50_ms": 74.539,
+              "p95_ms": 148.133,
+              "max_ms": 160.297
+            },
+            "queue": {
+              "n": 154,
+              "p50_ms": 61.329,
+              "p95_ms": 136.009,
+              "max_ms": 146.758
+            },
+            "totalSpan": {
+              "n": 154,
+              "p50_ms": 137.69,
+              "p95_ms": 202.944,
+              "max_ms": 239.797
+            }
+          }
+        },
+        "keyboard": {
+          "phase_names": [
+            "keyboard_0",
+            "keyboard_1",
+            "keyboard_2"
+          ],
+          "window_duration_ms": 3021.995,
+          "sample_n": 38,
+          "sample_density_per_s": 12.57447480885971,
+          "metrics": {
+            "UI": {
+              "n": 38,
+              "p50_ms": 6.627,
+              "p95_ms": 13.325,
+              "max_ms": 14.122
+            },
+            "raster": {
+              "n": 38,
+              "p50_ms": 78.937,
+              "p95_ms": 140.57,
+              "max_ms": 141.509
+            },
+            "queue": {
+              "n": 38,
+              "p50_ms": 67.047,
+              "p95_ms": 130.554,
+              "max_ms": 131.163
+            },
+            "totalSpan": {
+              "n": 38,
+              "p50_ms": 148.12,
+              "p95_ms": 215.384,
+              "max_ms": 221.72
+            }
+          }
+        },
+        "search": {
+          "phase_names": [
+            "search_0",
+            "search_1",
+            "search_2"
+          ],
+          "window_duration_ms": 2709.649,
+          "sample_n": 36,
+          "sample_density_per_s": 13.285853629012466,
+          "metrics": {
+            "UI": {
+              "n": 36,
+              "p50_ms": 0.55,
+              "p95_ms": 15.471,
+              "max_ms": 16.163
+            },
+            "raster": {
+              "n": 36,
+              "p50_ms": 73.33,
+              "p95_ms": 160.136,
+              "max_ms": 161.154
+            },
+            "queue": {
+              "n": 36,
+              "p50_ms": 60.796,
+              "p95_ms": 145.429,
+              "max_ms": 145.597
+            },
+            "totalSpan": {
+              "n": 36,
+              "p50_ms": 141.861,
+              "p95_ms": 203.464,
+              "max_ms": 206.026
+            }
+          }
+        },
+        "close": {
+          "phase_names": [
+            "close_0",
+            "close_1",
+            "close_2"
+          ],
+          "window_duration_ms": 1139.008,
+          "sample_n": 16,
+          "sample_density_per_s": 14.047311344608643,
+          "metrics": {
+            "UI": {
+              "n": 16,
+              "p50_ms": 1.26,
+              "p95_ms": 2.191,
+              "max_ms": 2.191
+            },
+            "raster": {
+              "n": 16,
+              "p50_ms": 7.925,
+              "p95_ms": 150.624,
+              "max_ms": 150.624
+            },
+            "queue": {
+              "n": 16,
+              "p50_ms": 4.379,
+              "p95_ms": 136.056,
+              "max_ms": 136.056
+            },
+            "totalSpan": {
+              "n": 16,
+              "p50_ms": 137.357,
+              "p95_ms": 153.652,
+              "max_ms": 153.652
+            }
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "first_open",
+          "start_us": 871185016971,
+          "end_us": 871185782759,
+          "window_duration_ms": 765.788,
+          "sample_n": 8,
+          "sample_density_per_s": 10.446755498910926,
+          "metrics": {
+            "UI": {
+              "n": 8,
+              "p50_ms": 1.319,
+              "p95_ms": 72.855,
+              "max_ms": 72.855
+            },
+            "raster": {
+              "n": 8,
+              "p50_ms": 72.071,
+              "p95_ms": 167.835,
+              "max_ms": 167.835
+            },
+            "queue": {
+              "n": 8,
+              "p50_ms": 58.689,
+              "p95_ms": 260.333,
+              "max_ms": 260.333
+            },
+            "totalSpan": {
+              "n": 8,
+              "p50_ms": 141.955,
+              "p95_ms": 324.141,
+              "max_ms": 324.141
+            }
+          }
+        },
+        {
+          "name": "first_close",
+          "start_us": 871186888847,
+          "end_us": 871187201466,
+          "window_duration_ms": 312.619,
+          "sample_n": 5,
+          "sample_density_per_s": 15.993909519255068,
+          "metrics": {
+            "UI": {
+              "n": 5,
+              "p50_ms": 1.196,
+              "p95_ms": 2.725,
+              "max_ms": 2.725
+            },
+            "raster": {
+              "n": 5,
+              "p50_ms": 84.313,
+              "p95_ms": 135.096,
+              "max_ms": 135.096
+            },
+            "queue": {
+              "n": 5,
+              "p50_ms": 0.275,
+              "p95_ms": 120.03,
+              "max_ms": 120.03
+            },
+            "totalSpan": {
+              "n": 5,
+              "p50_ms": 127.456,
+              "p95_ms": 137.734,
+              "max_ms": 137.734
+            }
+          }
+        },
+        {
+          "name": "open_0",
+          "start_us": 871187201471,
+          "end_us": 871187733590,
+          "window_duration_ms": 532.119,
+          "sample_n": 11,
+          "sample_density_per_s": 20.672067714176716,
+          "metrics": {
+            "UI": {
+              "n": 11,
+              "p50_ms": 1.291,
+              "p95_ms": 12.967,
+              "max_ms": 12.967
+            },
+            "raster": {
+              "n": 11,
+              "p50_ms": 60.699,
+              "p95_ms": 141.303,
+              "max_ms": 141.303
+            },
+            "queue": {
+              "n": 11,
+              "p50_ms": 34.718,
+              "p95_ms": 140.275,
+              "max_ms": 140.275
+            },
+            "totalSpan": {
+              "n": 11,
+              "p50_ms": 96.406,
+              "p95_ms": 216.953,
+              "max_ms": 216.953
+            }
+          }
+        },
+        {
+          "name": "drag_0",
+          "start_us": 871187733597,
+          "end_us": 871190882546,
+          "window_duration_ms": 3148.949,
+          "sample_n": 42,
+          "sample_density_per_s": 13.33778349538211,
+          "metrics": {
+            "UI": {
+              "n": 42,
+              "p50_ms": 1.902,
+              "p95_ms": 4.092,
+              "max_ms": 4.183
+            },
+            "raster": {
+              "n": 42,
+              "p50_ms": 73.897,
+              "p95_ms": 137.348,
+              "max_ms": 142.793
+            },
+            "queue": {
+              "n": 42,
+              "p50_ms": 63.483,
+              "p95_ms": 124.528,
+              "max_ms": 126.682
+            },
+            "totalSpan": {
+              "n": 42,
+              "p50_ms": 138.105,
+              "p95_ms": 201.473,
+              "max_ms": 203.009
+            }
+          }
+        },
+        {
+          "name": "fling_down_0",
+          "start_us": 871190882554,
+          "end_us": 871194646304,
+          "window_duration_ms": 3763.75,
+          "sample_n": 51,
+          "sample_density_per_s": 13.550315509797409,
+          "metrics": {
+            "UI": {
+              "n": 51,
+              "p50_ms": 2.821,
+              "p95_ms": 9.409,
+              "max_ms": 15.557
+            },
+            "raster": {
+              "n": 51,
+              "p50_ms": 74.14,
+              "p95_ms": 138.819,
+              "max_ms": 142.969
+            },
+            "queue": {
+              "n": 51,
+              "p50_ms": 61.505,
+              "p95_ms": 126.807,
+              "max_ms": 128.818
+            },
+            "totalSpan": {
+              "n": 51,
+              "p50_ms": 139.636,
+              "p95_ms": 193.641,
+              "max_ms": 205.548
+            }
+          }
+        },
+        {
+          "name": "fling_up_0",
+          "start_us": 871194646311,
+          "end_us": 871198518717,
+          "window_duration_ms": 3872.406,
+          "sample_n": 52,
+          "sample_density_per_s": 13.428344032108203,
+          "metrics": {
+            "UI": {
+              "n": 52,
+              "p50_ms": 2.08,
+              "p95_ms": 7.524,
+              "max_ms": 9.263
+            },
+            "raster": {
+              "n": 52,
+              "p50_ms": 73.805,
+              "p95_ms": 139.918,
+              "max_ms": 141.939
+            },
+            "queue": {
+              "n": 52,
+              "p50_ms": 58.564,
+              "p95_ms": 125.694,
+              "max_ms": 126.366
+            },
+            "totalSpan": {
+              "n": 52,
+              "p50_ms": 135.656,
+              "p95_ms": 198.856,
+              "max_ms": 204.482
+            }
+          }
+        },
+        {
+          "name": "keyboard_0",
+          "start_us": 871198519337,
+          "end_us": 871199526602,
+          "window_duration_ms": 1007.265,
+          "sample_n": 14,
+          "sample_density_per_s": 13.89902359359255,
+          "metrics": {
+            "UI": {
+              "n": 14,
+              "p50_ms": 6.053,
+              "p95_ms": 14.122,
+              "max_ms": 14.122
+            },
+            "raster": {
+              "n": 14,
+              "p50_ms": 41.483,
+              "p95_ms": 140.57,
+              "max_ms": 140.57
+            },
+            "queue": {
+              "n": 14,
+              "p50_ms": 0.986,
+              "p95_ms": 131.163,
+              "max_ms": 131.163
+            },
+            "totalSpan": {
+              "n": 14,
+              "p50_ms": 138.229,
+              "p95_ms": 221.72,
+              "max_ms": 221.72
+            }
+          }
+        },
+        {
+          "name": "search_0",
+          "start_us": 871199526607,
+          "end_us": 871200430144,
+          "window_duration_ms": 903.537,
+          "sample_n": 12,
+          "sample_density_per_s": 13.281138459188721,
+          "metrics": {
+            "UI": {
+              "n": 12,
+              "p50_ms": 0.503,
+              "p95_ms": 15.471,
+              "max_ms": 15.471
+            },
+            "raster": {
+              "n": 12,
+              "p50_ms": 73.33,
+              "p95_ms": 141.189,
+              "max_ms": 141.189
+            },
+            "queue": {
+              "n": 12,
+              "p50_ms": 60.796,
+              "p95_ms": 127.034,
+              "max_ms": 127.034
+            },
+            "totalSpan": {
+              "n": 12,
+              "p50_ms": 136.293,
+              "p95_ms": 206.026,
+              "max_ms": 206.026
+            }
+          }
+        },
+        {
+          "name": "empty_search_0",
+          "start_us": 871200430150,
+          "end_us": 871201333830,
+          "window_duration_ms": 903.68,
+          "sample_n": 12,
+          "sample_density_per_s": 13.279036827195467,
+          "metrics": {
+            "UI": {
+              "n": 12,
+              "p50_ms": 0.545,
+              "p95_ms": 2.399,
+              "max_ms": 2.399
+            },
+            "raster": {
+              "n": 12,
+              "p50_ms": 71.879,
+              "p95_ms": 144.383,
+              "max_ms": 144.383
+            },
+            "queue": {
+              "n": 12,
+              "p50_ms": 1.103,
+              "p95_ms": 128.238,
+              "max_ms": 128.238
+            },
+            "totalSpan": {
+              "n": 12,
+              "p50_ms": 133.161,
+              "p95_ms": 191.079,
+              "max_ms": 191.079
+            }
+          }
+        },
+        {
+          "name": "clear_search_0",
+          "start_us": 871201333842,
+          "end_us": 871203342559,
+          "window_duration_ms": 2008.717,
+          "sample_n": 26,
+          "sample_density_per_s": 12.943585383107726,
+          "metrics": {
+            "UI": {
+              "n": 26,
+              "p50_ms": 0.875,
+              "p95_ms": 9.359,
+              "max_ms": 10.776
+            },
+            "raster": {
+              "n": 26,
+              "p50_ms": 73.754,
+              "p95_ms": 142.751,
+              "max_ms": 144.358
+            },
+            "queue": {
+              "n": 26,
+              "p50_ms": 60.972,
+              "p95_ms": 127.216,
+              "max_ms": 128.891
+            },
+            "totalSpan": {
+              "n": 26,
+              "p50_ms": 136.772,
+              "p95_ms": 205.657,
+              "max_ms": 214.79
+            }
+          }
+        },
+        {
+          "name": "close_0",
+          "start_us": 871203342565,
+          "end_us": 871203655737,
+          "window_duration_ms": 313.172,
+          "sample_n": 5,
+          "sample_density_per_s": 15.965667428761192,
+          "metrics": {
+            "UI": {
+              "n": 5,
+              "p50_ms": 1.309,
+              "p95_ms": 1.82,
+              "max_ms": 1.82
+            },
+            "raster": {
+              "n": 5,
+              "p50_ms": 93.487,
+              "p95_ms": 142.175,
+              "max_ms": 142.175
+            },
+            "queue": {
+              "n": 5,
+              "p50_ms": 0.241,
+              "p95_ms": 129.045,
+              "max_ms": 129.045
+            },
+            "totalSpan": {
+              "n": 5,
+              "p50_ms": 138.766,
+              "p95_ms": 147.362,
+              "max_ms": 147.362
+            }
+          }
+        },
+        {
+          "name": "open_1",
+          "start_us": 871203655743,
+          "end_us": 871204174482,
+          "window_duration_ms": 518.739,
+          "sample_n": 10,
+          "sample_density_per_s": 19.277517210003488,
+          "metrics": {
+            "UI": {
+              "n": 10,
+              "p50_ms": 1.32,
+              "p95_ms": 13.767,
+              "max_ms": 13.767
+            },
+            "raster": {
+              "n": 10,
+              "p50_ms": 8.337,
+              "p95_ms": 141.016,
+              "max_ms": 141.016
+            },
+            "queue": {
+              "n": 10,
+              "p50_ms": 0.422,
+              "p95_ms": 127.638,
+              "max_ms": 127.638
+            },
+            "totalSpan": {
+              "n": 10,
+              "p50_ms": 101.493,
+              "p95_ms": 146.105,
+              "max_ms": 146.105
+            }
+          }
+        },
+        {
+          "name": "drag_1",
+          "start_us": 871204174487,
+          "end_us": 871207322899,
+          "window_duration_ms": 3148.412,
+          "sample_n": 43,
+          "sample_density_per_s": 13.65767885524512,
+          "metrics": {
+            "UI": {
+              "n": 43,
+              "p50_ms": 1.72,
+              "p95_ms": 4.767,
+              "max_ms": 5.369
+            },
+            "raster": {
+              "n": 43,
+              "p50_ms": 73.21,
+              "p95_ms": 142.473,
+              "max_ms": 143.562
+            },
+            "queue": {
+              "n": 43,
+              "p50_ms": 61.43,
+              "p95_ms": 125.976,
+              "max_ms": 128.153
+            },
+            "totalSpan": {
+              "n": 43,
+              "p50_ms": 133.711,
+              "p95_ms": 197.827,
+              "max_ms": 204.996
+            }
+          }
+        },
+        {
+          "name": "fling_down_1",
+          "start_us": 871207322911,
+          "end_us": 871211083251,
+          "window_duration_ms": 3760.34,
+          "sample_n": 51,
+          "sample_density_per_s": 13.56260338160911,
+          "metrics": {
+            "UI": {
+              "n": 51,
+              "p50_ms": 1.871,
+              "p95_ms": 9.411,
+              "max_ms": 10.603
+            },
+            "raster": {
+              "n": 51,
+              "p50_ms": 74.599,
+              "p95_ms": 140.95,
+              "max_ms": 141.776
+            },
+            "queue": {
+              "n": 51,
+              "p50_ms": 63.407,
+              "p95_ms": 127.435,
+              "max_ms": 128.263
+            },
+            "totalSpan": {
+              "n": 51,
+              "p50_ms": 133.441,
+              "p95_ms": 202.89,
+              "max_ms": 205.837
+            }
+          }
+        },
+        {
+          "name": "fling_up_1",
+          "start_us": 871211083258,
+          "end_us": 871214927223,
+          "window_duration_ms": 3843.965,
+          "sample_n": 52,
+          "sample_density_per_s": 13.527698613280817,
+          "metrics": {
+            "UI": {
+              "n": 52,
+              "p50_ms": 2.115,
+              "p95_ms": 8.471,
+              "max_ms": 9.44
+            },
+            "raster": {
+              "n": 52,
+              "p50_ms": 74.621,
+              "p95_ms": 144.002,
+              "max_ms": 150.787
+            },
+            "queue": {
+              "n": 52,
+              "p50_ms": 64.689,
+              "p95_ms": 128.322,
+              "max_ms": 136.179
+            },
+            "totalSpan": {
+              "n": 52,
+              "p50_ms": 134.356,
+              "p95_ms": 203.403,
+              "max_ms": 206.206
+            }
+          }
+        },
+        {
+          "name": "keyboard_1",
+          "start_us": 871214927640,
+          "end_us": 871215936177,
+          "window_duration_ms": 1008.537,
+          "sample_n": 13,
+          "sample_density_per_s": 12.889958424926403,
+          "metrics": {
+            "UI": {
+              "n": 13,
+              "p50_ms": 6.918,
+              "p95_ms": 12.729,
+              "max_ms": 12.729
+            },
+            "raster": {
+              "n": 13,
+              "p50_ms": 78.321,
+              "p95_ms": 141.509,
+              "max_ms": 141.509
+            },
+            "queue": {
+              "n": 13,
+              "p50_ms": 61.13,
+              "p95_ms": 128.64,
+              "max_ms": 128.64
+            },
+            "totalSpan": {
+              "n": 13,
+              "p50_ms": 142.516,
+              "p95_ms": 215.384,
+              "max_ms": 215.384
+            }
+          }
+        },
+        {
+          "name": "search_1",
+          "start_us": 871215936248,
+          "end_us": 871216839346,
+          "window_duration_ms": 903.098,
+          "sample_n": 12,
+          "sample_density_per_s": 13.287594480333253,
+          "metrics": {
+            "UI": {
+              "n": 12,
+              "p50_ms": 0.54,
+              "p95_ms": 11.414,
+              "max_ms": 11.414
+            },
+            "raster": {
+              "n": 12,
+              "p50_ms": 4.082,
+              "p95_ms": 146.058,
+              "max_ms": 146.058
+            },
+            "queue": {
+              "n": 12,
+              "p50_ms": 58.572,
+              "p95_ms": 133.21,
+              "max_ms": 133.21
+            },
+            "totalSpan": {
+              "n": 12,
+              "p50_ms": 134.223,
+              "p95_ms": 203.464,
+              "max_ms": 203.464
+            }
+          }
+        },
+        {
+          "name": "empty_search_1",
+          "start_us": 871216839353,
+          "end_us": 871217743477,
+          "window_duration_ms": 904.124,
+          "sample_n": 12,
+          "sample_density_per_s": 13.272515716870695,
+          "metrics": {
+            "UI": {
+              "n": 12,
+              "p50_ms": 0.485,
+              "p95_ms": 4.345,
+              "max_ms": 4.345
+            },
+            "raster": {
+              "n": 12,
+              "p50_ms": 4.339,
+              "p95_ms": 147.701,
+              "max_ms": 147.701
+            },
+            "queue": {
+              "n": 12,
+              "p50_ms": 1.437,
+              "p95_ms": 132.967,
+              "max_ms": 132.967
+            },
+            "totalSpan": {
+              "n": 12,
+              "p50_ms": 137.881,
+              "p95_ms": 152.364,
+              "max_ms": 152.364
+            }
+          }
+        },
+        {
+          "name": "clear_search_1",
+          "start_us": 871217743492,
+          "end_us": 871219751311,
+          "window_duration_ms": 2007.819,
+          "sample_n": 27,
+          "sample_density_per_s": 13.447427283036967,
+          "metrics": {
+            "UI": {
+              "n": 27,
+              "p50_ms": 0.561,
+              "p95_ms": 13.222,
+              "max_ms": 15.233
+            },
+            "raster": {
+              "n": 27,
+              "p50_ms": 77.552,
+              "p95_ms": 142.041,
+              "max_ms": 147.046
+            },
+            "queue": {
+              "n": 27,
+              "p50_ms": 66.044,
+              "p95_ms": 131.448,
+              "max_ms": 132.971
+            },
+            "totalSpan": {
+              "n": 27,
+              "p50_ms": 137.807,
+              "p95_ms": 220.792,
+              "max_ms": 232.39
+            }
+          }
+        },
+        {
+          "name": "close_1",
+          "start_us": 871219751317,
+          "end_us": 871220263888,
+          "window_duration_ms": 512.571,
+          "sample_n": 6,
+          "sample_density_per_s": 11.705695406099839,
+          "metrics": {
+            "UI": {
+              "n": 6,
+              "p50_ms": 1.114,
+              "p95_ms": 1.673,
+              "max_ms": 1.673
+            },
+            "raster": {
+              "n": 6,
+              "p50_ms": 7.508,
+              "p95_ms": 145.985,
+              "max_ms": 145.985
+            },
+            "queue": {
+              "n": 6,
+              "p50_ms": 4.379,
+              "p95_ms": 131.831,
+              "max_ms": 131.831
+            },
+            "totalSpan": {
+              "n": 6,
+              "p50_ms": 137.357,
+              "p95_ms": 151.032,
+              "max_ms": 151.032
+            }
+          }
+        },
+        {
+          "name": "open_2",
+          "start_us": 871220263895,
+          "end_us": 871220785839,
+          "window_duration_ms": 521.944,
+          "sample_n": 11,
+          "sample_density_per_s": 21.0750578606134,
+          "metrics": {
+            "UI": {
+              "n": 11,
+              "p50_ms": 1.365,
+              "p95_ms": 14.548,
+              "max_ms": 14.548
+            },
+            "raster": {
+              "n": 11,
+              "p50_ms": 9.62,
+              "p95_ms": 148.854,
+              "max_ms": 148.854
+            },
+            "queue": {
+              "n": 11,
+              "p50_ms": 0.159,
+              "p95_ms": 137.093,
+              "max_ms": 137.093
+            },
+            "totalSpan": {
+              "n": 11,
+              "p50_ms": 101.07,
+              "p95_ms": 155.259,
+              "max_ms": 155.259
+            }
+          }
+        },
+        {
+          "name": "drag_2",
+          "start_us": 871220785845,
+          "end_us": 871223952382,
+          "window_duration_ms": 3166.537,
+          "sample_n": 40,
+          "sample_density_per_s": 12.63209619846539,
+          "metrics": {
+            "UI": {
+              "n": 40,
+              "p50_ms": 1.916,
+              "p95_ms": 4.548,
+              "max_ms": 4.936
+            },
+            "raster": {
+              "n": 40,
+              "p50_ms": 79.608,
+              "p95_ms": 152.69,
+              "max_ms": 159.63
+            },
+            "queue": {
+              "n": 40,
+              "p50_ms": 72.41,
+              "p95_ms": 137.852,
+              "max_ms": 144.798
+            },
+            "totalSpan": {
+              "n": 40,
+              "p50_ms": 147.269,
+              "p95_ms": 213.387,
+              "max_ms": 218.465
+            }
+          }
+        },
+        {
+          "name": "fling_down_2",
+          "start_us": 871223952392,
+          "end_us": 871227817070,
+          "window_duration_ms": 3864.678,
+          "sample_n": 49,
+          "sample_density_per_s": 12.678934700381248,
+          "metrics": {
+            "UI": {
+              "n": 49,
+              "p50_ms": 2.116,
+              "p95_ms": 8.933,
+              "max_ms": 11.514
+            },
+            "raster": {
+              "n": 49,
+              "p50_ms": 77.883,
+              "p95_ms": 145.087,
+              "max_ms": 154.508
+            },
+            "queue": {
+              "n": 49,
+              "p50_ms": 64.49,
+              "p95_ms": 136.5,
+              "max_ms": 139.152
+            },
+            "totalSpan": {
+              "n": 49,
+              "p50_ms": 141.938,
+              "p95_ms": 210.972,
+              "max_ms": 219.303
+            }
+          }
+        },
+        {
+          "name": "fling_up_2",
+          "start_us": 871227817087,
+          "end_us": 871231687249,
+          "window_duration_ms": 3870.162,
+          "sample_n": 50,
+          "sample_density_per_s": 12.919355830582802,
+          "metrics": {
+            "UI": {
+              "n": 50,
+              "p50_ms": 2.344,
+              "p95_ms": 9.082,
+              "max_ms": 12.061
+            },
+            "raster": {
+              "n": 50,
+              "p50_ms": 79.885,
+              "p95_ms": 157.208,
+              "max_ms": 160.297
+            },
+            "queue": {
+              "n": 50,
+              "p50_ms": 65.217,
+              "p95_ms": 145.225,
+              "max_ms": 146.758
+            },
+            "totalSpan": {
+              "n": 50,
+              "p50_ms": 144.201,
+              "p95_ms": 204.869,
+              "max_ms": 239.797
+            }
+          }
+        },
+        {
+          "name": "keyboard_2",
+          "start_us": 871231687923,
+          "end_us": 871232694116,
+          "window_duration_ms": 1006.193,
+          "sample_n": 11,
+          "sample_density_per_s": 10.932296289081718,
+          "metrics": {
+            "UI": {
+              "n": 11,
+              "p50_ms": 7.453,
+              "p95_ms": 12.887,
+              "max_ms": 12.887
+            },
+            "raster": {
+              "n": 11,
+              "p50_ms": 84.593,
+              "p95_ms": 90.978,
+              "max_ms": 90.978
+            },
+            "queue": {
+              "n": 11,
+              "p50_ms": 70.337,
+              "p95_ms": 76.963,
+              "max_ms": 76.963
+            },
+            "totalSpan": {
+              "n": 11,
+              "p50_ms": 161.09,
+              "p95_ms": 180.558,
+              "max_ms": 180.558
+            }
+          }
+        },
+        {
+          "name": "search_2",
+          "start_us": 871232694121,
+          "end_us": 871233597135,
+          "window_duration_ms": 903.014,
+          "sample_n": 12,
+          "sample_density_per_s": 13.288830516470398,
+          "metrics": {
+            "UI": {
+              "n": 12,
+              "p50_ms": 0.706,
+              "p95_ms": 16.163,
+              "max_ms": 16.163
+            },
+            "raster": {
+              "n": 12,
+              "p50_ms": 5.206,
+              "p95_ms": 161.154,
+              "max_ms": 161.154
+            },
+            "queue": {
+              "n": 12,
+              "p50_ms": 1.971,
+              "p95_ms": 145.597,
+              "max_ms": 145.597
+            },
+            "totalSpan": {
+              "n": 12,
+              "p50_ms": 152.492,
+              "p95_ms": 177.759,
+              "max_ms": 177.759
+            }
+          }
+        },
+        {
+          "name": "empty_search_2",
+          "start_us": 871233597140,
+          "end_us": 871234502941,
+          "window_duration_ms": 905.801,
+          "sample_n": 11,
+          "sample_density_per_s": 12.143947732448959,
+          "metrics": {
+            "UI": {
+              "n": 11,
+              "p50_ms": 0.704,
+              "p95_ms": 4.271,
+              "max_ms": 4.271
+            },
+            "raster": {
+              "n": 11,
+              "p50_ms": 140.465,
+              "p95_ms": 161.207,
+              "max_ms": 161.207
+            },
+            "queue": {
+              "n": 11,
+              "p50_ms": 1.583,
+              "p95_ms": 137.871,
+              "max_ms": 137.871
+            },
+            "totalSpan": {
+              "n": 11,
+              "p50_ms": 141.812,
+              "p95_ms": 164.575,
+              "max_ms": 164.575
+            }
+          }
+        },
+        {
+          "name": "clear_search_2",
+          "start_us": 871234502949,
+          "end_us": 871236510921,
+          "window_duration_ms": 2007.972,
+          "sample_n": 24,
+          "sample_density_per_s": 11.952357901405,
+          "metrics": {
+            "UI": {
+              "n": 24,
+              "p50_ms": 0.71,
+              "p95_ms": 12.543,
+              "max_ms": 14.428
+            },
+            "raster": {
+              "n": 24,
+              "p50_ms": 75.568,
+              "p95_ms": 154.884,
+              "max_ms": 156.246
+            },
+            "queue": {
+              "n": 24,
+              "p50_ms": 64.118,
+              "p95_ms": 144.964,
+              "max_ms": 147.003
+            },
+            "totalSpan": {
+              "n": 24,
+              "p50_ms": 149.444,
+              "p95_ms": 218.405,
+              "max_ms": 220.914
+            }
+          }
+        },
+        {
+          "name": "close_2",
+          "start_us": 871236510932,
+          "end_us": 871236824197,
+          "window_duration_ms": 313.265,
+          "sample_n": 5,
+          "sample_density_per_s": 15.960927649114966,
+          "metrics": {
+            "UI": {
+              "n": 5,
+              "p50_ms": 1.282,
+              "p95_ms": 2.191,
+              "max_ms": 2.191
+            },
+            "raster": {
+              "n": 5,
+              "p50_ms": 4.239,
+              "p95_ms": 150.624,
+              "max_ms": 150.624
+            },
+            "queue": {
+              "n": 5,
+              "p50_ms": 58.119,
+              "p95_ms": 136.056,
+              "max_ms": 136.056
+            },
+            "totalSpan": {
+              "n": 5,
+              "p50_ms": 126.134,
+              "p95_ms": 153.652,
+              "max_ms": 153.652
+            }
+          }
+        }
+      ]
+    },
+    "current4fc-F2-after-timing-7plus-1": {
+      "source_fingerprint": "5a5ce0cd9b3b7e5a4ad43ff5a7dc7a71092abe79dd8b3bc24abd031339b58274",
+      "frame_count": 1466,
+      "unique_frame_numbers": 1466,
+      "no_duplicate_frame_numbers": true,
+      "display_hz": 60.0,
+      "physical_size": [
+        1242.0,
+        2208.0
+      ],
+      "dpr": 3.0,
+      "aggregates": {
+        "first_open": {
+          "phase_names": [
+            "first_open"
+          ],
+          "window_duration_ms": 620.083,
+          "sample_n": 9,
+          "sample_density_per_s": 14.514186004131705,
+          "metrics": {
+            "UI": {
+              "n": 9,
+              "p50_ms": 1.129,
+              "p95_ms": 24.457,
+              "max_ms": 24.457
+            },
+            "raster": {
+              "n": 9,
+              "p50_ms": 35.79,
+              "p95_ms": 215.151,
+              "max_ms": 215.151
+            },
+            "queue": {
+              "n": 9,
+              "p50_ms": 28.148,
+              "p95_ms": 345.723,
+              "max_ms": 345.723
+            },
+            "totalSpan": {
+              "n": 9,
+              "p50_ms": 57.806,
+              "p95_ms": 374.692,
+              "max_ms": 374.692
+            }
+          }
+        },
+        "repeat_open": {
+          "phase_names": [
+            "open_0",
+            "open_1",
+            "open_2"
+          ],
+          "window_duration_ms": 1368.471,
+          "sample_n": 53,
+          "sample_density_per_s": 38.72935560928949,
+          "metrics": {
+            "UI": {
+              "n": 53,
+              "p50_ms": 1.724,
+              "p95_ms": 12.985,
+              "max_ms": 13.61
+            },
+            "raster": {
+              "n": 53,
+              "p50_ms": 33.405,
+              "p95_ms": 43.503,
+              "max_ms": 46.611
+            },
+            "queue": {
+              "n": 53,
+              "p50_ms": 17.081,
+              "p95_ms": 33.453,
+              "max_ms": 34.779
+            },
+            "totalSpan": {
+              "n": 53,
+              "p50_ms": 43.363,
+              "p95_ms": 70.462,
+              "max_ms": 74.392
+            }
+          }
+        },
+        "drag": {
+          "phase_names": [
+            "drag_0",
+            "drag_1",
+            "drag_2"
+          ],
+          "window_duration_ms": 9528.793,
+          "sample_n": 262,
+          "sample_density_per_s": 27.495612508320832,
+          "metrics": {
+            "UI": {
+              "n": 262,
+              "p50_ms": 2.865,
+              "p95_ms": 4.896,
+              "max_ms": 6.135
+            },
+            "raster": {
+              "n": 262,
+              "p50_ms": 36.207,
+              "p95_ms": 37.251,
+              "max_ms": 38.648
+            },
+            "queue": {
+              "n": 262,
+              "p50_ms": 24.846,
+              "p95_ms": 32.901,
+              "max_ms": 34.734
+            },
+            "totalSpan": {
+              "n": 262,
+              "p50_ms": 65.241,
+              "p95_ms": 72.558,
+              "max_ms": 74.819
+            }
+          }
+        },
+        "fling_down": {
+          "phase_names": [
+            "fling_down_0",
+            "fling_down_1",
+            "fling_down_2"
+          ],
+          "window_duration_ms": 11583.344,
+          "sample_n": 317,
+          "sample_density_per_s": 27.36688127366329,
+          "metrics": {
+            "UI": {
+              "n": 317,
+              "p50_ms": 3.334,
+              "p95_ms": 7.711,
+              "max_ms": 11.661
+            },
+            "raster": {
+              "n": 317,
+              "p50_ms": 36.302,
+              "p95_ms": 37.618,
+              "max_ms": 38.896
+            },
+            "queue": {
+              "n": 317,
+              "p50_ms": 24.188,
+              "p95_ms": 32.575,
+              "max_ms": 34.731
+            },
+            "totalSpan": {
+              "n": 317,
+              "p50_ms": 65.337,
+              "p95_ms": 72.976,
+              "max_ms": 75.755
+            }
+          }
+        },
+        "fling_up": {
+          "phase_names": [
+            "fling_up_0",
+            "fling_up_1",
+            "fling_up_2"
+          ],
+          "window_duration_ms": 11578.91,
+          "sample_n": 317,
+          "sample_density_per_s": 27.37736108148349,
+          "metrics": {
+            "UI": {
+              "n": 317,
+              "p50_ms": 3.259,
+              "p95_ms": 7.993,
+              "max_ms": 11.297
+            },
+            "raster": {
+              "n": 317,
+              "p50_ms": 36.341,
+              "p95_ms": 37.449,
+              "max_ms": 39.207
+            },
+            "queue": {
+              "n": 317,
+              "p50_ms": 24.206,
+              "p95_ms": 32.788,
+              "max_ms": 34.18
+            },
+            "totalSpan": {
+              "n": 317,
+              "p50_ms": 65.799,
+              "p95_ms": 73.301,
+              "max_ms": 76.302
+            }
+          }
+        },
+        "keyboard": {
+          "phase_names": [
+            "keyboard_0",
+            "keyboard_1",
+            "keyboard_2"
+          ],
+          "window_duration_ms": 3030.761,
+          "sample_n": 73,
+          "sample_density_per_s": 24.08635982843913,
+          "metrics": {
+            "UI": {
+              "n": 73,
+              "p50_ms": 10.501,
+              "p95_ms": 19.942,
+              "max_ms": 27.351
+            },
+            "raster": {
+              "n": 73,
+              "p50_ms": 37.612,
+              "p95_ms": 44.926,
+              "max_ms": 46.061
+            },
+            "queue": {
+              "n": 73,
+              "p50_ms": 18.096,
+              "p95_ms": 33.669,
+              "max_ms": 36.359
+            },
+            "totalSpan": {
+              "n": 73,
+              "p50_ms": 69.821,
+              "p95_ms": 85.934,
+              "max_ms": 88.711
+            }
+          }
+        },
+        "search": {
+          "phase_names": [
+            "search_0",
+            "search_1",
+            "search_2"
+          ],
+          "window_duration_ms": 2711.527,
+          "sample_n": 71,
+          "sample_density_per_s": 26.184507843735283,
+          "metrics": {
+            "UI": {
+              "n": 71,
+              "p50_ms": 1.006,
+              "p95_ms": 4.13,
+              "max_ms": 23.672
+            },
+            "raster": {
+              "n": 71,
+              "p50_ms": 37.382,
+              "p95_ms": 41.297,
+              "max_ms": 42.659
+            },
+            "queue": {
+              "n": 71,
+              "p50_ms": 27.734,
+              "p95_ms": 36.515,
+              "max_ms": 37.526
+            },
+            "totalSpan": {
+              "n": 71,
+              "p50_ms": 68.716,
+              "p95_ms": 77.137,
+              "max_ms": 80.473
+            }
+          }
+        },
+        "close": {
+          "phase_names": [
+            "close_0",
+            "close_1",
+            "close_2"
+          ],
+          "window_duration_ms": 839.797,
+          "sample_n": 28,
+          "sample_density_per_s": 33.34139083611873,
+          "metrics": {
+            "UI": {
+              "n": 28,
+              "p50_ms": 1.572,
+              "p95_ms": 4.616,
+              "max_ms": 6.153
+            },
+            "raster": {
+              "n": 28,
+              "p50_ms": 23.382,
+              "p95_ms": 54.233,
+              "max_ms": 54.479
+            },
+            "queue": {
+              "n": 28,
+              "p50_ms": 13.672,
+              "p95_ms": 47.142,
+              "max_ms": 49.711
+            },
+            "totalSpan": {
+              "n": 28,
+              "p50_ms": 49.126,
+              "p95_ms": 77.506,
+              "max_ms": 81.8
+            }
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "first_open",
+          "start_us": 871338126541,
+          "end_us": 871338746624,
+          "window_duration_ms": 620.083,
+          "sample_n": 9,
+          "sample_density_per_s": 14.514186004131705,
+          "metrics": {
+            "UI": {
+              "n": 9,
+              "p50_ms": 1.129,
+              "p95_ms": 24.457,
+              "max_ms": 24.457
+            },
+            "raster": {
+              "n": 9,
+              "p50_ms": 35.79,
+              "p95_ms": 215.151,
+              "max_ms": 215.151
+            },
+            "queue": {
+              "n": 9,
+              "p50_ms": 28.148,
+              "p95_ms": 345.723,
+              "max_ms": 345.723
+            },
+            "totalSpan": {
+              "n": 9,
+              "p50_ms": 57.806,
+              "p95_ms": 374.692,
+              "max_ms": 374.692
+            }
+          }
+        },
+        {
+          "name": "first_close",
+          "start_us": 871339852380,
+          "end_us": 871340163756,
+          "window_duration_ms": 311.376,
+          "sample_n": 10,
+          "sample_density_per_s": 32.11551307743692,
+          "metrics": {
+            "UI": {
+              "n": 10,
+              "p50_ms": 0.998,
+              "p95_ms": 3.72,
+              "max_ms": 3.72
+            },
+            "raster": {
+              "n": 10,
+              "p50_ms": 5.174,
+              "p95_ms": 53.553,
+              "max_ms": 53.553
+            },
+            "queue": {
+              "n": 10,
+              "p50_ms": 14.614,
+              "p95_ms": 49.396,
+              "max_ms": 49.396
+            },
+            "totalSpan": {
+              "n": 10,
+              "p50_ms": 33.544,
+              "p95_ms": 72.339,
+              "max_ms": 72.339
+            }
+          }
+        },
+        {
+          "name": "open_0",
+          "start_us": 871340163761,
+          "end_us": 871340585624,
+          "window_duration_ms": 421.863,
+          "sample_n": 17,
+          "sample_density_per_s": 40.29744253466173,
+          "metrics": {
+            "UI": {
+              "n": 17,
+              "p50_ms": 1.676,
+              "p95_ms": 12.985,
+              "max_ms": 12.985
+            },
+            "raster": {
+              "n": 17,
+              "p50_ms": 33.068,
+              "p95_ms": 38.171,
+              "max_ms": 38.171
+            },
+            "queue": {
+              "n": 17,
+              "p50_ms": 17.425,
+              "p95_ms": 34.779,
+              "max_ms": 34.779
+            },
+            "totalSpan": {
+              "n": 17,
+              "p50_ms": 38.927,
+              "p95_ms": 72.901,
+              "max_ms": 72.901
+            }
+          }
+        },
+        {
+          "name": "drag_0",
+          "start_us": 871340585643,
+          "end_us": 871343745214,
+          "window_duration_ms": 3159.571,
+          "sample_n": 87,
+          "sample_density_per_s": 27.53538375937746,
+          "metrics": {
+            "UI": {
+              "n": 87,
+              "p50_ms": 2.867,
+              "p95_ms": 5.416,
+              "max_ms": 6.135
+            },
+            "raster": {
+              "n": 87,
+              "p50_ms": 35.868,
+              "p95_ms": 37.125,
+              "max_ms": 37.717
+            },
+            "queue": {
+              "n": 87,
+              "p50_ms": 24.286,
+              "p95_ms": 32.901,
+              "max_ms": 33.244
+            },
+            "totalSpan": {
+              "n": 87,
+              "p50_ms": 64.561,
+              "p95_ms": 71.776,
+              "max_ms": 73.478
+            }
+          }
+        },
+        {
+          "name": "fling_down_0",
+          "start_us": 871343745222,
+          "end_us": 871347579007,
+          "window_duration_ms": 3833.785,
+          "sample_n": 105,
+          "sample_density_per_s": 27.388077317846463,
+          "metrics": {
+            "UI": {
+              "n": 105,
+              "p50_ms": 3.176,
+              "p95_ms": 7.965,
+              "max_ms": 11.661
+            },
+            "raster": {
+              "n": 105,
+              "p50_ms": 36.048,
+              "p95_ms": 37.158,
+              "max_ms": 37.691
+            },
+            "queue": {
+              "n": 105,
+              "p50_ms": 24.206,
+              "p95_ms": 32.449,
+              "max_ms": 33.21
+            },
+            "totalSpan": {
+              "n": 105,
+              "p50_ms": 65.501,
+              "p95_ms": 72.455,
+              "max_ms": 74.202
+            }
+          }
+        },
+        {
+          "name": "fling_up_0",
+          "start_us": 871347579015,
+          "end_us": 871351433822,
+          "window_duration_ms": 3854.807,
+          "sample_n": 106,
+          "sample_density_per_s": 27.498134147831525,
+          "metrics": {
+            "UI": {
+              "n": 106,
+              "p50_ms": 3.148,
+              "p95_ms": 7.27,
+              "max_ms": 11.297
+            },
+            "raster": {
+              "n": 106,
+              "p50_ms": 36.264,
+              "p95_ms": 37.353,
+              "max_ms": 38.518
+            },
+            "queue": {
+              "n": 106,
+              "p50_ms": 24.063,
+              "p95_ms": 33.217,
+              "max_ms": 34.18
+            },
+            "totalSpan": {
+              "n": 106,
+              "p50_ms": 65.119,
+              "p95_ms": 72.71,
+              "max_ms": 76.302
+            }
+          }
+        },
+        {
+          "name": "keyboard_0",
+          "start_us": 871351435021,
+          "end_us": 871352446678,
+          "window_duration_ms": 1011.657,
+          "sample_n": 24,
+          "sample_density_per_s": 23.723455677171216,
+          "metrics": {
+            "UI": {
+              "n": 24,
+              "p50_ms": 9.14,
+              "p95_ms": 19.942,
+              "max_ms": 27.351
+            },
+            "raster": {
+              "n": 24,
+              "p50_ms": 37.212,
+              "p95_ms": 45.245,
+              "max_ms": 45.361
+            },
+            "queue": {
+              "n": 24,
+              "p50_ms": 16.72,
+              "p95_ms": 32.56,
+              "max_ms": 33.669
+            },
+            "totalSpan": {
+              "n": 24,
+              "p50_ms": 68.695,
+              "p95_ms": 84.672,
+              "max_ms": 87.485
+            }
+          }
+        },
+        {
+          "name": "search_0",
+          "start_us": 871352446683,
+          "end_us": 871353349732,
+          "window_duration_ms": 903.049,
+          "sample_n": 24,
+          "sample_density_per_s": 26.576630946936433,
+          "metrics": {
+            "UI": {
+              "n": 24,
+              "p50_ms": 1.038,
+              "p95_ms": 3.349,
+              "max_ms": 23.672
+            },
+            "raster": {
+              "n": 24,
+              "p50_ms": 37.039,
+              "p95_ms": 39.304,
+              "max_ms": 39.404
+            },
+            "queue": {
+              "n": 24,
+              "p50_ms": 26.624,
+              "p95_ms": 33.709,
+              "max_ms": 34.565
+            },
+            "totalSpan": {
+              "n": 24,
+              "p50_ms": 66.255,
+              "p95_ms": 73.729,
+              "max_ms": 76.464
+            }
+          }
+        },
+        {
+          "name": "empty_search_0",
+          "start_us": 871353349739,
+          "end_us": 871354253760,
+          "window_duration_ms": 904.021,
+          "sample_n": 24,
+          "sample_density_per_s": 26.54805585268484,
+          "metrics": {
+            "UI": {
+              "n": 24,
+              "p50_ms": 0.944,
+              "p95_ms": 2.418,
+              "max_ms": 2.856
+            },
+            "raster": {
+              "n": 24,
+              "p50_ms": 36.684,
+              "p95_ms": 37.616,
+              "max_ms": 49.031
+            },
+            "queue": {
+              "n": 24,
+              "p50_ms": 27.886,
+              "p95_ms": 33.817,
+              "max_ms": 34.385
+            },
+            "totalSpan": {
+              "n": 24,
+              "p50_ms": 66.157,
+              "p95_ms": 74.772,
+              "max_ms": 85.394
+            }
+          }
+        },
+        {
+          "name": "clear_search_0",
+          "start_us": 871354253767,
+          "end_us": 871356260147,
+          "window_duration_ms": 2006.38,
+          "sample_n": 54,
+          "sample_density_per_s": 26.914143881019548,
+          "metrics": {
+            "UI": {
+              "n": 54,
+              "p50_ms": 0.982,
+              "p95_ms": 17.699,
+              "max_ms": 26.669
+            },
+            "raster": {
+              "n": 54,
+              "p50_ms": 36.753,
+              "p95_ms": 42.246,
+              "max_ms": 44.663
+            },
+            "queue": {
+              "n": 54,
+              "p50_ms": 25.508,
+              "p95_ms": 34.058,
+              "max_ms": 35.49
+            },
+            "totalSpan": {
+              "n": 54,
+              "p50_ms": 66.781,
+              "p95_ms": 82.139,
+              "max_ms": 90.845
+            }
+          }
+        },
+        {
+          "name": "close_0",
+          "start_us": 871356260161,
+          "end_us": 871356577852,
+          "window_duration_ms": 317.691,
+          "sample_n": 11,
+          "sample_density_per_s": 34.62483986011565,
+          "metrics": {
+            "UI": {
+              "n": 11,
+              "p50_ms": 1.37,
+              "p95_ms": 6.153,
+              "max_ms": 6.153
+            },
+            "raster": {
+              "n": 11,
+              "p50_ms": 4.294,
+              "p95_ms": 53.112,
+              "max_ms": 53.112
+            },
+            "queue": {
+              "n": 11,
+              "p50_ms": 12.448,
+              "p95_ms": 49.711,
+              "max_ms": 49.711
+            },
+            "totalSpan": {
+              "n": 11,
+              "p50_ms": 32.118,
+              "p95_ms": 73.021,
+              "max_ms": 73.021
+            }
+          }
+        },
+        {
+          "name": "open_1",
+          "start_us": 871356577857,
+          "end_us": 871357092232,
+          "window_duration_ms": 514.375,
+          "sample_n": 19,
+          "sample_density_per_s": 36.93803159173755,
+          "metrics": {
+            "UI": {
+              "n": 19,
+              "p50_ms": 1.319,
+              "p95_ms": 13.59,
+              "max_ms": 13.59
+            },
+            "raster": {
+              "n": 19,
+              "p50_ms": 33.405,
+              "p95_ms": 46.051,
+              "max_ms": 46.051
+            },
+            "queue": {
+              "n": 19,
+              "p50_ms": 17.081,
+              "p95_ms": 33.453,
+              "max_ms": 33.453
+            },
+            "totalSpan": {
+              "n": 19,
+              "p50_ms": 51.298,
+              "p95_ms": 70.41,
+              "max_ms": 70.41
+            }
+          }
+        },
+        {
+          "name": "drag_1",
+          "start_us": 871357092238,
+          "end_us": 871360270786,
+          "window_duration_ms": 3178.548,
+          "sample_n": 88,
+          "sample_density_per_s": 27.685597323054427,
+          "metrics": {
+            "UI": {
+              "n": 88,
+              "p50_ms": 2.846,
+              "p95_ms": 4.808,
+              "max_ms": 5.973
+            },
+            "raster": {
+              "n": 88,
+              "p50_ms": 36.199,
+              "p95_ms": 37.27,
+              "max_ms": 37.85
+            },
+            "queue": {
+              "n": 88,
+              "p50_ms": 25.182,
+              "p95_ms": 32.732,
+              "max_ms": 33.67
+            },
+            "totalSpan": {
+              "n": 88,
+              "p50_ms": 65.31,
+              "p95_ms": 72.712,
+              "max_ms": 73.392
+            }
+          }
+        },
+        {
+          "name": "fling_down_1",
+          "start_us": 871360270798,
+          "end_us": 871364123923,
+          "window_duration_ms": 3853.125,
+          "sample_n": 106,
+          "sample_density_per_s": 27.51013787510138,
+          "metrics": {
+            "UI": {
+              "n": 106,
+              "p50_ms": 3.352,
+              "p95_ms": 7.39,
+              "max_ms": 9.813
+            },
+            "raster": {
+              "n": 106,
+              "p50_ms": 36.275,
+              "p95_ms": 37.288,
+              "max_ms": 38.541
+            },
+            "queue": {
+              "n": 106,
+              "p50_ms": 23.401,
+              "p95_ms": 32.541,
+              "max_ms": 33.923
+            },
+            "totalSpan": {
+              "n": 106,
+              "p50_ms": 64.898,
+              "p95_ms": 72.36,
+              "max_ms": 73.26
+            }
+          }
+        },
+        {
+          "name": "fling_up_1",
+          "start_us": 871364123938,
+          "end_us": 871367970726,
+          "window_duration_ms": 3846.788,
+          "sample_n": 105,
+          "sample_density_per_s": 27.295499518039467,
+          "metrics": {
+            "UI": {
+              "n": 105,
+              "p50_ms": 3.25,
+              "p95_ms": 8.467,
+              "max_ms": 9.812
+            },
+            "raster": {
+              "n": 105,
+              "p50_ms": 36.156,
+              "p95_ms": 37.394,
+              "max_ms": 37.9
+            },
+            "queue": {
+              "n": 105,
+              "p50_ms": 24.1,
+              "p95_ms": 32.669,
+              "max_ms": 33.953
+            },
+            "totalSpan": {
+              "n": 105,
+              "p50_ms": 65.395,
+              "p95_ms": 73.055,
+              "max_ms": 74.008
+            }
+          }
+        },
+        {
+          "name": "keyboard_1",
+          "start_us": 871367971408,
+          "end_us": 871368983126,
+          "window_duration_ms": 1011.718,
+          "sample_n": 25,
+          "sample_density_per_s": 24.71044302859097,
+          "metrics": {
+            "UI": {
+              "n": 25,
+              "p50_ms": 10.991,
+              "p95_ms": 16.909,
+              "max_ms": 17.385
+            },
+            "raster": {
+              "n": 25,
+              "p50_ms": 37.318,
+              "p95_ms": 44.66,
+              "max_ms": 44.805
+            },
+            "queue": {
+              "n": 25,
+              "p50_ms": 18.862,
+              "p95_ms": 33.174,
+              "max_ms": 35.561
+            },
+            "totalSpan": {
+              "n": 25,
+              "p50_ms": 68.619,
+              "p95_ms": 84.429,
+              "max_ms": 86.808
+            }
+          }
+        },
+        {
+          "name": "search_1",
+          "start_us": 871368983146,
+          "end_us": 871369888378,
+          "window_duration_ms": 905.232,
+          "sample_n": 24,
+          "sample_density_per_s": 26.51254043162416,
+          "metrics": {
+            "UI": {
+              "n": 24,
+              "p50_ms": 0.96,
+              "p95_ms": 2.15,
+              "max_ms": 22.181
+            },
+            "raster": {
+              "n": 24,
+              "p50_ms": 37.097,
+              "p95_ms": 41.915,
+              "max_ms": 42.659
+            },
+            "queue": {
+              "n": 24,
+              "p50_ms": 26.476,
+              "p95_ms": 35.909,
+              "max_ms": 36.713
+            },
+            "totalSpan": {
+              "n": 24,
+              "p50_ms": 68.716,
+              "p95_ms": 76.365,
+              "max_ms": 77.137
+            }
+          }
+        },
+        {
+          "name": "empty_search_1",
+          "start_us": 871369888394,
+          "end_us": 871370792493,
+          "window_duration_ms": 904.099,
+          "sample_n": 24,
+          "sample_density_per_s": 26.545765452677195,
+          "metrics": {
+            "UI": {
+              "n": 24,
+              "p50_ms": 0.944,
+              "p95_ms": 2.411,
+              "max_ms": 2.69
+            },
+            "raster": {
+              "n": 24,
+              "p50_ms": 37.075,
+              "p95_ms": 41.809,
+              "max_ms": 42.512
+            },
+            "queue": {
+              "n": 24,
+              "p50_ms": 28.409,
+              "p95_ms": 34.727,
+              "max_ms": 35.588
+            },
+            "totalSpan": {
+              "n": 24,
+              "p50_ms": 67.468,
+              "p95_ms": 76.674,
+              "max_ms": 85.464
+            }
+          }
+        },
+        {
+          "name": "clear_search_1",
+          "start_us": 871370792508,
+          "end_us": 871372799698,
+          "window_duration_ms": 2007.19,
+          "sample_n": 51,
+          "sample_density_per_s": 25.408655882103837,
+          "metrics": {
+            "UI": {
+              "n": 51,
+              "p50_ms": 1.051,
+              "p95_ms": 19.65,
+              "max_ms": 31.014
+            },
+            "raster": {
+              "n": 51,
+              "p50_ms": 37.888,
+              "p95_ms": 42.048,
+              "max_ms": 43.867
+            },
+            "queue": {
+              "n": 51,
+              "p50_ms": 25.329,
+              "p95_ms": 35.08,
+              "max_ms": 37.415
+            },
+            "totalSpan": {
+              "n": 51,
+              "p50_ms": 70.347,
+              "p95_ms": 82.447,
+              "max_ms": 94.663
+            }
+          }
+        },
+        {
+          "name": "close_1",
+          "start_us": 871372799704,
+          "end_us": 871373112075,
+          "window_duration_ms": 312.371,
+          "sample_n": 11,
+          "sample_density_per_s": 35.21453656069225,
+          "metrics": {
+            "UI": {
+              "n": 11,
+              "p50_ms": 1.778,
+              "p95_ms": 4.616,
+              "max_ms": 4.616
+            },
+            "raster": {
+              "n": 11,
+              "p50_ms": 20.423,
+              "p95_ms": 54.233,
+              "max_ms": 54.233
+            },
+            "queue": {
+              "n": 11,
+              "p50_ms": 10.053,
+              "p95_ms": 46.043,
+              "max_ms": 46.043
+            },
+            "totalSpan": {
+              "n": 11,
+              "p50_ms": 45.986,
+              "p95_ms": 72.483,
+              "max_ms": 72.483
+            }
+          }
+        },
+        {
+          "name": "open_2",
+          "start_us": 871373112080,
+          "end_us": 871373544313,
+          "window_duration_ms": 432.233,
+          "sample_n": 17,
+          "sample_density_per_s": 39.330638798981106,
+          "metrics": {
+            "UI": {
+              "n": 17,
+              "p50_ms": 1.848,
+              "p95_ms": 13.61,
+              "max_ms": 13.61
+            },
+            "raster": {
+              "n": 17,
+              "p50_ms": 35.189,
+              "p95_ms": 46.611,
+              "max_ms": 46.611
+            },
+            "queue": {
+              "n": 17,
+              "p50_ms": 13.534,
+              "p95_ms": 34.471,
+              "max_ms": 34.471
+            },
+            "totalSpan": {
+              "n": 17,
+              "p50_ms": 43.363,
+              "p95_ms": 74.392,
+              "max_ms": 74.392
+            }
+          }
+        },
+        {
+          "name": "drag_2",
+          "start_us": 871373544319,
+          "end_us": 871376734993,
+          "window_duration_ms": 3190.674,
+          "sample_n": 87,
+          "sample_density_per_s": 27.26696616451571,
+          "metrics": {
+            "UI": {
+              "n": 87,
+              "p50_ms": 2.974,
+              "p95_ms": 4.532,
+              "max_ms": 5.867
+            },
+            "raster": {
+              "n": 87,
+              "p50_ms": 36.499,
+              "p95_ms": 37.477,
+              "max_ms": 38.648
+            },
+            "queue": {
+              "n": 87,
+              "p50_ms": 24.884,
+              "p95_ms": 33.561,
+              "max_ms": 34.734
+            },
+            "totalSpan": {
+              "n": 87,
+              "p50_ms": 65.574,
+              "p95_ms": 73.234,
+              "max_ms": 74.819
+            }
+          }
+        },
+        {
+          "name": "fling_down_2",
+          "start_us": 871376735001,
+          "end_us": 871380631435,
+          "window_duration_ms": 3896.434,
+          "sample_n": 106,
+          "sample_density_per_s": 27.204361731778338,
+          "metrics": {
+            "UI": {
+              "n": 106,
+              "p50_ms": 3.406,
+              "p95_ms": 7.711,
+              "max_ms": 9.971
+            },
+            "raster": {
+              "n": 106,
+              "p50_ms": 36.53,
+              "p95_ms": 37.947,
+              "max_ms": 38.896
+            },
+            "queue": {
+              "n": 106,
+              "p50_ms": 24.227,
+              "p95_ms": 32.774,
+              "max_ms": 34.731
+            },
+            "totalSpan": {
+              "n": 106,
+              "p50_ms": 65.909,
+              "p95_ms": 73.625,
+              "max_ms": 75.755
+            }
+          }
+        },
+        {
+          "name": "fling_up_2",
+          "start_us": 871380631443,
+          "end_us": 871384508758,
+          "window_duration_ms": 3877.315,
+          "sample_n": 106,
+          "sample_density_per_s": 27.33850615696687,
+          "metrics": {
+            "UI": {
+              "n": 106,
+              "p50_ms": 3.403,
+              "p95_ms": 7.865,
+              "max_ms": 8.64
+            },
+            "raster": {
+              "n": 106,
+              "p50_ms": 36.6,
+              "p95_ms": 37.708,
+              "max_ms": 39.207
+            },
+            "queue": {
+              "n": 106,
+              "p50_ms": 24.785,
+              "p95_ms": 32.591,
+              "max_ms": 32.925
+            },
+            "totalSpan": {
+              "n": 106,
+              "p50_ms": 66.14,
+              "p95_ms": 73.62,
+              "max_ms": 74.77
+            }
+          }
+        },
+        {
+          "name": "keyboard_2",
+          "start_us": 871384509319,
+          "end_us": 871385516705,
+          "window_duration_ms": 1007.386,
+          "sample_n": 24,
+          "sample_density_per_s": 23.824035672522747,
+          "metrics": {
+            "UI": {
+              "n": 24,
+              "p50_ms": 9.799,
+              "p95_ms": 22.046,
+              "max_ms": 25.476
+            },
+            "raster": {
+              "n": 24,
+              "p50_ms": 40.596,
+              "p95_ms": 44.926,
+              "max_ms": 46.061
+            },
+            "queue": {
+              "n": 24,
+              "p50_ms": 17.852,
+              "p95_ms": 34.503,
+              "max_ms": 36.359
+            },
+            "totalSpan": {
+              "n": 24,
+              "p50_ms": 71.679,
+              "p95_ms": 85.934,
+              "max_ms": 88.711
+            }
+          }
+        },
+        {
+          "name": "search_2",
+          "start_us": 871385516710,
+          "end_us": 871386419956,
+          "window_duration_ms": 903.246,
+          "sample_n": 23,
+          "sample_density_per_s": 25.463716418340077,
+          "metrics": {
+            "UI": {
+              "n": 23,
+              "p50_ms": 0.988,
+              "p95_ms": 4.13,
+              "max_ms": 23.46
+            },
+            "raster": {
+              "n": 23,
+              "p50_ms": 37.55,
+              "p95_ms": 41.297,
+              "max_ms": 42.421
+            },
+            "queue": {
+              "n": 23,
+              "p50_ms": 28.457,
+              "p95_ms": 37.311,
+              "max_ms": 37.526
+            },
+            "totalSpan": {
+              "n": 23,
+              "p50_ms": 70.83,
+              "p95_ms": 78.843,
+              "max_ms": 80.473
+            }
+          }
+        },
+        {
+          "name": "empty_search_2",
+          "start_us": 871386419964,
+          "end_us": 871387325973,
+          "window_duration_ms": 906.009,
+          "sample_n": 24,
+          "sample_density_per_s": 26.489803081426345,
+          "metrics": {
+            "UI": {
+              "n": 24,
+              "p50_ms": 1.071,
+              "p95_ms": 3.544,
+              "max_ms": 3.862
+            },
+            "raster": {
+              "n": 24,
+              "p50_ms": 37.455,
+              "p95_ms": 41.931,
+              "max_ms": 43.076
+            },
+            "queue": {
+              "n": 24,
+              "p50_ms": 27.165,
+              "p95_ms": 36.226,
+              "max_ms": 36.575
+            },
+            "totalSpan": {
+              "n": 24,
+              "p50_ms": 69.5,
+              "p95_ms": 80.043,
+              "max_ms": 82.289
+            }
+          }
+        },
+        {
+          "name": "clear_search_2",
+          "start_us": 871387325988,
+          "end_us": 871389338796,
+          "window_duration_ms": 2012.808,
+          "sample_n": 51,
+          "sample_density_per_s": 25.337737131410446,
+          "metrics": {
+            "UI": {
+              "n": 51,
+              "p50_ms": 1.138,
+              "p95_ms": 19.78,
+              "max_ms": 29.133
+            },
+            "raster": {
+              "n": 51,
+              "p50_ms": 37.717,
+              "p95_ms": 42.825,
+              "max_ms": 45.449
+            },
+            "queue": {
+              "n": 51,
+              "p50_ms": 25.989,
+              "p95_ms": 35.816,
+              "max_ms": 35.97
+            },
+            "totalSpan": {
+              "n": 51,
+              "p50_ms": 71.916,
+              "p95_ms": 82.401,
+              "max_ms": 84.628
+            }
+          }
+        },
+        {
+          "name": "close_2",
+          "start_us": 871389338803,
+          "end_us": 871389548538,
+          "window_duration_ms": 209.735,
+          "sample_n": 6,
+          "sample_density_per_s": 28.60752854792953,
+          "metrics": {
+            "UI": {
+              "n": 6,
+              "p50_ms": 1.572,
+              "p95_ms": 3.05,
+              "max_ms": 3.05
+            },
+            "raster": {
+              "n": 6,
+              "p50_ms": 33.41,
+              "p95_ms": 54.479,
+              "max_ms": 54.479
+            },
+            "queue": {
+              "n": 6,
+              "p50_ms": 25.008,
+              "p95_ms": 47.142,
+              "max_ms": 47.142
+            },
+            "totalSpan": {
+              "n": 6,
+              "p50_ms": 60.503,
+              "p95_ms": 81.8,
+              "max_ms": 81.8
+            }
+          }
+        }
+      ]
+    },
+    "current4fc-F2-after-timing-7plus-2": {
+      "source_fingerprint": "5a5ce0cd9b3b7e5a4ad43ff5a7dc7a71092abe79dd8b3bc24abd031339b58274",
+      "frame_count": 1481,
+      "unique_frame_numbers": 1481,
+      "no_duplicate_frame_numbers": true,
+      "display_hz": 60.0,
+      "physical_size": [
+        1242.0,
+        2208.0
+      ],
+      "dpr": 3.0,
+      "aggregates": {
+        "first_open": {
+          "phase_names": [
+            "first_open"
+          ],
+          "window_duration_ms": 622.104,
+          "sample_n": 9,
+          "sample_density_per_s": 14.467034450831372,
+          "metrics": {
+            "UI": {
+              "n": 9,
+              "p50_ms": 0.98,
+              "p95_ms": 31.147,
+              "max_ms": 31.147
+            },
+            "raster": {
+              "n": 9,
+              "p50_ms": 36.398,
+              "p95_ms": 216.421,
+              "max_ms": 216.421
+            },
+            "queue": {
+              "n": 9,
+              "p50_ms": 31.785,
+              "p95_ms": 325.648,
+              "max_ms": 325.648
+            },
+            "totalSpan": {
+              "n": 9,
+              "p50_ms": 60.032,
+              "p95_ms": 373.203,
+              "max_ms": 373.203
+            }
+          }
+        },
+        "repeat_open": {
+          "phase_names": [
+            "open_0",
+            "open_1",
+            "open_2"
+          ],
+          "window_duration_ms": 1303.347,
+          "sample_n": 50,
+          "sample_density_per_s": 38.36276908605306,
+          "metrics": {
+            "UI": {
+              "n": 50,
+              "p50_ms": 1.687,
+              "p95_ms": 13.217,
+              "max_ms": 14.343
+            },
+            "raster": {
+              "n": 50,
+              "p50_ms": 32.996,
+              "p95_ms": 40.605,
+              "max_ms": 48.594
+            },
+            "queue": {
+              "n": 50,
+              "p50_ms": 15.305,
+              "p95_ms": 33.768,
+              "max_ms": 35.513
+            },
+            "totalSpan": {
+              "n": 50,
+              "p50_ms": 44.603,
+              "p95_ms": 71.589,
+              "max_ms": 73.111
+            }
+          }
+        },
+        "drag": {
+          "phase_names": [
+            "drag_0",
+            "drag_1",
+            "drag_2"
+          ],
+          "window_duration_ms": 9535.523,
+          "sample_n": 264,
+          "sample_density_per_s": 27.68594863648276,
+          "metrics": {
+            "UI": {
+              "n": 264,
+              "p50_ms": 2.983,
+              "p95_ms": 5.445,
+              "max_ms": 8.847
+            },
+            "raster": {
+              "n": 264,
+              "p50_ms": 36.099,
+              "p95_ms": 37.047,
+              "max_ms": 38.046
+            },
+            "queue": {
+              "n": 264,
+              "p50_ms": 25.297,
+              "p95_ms": 32.697,
+              "max_ms": 35.028
+            },
+            "totalSpan": {
+              "n": 264,
+              "p50_ms": 65.173,
+              "p95_ms": 72.623,
+              "max_ms": 75.377
+            }
+          }
+        },
+        "fling_down": {
+          "phase_names": [
+            "fling_down_0",
+            "fling_down_1",
+            "fling_down_2"
+          ],
+          "window_duration_ms": 11732.461,
+          "sample_n": 322,
+          "sample_density_per_s": 27.445222276894846,
+          "metrics": {
+            "UI": {
+              "n": 322,
+              "p50_ms": 3.381,
+              "p95_ms": 8.621,
+              "max_ms": 16.876
+            },
+            "raster": {
+              "n": 322,
+              "p50_ms": 36.159,
+              "p95_ms": 37.078,
+              "max_ms": 38.402
+            },
+            "queue": {
+              "n": 322,
+              "p50_ms": 24.273,
+              "p95_ms": 32.685,
+              "max_ms": 35.613
+            },
+            "totalSpan": {
+              "n": 322,
+              "p50_ms": 65.211,
+              "p95_ms": 72.929,
+              "max_ms": 75.999
+            }
+          }
+        },
+        "fling_up": {
+          "phase_names": [
+            "fling_up_0",
+            "fling_up_1",
+            "fling_up_2"
+          ],
+          "window_duration_ms": 11618.179,
+          "sample_n": 319,
+          "sample_density_per_s": 27.456970666401336,
+          "metrics": {
+            "UI": {
+              "n": 319,
+              "p50_ms": 3.393,
+              "p95_ms": 8.053,
+              "max_ms": 10.503
+            },
+            "raster": {
+              "n": 319,
+              "p50_ms": 36.305,
+              "p95_ms": 37.413,
+              "max_ms": 56.471
+            },
+            "queue": {
+              "n": 319,
+              "p50_ms": 24.058,
+              "p95_ms": 32.783,
+              "max_ms": 35.695
+            },
+            "totalSpan": {
+              "n": 319,
+              "p50_ms": 65.198,
+              "p95_ms": 72.668,
+              "max_ms": 92.144
+            }
+          }
+        },
+        "keyboard": {
+          "phase_names": [
+            "keyboard_0",
+            "keyboard_1",
+            "keyboard_2"
+          ],
+          "window_duration_ms": 3034.604,
+          "sample_n": 73,
+          "sample_density_per_s": 24.05585704098459,
+          "metrics": {
+            "UI": {
+              "n": 73,
+              "p50_ms": 12.129,
+              "p95_ms": 22.859,
+              "max_ms": 26.339
+            },
+            "raster": {
+              "n": 73,
+              "p50_ms": 37.661,
+              "p95_ms": 44.856,
+              "max_ms": 46.023
+            },
+            "queue": {
+              "n": 73,
+              "p50_ms": 18.06,
+              "p95_ms": 35.242,
+              "max_ms": 36.59
+            },
+            "totalSpan": {
+              "n": 73,
+              "p50_ms": 70.264,
+              "p95_ms": 87.34,
+              "max_ms": 90.24
+            }
+          }
+        },
+        "search": {
+          "phase_names": [
+            "search_0",
+            "search_1",
+            "search_2"
+          ],
+          "window_duration_ms": 2716.153,
+          "sample_n": 72,
+          "sample_density_per_s": 26.50807962585318,
+          "metrics": {
+            "UI": {
+              "n": 72,
+              "p50_ms": 0.98,
+              "p95_ms": 6.978,
+              "max_ms": 25.371
+            },
+            "raster": {
+              "n": 72,
+              "p50_ms": 37.014,
+              "p95_ms": 40.065,
+              "max_ms": 42.848
+            },
+            "queue": {
+              "n": 72,
+              "p50_ms": 26.86,
+              "p95_ms": 34.165,
+              "max_ms": 38.582
+            },
+            "totalSpan": {
+              "n": 72,
+              "p50_ms": 68.156,
+              "p95_ms": 75.696,
+              "max_ms": 81.439
+            }
+          }
+        },
+        "close": {
+          "phase_names": [
+            "close_0",
+            "close_1",
+            "close_2"
+          ],
+          "window_duration_ms": 935.597,
+          "sample_n": 30,
+          "sample_density_per_s": 32.065087852996534,
+          "metrics": {
+            "UI": {
+              "n": 30,
+              "p50_ms": 1.499,
+              "p95_ms": 3.542,
+              "max_ms": 4.715
+            },
+            "raster": {
+              "n": 30,
+              "p50_ms": 23.715,
+              "p95_ms": 53.505,
+              "max_ms": 53.616
+            },
+            "queue": {
+              "n": 30,
+              "p50_ms": 19.93,
+              "p95_ms": 47.056,
+              "max_ms": 50.006
+            },
+            "totalSpan": {
+              "n": 30,
+              "p50_ms": 56.16,
+              "p95_ms": 74.685,
+              "max_ms": 76.344
+            }
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "first_open",
+          "start_us": 871738650736,
+          "end_us": 871739272840,
+          "window_duration_ms": 622.104,
+          "sample_n": 9,
+          "sample_density_per_s": 14.467034450831372,
+          "metrics": {
+            "UI": {
+              "n": 9,
+              "p50_ms": 0.98,
+              "p95_ms": 31.147,
+              "max_ms": 31.147
+            },
+            "raster": {
+              "n": 9,
+              "p50_ms": 36.398,
+              "p95_ms": 216.421,
+              "max_ms": 216.421
+            },
+            "queue": {
+              "n": 9,
+              "p50_ms": 31.785,
+              "p95_ms": 325.648,
+              "max_ms": 325.648
+            },
+            "totalSpan": {
+              "n": 9,
+              "p50_ms": 60.032,
+              "p95_ms": 373.203,
+              "max_ms": 373.203
+            }
+          }
+        },
+        {
+          "name": "first_close",
+          "start_us": 871740375983,
+          "end_us": 871740700339,
+          "window_duration_ms": 324.356,
+          "sample_n": 10,
+          "sample_density_per_s": 30.830322238528037,
+          "metrics": {
+            "UI": {
+              "n": 10,
+              "p50_ms": 1.216,
+              "p95_ms": 2.506,
+              "max_ms": 2.506
+            },
+            "raster": {
+              "n": 10,
+              "p50_ms": 22.543,
+              "p95_ms": 51.966,
+              "max_ms": 51.966
+            },
+            "queue": {
+              "n": 10,
+              "p50_ms": 17.453,
+              "p95_ms": 41.021,
+              "max_ms": 41.021
+            },
+            "totalSpan": {
+              "n": 10,
+              "p50_ms": 49.733,
+              "p95_ms": 69.025,
+              "max_ms": 69.025
+            }
+          }
+        },
+        {
+          "name": "open_0",
+          "start_us": 871740700345,
+          "end_us": 871741136136,
+          "window_duration_ms": 435.791,
+          "sample_n": 17,
+          "sample_density_per_s": 39.009525208184655,
+          "metrics": {
+            "UI": {
+              "n": 17,
+              "p50_ms": 1.66,
+              "p95_ms": 13.217,
+              "max_ms": 13.217
+            },
+            "raster": {
+              "n": 17,
+              "p50_ms": 34.037,
+              "p95_ms": 40.605,
+              "max_ms": 40.605
+            },
+            "queue": {
+              "n": 17,
+              "p50_ms": 16.992,
+              "p95_ms": 34.041,
+              "max_ms": 34.041
+            },
+            "totalSpan": {
+              "n": 17,
+              "p50_ms": 42.646,
+              "p95_ms": 71.744,
+              "max_ms": 71.744
+            }
+          }
+        },
+        {
+          "name": "drag_0",
+          "start_us": 871741136143,
+          "end_us": 871744305476,
+          "window_duration_ms": 3169.333,
+          "sample_n": 88,
+          "sample_density_per_s": 27.766094632529935,
+          "metrics": {
+            "UI": {
+              "n": 88,
+              "p50_ms": 2.911,
+              "p95_ms": 5.484,
+              "max_ms": 6.442
+            },
+            "raster": {
+              "n": 88,
+              "p50_ms": 35.762,
+              "p95_ms": 36.517,
+              "max_ms": 38.046
+            },
+            "queue": {
+              "n": 88,
+              "p50_ms": 26.086,
+              "p95_ms": 33.008,
+              "max_ms": 33.547
+            },
+            "totalSpan": {
+              "n": 88,
+              "p50_ms": 65.173,
+              "p95_ms": 72.297,
+              "max_ms": 73.021
+            }
+          }
+        },
+        {
+          "name": "fling_down_0",
+          "start_us": 871744305486,
+          "end_us": 871748205660,
+          "window_duration_ms": 3900.174,
+          "sample_n": 107,
+          "sample_density_per_s": 27.434673427390674,
+          "metrics": {
+            "UI": {
+              "n": 107,
+              "p50_ms": 3.348,
+              "p95_ms": 8.731,
+              "max_ms": 16.876
+            },
+            "raster": {
+              "n": 107,
+              "p50_ms": 35.984,
+              "p95_ms": 36.86,
+              "max_ms": 37.421
+            },
+            "queue": {
+              "n": 107,
+              "p50_ms": 23.826,
+              "p95_ms": 32.775,
+              "max_ms": 35.613
+            },
+            "totalSpan": {
+              "n": 107,
+              "p50_ms": 65.01,
+              "p95_ms": 72.929,
+              "max_ms": 75.999
+            }
+          }
+        },
+        {
+          "name": "fling_up_0",
+          "start_us": 871748205698,
+          "end_us": 871752086096,
+          "window_duration_ms": 3880.398,
+          "sample_n": 107,
+          "sample_density_per_s": 27.574491070245887,
+          "metrics": {
+            "UI": {
+              "n": 107,
+              "p50_ms": 3.104,
+              "p95_ms": 7.139,
+              "max_ms": 8.8
+            },
+            "raster": {
+              "n": 107,
+              "p50_ms": 36.176,
+              "p95_ms": 37.213,
+              "max_ms": 38.002
+            },
+            "queue": {
+              "n": 107,
+              "p50_ms": 24.067,
+              "p95_ms": 32.638,
+              "max_ms": 34.817
+            },
+            "totalSpan": {
+              "n": 107,
+              "p50_ms": 65.097,
+              "p95_ms": 72.612,
+              "max_ms": 75.772
+            }
+          }
+        },
+        {
+          "name": "keyboard_0",
+          "start_us": 871752086766,
+          "end_us": 871753100050,
+          "window_duration_ms": 1013.284,
+          "sample_n": 24,
+          "sample_density_per_s": 23.685363629545122,
+          "metrics": {
+            "UI": {
+              "n": 24,
+              "p50_ms": 9.869,
+              "p95_ms": 19.534,
+              "max_ms": 26.339
+            },
+            "raster": {
+              "n": 24,
+              "p50_ms": 37.196,
+              "p95_ms": 43.874,
+              "max_ms": 46.023
+            },
+            "queue": {
+              "n": 24,
+              "p50_ms": 17.711,
+              "p95_ms": 34.246,
+              "max_ms": 35.242
+            },
+            "totalSpan": {
+              "n": 24,
+              "p50_ms": 69.832,
+              "p95_ms": 83.941,
+              "max_ms": 87.34
+            }
+          }
+        },
+        {
+          "name": "search_0",
+          "start_us": 871753100064,
+          "end_us": 871754004279,
+          "window_duration_ms": 904.215,
+          "sample_n": 24,
+          "sample_density_per_s": 26.542359947578838,
+          "metrics": {
+            "UI": {
+              "n": 24,
+              "p50_ms": 0.916,
+              "p95_ms": 5.878,
+              "max_ms": 24.524
+            },
+            "raster": {
+              "n": 24,
+              "p50_ms": 36.999,
+              "p95_ms": 39.759,
+              "max_ms": 41.97
+            },
+            "queue": {
+              "n": 24,
+              "p50_ms": 27.138,
+              "p95_ms": 34.148,
+              "max_ms": 38.582
+            },
+            "totalSpan": {
+              "n": 24,
+              "p50_ms": 68.28,
+              "p95_ms": 74.017,
+              "max_ms": 81.439
+            }
+          }
+        },
+        {
+          "name": "empty_search_0",
+          "start_us": 871754004285,
+          "end_us": 871754909389,
+          "window_duration_ms": 905.104,
+          "sample_n": 24,
+          "sample_density_per_s": 26.516289840725484,
+          "metrics": {
+            "UI": {
+              "n": 24,
+              "p50_ms": 0.925,
+              "p95_ms": 2.841,
+              "max_ms": 2.864
+            },
+            "raster": {
+              "n": 24,
+              "p50_ms": 36.947,
+              "p95_ms": 38.032,
+              "max_ms": 38.237
+            },
+            "queue": {
+              "n": 24,
+              "p50_ms": 26.986,
+              "p95_ms": 33.951,
+              "max_ms": 34.861
+            },
+            "totalSpan": {
+              "n": 24,
+              "p50_ms": 66.492,
+              "p95_ms": 74.314,
+              "max_ms": 75.192
+            }
+          }
+        },
+        {
+          "name": "clear_search_0",
+          "start_us": 871754909394,
+          "end_us": 871756919419,
+          "window_duration_ms": 2010.025,
+          "sample_n": 54,
+          "sample_density_per_s": 26.86533749580229,
+          "metrics": {
+            "UI": {
+              "n": 54,
+              "p50_ms": 1.05,
+              "p95_ms": 14.557,
+              "max_ms": 25.4
+            },
+            "raster": {
+              "n": 54,
+              "p50_ms": 36.635,
+              "p95_ms": 40.891,
+              "max_ms": 44.776
+            },
+            "queue": {
+              "n": 54,
+              "p50_ms": 25.595,
+              "p95_ms": 33.603,
+              "max_ms": 34.289
+            },
+            "totalSpan": {
+              "n": 54,
+              "p50_ms": 66.444,
+              "p95_ms": 78.381,
+              "max_ms": 85.977
+            }
+          }
+        },
+        {
+          "name": "close_0",
+          "start_us": 871756919433,
+          "end_us": 871757234579,
+          "window_duration_ms": 315.146,
+          "sample_n": 9,
+          "sample_density_per_s": 28.55819207605364,
+          "metrics": {
+            "UI": {
+              "n": 9,
+              "p50_ms": 1.908,
+              "p95_ms": 3.018,
+              "max_ms": 3.018
+            },
+            "raster": {
+              "n": 9,
+              "p50_ms": 34.086,
+              "p95_ms": 53.315,
+              "max_ms": 53.315
+            },
+            "queue": {
+              "n": 9,
+              "p50_ms": 19.93,
+              "p95_ms": 39.494,
+              "max_ms": 39.494
+            },
+            "totalSpan": {
+              "n": 9,
+              "p50_ms": 56.16,
+              "p95_ms": 76.344,
+              "max_ms": 76.344
+            }
+          }
+        },
+        {
+          "name": "open_1",
+          "start_us": 871757234584,
+          "end_us": 871757663614,
+          "window_duration_ms": 429.03,
+          "sample_n": 16,
+          "sample_density_per_s": 37.293429363913944,
+          "metrics": {
+            "UI": {
+              "n": 16,
+              "p50_ms": 1.695,
+              "p95_ms": 14.343,
+              "max_ms": 14.343
+            },
+            "raster": {
+              "n": 16,
+              "p50_ms": 28.301,
+              "p95_ms": 48.594,
+              "max_ms": 48.594
+            },
+            "queue": {
+              "n": 16,
+              "p50_ms": 10.91,
+              "p95_ms": 35.513,
+              "max_ms": 35.513
+            },
+            "totalSpan": {
+              "n": 16,
+              "p50_ms": 48.553,
+              "p95_ms": 71.589,
+              "max_ms": 71.589
+            }
+          }
+        },
+        {
+          "name": "drag_1",
+          "start_us": 871757663622,
+          "end_us": 871760858599,
+          "window_duration_ms": 3194.977,
+          "sample_n": 88,
+          "sample_density_per_s": 27.543234270544044,
+          "metrics": {
+            "UI": {
+              "n": 88,
+              "p50_ms": 3.161,
+              "p95_ms": 4.967,
+              "max_ms": 6.083
+            },
+            "raster": {
+              "n": 88,
+              "p50_ms": 36.204,
+              "p95_ms": 37.109,
+              "max_ms": 37.882
+            },
+            "queue": {
+              "n": 88,
+              "p50_ms": 25.266,
+              "p95_ms": 32.59,
+              "max_ms": 35.028
+            },
+            "totalSpan": {
+              "n": 88,
+              "p50_ms": 65.172,
+              "p95_ms": 72.767,
+              "max_ms": 75.377
+            }
+          }
+        },
+        {
+          "name": "fling_down_1",
+          "start_us": 871760858607,
+          "end_us": 871764792531,
+          "window_duration_ms": 3933.924,
+          "sample_n": 108,
+          "sample_density_per_s": 27.453504439841744,
+          "metrics": {
+            "UI": {
+              "n": 108,
+              "p50_ms": 3.545,
+              "p95_ms": 8.731,
+              "max_ms": 9.871
+            },
+            "raster": {
+              "n": 108,
+              "p50_ms": 36.268,
+              "p95_ms": 37.554,
+              "max_ms": 38.402
+            },
+            "queue": {
+              "n": 108,
+              "p50_ms": 24.066,
+              "p95_ms": 32.455,
+              "max_ms": 33.092
+            },
+            "totalSpan": {
+              "n": 108,
+              "p50_ms": 65.495,
+              "p95_ms": 72.755,
+              "max_ms": 75.3
+            }
+          }
+        },
+        {
+          "name": "fling_up_1",
+          "start_us": 871764792539,
+          "end_us": 871768644972,
+          "window_duration_ms": 3852.433,
+          "sample_n": 106,
+          "sample_density_per_s": 27.515079431621523,
+          "metrics": {
+            "UI": {
+              "n": 106,
+              "p50_ms": 3.504,
+              "p95_ms": 8.319,
+              "max_ms": 10.503
+            },
+            "raster": {
+              "n": 106,
+              "p50_ms": 36.252,
+              "p95_ms": 37.212,
+              "max_ms": 38.407
+            },
+            "queue": {
+              "n": 106,
+              "p50_ms": 23.825,
+              "p95_ms": 32.419,
+              "max_ms": 34.266
+            },
+            "totalSpan": {
+              "n": 106,
+              "p50_ms": 65.021,
+              "p95_ms": 72.145,
+              "max_ms": 73.541
+            }
+          }
+        },
+        {
+          "name": "keyboard_1",
+          "start_us": 871768645580,
+          "end_us": 871769656980,
+          "window_duration_ms": 1011.4,
+          "sample_n": 24,
+          "sample_density_per_s": 23.72948388372553,
+          "metrics": {
+            "UI": {
+              "n": 24,
+              "p50_ms": 13.902,
+              "p95_ms": 21.756,
+              "max_ms": 25.767
+            },
+            "raster": {
+              "n": 24,
+              "p50_ms": 37.303,
+              "p95_ms": 43.636,
+              "max_ms": 45.599
+            },
+            "queue": {
+              "n": 24,
+              "p50_ms": 16.842,
+              "p95_ms": 35.034,
+              "max_ms": 36.59
+            },
+            "totalSpan": {
+              "n": 24,
+              "p50_ms": 69.284,
+              "p95_ms": 82.993,
+              "max_ms": 86.632
+            }
+          }
+        },
+        {
+          "name": "search_1",
+          "start_us": 871769656989,
+          "end_us": 871770562922,
+          "window_duration_ms": 905.933,
+          "sample_n": 24,
+          "sample_density_per_s": 26.49202534845292,
+          "metrics": {
+            "UI": {
+              "n": 24,
+              "p50_ms": 1.012,
+              "p95_ms": 5.051,
+              "max_ms": 23.879
+            },
+            "raster": {
+              "n": 24,
+              "p50_ms": 36.9,
+              "p95_ms": 39.375,
+              "max_ms": 42.848
+            },
+            "queue": {
+              "n": 24,
+              "p50_ms": 26.13,
+              "p95_ms": 34.001,
+              "max_ms": 34.178
+            },
+            "totalSpan": {
+              "n": 24,
+              "p50_ms": 66.121,
+              "p95_ms": 74.312,
+              "max_ms": 75.696
+            }
+          }
+        },
+        {
+          "name": "empty_search_1",
+          "start_us": 871770562927,
+          "end_us": 871771467136,
+          "window_duration_ms": 904.209,
+          "sample_n": 25,
+          "sample_density_per_s": 27.648475076005656,
+          "metrics": {
+            "UI": {
+              "n": 25,
+              "p50_ms": 1.064,
+              "p95_ms": 3.457,
+              "max_ms": 5.066
+            },
+            "raster": {
+              "n": 25,
+              "p50_ms": 36.832,
+              "p95_ms": 37.563,
+              "max_ms": 37.686
+            },
+            "queue": {
+              "n": 25,
+              "p50_ms": 27.182,
+              "p95_ms": 34.275,
+              "max_ms": 35.932
+            },
+            "totalSpan": {
+              "n": 25,
+              "p50_ms": 65.591,
+              "p95_ms": 74.174,
+              "max_ms": 74.209
+            }
+          }
+        },
+        {
+          "name": "clear_search_1",
+          "start_us": 871771467154,
+          "end_us": 871773475946,
+          "window_duration_ms": 2008.792,
+          "sample_n": 52,
+          "sample_density_per_s": 25.886204246133996,
+          "metrics": {
+            "UI": {
+              "n": 52,
+              "p50_ms": 1.14,
+              "p95_ms": 16.504,
+              "max_ms": 28.634
+            },
+            "raster": {
+              "n": 52,
+              "p50_ms": 36.951,
+              "p95_ms": 43.459,
+              "max_ms": 50.888
+            },
+            "queue": {
+              "n": 52,
+              "p50_ms": 23.729,
+              "p95_ms": 35.758,
+              "max_ms": 37.286
+            },
+            "totalSpan": {
+              "n": 52,
+              "p50_ms": 69.024,
+              "p95_ms": 81.255,
+              "max_ms": 91.881
+            }
+          }
+        },
+        {
+          "name": "close_1",
+          "start_us": 871773475954,
+          "end_us": 871773786194,
+          "window_duration_ms": 310.24,
+          "sample_n": 10,
+          "sample_density_per_s": 32.23310985043837,
+          "metrics": {
+            "UI": {
+              "n": 10,
+              "p50_ms": 1.527,
+              "p95_ms": 3.542,
+              "max_ms": 3.542
+            },
+            "raster": {
+              "n": 10,
+              "p50_ms": 25.075,
+              "p95_ms": 53.505,
+              "max_ms": 53.505
+            },
+            "queue": {
+              "n": 10,
+              "p50_ms": 21.277,
+              "p95_ms": 47.056,
+              "max_ms": 47.056
+            },
+            "totalSpan": {
+              "n": 10,
+              "p50_ms": 62.177,
+              "p95_ms": 74.654,
+              "max_ms": 74.654
+            }
+          }
+        },
+        {
+          "name": "open_2",
+          "start_us": 871773786199,
+          "end_us": 871774224725,
+          "window_duration_ms": 438.526,
+          "sample_n": 17,
+          "sample_density_per_s": 38.76623050856734,
+          "metrics": {
+            "UI": {
+              "n": 17,
+              "p50_ms": 1.687,
+              "p95_ms": 13.289,
+              "max_ms": 13.289
+            },
+            "raster": {
+              "n": 17,
+              "p50_ms": 32.996,
+              "p95_ms": 43.348,
+              "max_ms": 43.348
+            },
+            "queue": {
+              "n": 17,
+              "p50_ms": 15.305,
+              "p95_ms": 33.768,
+              "max_ms": 33.768
+            },
+            "totalSpan": {
+              "n": 17,
+              "p50_ms": 37.071,
+              "p95_ms": 73.111,
+              "max_ms": 73.111
+            }
+          }
+        },
+        {
+          "name": "drag_2",
+          "start_us": 871774224741,
+          "end_us": 871777395954,
+          "window_duration_ms": 3171.213,
+          "sample_n": 88,
+          "sample_density_per_s": 27.749633972867795,
+          "metrics": {
+            "UI": {
+              "n": 88,
+              "p50_ms": 2.843,
+              "p95_ms": 5.636,
+              "max_ms": 8.847
+            },
+            "raster": {
+              "n": 88,
+              "p50_ms": 36.291,
+              "p95_ms": 37.114,
+              "max_ms": 37.55
+            },
+            "queue": {
+              "n": 88,
+              "p50_ms": 24.885,
+              "p95_ms": 32.49,
+              "max_ms": 32.917
+            },
+            "totalSpan": {
+              "n": 88,
+              "p50_ms": 64.962,
+              "p95_ms": 72.642,
+              "max_ms": 73.354
+            }
+          }
+        },
+        {
+          "name": "fling_down_2",
+          "start_us": 871777396002,
+          "end_us": 871781294365,
+          "window_duration_ms": 3898.363,
+          "sample_n": 107,
+          "sample_density_per_s": 27.44741831378966,
+          "metrics": {
+            "UI": {
+              "n": 107,
+              "p50_ms": 3.272,
+              "p95_ms": 7.951,
+              "max_ms": 9.239
+            },
+            "raster": {
+              "n": 107,
+              "p50_ms": 36.277,
+              "p95_ms": 36.992,
+              "max_ms": 38.254
+            },
+            "queue": {
+              "n": 107,
+              "p50_ms": 24.712,
+              "p95_ms": 32.685,
+              "max_ms": 33.148
+            },
+            "totalSpan": {
+              "n": 107,
+              "p50_ms": 65.43,
+              "p95_ms": 73.021,
+              "max_ms": 74.705
+            }
+          }
+        },
+        {
+          "name": "fling_up_2",
+          "start_us": 871781294392,
+          "end_us": 871785179740,
+          "window_duration_ms": 3885.348,
+          "sample_n": 106,
+          "sample_density_per_s": 27.281983492855723,
+          "metrics": {
+            "UI": {
+              "n": 106,
+              "p50_ms": 3.45,
+              "p95_ms": 8.237,
+              "max_ms": 9.819
+            },
+            "raster": {
+              "n": 106,
+              "p50_ms": 36.532,
+              "p95_ms": 37.591,
+              "max_ms": 56.471
+            },
+            "queue": {
+              "n": 106,
+              "p50_ms": 23.979,
+              "p95_ms": 33.261,
+              "max_ms": 35.695
+            },
+            "totalSpan": {
+              "n": 106,
+              "p50_ms": 65.198,
+              "p95_ms": 73.105,
+              "max_ms": 92.144
+            }
+          }
+        },
+        {
+          "name": "keyboard_2",
+          "start_us": 871785180410,
+          "end_us": 871786190330,
+          "window_duration_ms": 1009.92,
+          "sample_n": 25,
+          "sample_density_per_s": 24.75443599493029,
+          "metrics": {
+            "UI": {
+              "n": 25,
+              "p50_ms": 14.054,
+              "p95_ms": 22.859,
+              "max_ms": 22.979
+            },
+            "raster": {
+              "n": 25,
+              "p50_ms": 38.05,
+              "p95_ms": 44.856,
+              "max_ms": 44.925
+            },
+            "queue": {
+              "n": 25,
+              "p50_ms": 20.183,
+              "p95_ms": 36.016,
+              "max_ms": 36.243
+            },
+            "totalSpan": {
+              "n": 25,
+              "p50_ms": 72.824,
+              "p95_ms": 88.657,
+              "max_ms": 90.24
+            }
+          }
+        },
+        {
+          "name": "search_2",
+          "start_us": 871786190341,
+          "end_us": 871787096346,
+          "window_duration_ms": 906.005,
+          "sample_n": 24,
+          "sample_density_per_s": 26.489920033553897,
+          "metrics": {
+            "UI": {
+              "n": 24,
+              "p50_ms": 0.921,
+              "p95_ms": 6.978,
+              "max_ms": 25.371
+            },
+            "raster": {
+              "n": 24,
+              "p50_ms": 37.228,
+              "p95_ms": 40.065,
+              "max_ms": 42.315
+            },
+            "queue": {
+              "n": 24,
+              "p50_ms": 26.86,
+              "p95_ms": 34.165,
+              "max_ms": 34.691
+            },
+            "totalSpan": {
+              "n": 24,
+              "p50_ms": 68.156,
+              "p95_ms": 78.038,
+              "max_ms": 81.308
+            }
+          }
+        },
+        {
+          "name": "empty_search_2",
+          "start_us": 871787096351,
+          "end_us": 871788000867,
+          "window_duration_ms": 904.516,
+          "sample_n": 24,
+          "sample_density_per_s": 26.53352732289976,
+          "metrics": {
+            "UI": {
+              "n": 24,
+              "p50_ms": 1.091,
+              "p95_ms": 2.816,
+              "max_ms": 3.066
+            },
+            "raster": {
+              "n": 24,
+              "p50_ms": 37.111,
+              "p95_ms": 38.042,
+              "max_ms": 38.298
+            },
+            "queue": {
+              "n": 24,
+              "p50_ms": 26.896,
+              "p95_ms": 34.132,
+              "max_ms": 34.338
+            },
+            "totalSpan": {
+              "n": 24,
+              "p50_ms": 65.387,
+              "p95_ms": 74.562,
+              "max_ms": 76.074
+            }
+          }
+        },
+        {
+          "name": "clear_search_2",
+          "start_us": 871788000879,
+          "end_us": 871790011183,
+          "window_duration_ms": 2010.304,
+          "sample_n": 51,
+          "sample_density_per_s": 25.36929737989876,
+          "metrics": {
+            "UI": {
+              "n": 51,
+              "p50_ms": 1.027,
+              "p95_ms": 20.13,
+              "max_ms": 27.598
+            },
+            "raster": {
+              "n": 51,
+              "p50_ms": 37.743,
+              "p95_ms": 43.357,
+              "max_ms": 47.178
+            },
+            "queue": {
+              "n": 51,
+              "p50_ms": 25.633,
+              "p95_ms": 35.219,
+              "max_ms": 40.096
+            },
+            "totalSpan": {
+              "n": 51,
+              "p50_ms": 69.861,
+              "p95_ms": 83.14,
+              "max_ms": 99.884
+            }
+          }
+        },
+        {
+          "name": "close_2",
+          "start_us": 871790011189,
+          "end_us": 871790321400,
+          "window_duration_ms": 310.211,
+          "sample_n": 11,
+          "sample_density_per_s": 35.45973547037339,
+          "metrics": {
+            "UI": {
+              "n": 11,
+              "p50_ms": 1.469,
+              "p95_ms": 4.715,
+              "max_ms": 4.715
+            },
+            "raster": {
+              "n": 11,
+              "p50_ms": 23.56,
+              "p95_ms": 53.616,
+              "max_ms": 53.616
+            },
+            "queue": {
+              "n": 11,
+              "p50_ms": 12.987,
+              "p95_ms": 50.006,
+              "max_ms": 50.006
+            },
+            "totalSpan": {
+              "n": 11,
+              "p50_ms": 48.652,
+              "p95_ms": 74.685,
+              "max_ms": 74.685
+            }
+          }
+        }
+      ]
+    },
+    "current4fc-before-timing-7plus-2": {
+      "source_fingerprint": "72eb8c326764b58ebeae7a813770236310708d38387a8793b0e4ef1a6f86a1b7",
+      "frame_count": 750,
+      "unique_frame_numbers": 750,
+      "no_duplicate_frame_numbers": true,
+      "display_hz": 60.0,
+      "physical_size": [
+        1242.0,
+        2208.0
+      ],
+      "dpr": 3.0,
+      "aggregates": {
+        "first_open": {
+          "phase_names": [
+            "first_open"
+          ],
+          "window_duration_ms": 743.915,
+          "sample_n": 9,
+          "sample_density_per_s": 12.09815637539235,
+          "metrics": {
+            "UI": {
+              "n": 9,
+              "p50_ms": 1.192,
+              "p95_ms": 48.266,
+              "max_ms": 48.266
+            },
+            "raster": {
+              "n": 9,
+              "p50_ms": 72.106,
+              "p95_ms": 169.505,
+              "max_ms": 169.505
+            },
+            "queue": {
+              "n": 9,
+              "p50_ms": 60.799,
+              "p95_ms": 285.047,
+              "max_ms": 285.047
+            },
+            "totalSpan": {
+              "n": 9,
+              "p50_ms": 136.953,
+              "p95_ms": 325.468,
+              "max_ms": 325.468
+            }
+          }
+        },
+        "repeat_open": {
+          "phase_names": [
+            "open_0",
+            "open_1",
+            "open_2"
+          ],
+          "window_duration_ms": 1666.986,
+          "sample_n": 34,
+          "sample_density_per_s": 20.39609210875196,
+          "metrics": {
+            "UI": {
+              "n": 34,
+              "p50_ms": 1.228,
+              "p95_ms": 13.209,
+              "max_ms": 19.852
+            },
+            "raster": {
+              "n": 34,
+              "p50_ms": 7.782,
+              "p95_ms": 140.829,
+              "max_ms": 148.245
+            },
+            "queue": {
+              "n": 34,
+              "p50_ms": 0.982,
+              "p95_ms": 122.927,
+              "max_ms": 138.892
+            },
+            "totalSpan": {
+              "n": 34,
+              "p50_ms": 100.135,
+              "p95_ms": 148.287,
+              "max_ms": 157.233
+            }
+          }
+        },
+        "drag": {
+          "phase_names": [
+            "drag_0",
+            "drag_1",
+            "drag_2"
+          ],
+          "window_duration_ms": 9662.014,
+          "sample_n": 129,
+          "sample_density_per_s": 13.351253682720808,
+          "metrics": {
+            "UI": {
+              "n": 129,
+              "p50_ms": 1.706,
+              "p95_ms": 4.593,
+              "max_ms": 6.016
+            },
+            "raster": {
+              "n": 129,
+              "p50_ms": 74.245,
+              "p95_ms": 152.333,
+              "max_ms": 161.212
+            },
+            "queue": {
+              "n": 129,
+              "p50_ms": 68.285,
+              "p95_ms": 137.959,
+              "max_ms": 144.462
+            },
+            "totalSpan": {
+              "n": 129,
+              "p50_ms": 137.003,
+              "p95_ms": 198.744,
+              "max_ms": 236.005
+            }
+          }
+        },
+        "fling_down": {
+          "phase_names": [
+            "fling_down_0",
+            "fling_down_1",
+            "fling_down_2"
+          ],
+          "window_duration_ms": 11618.005,
+          "sample_n": 151,
+          "sample_density_per_s": 12.997067913122779,
+          "metrics": {
+            "UI": {
+              "n": 151,
+              "p50_ms": 2.514,
+              "p95_ms": 9.82,
+              "max_ms": 14.316
+            },
+            "raster": {
+              "n": 151,
+              "p50_ms": 74.728,
+              "p95_ms": 149.148,
+              "max_ms": 170.863
+            },
+            "queue": {
+              "n": 151,
+              "p50_ms": 62.561,
+              "p95_ms": 137.692,
+              "max_ms": 154.979
+            },
+            "totalSpan": {
+              "n": 151,
+              "p50_ms": 141.578,
+              "p95_ms": 204.121,
+              "max_ms": 222.889
+            }
+          }
+        },
+        "fling_up": {
+          "phase_names": [
+            "fling_up_0",
+            "fling_up_1",
+            "fling_up_2"
+          ],
+          "window_duration_ms": 11648.465,
+          "sample_n": 152,
+          "sample_density_per_s": 13.048929622915981,
+          "metrics": {
+            "UI": {
+              "n": 152,
+              "p50_ms": 2.311,
+              "p95_ms": 11.127,
+              "max_ms": 15.461
+            },
+            "raster": {
+              "n": 152,
+              "p50_ms": 77.327,
+              "p95_ms": 149.147,
+              "max_ms": 165.734
+            },
+            "queue": {
+              "n": 152,
+              "p50_ms": 63.998,
+              "p95_ms": 138.743,
+              "max_ms": 152.501
+            },
+            "totalSpan": {
+              "n": 152,
+              "p50_ms": 142.213,
+              "p95_ms": 208.759,
+              "max_ms": 246.962
+            }
+          }
+        },
+        "keyboard": {
+          "phase_names": [
+            "keyboard_0",
+            "keyboard_1",
+            "keyboard_2"
+          ],
+          "window_duration_ms": 3024.121,
+          "sample_n": 36,
+          "sample_density_per_s": 11.904285575874775,
+          "metrics": {
+            "UI": {
+              "n": 36,
+              "p50_ms": 6.894,
+              "p95_ms": 13.368,
+              "max_ms": 15.896
+            },
+            "raster": {
+              "n": 36,
+              "p50_ms": 79.48,
+              "p95_ms": 159.7,
+              "max_ms": 164.638
+            },
+            "queue": {
+              "n": 36,
+              "p50_ms": 65.169,
+              "p95_ms": 147.313,
+              "max_ms": 150.285
+            },
+            "totalSpan": {
+              "n": 36,
+              "p50_ms": 154.644,
+              "p95_ms": 232.077,
+              "max_ms": 244.049
+            }
+          }
+        },
+        "search": {
+          "phase_names": [
+            "search_0",
+            "search_1",
+            "search_2"
+          ],
+          "window_duration_ms": 2709.278,
+          "sample_n": 33,
+          "sample_density_per_s": 12.180366872650204,
+          "metrics": {
+            "UI": {
+              "n": 33,
+              "p50_ms": 0.565,
+              "p95_ms": 13.142,
+              "max_ms": 13.99
+            },
+            "raster": {
+              "n": 33,
+              "p50_ms": 80.558,
+              "p95_ms": 159.772,
+              "max_ms": 162.038
+            },
+            "queue": {
+              "n": 33,
+              "p50_ms": 71.743,
+              "p95_ms": 143.173,
+              "max_ms": 143.761
+            },
+            "totalSpan": {
+              "n": 33,
+              "p50_ms": 142.452,
+              "p95_ms": 176.449,
+              "max_ms": 228.299
+            }
+          }
+        },
+        "close": {
+          "phase_names": [
+            "close_0",
+            "close_1",
+            "close_2"
+          ],
+          "window_duration_ms": 1131.907,
+          "sample_n": 15,
+          "sample_density_per_s": 13.251972114316812,
+          "metrics": {
+            "UI": {
+              "n": 15,
+              "p50_ms": 1.444,
+              "p95_ms": 3.329,
+              "max_ms": 3.329
+            },
+            "raster": {
+              "n": 15,
+              "p50_ms": 77.335,
+              "p95_ms": 152.557,
+              "max_ms": 152.557
+            },
+            "queue": {
+              "n": 15,
+              "p50_ms": 66.723,
+              "p95_ms": 140.76,
+              "max_ms": 140.76
+            },
+            "totalSpan": {
+              "n": 15,
+              "p50_ms": 133.952,
+              "p95_ms": 219.043,
+              "max_ms": 219.043
+            }
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "first_open",
+          "start_us": 871914970264,
+          "end_us": 871915714179,
+          "window_duration_ms": 743.915,
+          "sample_n": 9,
+          "sample_density_per_s": 12.09815637539235,
+          "metrics": {
+            "UI": {
+              "n": 9,
+              "p50_ms": 1.192,
+              "p95_ms": 48.266,
+              "max_ms": 48.266
+            },
+            "raster": {
+              "n": 9,
+              "p50_ms": 72.106,
+              "p95_ms": 169.505,
+              "max_ms": 169.505
+            },
+            "queue": {
+              "n": 9,
+              "p50_ms": 60.799,
+              "p95_ms": 285.047,
+              "max_ms": 285.047
+            },
+            "totalSpan": {
+              "n": 9,
+              "p50_ms": 136.953,
+              "p95_ms": 325.468,
+              "max_ms": 325.468
+            }
+          }
+        },
+        {
+          "name": "first_close",
+          "start_us": 871916818031,
+          "end_us": 871917128064,
+          "window_duration_ms": 310.033,
+          "sample_n": 5,
+          "sample_density_per_s": 16.127315479319943,
+          "metrics": {
+            "UI": {
+              "n": 5,
+              "p50_ms": 1.031,
+              "p95_ms": 1.517,
+              "max_ms": 1.517
+            },
+            "raster": {
+              "n": 5,
+              "p50_ms": 3.386,
+              "p95_ms": 141.587,
+              "max_ms": 141.587
+            },
+            "queue": {
+              "n": 5,
+              "p50_ms": 85.263,
+              "p95_ms": 126.004,
+              "max_ms": 126.004
+            },
+            "totalSpan": {
+              "n": 5,
+              "p50_ms": 119.724,
+              "p95_ms": 144.717,
+              "max_ms": 144.717
+            }
+          }
+        },
+        {
+          "name": "open_0",
+          "start_us": 871917128069,
+          "end_us": 871917762764,
+          "window_duration_ms": 634.695,
+          "sample_n": 12,
+          "sample_density_per_s": 18.90671897525583,
+          "metrics": {
+            "UI": {
+              "n": 12,
+              "p50_ms": 1.39,
+              "p95_ms": 12.861,
+              "max_ms": 12.861
+            },
+            "raster": {
+              "n": 12,
+              "p50_ms": 8.58,
+              "p95_ms": 138.241,
+              "max_ms": 138.241
+            },
+            "queue": {
+              "n": 12,
+              "p50_ms": 0.953,
+              "p95_ms": 122.459,
+              "max_ms": 122.459
+            },
+            "totalSpan": {
+              "n": 12,
+              "p50_ms": 94.41,
+              "p95_ms": 140.918,
+              "max_ms": 140.918
+            }
+          }
+        },
+        {
+          "name": "drag_0",
+          "start_us": 871917762770,
+          "end_us": 871920916191,
+          "window_duration_ms": 3153.421,
+          "sample_n": 44,
+          "sample_density_per_s": 13.953100458200792,
+          "metrics": {
+            "UI": {
+              "n": 44,
+              "p50_ms": 1.65,
+              "p95_ms": 3.981,
+              "max_ms": 5.678
+            },
+            "raster": {
+              "n": 44,
+              "p50_ms": 73.671,
+              "p95_ms": 143.034,
+              "max_ms": 144.394
+            },
+            "queue": {
+              "n": 44,
+              "p50_ms": 64.344,
+              "p95_ms": 126.674,
+              "max_ms": 130.005
+            },
+            "totalSpan": {
+              "n": 44,
+              "p50_ms": 134.329,
+              "p95_ms": 198.744,
+              "max_ms": 206.241
+            }
+          }
+        },
+        {
+          "name": "fling_down_0",
+          "start_us": 871920916197,
+          "end_us": 871924778265,
+          "window_duration_ms": 3862.068,
+          "sample_n": 51,
+          "sample_density_per_s": 13.205360444197254,
+          "metrics": {
+            "UI": {
+              "n": 51,
+              "p50_ms": 3.107,
+              "p95_ms": 6.854,
+              "max_ms": 8.098
+            },
+            "raster": {
+              "n": 51,
+              "p50_ms": 74.543,
+              "p95_ms": 139.717,
+              "max_ms": 144.068
+            },
+            "queue": {
+              "n": 51,
+              "p50_ms": 62.41,
+              "p95_ms": 128.153,
+              "max_ms": 128.834
+            },
+            "totalSpan": {
+              "n": 51,
+              "p50_ms": 139.606,
+              "p95_ms": 205.575,
+              "max_ms": 206.274
+            }
+          }
+        },
+        {
+          "name": "fling_up_0",
+          "start_us": 871924778273,
+          "end_us": 871928758135,
+          "window_duration_ms": 3979.862,
+          "sample_n": 54,
+          "sample_density_per_s": 13.568309654957886,
+          "metrics": {
+            "UI": {
+              "n": 54,
+              "p50_ms": 2.311,
+              "p95_ms": 10.253,
+              "max_ms": 12.724
+            },
+            "raster": {
+              "n": 54,
+              "p50_ms": 74.11,
+              "p95_ms": 142.416,
+              "max_ms": 143.568
+            },
+            "queue": {
+              "n": 54,
+              "p50_ms": 60.093,
+              "p95_ms": 127.282,
+              "max_ms": 128.158
+            },
+            "totalSpan": {
+              "n": 54,
+              "p50_ms": 136.055,
+              "p95_ms": 199.491,
+              "max_ms": 202.957
+            }
+          }
+        },
+        {
+          "name": "keyboard_0",
+          "start_us": 871928758545,
+          "end_us": 871929769116,
+          "window_duration_ms": 1010.571,
+          "sample_n": 14,
+          "sample_density_per_s": 13.8535540798222,
+          "metrics": {
+            "UI": {
+              "n": 14,
+              "p50_ms": 6.119,
+              "p95_ms": 13.171,
+              "max_ms": 13.171
+            },
+            "raster": {
+              "n": 14,
+              "p50_ms": 74.934,
+              "p95_ms": 137.863,
+              "max_ms": 137.863
+            },
+            "queue": {
+              "n": 14,
+              "p50_ms": 61.959,
+              "p95_ms": 122.546,
+              "max_ms": 122.546
+            },
+            "totalSpan": {
+              "n": 14,
+              "p50_ms": 139.799,
+              "p95_ms": 207.146,
+              "max_ms": 207.146
+            }
+          }
+        },
+        {
+          "name": "search_0",
+          "start_us": 871929769121,
+          "end_us": 871930672235,
+          "window_duration_ms": 903.114,
+          "sample_n": 11,
+          "sample_density_per_s": 12.180079148368867,
+          "metrics": {
+            "UI": {
+              "n": 11,
+              "p50_ms": 0.527,
+              "p95_ms": 12.335,
+              "max_ms": 12.335
+            },
+            "raster": {
+              "n": 11,
+              "p50_ms": 8.269,
+              "p95_ms": 143.882,
+              "max_ms": 143.882
+            },
+            "queue": {
+              "n": 11,
+              "p50_ms": 52.191,
+              "p95_ms": 134.958,
+              "max_ms": 134.958
+            },
+            "totalSpan": {
+              "n": 11,
+              "p50_ms": 138.805,
+              "p95_ms": 153.754,
+              "max_ms": 153.754
+            }
+          }
+        },
+        {
+          "name": "empty_search_0",
+          "start_us": 871930672241,
+          "end_us": 871931574998,
+          "window_duration_ms": 902.757,
+          "sample_n": 12,
+          "sample_density_per_s": 13.29261362692286,
+          "metrics": {
+            "UI": {
+              "n": 12,
+              "p50_ms": 0.491,
+              "p95_ms": 3.365,
+              "max_ms": 3.365
+            },
+            "raster": {
+              "n": 12,
+              "p50_ms": 3.296,
+              "p95_ms": 142.171,
+              "max_ms": 142.171
+            },
+            "queue": {
+              "n": 12,
+              "p50_ms": 0.254,
+              "p95_ms": 125.025,
+              "max_ms": 125.025
+            },
+            "totalSpan": {
+              "n": 12,
+              "p50_ms": 128.749,
+              "p95_ms": 143.065,
+              "max_ms": 143.065
+            }
+          }
+        },
+        {
+          "name": "clear_search_0",
+          "start_us": 871931575003,
+          "end_us": 871933585955,
+          "window_duration_ms": 2010.952,
+          "sample_n": 28,
+          "sample_density_per_s": 13.923753525693304,
+          "metrics": {
+            "UI": {
+              "n": 28,
+              "p50_ms": 0.493,
+              "p95_ms": 13.099,
+              "max_ms": 14.652
+            },
+            "raster": {
+              "n": 28,
+              "p50_ms": 73.884,
+              "p95_ms": 143.555,
+              "max_ms": 143.736
+            },
+            "queue": {
+              "n": 28,
+              "p50_ms": 66.498,
+              "p95_ms": 128.931,
+              "max_ms": 131.359
+            },
+            "totalSpan": {
+              "n": 28,
+              "p50_ms": 136.319,
+              "p95_ms": 202.532,
+              "max_ms": 203.214
+            }
+          }
+        },
+        {
+          "name": "close_0",
+          "start_us": 871933585959,
+          "end_us": 871933997033,
+          "window_duration_ms": 411.074,
+          "sample_n": 5,
+          "sample_density_per_s": 12.163260142942633,
+          "metrics": {
+            "UI": {
+              "n": 5,
+              "p50_ms": 1.981,
+              "p95_ms": 2.507,
+              "max_ms": 2.507
+            },
+            "raster": {
+              "n": 5,
+              "p50_ms": 77.335,
+              "p95_ms": 144.185,
+              "max_ms": 144.185
+            },
+            "queue": {
+              "n": 5,
+              "p50_ms": 71.096,
+              "p95_ms": 128.457,
+              "max_ms": 128.457
+            },
+            "totalSpan": {
+              "n": 5,
+              "p50_ms": 115.365,
+              "p95_ms": 208.209,
+              "max_ms": 208.209
+            }
+          }
+        },
+        {
+          "name": "open_1",
+          "start_us": 871933997039,
+          "end_us": 871934509556,
+          "window_duration_ms": 512.517,
+          "sample_n": 11,
+          "sample_density_per_s": 21.462702700593347,
+          "metrics": {
+            "UI": {
+              "n": 11,
+              "p50_ms": 1.228,
+              "p95_ms": 13.209,
+              "max_ms": 13.209
+            },
+            "raster": {
+              "n": 11,
+              "p50_ms": 15.373,
+              "p95_ms": 140.829,
+              "max_ms": 140.829
+            },
+            "queue": {
+              "n": 11,
+              "p50_ms": 2.378,
+              "p95_ms": 122.927,
+              "max_ms": 122.927
+            },
+            "totalSpan": {
+              "n": 11,
+              "p50_ms": 96.738,
+              "p95_ms": 145.199,
+              "max_ms": 145.199
+            }
+          }
+        },
+        {
+          "name": "drag_1",
+          "start_us": 871934509561,
+          "end_us": 871937765440,
+          "window_duration_ms": 3255.879,
+          "sample_n": 45,
+          "sample_density_per_s": 13.821152444547232,
+          "metrics": {
+            "UI": {
+              "n": 45,
+              "p50_ms": 1.738,
+              "p95_ms": 4.325,
+              "max_ms": 4.76
+            },
+            "raster": {
+              "n": 45,
+              "p50_ms": 74.097,
+              "p95_ms": 140.755,
+              "max_ms": 143.248
+            },
+            "queue": {
+              "n": 45,
+              "p50_ms": 69.972,
+              "p95_ms": 127.093,
+              "max_ms": 128.253
+            },
+            "totalSpan": {
+              "n": 45,
+              "p50_ms": 134.24,
+              "p95_ms": 192.106,
+              "max_ms": 204.858
+            }
+          }
+        },
+        {
+          "name": "fling_down_1",
+          "start_us": 871937765446,
+          "end_us": 871941629638,
+          "window_duration_ms": 3864.192,
+          "sample_n": 51,
+          "sample_density_per_s": 13.1981019576667,
+          "metrics": {
+            "UI": {
+              "n": 51,
+              "p50_ms": 2.258,
+              "p95_ms": 9.478,
+              "max_ms": 12.644
+            },
+            "raster": {
+              "n": 51,
+              "p50_ms": 75.005,
+              "p95_ms": 141.798,
+              "max_ms": 144.691
+            },
+            "queue": {
+              "n": 51,
+              "p50_ms": 61.37,
+              "p95_ms": 127.404,
+              "max_ms": 128.967
+            },
+            "totalSpan": {
+              "n": 51,
+              "p50_ms": 135.028,
+              "p95_ms": 202.168,
+              "max_ms": 206.557
+            }
+          }
+        },
+        {
+          "name": "fling_up_1",
+          "start_us": 871941629645,
+          "end_us": 871945500137,
+          "window_duration_ms": 3870.492,
+          "sample_n": 51,
+          "sample_density_per_s": 13.176619406525061,
+          "metrics": {
+            "UI": {
+              "n": 51,
+              "p50_ms": 2.269,
+              "p95_ms": 11.127,
+              "max_ms": 15.461
+            },
+            "raster": {
+              "n": 51,
+              "p50_ms": 77.456,
+              "p95_ms": 147.331,
+              "max_ms": 165.734
+            },
+            "queue": {
+              "n": 51,
+              "p50_ms": 65.383,
+              "p95_ms": 133.334,
+              "max_ms": 152.501
+            },
+            "totalSpan": {
+              "n": 51,
+              "p50_ms": 145.494,
+              "p95_ms": 210.453,
+              "max_ms": 246.962
+            }
+          }
+        },
+        {
+          "name": "keyboard_1",
+          "start_us": 871945500673,
+          "end_us": 871946507423,
+          "window_duration_ms": 1006.75,
+          "sample_n": 11,
+          "sample_density_per_s": 10.926247827166625,
+          "metrics": {
+            "UI": {
+              "n": 11,
+              "p50_ms": 7.473,
+              "p95_ms": 13.368,
+              "max_ms": 13.368
+            },
+            "raster": {
+              "n": 11,
+              "p50_ms": 82.068,
+              "p95_ms": 164.638,
+              "max_ms": 164.638
+            },
+            "queue": {
+              "n": 11,
+              "p50_ms": 66.938,
+              "p95_ms": 150.285,
+              "max_ms": 150.285
+            },
+            "totalSpan": {
+              "n": 11,
+              "p50_ms": 156.734,
+              "p95_ms": 175.758,
+              "max_ms": 175.758
+            }
+          }
+        },
+        {
+          "name": "search_1",
+          "start_us": 871946507430,
+          "end_us": 871947410027,
+          "window_duration_ms": 902.597,
+          "sample_n": 11,
+          "sample_density_per_s": 12.187055795665175,
+          "metrics": {
+            "UI": {
+              "n": 11,
+              "p50_ms": 0.576,
+              "p95_ms": 13.99,
+              "max_ms": 13.99
+            },
+            "raster": {
+              "n": 11,
+              "p50_ms": 81.733,
+              "p95_ms": 162.038,
+              "max_ms": 162.038
+            },
+            "queue": {
+              "n": 11,
+              "p50_ms": 71.851,
+              "p95_ms": 143.761,
+              "max_ms": 143.761
+            },
+            "totalSpan": {
+              "n": 11,
+              "p50_ms": 154.049,
+              "p95_ms": 228.299,
+              "max_ms": 228.299
+            }
+          }
+        },
+        {
+          "name": "empty_search_1",
+          "start_us": 871947410033,
+          "end_us": 871948312618,
+          "window_duration_ms": 902.585,
+          "sample_n": 12,
+          "sample_density_per_s": 13.295146717483671,
+          "metrics": {
+            "UI": {
+              "n": 12,
+              "p50_ms": 0.52,
+              "p95_ms": 4.625,
+              "max_ms": 4.625
+            },
+            "raster": {
+              "n": 12,
+              "p50_ms": 4.491,
+              "p95_ms": 159.215,
+              "max_ms": 159.215
+            },
+            "queue": {
+              "n": 12,
+              "p50_ms": 0.319,
+              "p95_ms": 146.927,
+              "max_ms": 146.927
+            },
+            "totalSpan": {
+              "n": 12,
+              "p50_ms": 145.07,
+              "p95_ms": 164.777,
+              "max_ms": 164.777
+            }
+          }
+        },
+        {
+          "name": "clear_search_1",
+          "start_us": 871948312623,
+          "end_us": 871950319396,
+          "window_duration_ms": 2006.773,
+          "sample_n": 24,
+          "sample_density_per_s": 11.95949915610784,
+          "metrics": {
+            "UI": {
+              "n": 24,
+              "p50_ms": 0.734,
+              "p95_ms": 11.31,
+              "max_ms": 15.829
+            },
+            "raster": {
+              "n": 24,
+              "p50_ms": 81.337,
+              "p95_ms": 157.547,
+              "max_ms": 162.231
+            },
+            "queue": {
+              "n": 24,
+              "p50_ms": 65.634,
+              "p95_ms": 149.041,
+              "max_ms": 151.873
+            },
+            "totalSpan": {
+              "n": 24,
+              "p50_ms": 147.831,
+              "p95_ms": 240.706,
+              "max_ms": 248.245
+            }
+          }
+        },
+        {
+          "name": "close_1",
+          "start_us": 871950319401,
+          "end_us": 871950731705,
+          "window_duration_ms": 412.304,
+          "sample_n": 5,
+          "sample_density_per_s": 12.126974271411386,
+          "metrics": {
+            "UI": {
+              "n": 5,
+              "p50_ms": 1.444,
+              "p95_ms": 3.007,
+              "max_ms": 3.007
+            },
+            "raster": {
+              "n": 5,
+              "p50_ms": 5.018,
+              "p95_ms": 152.557,
+              "max_ms": 152.557
+            },
+            "queue": {
+              "n": 5,
+              "p50_ms": 62.829,
+              "p95_ms": 140.76,
+              "max_ms": 140.76
+            },
+            "totalSpan": {
+              "n": 5,
+              "p50_ms": 133.952,
+              "p95_ms": 158.305,
+              "max_ms": 158.305
+            }
+          }
+        },
+        {
+          "name": "open_2",
+          "start_us": 871950731713,
+          "end_us": 871951251487,
+          "window_duration_ms": 519.774,
+          "sample_n": 11,
+          "sample_density_per_s": 21.163043938327043,
+          "metrics": {
+            "UI": {
+              "n": 11,
+              "p50_ms": 1.201,
+              "p95_ms": 19.852,
+              "max_ms": 19.852
+            },
+            "raster": {
+              "n": 11,
+              "p50_ms": 7.614,
+              "p95_ms": 148.245,
+              "max_ms": 148.245
+            },
+            "queue": {
+              "n": 11,
+              "p50_ms": 0.982,
+              "p95_ms": 138.892,
+              "max_ms": 138.892
+            },
+            "totalSpan": {
+              "n": 11,
+              "p50_ms": 113.455,
+              "p95_ms": 157.233,
+              "max_ms": 157.233
+            }
+          }
+        },
+        {
+          "name": "drag_2",
+          "start_us": 871951251496,
+          "end_us": 871954504210,
+          "window_duration_ms": 3252.714,
+          "sample_n": 40,
+          "sample_density_per_s": 12.297423013520401,
+          "metrics": {
+            "UI": {
+              "n": 40,
+              "p50_ms": 1.705,
+              "p95_ms": 4.969,
+              "max_ms": 6.016
+            },
+            "raster": {
+              "n": 40,
+              "p50_ms": 79.513,
+              "p95_ms": 157.04,
+              "max_ms": 161.212
+            },
+            "queue": {
+              "n": 40,
+              "p50_ms": 70.026,
+              "p95_ms": 141.168,
+              "max_ms": 144.462
+            },
+            "totalSpan": {
+              "n": 40,
+              "p50_ms": 146.486,
+              "p95_ms": 208.129,
+              "max_ms": 236.005
+            }
+          }
+        },
+        {
+          "name": "fling_down_2",
+          "start_us": 871954504239,
+          "end_us": 871958395984,
+          "window_duration_ms": 3891.745,
+          "sample_n": 49,
+          "sample_density_per_s": 12.590752991267413,
+          "metrics": {
+            "UI": {
+              "n": 49,
+              "p50_ms": 2.621,
+              "p95_ms": 12.918,
+              "max_ms": 14.316
+            },
+            "raster": {
+              "n": 49,
+              "p50_ms": 80.662,
+              "p95_ms": 155.319,
+              "max_ms": 170.863
+            },
+            "queue": {
+              "n": 49,
+              "p50_ms": 65.522,
+              "p95_ms": 142.326,
+              "max_ms": 154.979
+            },
+            "totalSpan": {
+              "n": 49,
+              "p50_ms": 147.735,
+              "p95_ms": 208.371,
+              "max_ms": 222.889
+            }
+          }
+        },
+        {
+          "name": "fling_up_2",
+          "start_us": 871958395992,
+          "end_us": 871962194103,
+          "window_duration_ms": 3798.111,
+          "sample_n": 47,
+          "sample_density_per_s": 12.374572517759486,
+          "metrics": {
+            "UI": {
+              "n": 47,
+              "p50_ms": 2.38,
+              "p95_ms": 11.71,
+              "max_ms": 12.741
+            },
+            "raster": {
+              "n": 47,
+              "p50_ms": 81.246,
+              "p95_ms": 154.777,
+              "max_ms": 160.893
+            },
+            "queue": {
+              "n": 47,
+              "p50_ms": 70.812,
+              "p95_ms": 139.918,
+              "max_ms": 146.379
+            },
+            "totalSpan": {
+              "n": 47,
+              "p50_ms": 146.255,
+              "p95_ms": 210.338,
+              "max_ms": 223.402
+            }
+          }
+        },
+        {
+          "name": "keyboard_2",
+          "start_us": 871962194634,
+          "end_us": 871963201434,
+          "window_duration_ms": 1006.8,
+          "sample_n": 11,
+          "sample_density_per_s": 10.925705204608661,
+          "metrics": {
+            "UI": {
+              "n": 11,
+              "p50_ms": 7.174,
+              "p95_ms": 15.896,
+              "max_ms": 15.896
+            },
+            "raster": {
+              "n": 11,
+              "p50_ms": 84.927,
+              "p95_ms": 159.7,
+              "max_ms": 159.7
+            },
+            "queue": {
+              "n": 11,
+              "p50_ms": 74.757,
+              "p95_ms": 145.888,
+              "max_ms": 145.888
+            },
+            "totalSpan": {
+              "n": 11,
+              "p50_ms": 162.509,
+              "p95_ms": 244.049,
+              "max_ms": 244.049
+            }
+          }
+        },
+        {
+          "name": "search_2",
+          "start_us": 871963201441,
+          "end_us": 871964105008,
+          "window_duration_ms": 903.567,
+          "sample_n": 11,
+          "sample_density_per_s": 12.173972710380083,
+          "metrics": {
+            "UI": {
+              "n": 11,
+              "p50_ms": 0.6,
+              "p95_ms": 13.142,
+              "max_ms": 13.142
+            },
+            "raster": {
+              "n": 11,
+              "p50_ms": 80.142,
+              "p95_ms": 157.271,
+              "max_ms": 157.271
+            },
+            "queue": {
+              "n": 11,
+              "p50_ms": 65.449,
+              "p95_ms": 141.857,
+              "max_ms": 141.857
+            },
+            "totalSpan": {
+              "n": 11,
+              "p50_ms": 149.301,
+              "p95_ms": 160.964,
+              "max_ms": 160.964
+            }
+          }
+        },
+        {
+          "name": "empty_search_2",
+          "start_us": 871964105013,
+          "end_us": 871965010171,
+          "window_duration_ms": 905.158,
+          "sample_n": 12,
+          "sample_density_per_s": 13.257353964722181,
+          "metrics": {
+            "UI": {
+              "n": 12,
+              "p50_ms": 0.597,
+              "p95_ms": 4.192,
+              "max_ms": 4.192
+            },
+            "raster": {
+              "n": 12,
+              "p50_ms": 79.585,
+              "p95_ms": 159.117,
+              "max_ms": 159.117
+            },
+            "queue": {
+              "n": 12,
+              "p50_ms": 63.19,
+              "p95_ms": 143.145,
+              "max_ms": 143.145
+            },
+            "totalSpan": {
+              "n": 12,
+              "p50_ms": 146.472,
+              "p95_ms": 215.486,
+              "max_ms": 215.486
+            }
+          }
+        },
+        {
+          "name": "clear_search_2",
+          "start_us": 871965010178,
+          "end_us": 871967019006,
+          "window_duration_ms": 2008.828,
+          "sample_n": 24,
+          "sample_density_per_s": 11.947264773290694,
+          "metrics": {
+            "UI": {
+              "n": 24,
+              "p50_ms": 1.442,
+              "p95_ms": 10.674,
+              "max_ms": 15.06
+            },
+            "raster": {
+              "n": 24,
+              "p50_ms": 80.689,
+              "p95_ms": 156.072,
+              "max_ms": 159.993
+            },
+            "queue": {
+              "n": 24,
+              "p50_ms": 66.585,
+              "p95_ms": 145.145,
+              "max_ms": 145.569
+            },
+            "totalSpan": {
+              "n": 24,
+              "p50_ms": 148.924,
+              "p95_ms": 213.126,
+              "max_ms": 223.356
+            }
+          }
+        },
+        {
+          "name": "close_2",
+          "start_us": 871967019013,
+          "end_us": 871967327542,
+          "window_duration_ms": 308.529,
+          "sample_n": 5,
+          "sample_density_per_s": 16.205932019356364,
+          "metrics": {
+            "UI": {
+              "n": 5,
+              "p50_ms": 1.299,
+              "p95_ms": 3.329,
+              "max_ms": 3.329
+            },
+            "raster": {
+              "n": 5,
+              "p50_ms": 81.172,
+              "p95_ms": 151.419,
+              "max_ms": 151.419
+            },
+            "queue": {
+              "n": 5,
+              "p50_ms": 66.723,
+              "p95_ms": 136.365,
+              "max_ms": 136.365
+            },
+            "totalSpan": {
+              "n": 5,
+              "p50_ms": 143.288,
+              "p95_ms": 219.043,
+              "max_ms": 219.043
+            }
+          }
+        }
+      ]
+    }
+  }
+}

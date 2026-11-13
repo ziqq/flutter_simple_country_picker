@@ -1,0 +1,1019 @@
+{
+  "baseline_revision": "4fc727ef3998fcc91492b6657d27fb130b093f7c",
+  "device": "Samsung Galaxy A8 SM-A530F Android 9 / Skia OpenGL",
+  "flutter": "3.47.5",
+  "notes": [
+    "Cold picker opening in a fresh profile process. No shader warmup and no driver-cache reset.",
+    "The untraced and traced frames come from separate processes.",
+    "The no-blur diagnostics intentionally change appearance and are not product candidates.",
+    "FrameTiming build and raster times are wall times. Framework BUILD may be nested inside LAYOUT.",
+    "The provider await records scheduling time as well as provider work. The in-memory list was constructed synchronously in a separate scope.",
+    "For GL attribution, compile and link scopes are non-overlapping inside the raster frame. Draw-op names do not identify individual widget paint commands or shader keys."
+  ],
+  "untraced_reference": {
+    "raw_sha256": "5013c402d33e35856f108b1dd5ac7f311857dafbfb44c7cdf5095ec910bbc588",
+    "frame": {
+      "frame_number": 11,
+      "build_start_us": 695758105095,
+      "raster_start_us": 695758224648,
+      "raster_finish_us": 695758640228,
+      "ui_us": 119393,
+      "raster_us": 415580,
+      "queue_us": 160,
+      "total_us": 610750
+    }
+  },
+  "runs": [
+    {
+      "run": "nov10-cpu-markers-a8-1",
+      "profile": "profile",
+      "renderer_shader_filters_supported": false,
+      "source_fingerprint": "e89c3b14b7c852471c04b7c0390aeb3b0e43b25bacae6c3c1f1dd95b406e09cf",
+      "fixture_sha256": "3fb95b837b6ea9de2bc5e980856df62094f5696f6366673cb8ef5df51a302f37",
+      "driver_sha256": "e778f2d7dc5420bbe2f3c6c64df7eadb5d703af010b3dee38e8f10dc33ef6d0a",
+      "engine_sha256": "2c04ba3cb56c08750eff9516001e390923f396eb20803ed983dfa9795a722dd7",
+      "before": {
+        "temperature_c": 23.8,
+        "level_percent": 100,
+        "usb": true
+      },
+      "after": {
+        "temperature_c": 24.0,
+        "level_percent": 100,
+        "usb": true
+      },
+      "cleanup_ok": true,
+      "raw_sha256": "31e2776ec2a3fdca02bb3f5ef62baf786232419556a350ff4608f4caa6ba4ebd",
+      "trace_sha256": "f79f4444d270dafa99bb0bc85b034eabf24f8513505b0fa5dfac597f5439705a",
+      "action_window_us": {
+        "name": "first_open",
+        "start_us": 700681249726,
+        "end_us": 700682252231
+      },
+      "ui_peak_frame": 12,
+      "raster_peak_frame": 12,
+      "frames": [
+        {
+          "frame_number": 11,
+          "build_start_us": 700681291400,
+          "raster_start_us": 700681344297,
+          "raster_finish_us": 700681500508,
+          "ui_us": 52593,
+          "raster_us": 156211,
+          "queue_us": 304,
+          "total_us": 211167,
+          "ui_framework": {
+            "BUILD": {
+              "dur_us": 30777,
+              "count": 6
+            },
+            "LAYOUT": {
+              "dur_us": 42604,
+              "count": 1
+            },
+            "PAINT": {
+              "dur_us": 2597,
+              "count": 1
+            }
+          },
+          "ui_markers": {
+            "Picker.Provider.construct": {
+              "dur_us": 1909,
+              "count": 1
+            },
+            "Picker.Provider.getCountries": {
+              "dur_us": 43157,
+              "count": 1
+            }
+          },
+          "draw_correlation": [
+            {
+              "name": "Rasterizer::DoDraw",
+              "start_us": 700681344269,
+              "duration_us": 156299,
+              "args": {
+                "frame_number": "11"
+              }
+            }
+          ],
+          "raster_scopes": {
+            "driver_compile_shader": {
+              "dur_us": 19710,
+              "count": 2,
+              "max_us": 17127
+            },
+            "driver_link_program": {
+              "dur_us": 117601,
+              "count": 1,
+              "max_us": 117601
+            },
+            "SurfaceFrame::Encode": {
+              "dur_us": 153315,
+              "count": 1,
+              "max_us": 153315
+            },
+            "SurfaceFrame::Submit": {
+              "dur_us": 155205,
+              "count": 1,
+              "max_us": 155205
+            }
+          },
+          "program_samples_by_operation": {
+            "unlabelled": {
+              "compile_us": [
+                17127,
+                2583
+              ],
+              "link_us": [
+                117601
+              ]
+            }
+          }
+        },
+        {
+          "frame_number": 12,
+          "build_start_us": 700681502939,
+          "raster_start_us": 700681608168,
+          "raster_finish_us": 700681983145,
+          "ui_us": 104996,
+          "raster_us": 374977,
+          "queue_us": 233,
+          "total_us": 610176,
+          "ui_framework": {
+            "BUILD": {
+              "dur_us": 41318,
+              "count": 20
+            },
+            "LAYOUT": {
+              "dur_us": 99930,
+              "count": 1
+            },
+            "PAINT": {
+              "dur_us": 3652,
+              "count": 1
+            }
+          },
+          "ui_markers": {
+            "Picker.List.itemBuilder": {
+              "dur_us": 245,
+              "count": 15
+            },
+            "Picker.List.rowBuild": {
+              "dur_us": 7901,
+              "count": 14
+            }
+          },
+          "draw_correlation": [
+            {
+              "name": "Rasterizer::DoDraw",
+              "start_us": 700681608155,
+              "duration_us": 375083,
+              "args": {
+                "frame_number": "12"
+              }
+            }
+          ],
+          "raster_scopes": {
+            "Canvas::saveLayer": {
+              "dur_us": 2815,
+              "count": 4,
+              "max_us": 1365
+            },
+            "driver_compile_shader": {
+              "dur_us": 46485,
+              "count": 28,
+              "max_us": 5291
+            },
+            "driver_link_program": {
+              "dur_us": 239467,
+              "count": 14,
+              "max_us": 55205
+            },
+            "SurfaceFrame::Encode": {
+              "dur_us": 360879,
+              "count": 1,
+              "max_us": 360879
+            },
+            "SurfaceFrame::Submit": {
+              "dur_us": 362451,
+              "count": 1,
+              "max_us": 362451
+            }
+          },
+          "program_samples_by_operation": {
+            "unlabelled": {
+              "compile_us": [
+                1461,
+                1313,
+                2156,
+                5291,
+                1088,
+                1238,
+                1240,
+                1418,
+                3684,
+                1543,
+                1788,
+                44,
+                1166,
+                1364,
+                3968,
+                1475,
+                3350,
+                52,
+                1363,
+                1189,
+                1324,
+                1272,
+                1625,
+                1213,
+                1653,
+                1250,
+                1895,
+                62
+              ],
+              "link_us": [
+                5611,
+                55205,
+                5160,
+                5364,
+                31614,
+                16207,
+                6242,
+                30630,
+                26490,
+                5339,
+                9311,
+                15620,
+                9619,
+                17055
+              ]
+            }
+          }
+        }
+      ],
+      "ui_markers": {
+        "Picker.Localization.delegateLoad": {
+          "count": 1,
+          "total_us": 16,
+          "first_start_us": 700681009767,
+          "last_end_us": 700681009783
+        },
+        "Picker.Provider.construct": {
+          "count": 1,
+          "total_us": 1909,
+          "first_start_us": 700681298804,
+          "last_end_us": 700681300713
+        },
+        "Picker.Provider.getCountries": {
+          "count": 1,
+          "total_us": 57210,
+          "first_start_us": 700681300836,
+          "last_end_us": 700681358046
+        },
+        "Picker.Controller.filterAndFavorites": {
+          "count": 1,
+          "total_us": 2720,
+          "first_start_us": 700681358054,
+          "last_end_us": 700681360774
+        },
+        "Picker.Controller.localizeAndMakeSortKeys": {
+          "count": 3,
+          "total_us": 2605,
+          "first_start_us": 700681360830,
+          "last_end_us": 700681363692
+        },
+        "Picker.Controller.sort": {
+          "count": 3,
+          "total_us": 469,
+          "first_start_us": 700681361540,
+          "last_end_us": 700681364216
+        },
+        "Picker.Controller.project": {
+          "count": 3,
+          "total_us": 174,
+          "first_start_us": 700681361549,
+          "last_end_us": 700681364302
+        },
+        "Picker.Controller.publish": {
+          "count": 1,
+          "total_us": 1020,
+          "first_start_us": 700681364407,
+          "last_end_us": 700681365427
+        },
+        "Picker.List.buildGroups": {
+          "count": 1,
+          "total_us": 585,
+          "first_start_us": 700681364637,
+          "last_end_us": 700681365222
+        },
+        "Picker.List.groupEntries": {
+          "count": 1,
+          "total_us": 67,
+          "first_start_us": 700681365237,
+          "last_end_us": 700681365304
+        },
+        "Picker.List.itemBuilder": {
+          "count": 15,
+          "total_us": 245,
+          "first_start_us": 700681528762,
+          "last_end_us": 700681599379
+        },
+        "Picker.List.rowBuild": {
+          "count": 14,
+          "total_us": 7901,
+          "first_start_us": 700681528857,
+          "last_end_us": 700681600086
+        }
+      }
+    },
+    {
+      "run": "nov10-skia-stock-a8-1",
+      "profile": "profile",
+      "renderer_shader_filters_supported": false,
+      "source_fingerprint": "72eb8c326764b58ebeae7a813770236310708d38387a8793b0e4ef1a6f86a1b7",
+      "fixture_sha256": "3fb95b837b6ea9de2bc5e980856df62094f5696f6366673cb8ef5df51a302f37",
+      "driver_sha256": "e778f2d7dc5420bbe2f3c6c64df7eadb5d703af010b3dee38e8f10dc33ef6d0a",
+      "engine_sha256": "2c04ba3cb56c08750eff9516001e390923f396eb20803ed983dfa9795a722dd7",
+      "before": {
+        "temperature_c": 24.2,
+        "level_percent": 100,
+        "usb": true
+      },
+      "after": {
+        "temperature_c": 24.4,
+        "level_percent": 100,
+        "usb": true
+      },
+      "cleanup_ok": true,
+      "raw_sha256": "ccf2726cb0492543a86fbcaf250f1498046f94ba88afb4076700e8af9ba4cb3d",
+      "trace_sha256": "2b3c385c224e238a18c06f9f1493e20349c426f2a1879a9b5285888e5caf8a24",
+      "action_window_us": {
+        "name": "first_open",
+        "start_us": 701006405944,
+        "end_us": 701007394294
+      },
+      "ui_peak_frame": 14,
+      "raster_peak_frame": 14,
+      "frames": [
+        {
+          "frame_number": 13,
+          "build_start_us": 701006444386,
+          "raster_start_us": 701006495139,
+          "raster_finish_us": 701006651704,
+          "ui_us": 50413,
+          "raster_us": 156565,
+          "queue_us": 340,
+          "total_us": 212605,
+          "ui_framework": {
+            "BUILD": {
+              "dur_us": 30756,
+              "count": 6
+            },
+            "LAYOUT": {
+              "dur_us": 40086,
+              "count": 1
+            },
+            "PAINT": {
+              "dur_us": 2742,
+              "count": 1
+            }
+          },
+          "ui_markers": {},
+          "draw_correlation": [
+            {
+              "name": "Rasterizer::DoDraw",
+              "start_us": 701006495117,
+              "duration_us": 156657,
+              "args": {
+                "frame_number": "13"
+              }
+            }
+          ],
+          "raster_scopes": {
+            "driver_compile_shader": {
+              "dur_us": 19217,
+              "count": 2,
+              "max_us": 16096
+            },
+            "driver_link_program": {
+              "dur_us": 115253,
+              "count": 1,
+              "max_us": 115253
+            },
+            "SurfaceFrame::Encode": {
+              "dur_us": 152958,
+              "count": 1,
+              "max_us": 152958
+            },
+            "SurfaceFrame::Submit": {
+              "dur_us": 155712,
+              "count": 1,
+              "max_us": 155712
+            }
+          },
+          "program_samples_by_operation": {
+            "FillRectOp": {
+              "compile_us": [
+                16096,
+                3121
+              ],
+              "link_us": [
+                115253
+              ]
+            }
+          }
+        },
+        {
+          "frame_number": 14,
+          "build_start_us": 701006629142,
+          "raster_start_us": 701006753337,
+          "raster_finish_us": 701007129657,
+          "ui_us": 124033,
+          "raster_us": 376320,
+          "queue_us": 162,
+          "total_us": 606911,
+          "ui_framework": {
+            "BUILD": {
+              "dur_us": 56736,
+              "count": 20
+            },
+            "LAYOUT": {
+              "dur_us": 118350,
+              "count": 1
+            },
+            "PAINT": {
+              "dur_us": 4202,
+              "count": 1
+            }
+          },
+          "ui_markers": {},
+          "draw_correlation": [
+            {
+              "name": "Rasterizer::DoDraw",
+              "start_us": 701006753326,
+              "duration_us": 376435,
+              "args": {
+                "frame_number": "14"
+              }
+            }
+          ],
+          "raster_scopes": {
+            "Canvas::saveLayer": {
+              "dur_us": 3905,
+              "count": 4,
+              "max_us": 1906
+            },
+            "driver_compile_shader": {
+              "dur_us": 46103,
+              "count": 28,
+              "max_us": 4686
+            },
+            "driver_link_program": {
+              "dur_us": 244700,
+              "count": 14,
+              "max_us": 57212
+            },
+            "SurfaceFrame::Encode": {
+              "dur_us": 359954,
+              "count": 1,
+              "max_us": 359954
+            },
+            "SurfaceFrame::Submit": {
+              "dur_us": 361757,
+              "count": 1,
+              "max_us": 361757
+            }
+          },
+          "program_samples_by_operation": {
+            "FillRectOp": {
+              "compile_us": [
+                1204,
+                1239,
+                1125,
+                1314,
+                3686,
+                1514,
+                1684,
+                47,
+                1249,
+                1492,
+                3896,
+                1454,
+                3717,
+                68
+              ],
+              "link_us": [
+                11423,
+                5502,
+                30555,
+                16028,
+                6120,
+                33297,
+                28292
+              ]
+            },
+            "FillRRectOp": {
+              "compile_us": [
+                1817,
+                4686
+              ],
+              "link_us": [
+                57212
+              ]
+            },
+            "AtlasTextOp": {
+              "compile_us": [
+                1337,
+                1437
+              ],
+              "link_us": [
+                5918
+              ]
+            },
+            "TextureOp": {
+              "compile_us": [
+                1431,
+                1264,
+                1674,
+                1197,
+                1882,
+                106
+              ],
+              "link_us": [
+                6654,
+                13654,
+                15019
+              ]
+            },
+            "CircleOp": {
+              "compile_us": [
+                1192,
+                1192
+              ],
+              "link_us": [
+                5501
+              ]
+            },
+            "EllipseOp": {
+              "compile_us": [
+                1854,
+                1345
+              ],
+              "link_us": [
+                9525
+              ]
+            }
+          }
+        }
+      ],
+      "ui_markers": {}
+    },
+    {
+      "run": "nov10-skia-no-blur-a8-1",
+      "profile": "profile",
+      "renderer_shader_filters_supported": false,
+      "source_fingerprint": "e54ebf459cc67110f820305c26bbf90a571c9fa3b1a6876c3d445724b74e1613",
+      "fixture_sha256": "3fb95b837b6ea9de2bc5e980856df62094f5696f6366673cb8ef5df51a302f37",
+      "driver_sha256": "e778f2d7dc5420bbe2f3c6c64df7eadb5d703af010b3dee38e8f10dc33ef6d0a",
+      "engine_sha256": "2c04ba3cb56c08750eff9516001e390923f396eb20803ed983dfa9795a722dd7",
+      "before": {
+        "temperature_c": 24.4,
+        "level_percent": 100,
+        "usb": true
+      },
+      "after": {
+        "temperature_c": 24.7,
+        "level_percent": 100,
+        "usb": true
+      },
+      "cleanup_ok": true,
+      "raw_sha256": "a3e03b524001440448dd80395836e00ce0c16242486c0e1bdff548494cff90de",
+      "trace_sha256": "353d40cb87689c3de9e6c6ae3e20aaa6a6efa4a281a8714e84338578c321db93",
+      "action_window_us": {
+        "name": "first_open",
+        "start_us": 701068875541,
+        "end_us": 701069832298
+      },
+      "ui_peak_frame": 25,
+      "raster_peak_frame": 25,
+      "frames": [
+        {
+          "frame_number": 24,
+          "build_start_us": 701068934752,
+          "raster_start_us": 701069028149,
+          "raster_finish_us": 701069218201,
+          "ui_us": 92955,
+          "raster_us": 190052,
+          "queue_us": 442,
+          "total_us": 309235,
+          "ui_framework": {
+            "BUILD": {
+              "dur_us": 43702,
+              "count": 6
+            },
+            "LAYOUT": {
+              "dur_us": 83612,
+              "count": 1
+            },
+            "PAINT": {
+              "dur_us": 3386,
+              "count": 1
+            }
+          },
+          "ui_markers": {},
+          "draw_correlation": [
+            {
+              "name": "Rasterizer::DoDraw",
+              "start_us": 701069028003,
+              "duration_us": 190255,
+              "args": {
+                "frame_number": "24"
+              }
+            }
+          ],
+          "raster_scopes": {
+            "driver_compile_shader": {
+              "dur_us": 20730,
+              "count": 2,
+              "max_us": 18210
+            },
+            "driver_link_program": {
+              "dur_us": 144596,
+              "count": 1,
+              "max_us": 144596
+            },
+            "SurfaceFrame::Encode": {
+              "dur_us": 181858,
+              "count": 1,
+              "max_us": 181858
+            },
+            "SurfaceFrame::Submit": {
+              "dur_us": 189179,
+              "count": 1,
+              "max_us": 189179
+            }
+          },
+          "program_samples_by_operation": {
+            "FillRectOp": {
+              "compile_us": [
+                18210,
+                2520
+              ],
+              "link_us": [
+                144596
+              ]
+            }
+          }
+        },
+        {
+          "frame_number": 25,
+          "build_start_us": 701069170645,
+          "raster_start_us": 701069299553,
+          "raster_finish_us": 701069573126,
+          "ui_us": 128619,
+          "raster_us": 273573,
+          "queue_us": 289,
+          "total_us": 513460,
+          "ui_framework": {
+            "BUILD": {
+              "dur_us": 51089,
+              "count": 20
+            },
+            "LAYOUT": {
+              "dur_us": 122793,
+              "count": 1
+            },
+            "PAINT": {
+              "dur_us": 3348,
+              "count": 1
+            }
+          },
+          "ui_markers": {},
+          "draw_correlation": [
+            {
+              "name": "Rasterizer::DoDraw",
+              "start_us": 701069299534,
+              "duration_us": 273635,
+              "args": {
+                "frame_number": "25"
+              }
+            }
+          ],
+          "raster_scopes": {
+            "Canvas::saveLayer": {
+              "dur_us": 170,
+              "count": 2,
+              "max_us": 87
+            },
+            "driver_compile_shader": {
+              "dur_us": 30091,
+              "count": 18,
+              "max_us": 4653
+            },
+            "driver_link_program": {
+              "dur_us": 167196,
+              "count": 9,
+              "max_us": 55184
+            },
+            "SurfaceFrame::Encode": {
+              "dur_us": 258220,
+              "count": 1,
+              "max_us": 258220
+            },
+            "SurfaceFrame::Submit": {
+              "dur_us": 260722,
+              "count": 1,
+              "max_us": 260722
+            }
+          },
+          "program_samples_by_operation": {
+            "FillRectOp": {
+              "compile_us": [
+                1183,
+                1354,
+                1065,
+                1279,
+                1931,
+                67,
+                3342,
+                1383
+              ],
+              "link_us": [
+                7763,
+                7160,
+                16684,
+                30908
+              ]
+            },
+            "FillRRectOp": {
+              "compile_us": [
+                1659,
+                4653
+              ],
+              "link_us": [
+                55184
+              ]
+            },
+            "AtlasTextOp": {
+              "compile_us": [
+                1270,
+                1457
+              ],
+              "link_us": [
+                8930
+              ]
+            },
+            "CircleOp": {
+              "compile_us": [
+                1661,
+                1314
+              ],
+              "link_us": [
+                15619
+              ]
+            },
+            "EllipseOp": {
+              "compile_us": [
+                1820,
+                1360
+              ],
+              "link_us": [
+                10436
+              ]
+            },
+            "TextureOp": {
+              "compile_us": [
+                1959,
+                1334
+              ],
+              "link_us": [
+                14512
+              ]
+            }
+          }
+        }
+      ],
+      "ui_markers": {}
+    },
+    {
+      "run": "nov10-skia-no-blur-no-splash-a8-1",
+      "profile": "profile",
+      "renderer_shader_filters_supported": false,
+      "source_fingerprint": "e54ebf459cc67110f820305c26bbf90a571c9fa3b1a6876c3d445724b74e1613",
+      "fixture_sha256": "b0e19d546a0b7e7c335d7174bf43259d4c7d150653eb400976c4a7d7908a66f1",
+      "driver_sha256": "e778f2d7dc5420bbe2f3c6c64df7eadb5d703af010b3dee38e8f10dc33ef6d0a",
+      "engine_sha256": "2c04ba3cb56c08750eff9516001e390923f396eb20803ed983dfa9795a722dd7",
+      "before": {
+        "temperature_c": 24.9,
+        "level_percent": 100,
+        "usb": true
+      },
+      "after": {
+        "temperature_c": 24.9,
+        "level_percent": 100,
+        "usb": true
+      },
+      "cleanup_ok": true,
+      "raw_sha256": "4726e6e1008ffb8f6c6712ad09fb4a75f194be8a564287f7fe502aa6d6008299",
+      "trace_sha256": "dcc4a6b8adbb9b195e7c7dba44b8ee4ffba06e5362160adf87261e00e1cb5c95",
+      "action_window_us": {
+        "name": "first_open",
+        "start_us": 701260116663,
+        "end_us": 701261140123
+      },
+      "ui_peak_frame": 8,
+      "raster_peak_frame": 8,
+      "frames": [
+        {
+          "frame_number": 7,
+          "build_start_us": 701260199337,
+          "raster_start_us": 701260266353,
+          "raster_finish_us": 701260273867,
+          "ui_us": 66278,
+          "raster_us": 7514,
+          "queue_us": 738,
+          "total_us": 143626,
+          "ui_framework": {
+            "BUILD": {
+              "dur_us": 35283,
+              "count": 6
+            },
+            "LAYOUT": {
+              "dur_us": 49558,
+              "count": 1
+            },
+            "PAINT": {
+              "dur_us": 8294,
+              "count": 1
+            }
+          },
+          "ui_markers": {},
+          "draw_correlation": [
+            {
+              "name": "Rasterizer::DoDraw",
+              "start_us": 701260266329,
+              "duration_us": 7712,
+              "args": {
+                "frame_number": "7"
+              }
+            }
+          ],
+          "raster_scopes": {
+            "SurfaceFrame::Encode": {
+              "dur_us": 2250,
+              "count": 1,
+              "max_us": 2250
+            },
+            "SurfaceFrame::Submit": {
+              "dur_us": 6621,
+              "count": 1,
+              "max_us": 6621
+            }
+          },
+          "program_samples_by_operation": {}
+        },
+        {
+          "frame_number": 8,
+          "build_start_us": 701260382471,
+          "raster_start_us": 701260507016,
+          "raster_finish_us": 701260840312,
+          "ui_us": 124380,
+          "raster_us": 333296,
+          "queue_us": 165,
+          "total_us": 542832,
+          "ui_framework": {
+            "BUILD": {
+              "dur_us": 50491,
+              "count": 20
+            },
+            "LAYOUT": {
+              "dur_us": 119620,
+              "count": 1
+            },
+            "PAINT": {
+              "dur_us": 3190,
+              "count": 1
+            }
+          },
+          "ui_markers": {},
+          "draw_correlation": [
+            {
+              "name": "Rasterizer::DoDraw",
+              "start_us": 701260507002,
+              "duration_us": 333398,
+              "args": {
+                "frame_number": "8"
+              }
+            }
+          ],
+          "raster_scopes": {
+            "Canvas::saveLayer": {
+              "dur_us": 125,
+              "count": 2,
+              "max_us": 64
+            },
+            "driver_compile_shader": {
+              "dur_us": 35855,
+              "count": 22,
+              "max_us": 5298
+            },
+            "driver_link_program": {
+              "dur_us": 215635,
+              "count": 11,
+              "max_us": 69020
+            },
+            "SurfaceFrame::Encode": {
+              "dur_us": 317084,
+              "count": 1,
+              "max_us": 317084
+            },
+            "SurfaceFrame::Submit": {
+              "dur_us": 318860,
+              "count": 1,
+              "max_us": 318860
+            }
+          },
+          "program_samples_by_operation": {
+            "FillRectOp": {
+              "compile_us": [
+                1185,
+                1458,
+                1128,
+                1351,
+                1922,
+                56,
+                3767,
+                1581
+              ],
+              "link_us": [
+                11835,
+                7787,
+                18529,
+                30906
+              ]
+            },
+            "FillRRectOp": {
+              "compile_us": [
+                1808,
+                5298
+              ],
+              "link_us": [
+                69020
+              ]
+            },
+            "AtlasTextOp": {
+              "compile_us": [
+                1772,
+                1436
+              ],
+              "link_us": [
+                5880
+              ]
+            },
+            "CircularRRectOp": {
+              "compile_us": [
+                2099,
+                1369
+              ],
+              "link_us": [
+                17183
+              ]
+            },
+            "CircleOp": {
+              "compile_us": [
+                1650,
+                46,
+                1365,
+                46
+              ],
+              "link_us": [
+                15925,
+                10629
+              ]
+            },
+            "EllipseOp": {
+              "compile_us": [
+                1721,
+                1304
+              ],
+              "link_us": [
+                9932
+              ]
+            },
+            "TextureOp": {
+              "compile_us": [
+                2016,
+                1477
+              ],
+              "link_us": [
+                18009
+              ]
+            }
+          }
+        }
+      ],
+      "ui_markers": {}
+    }
+  ]
+}

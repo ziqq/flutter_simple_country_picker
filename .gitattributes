@@ -1,0 +1,2 @@
+# The generator's --check compares the generated Dart file byte for byte.
+lib/src/constant/country_phone_rules.g.dart text eol=lf

@@ -1,3 +1,5 @@
+import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -18,6 +20,23 @@ void main() {
         expect(CountryUtil.countryCodeToEmoji('de'), '🇩🇪');
         expect(CountryUtil.countryCodeToEmoji('fr'), '🇫🇷');
         expect(CountryUtil.countryCodeToEmoji('jp'), '🇯🇵');
+      });
+
+      test('produces a regional indicator pair for every bundled country', () {
+        const regionalIndicatorA = 0x1F1E6;
+        for (final json in countries) {
+          final country = Country.fromJson(json);
+          final code = country.countryCode.toUpperCase();
+          final runes = country.flagEmoji.runes.toList();
+
+          expect(runes, hasLength(2), reason: code);
+          expect(runes, <int>[
+            regionalIndicatorA + code.codeUnitAt(0) - 0x41,
+            regionalIndicatorA + code.codeUnitAt(1) - 0x41,
+          ], reason: code);
+          // Two supplementary-plane code points => four UTF-16 code units.
+          expect(country.flagEmoji.length, 4, reason: code);
+        }
       });
 
       test('should handle mixed case country codes', () {
@@ -63,6 +82,54 @@ void main() {
         );
         expect(() => CountryUtil.countryCodeToEmoji('1A'), throwsArgumentError);
         expect(() => CountryUtil.countryCodeToEmoji('@#'), throwsArgumentError);
+      });
+    });
+
+    group('foldDiacritics() -', () {
+      test('removes Latin diacritics', () {
+        expect(CountryUtil.foldDiacritics('Österreich'), 'Osterreich');
+        expect(CountryUtil.foldDiacritics('Égypte'), 'Egypte');
+        expect(CountryUtil.foldDiacritics('États-Unis'), 'Etats-Unis');
+        expect(CountryUtil.foldDiacritics('Curaçao'), 'Curacao');
+        expect(CountryUtil.foldDiacritics('Łódź'), 'Lodz');
+        expect(CountryUtil.foldDiacritics('Ålesund'), 'Alesund');
+      });
+
+      test('expands ligatures', () {
+        expect(CountryUtil.foldDiacritics('Straße'), 'Strasse');
+        expect(CountryUtil.foldDiacritics('Færøerne'), 'Faeroerne');
+      });
+
+      test('folds Greek tonos and Cyrillic Ё but keeps Й', () {
+        expect(CountryUtil.foldDiacritics('Ελλάδα'), 'Ελλαδα');
+        expect(CountryUtil.foldDiacritics('Ёлка'), 'Елка');
+        expect(CountryUtil.foldDiacritics('Йемен'), 'Йемен');
+      });
+
+      test('returns the same instance when nothing changes', () {
+        const value = 'Russia 🇷🇺';
+        expect(identical(CountryUtil.foldDiacritics(value), value), isTrue);
+      });
+
+      test('keeps surrogate pairs around folded letters', () {
+        expect(
+          CountryUtil.foldDiacritics('🇦🇹 Österreich'),
+          '🇦🇹 Osterreich',
+        );
+      });
+    });
+
+    group('compareNames() -', () {
+      test('sorts accented names among their base letter', () {
+        final names = ['Zypern', 'Österreich', 'Oman', 'Ägypten', 'Albanien']
+          ..sort(CountryUtil.compareNames);
+        expect(names, ['Ägypten', 'Albanien', 'Oman', 'Österreich', 'Zypern']);
+      });
+
+      test('ignores case and breaks ties by the original string', () {
+        expect(CountryUtil.compareNames('a', 'B'), lessThan(0));
+        expect(CountryUtil.compareNames('Å', 'A'), greaterThan(0));
+        expect(CountryUtil.compareNames('A', 'A'), 0);
       });
     });
   });

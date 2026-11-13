@@ -8,6 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_simple_country_picker/src/data/country_provider.dart';
 import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:flutter_simple_country_picker/src/model/country.dart';
+import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 
 /// {@template country_state}
 /// Countries state.
@@ -158,6 +159,7 @@ final class CountryController extends ValueNotifier<CountryState> {
   CountryController({
     required CountryProvider provider,
     bool showPhoneCode = true,
+    bool showWorldWide = false,
     bool? showGroup,
     List<Country>? countries,
     List<String>? exclude,
@@ -168,6 +170,7 @@ final class CountryController extends ValueNotifier<CountryState> {
        _favorites = favorites,
        _filter = filter,
        _showPhoneCode = showPhoneCode,
+       _showWorldWide = showWorldWide,
        search = TextEditingController(),
        super(
          CountryState.idle(
@@ -195,6 +198,9 @@ final class CountryController extends ValueNotifier<CountryState> {
 
   /// Used to show phone code.
   final bool _showPhoneCode;
+
+  /// Used to show the "World Wide" option at the beginning of the list.
+  final bool _showWorldWide;
 
   /// Search controller.
   TextEditingController? search;
@@ -282,7 +288,12 @@ final class CountryController extends ValueNotifier<CountryState> {
         $countries.add(country);
       }
 
+      const worldWide = Country.worldWide;
+      final showWorldWide =
+          _showWorldWide &&
+          !(exclude?.contains(worldWide.countryCode) ?? false);
       final result = <Country>[
+        if (showWorldWide) ..._localize(<Country>[worldWide]),
         ..._localize(favorites),
         ..._localize($countries),
       ];
@@ -329,29 +340,28 @@ final class CountryController extends ValueNotifier<CountryState> {
     // we can skip localizing and sorting.
     if (localization == null) return countries.toList(growable: false);
 
-    final result = <Country>[];
+    final result = <({Country country, String name, String sortKey})>[];
     for (final country in countries) {
       final formatted = localization.getFormatedCountryNameByCode(
         country.countryCode,
       );
-
-      // If localization is not available for a country,
-      // we can use the original name.
-      if (formatted == null || formatted.isEmpty) {
-        result.add(country);
-      } else {
-        result.add(country.copyWith(nameLocalized: formatted));
-      }
+      final name = formatted == null || formatted.isEmpty
+          ? country.name
+          : formatted;
+      result.add((
+        country: country.copyWith(nameLocalized: name),
+        name: name,
+        sortKey: CountryUtil.foldDiacritics(name).toLowerCase(),
+      ));
     }
 
-    // Sorting countries by localized name,
-    // if available, otherwise by original name.
-    result.sort(
-      (a, b) =>
-          (a.nameLocalized ?? a.name).compareTo(b.nameLocalized ?? b.name),
-    );
+    // Normalize each name once, keeping the original spelling as a tie-breaker.
+    result.sort((a, b) {
+      final order = a.sortKey.compareTo(b.sortKey);
+      return order != 0 ? order : a.name.compareTo(b.name);
+    });
 
-    return result.toList(growable: false);
+    return result.map((entry) => entry.country).toList(growable: false);
   }
 
   /// Handles a given operation with error handling and completion tracking.

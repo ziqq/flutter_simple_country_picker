@@ -1,3 +1,8 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 14 October 2024
+ */
+
 // Anton Ustinoff <a.a.ustinoff@gmail.com>, 14 October 2024
 
 import 'dart:developer' as dev show log;
@@ -131,7 +136,7 @@ class _MobilePreviewState extends State<MobilePreview>
                         context,
                       ),
                       borderRadius: BorderRadius.all(
-                        Radius.circular(pickerTheme.radius),
+                        Radius.circular(pickerTheme.baseCornerRadius),
                       ),
                     ),
                     child: Padding(
@@ -175,7 +180,7 @@ class _MobilePreviewState extends State<MobilePreview>
                     context,
                   ),
                   borderRadius: BorderRadius.all(
-                    Radius.circular(pickerTheme.radius),
+                    Radius.circular(pickerTheme.baseCornerRadius),
                   ),
                 ),
                 child: ConstrainedBox(

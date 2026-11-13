@@ -1,0 +1,14 @@
+{
+  "exit_code": null,
+  "failure": "AssertionError('Passive cooling did not match within180s; preserve failed preflight')",
+  "cleanup": {
+    "force_stop_exit": 0,
+    "uninstall_exit": 0,
+    "own_package_absent": true,
+    "output": "no installed own run",
+    "user_packages_untouched": true,
+    "lease_absent": true,
+    "canonical_restored": true
+  },
+  "finished_utc": "2026-11-06T09:11:28.854212+00:00"
+}

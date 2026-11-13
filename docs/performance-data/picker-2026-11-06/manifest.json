@@ -1,0 +1,84 @@
+{
+  "shipping_head": "4fc727ef3998fcc91492b6657d27fb130b093f7c",
+  "protocol": "single-ui-baseline-20261105-v3-native-waits-six-quality",
+  "source_before": "72eb8c326764b58ebeae7a813770236310708d38387a8793b0e4ef1a6f86a1b7",
+  "runtime_candidates_shipped": false,
+  "runs": {
+    "a8-before-1": {
+      "file": "a8-before-1.json",
+      "sha256": "ce95d8be64ff9ab5c5e6c7d4df9520b23b1de920f9e17f0c58c70216d3b532ce",
+      "source": "72eb8c326764b58ebeae7a813770236310708d38387a8793b0e4ef1a6f86a1b7",
+      "complete": true
+    },
+    "a8-before-2": {
+      "file": "a8-before-2.json",
+      "sha256": "d032ed4db6e876ff673f36b87dd6fb9ad956211b95b8cf6b5c7aa2b4c5f2929b",
+      "source": "72eb8c326764b58ebeae7a813770236310708d38387a8793b0e4ef1a6f86a1b7",
+      "complete": true
+    },
+    "a8-before-3": {
+      "file": "a8-before-3.json",
+      "sha256": "1d22620ceebfe1c30684b02dcdbdb1c75523292521677b3464c97a38c20dde54",
+      "source": "72eb8c326764b58ebeae7a813770236310708d38387a8793b0e4ef1a6f86a1b7",
+      "complete": true
+    },
+    "a8-shade-cache-rejected": {
+      "file": "a8-shade-cache-rejected.json",
+      "sha256": "dd668635eece8613b3a844b1738bfc60888fcb9a47c3e13c8190b131498adb22",
+      "source": "534f7dad0bae641fcb622f12ddf3a9c370ff416a42de5dcfd22b45b92c5bbe9f",
+      "complete": true
+    },
+    "a8-row-cache-rejected": {
+      "file": "a8-row-cache-rejected.json",
+      "sha256": "47cbdde4bd8aa8fd49e9794b309292e0f4c79f8fb9f50b80d4cee62677f4190a",
+      "source": "edc42bf6fec68acfdf8b14147f0db722c2e21ce3ad04fd0f471415ee007e2fcc",
+      "complete": true
+    },
+    "a8-no-blur-diagnostic": {
+      "file": "a8-no-blur-diagnostic.json",
+      "sha256": "10f3096034b1ce7df0e0053d3ef4c7c38020b562e994a30c8f47e2e1b6752c80",
+      "source": "e54ebf459cc67110f820305c26bbf90a571c9fa3b1a6876c3d445724b74e1613",
+      "complete": true
+    },
+    "7plus-before-1": {
+      "file": "7plus-before-1.json",
+      "sha256": "e444a996813aa4f8bb925116913f2b825141477f937436ccc1156527cc52db02",
+      "source": "72eb8c326764b58ebeae7a813770236310708d38387a8793b0e4ef1a6f86a1b7",
+      "complete": true
+    },
+    "7plus-f2-after-1": {
+      "file": "7plus-f2-after-1.json",
+      "sha256": "1df740719cd245040796561cc99ccb854a908e8b1d86db0de1f8a51b78ae8931",
+      "source": "5a5ce0cd9b3b7e5a4ad43ff5a7dc7a71092abe79dd8b3bc24abd031339b58274",
+      "complete": true
+    },
+    "7plus-f2-after-2": {
+      "file": "7plus-f2-after-2.json",
+      "sha256": "326239983e215496c1bc04faacf07d3aaf8b21ae0ad2f1b45b9bd7ae186c942b",
+      "source": "5a5ce0cd9b3b7e5a4ad43ff5a7dc7a71092abe79dd8b3bc24abd031339b58274",
+      "complete": true
+    },
+    "7plus-before-2": {
+      "file": "7plus-before-2.json",
+      "sha256": "c43674761b5a9bb61ee90009698b71a36d4addbd856af1ea56fa3a06c6b67b24",
+      "source": "72eb8c326764b58ebeae7a813770236310708d38387a8793b0e4ef1a6f86a1b7",
+      "complete": true
+    }
+  },
+  "limits": [
+    "Engine FrameTiming wall times, not GPU durations or presented FPS",
+    "Fresh process/install; OS/driver caches retained",
+    "No warmup, renderer/settings changes or cache purge",
+    "Light timing only; dark has quality evidence",
+    "Row-cache keyboard PNG collector delayed by post-timing memory RPC; keyboard quality unqualified",
+    "F2 first-opening regression retained; F3 not executed"
+  ],
+  "f3": {
+    "runtime_sha256": "e389147327122d3cec17a02235874b87dd5f13428a1aba194d69e1d8c34eee8e",
+    "snapshot_source": "f9c33f64bd2a90def4b6864b44326b03e3653a848a19e78c4894967d66163b20",
+    "patch": "f3-pending-from-4fc727e.patch",
+    "base": "4fc727e",
+    "executed": false,
+    "shipping": false
+  }
+}

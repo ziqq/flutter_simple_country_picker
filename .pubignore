@@ -23,6 +23,8 @@ example/.dart_tool/
 example/.flutter-plugins
 example/.flutter-plugins-dependencies
 example/.metadata
+# Review evidence is kept in Git, not in the package archive.
+docs/performance-data/
 
 # Local tooling output
 /log.pana.json

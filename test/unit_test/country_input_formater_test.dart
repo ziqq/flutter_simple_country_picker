@@ -3,6 +3,74 @@ import 'package:flutter_simple_country_picker/src/util/country_input_formatter.d
 import 'package:flutter_test/flutter_test.dart';
 
 void main() => group('CountryInputFormatter -', () {
+  test('restoring a filtered mask clamps the caret to remaining digits', () {
+    final formatter = CountryInputFormatter(
+      mask: '##',
+      filter: {'#': RegExp('[2-9]')},
+    );
+    final overflow = formatter.formatEditUpdate(
+      TextEditingValue.empty,
+      const TextEditingValue(
+        text: '234',
+        selection: TextSelection.collapsed(offset: 3),
+      ),
+    );
+    expect(overflow.text, '234');
+    expect(formatter.valueStatus.isOverflow, isTrue);
+    final restored = formatter.formatEditUpdate(
+      overflow,
+      const TextEditingValue(
+        text: '11',
+        selection: TextSelection.collapsed(offset: 2),
+      ),
+    );
+    expect(restored.text, isEmpty);
+    expect(restored.selection.baseOffset, 0);
+    expect(formatter.valueStatus.isOverflow, isFalse);
+  });
+
+  test('deleting the first digit keeps the caret at the start', () {
+    final formatter = CountryInputFormatter(mask: '###');
+    final previous = formatter.formatEditUpdate(
+      TextEditingValue.empty,
+      const TextEditingValue(text: '123'),
+    );
+    final result = formatter.formatEditUpdate(
+      previous.copyWith(selection: const TextSelection.collapsed(offset: 1)),
+      const TextEditingValue(
+        text: '23',
+        selection: TextSelection.collapsed(offset: 0),
+      ),
+    );
+    expect(result.text, '23');
+    expect(result.selection.baseOffset, 0);
+  });
+
+  test('pasting a trailing separator does not add it to unmasked digits', () {
+    final formatter = CountryInputFormatter(mask: '#-#');
+    final result = formatter.formatEditUpdate(
+      TextEditingValue.empty,
+      const TextEditingValue(text: '1-'),
+    );
+    expect(formatter.getUnmaskedText(), '1');
+    expect(result.text, '1-');
+    expect(result.selection.baseOffset, result.text.length);
+  });
+
+  test(
+    'pasting mismatched repeated separators retains only accepted digits',
+    () {
+      final formatter = CountryInputFormatter(mask: '#--#');
+      final result = formatter.formatEditUpdate(
+        TextEditingValue.empty,
+        const TextEditingValue(text: '1-x'),
+      );
+      expect(formatter.getUnmaskedText(), '1');
+      expect(result.text, '1');
+      expect(result.selection.baseOffset, 1);
+    },
+  );
+
   test('initializes with default values', () {
     final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
     expect(formatter.getMask(), '+# (###) ###-##-##');
