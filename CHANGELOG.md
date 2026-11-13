@@ -47,6 +47,13 @@
 - **FIXED**: the grouped picker profile benchmark now uses `benchmarkLive` to capture framework-requested animation frames and records raw timing samples, action windows, the frame policy and protocol version; first-opening capture also drains the final timing batch while keeping the action window separate; earlier measurement protocols and the A8 GPU-compiler experiments remain documented separately, with no shader warm-up or public API change
 - **FIXED**: CI limits mise lockfile checksum refreshes to the runner's platform instead of downloading every desktop Flutter archive during installation
 
+## 0.11.3
+- **ADDED**: expanded the picker to 75 built-in locales, including all 71 entries in the Telegram Translations catalog and separate Brazilian (`pt-BR`) and European (`pt-PT`) Portuguese translations
+- **FIXED**: phone input completion rejects national numbers made entirely of zeros, [#25](https://github.com/ziqq/flutter_simple_country_picker/issues/25)
+- **FIXED**: Hindi (`hi`) uses its own translations, and Turkish (`tr`) includes the six missing country names
+- **FIXED**: the extended phone input falls back to the original country name when a translation is missing
+- **CHANGED**: automatic phone formatting uses country templates with the longest matching prefix, shows the unfilled template in gray in both input variants, and retains digits beyond the template without regrouping, [#25](https://github.com/ziqq/flutter_simple_country_picker/issues/25)
+
 ## 0.11.2
 - **ADDED**: opt-in phone formatting by country and prefix through `CountryInputFormatter.forCountry`, `updateCountry` and `CountryPhoneInput.useCountryFormatting` (including `extended`); pinned libphonenumber rules for 238 countries recognize every supported length and retain digits beyond the pattern
 - **FIXED**: pasted Indonesian numbers preserve their significant leading `8`; input widgets strip country-declared national prefixes, retain manual prefix normalization for custom countries and preserve selection when switching formatting modes

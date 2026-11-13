@@ -19,6 +19,33 @@ void main() => group('CountryParser -', () {
 
   tearDownAll(() async {});
 
+  test('parses the country name for each Portuguese variant', () {
+    for (final (region, name) in [('BR', 'Polônia'), ('PT', 'Polónia')]) {
+      final country = CountryParser.parseCountryName(
+        name,
+        locales: [Locale('pt', region)],
+      );
+      expect(country.countryCode, 'PL', reason: region);
+    }
+  });
+
+  test('parses country names in the added and corrected locales', () {
+    const cases = [
+      ('be', 'Харватыя', 'HR'),
+      ('hi', 'भारत', 'IN'),
+      ('ms', 'Jerman', 'DE'),
+      ('uz', 'Oʻzbekiston', 'UZ'),
+      ('tr', 'Hırvatistan', 'HR'),
+    ];
+    for (final (language, name, code) in cases) {
+      final country = CountryParser.parseCountryName(
+        name,
+        locales: [Locale(language)],
+      );
+      expect(country.countryCode, code, reason: language);
+    }
+  });
+
   testWidgets('should display selected country based on country name', (
     tester,
   ) async {

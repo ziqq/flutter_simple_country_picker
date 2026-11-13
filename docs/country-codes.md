@@ -13,7 +13,7 @@ before adding or changing entries in
 After changing the Dart dataset, regenerate the JSON mirror:
 
 ```shell
-mise exec -- dart --disable-analytics run tool/generate_json.dart
+fvm dart --disable-analytics run tool/dart/generate_json.dart
 ```
 
 Then run at least:

@@ -28,7 +28,7 @@ For a deeper maintainer guide with concrete shared-calling-code examples, see
 2. Regenerate the JSON mirror:
 
 	 ```shell
-	 mise exec -- dart --disable-analytics run tool/generate_json.dart
+	 fvm dart --disable-analytics run tool/dart/generate_json.dart
 	 ```
 
 3. Run the country dataset tests. At minimum, run:

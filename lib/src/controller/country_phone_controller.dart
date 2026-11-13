@@ -82,8 +82,8 @@ final class CountryPhoneResolution {
 
 /// Status of the current phone input value.
 ///
-/// This status describes the local phone-number input relative to the expected
-/// length for the currently selected country in [CountryPhoneInput].
+/// This status describes the national digits and their expected length for the
+/// currently selected country in [CountryPhoneInput].
 @immutable
 final class CountryPhoneValueStatus {
   /// Creates a phone-value status.
@@ -91,6 +91,7 @@ final class CountryPhoneValueStatus {
     required this.currentLength,
     required this.expectedLength,
     required this.isOverflow,
+    this.isAllZeros = false,
   }) : assert(currentLength >= 0, 'currentLength cannot be negative'),
        assert(expectedLength >= 0, 'expectedLength cannot be negative');
 
@@ -98,7 +99,8 @@ final class CountryPhoneValueStatus {
   const CountryPhoneValueStatus.empty()
     : currentLength = 0,
       expectedLength = 0,
-      isOverflow = false;
+      isOverflow = false,
+      isAllZeros = false;
 
   /// Current count of national digits in the phone input.
   final int currentLength;
@@ -112,6 +114,9 @@ final class CountryPhoneValueStatus {
   /// Whether the current input exceeds the expected length.
   final bool isOverflow;
 
+  /// Whether the non-empty national number consists entirely of zeros.
+  final bool isAllZeros;
+
   /// Whether the current input has no national digits yet.
   bool get isEmpty => currentLength == 0;
 
@@ -122,19 +127,24 @@ final class CountryPhoneValueStatus {
       expectedLength > 0 &&
       currentLength < expectedLength;
 
-  /// Whether the current input matches the expected length exactly.
+  /// Whether the input matches the expected length and has a non-zero digit.
   bool get isComplete =>
-      !isOverflow && expectedLength > 0 && currentLength == expectedLength;
+      !isOverflow &&
+      !isAllZeros &&
+      expectedLength > 0 &&
+      currentLength == expectedLength;
 
   /// Creates a new status with updated fields.
   CountryPhoneValueStatus copyWith({
     int? currentLength,
     int? expectedLength,
     bool? isOverflow,
+    bool? isAllZeros,
   }) => CountryPhoneValueStatus(
     currentLength: currentLength ?? this.currentLength,
     expectedLength: expectedLength ?? this.expectedLength,
     isOverflow: isOverflow ?? this.isOverflow,
+    isAllZeros: isAllZeros ?? this.isAllZeros,
   );
 
   @override
@@ -143,10 +153,12 @@ final class CountryPhoneValueStatus {
       other is CountryPhoneValueStatus &&
           other.currentLength == currentLength &&
           other.expectedLength == expectedLength &&
-          other.isOverflow == isOverflow;
+          other.isOverflow == isOverflow &&
+          other.isAllZeros == isAllZeros;
 
   @override
-  int get hashCode => Object.hash(currentLength, expectedLength, isOverflow);
+  int get hashCode =>
+      Object.hash(currentLength, expectedLength, isOverflow, isAllZeros);
 }
 
 /// Immutable controller value, similar in role to Flutter's editing values.
@@ -296,6 +308,7 @@ final class CountryPhoneController
 
   /// Regular expression to remove non-digit characters from phone number.
   static final _nonDigitsRegExp = RegExp('[^0-9]');
+  static final _allZerosRegExp = RegExp(r'^0+$');
 
   /// Regular expression to remove spaces from phone number.
   static final _regExp = RegExp(r'\s+');
@@ -377,10 +390,9 @@ final class CountryPhoneController
   }
 
   static CountryPhoneValueStatus _defaultValueStatus(String value) =>
-      CountryPhoneValueStatus(
-        currentLength: _nationalDigitsLength(value),
-        expectedLength: 0,
-        isOverflow: false,
+      _updatedValueStatus(
+        text: value,
+        previous: const CountryPhoneValueStatus.empty(),
       );
 
   static CountryPhoneEditingValue _normalizeValue(
@@ -394,26 +406,20 @@ final class CountryPhoneController
     required String text,
     required CountryPhoneValueStatus previous,
   }) {
-    final nextLength = _nationalDigitsLength(text);
+    final digits = _nationalDigits(text);
     final expectedLength = previous.expectedLength;
 
     return previous.copyWith(
-      currentLength: nextLength,
-      isOverflow: expectedLength > 0 && nextLength > expectedLength,
+      currentLength: digits.length,
+      isOverflow: expectedLength > 0 && digits.length > expectedLength,
+      isAllZeros: _allZerosRegExp.hasMatch(digits),
     );
   }
 
-  static int _nationalDigitsLength(String value) {
+  static String _nationalDigits(String value) {
     final e164 = _toE164Digits(value);
-    if (e164.isEmpty) return 0;
-
     final code = _extractCallingCode(e164);
-    if (code.isEmpty) return e164.length;
-
-    // _extractCallingCode only returns a prefix of e164.
-    return e164.startsWith(code)
-        ? e164.substring(code.length).length
-        : e164.length; // coverage:ignore-line
+    return e164.substring(code.length);
   }
 
   static String _toE164Digits(String value) {

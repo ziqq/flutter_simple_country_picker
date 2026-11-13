@@ -197,6 +197,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
   late final _painter = _BackgroundPainter(pickerTheme: _pickerTheme);
   late final TextEditingController _phoneController;
   late final CountryInputFormatter _formatter;
+  final ScrollController _phoneScrollController = ScrollController();
   late CountryPhoneController _controller;
   late ValueNotifier<Country> _countryController;
 
@@ -412,6 +413,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
   @override
   void dispose() {
     _pickerTheme.dispose();
+    _phoneScrollController.dispose();
     _phoneController
       ..removeListener(_onPhoneChanged)
       ..dispose();
@@ -449,6 +451,104 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
   String _semanticsLabelOf(CountryLocalizations localization, Country c) =>
       '${localization.getFormatedCountryNameByCode(c.countryCode) ?? c.name}'
       ', +${c.phoneCode}';
+
+  Widget _buildPhoneField(
+    BuildContext context, {
+    required Key key,
+    required Country country,
+    required CountryLocalizations localization,
+    required CountryPickerTheme pickerTheme,
+    required TextStyle? textStyle,
+    EdgeInsets? contentPadding,
+  }) {
+    final showMask =
+        widget.useCountryFormatting &&
+        widget.placeholder == null &&
+        _formatter.maskHint != null;
+    final hintStyle = textStyle?.copyWith(
+      color: pickerTheme.searchTextStyle?.color?.withValues(alpha: .5),
+    );
+    var decoration = InputDecoration(
+      hintText: showMask
+          ? null
+          : widget.placeholder ??
+                (widget.useCountryFormatting ? null : country.mask) ??
+                localization.phonePlaceholder,
+      hintStyle: hintStyle,
+      contentPadding: contentPadding,
+      border: InputBorder.none,
+      errorBorder: InputBorder.none,
+      enabledBorder: InputBorder.none,
+      focusedBorder: InputBorder.none,
+      disabledBorder: InputBorder.none,
+      focusedErrorBorder: InputBorder.none,
+    );
+
+    _PhoneMaskPainter? maskPainter;
+    if (showMask) {
+      final theme = Theme.of(context);
+      final effectiveDecoration = decoration.applyDefaults(
+        theme.inputDecorationTheme,
+      );
+      final padding =
+          effectiveDecoration.contentPadding?.resolve(TextDirection.ltr) ??
+          ((effectiveDecoration.isCollapsed ?? false)
+              ? EdgeInsets.zero
+              : EdgeInsets.symmetric(
+                  horizontal: (effectiveDecoration.filled ?? false) ? 12 : 0,
+                  vertical: theme.useMaterial3
+                      ? (effectiveDecoration.isDense ?? false)
+                            ? 4
+                            : 8
+                      : (effectiveDecoration.isDense ?? false)
+                      ? 8
+                      : 12,
+                ));
+      decoration = decoration.copyWith(contentPadding: padding);
+      final inputStyle =
+          (theme.useMaterial3
+                  ? theme.textTheme.bodyLarge
+                  : theme.textTheme.titleMedium)
+              ?.merge(textStyle) ??
+          const TextStyle();
+      maskPainter = _PhoneMaskPainter(
+        controller: _phoneController,
+        scrollController: _phoneScrollController,
+        formatter: _formatter,
+        country: country,
+        padding: padding,
+        style: MediaQuery.boldTextOf(context)
+            ? inputStyle.merge(const TextStyle(fontWeight: FontWeight.bold))
+            : inputStyle,
+        hintColor:
+            hintStyle?.color ??
+            (inputStyle.color ?? theme.colorScheme.onSurface).withValues(
+              alpha: .5,
+            ),
+        textScaler: MediaQuery.textScalerOf(context),
+        locale: Localizations.maybeLocaleOf(context),
+      );
+    }
+
+    final field = TextFormField(
+      key: key,
+      autofocus: widget.autofocus,
+      controller: _phoneController,
+      scrollController: showMask ? _phoneScrollController : null,
+      inputFormatters: [_formatter],
+      keyboardType: TextInputType.number,
+      onChanged: (_) => widget.onChanged?.call(_controller.text),
+      cursorColor: textStyle?.color,
+      style: textStyle,
+      textAlignVertical: showMask ? TextAlignVertical.center : null,
+      textDirection: showMask ? TextDirection.ltr : null,
+      decoration: decoration,
+    );
+    return Semantics(
+      label: localization.phonePlaceholder,
+      child: CustomPaint(foregroundPainter: maskPainter, child: field),
+    );
+  }
 }
 
 /// State for widget [CountryPhoneInput].
@@ -572,40 +672,15 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
               child: CustomPaint(
                 painter: _painter,
                 child: Center(
-                  child: Semantics(
-                    label: localization.phonePlaceholder,
-                    child: TextFormField(
-                      key: const ValueKey<String>('country_phone_number'),
-                      autofocus: widget.autofocus,
-                      controller: _phoneController,
-                      inputFormatters: [_formatter],
-                      keyboardType: TextInputType.number,
-                      onChanged: (_) {
-                        widget.onChanged?.call(_controller.text);
-                      },
-                      cursorColor: textStyle?.color,
-                      style: textStyle,
-                      decoration: InputDecoration(
-                        hintText:
-                            widget.placeholder ??
-                            selected.mask ??
-                            localization.phonePlaceholder,
-                        hintStyle: textStyle?.copyWith(
-                          color: pickerTheme.searchTextStyle?.color?.withValues(
-                            alpha: .5,
-                          ),
-                        ),
-                        contentPadding: EdgeInsets.only(
-                          right: pickerTheme.padding,
-                          left: pickerTheme.padding,
-                        ),
-                        border: InputBorder.none,
-                        errorBorder: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        disabledBorder: InputBorder.none,
-                        focusedErrorBorder: InputBorder.none,
-                      ),
+                  child: _buildPhoneField(
+                    context,
+                    key: const ValueKey<String>('country_phone_number'),
+                    country: selected,
+                    localization: localization,
+                    pickerTheme: pickerTheme,
+                    textStyle: textStyle,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: pickerTheme.padding,
                     ),
                   ),
                 ),
@@ -748,7 +823,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                         ),
                         TextSpan(
                           text:
-                              ' ${localization.getFormatedCountryNameByCode(selected.countryCode)}',
+                              ' ${localization.getFormatedCountryNameByCode(selected.countryCode) ?? selected.name}',
                         ),
                       ],
                     ),
@@ -805,38 +880,15 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                       padding: EdgeInsets.symmetric(
                         horizontal: padding.horizontal / 2.5,
                       ),
-                      child: Semantics(
-                        label: localization.phonePlaceholder,
-                        child: TextFormField(
-                          key: const ValueKey<String>(
-                            'country_phone_input_extended',
-                          ),
-                          autofocus: widget.autofocus,
-                          controller: _phoneController,
-                          inputFormatters: [_formatter],
-                          style: textStyle,
-                          cursorColor: textStyle?.color,
-                          onChanged: (_) {
-                            widget.onChanged?.call(_controller.text);
-                          },
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            hintText:
-                                widget.placeholder ??
-                                selected.mask ??
-                                localization.phonePlaceholder,
-                            hintStyle: textStyle?.copyWith(
-                              color: pickerTheme.searchTextStyle?.color
-                                  ?.withValues(alpha: .5),
-                            ),
-                            border: InputBorder.none,
-                            errorBorder: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            disabledBorder: InputBorder.none,
-                            focusedErrorBorder: InputBorder.none,
-                          ),
+                      child: _buildPhoneField(
+                        context,
+                        key: const ValueKey<String>(
+                          'country_phone_input_extended',
                         ),
+                        country: selected,
+                        localization: localization,
+                        pickerTheme: pickerTheme,
+                        textStyle: textStyle,
                       ),
                     ),
                   ),
@@ -849,6 +901,85 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
       ),
     );
   }
+}
+
+/// Paints the unfilled template without adding characters to the text field.
+class _PhoneMaskPainter extends CustomPainter {
+  _PhoneMaskPainter({
+    required this.controller,
+    required this.scrollController,
+    required this.formatter,
+    required this.country,
+    required this.padding,
+    required this.style,
+    required this.hintColor,
+    required this.textScaler,
+    required this.locale,
+  }) : super(repaint: Listenable.merge([controller, scrollController]));
+
+  final TextEditingController controller;
+  final ScrollController scrollController;
+  final CountryInputFormatter formatter;
+  final Country country;
+  final EdgeInsets padding;
+  final TextStyle style;
+  final Color hintColor;
+  final TextScaler textScaler;
+  final Locale? locale;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final hint = formatter.maskHint;
+    final value = controller.value;
+    if (hint == null || hint.isEmpty || !value.composing.isCollapsed) return;
+
+    final bounds = padding.deflateRect(Offset.zero & size);
+    if (bounds.isEmpty) return;
+    final scrollOffset = scrollController.hasClients
+        ? scrollController.offset
+        : 0.0;
+    final painter = TextPainter(
+      text: TextSpan(
+        style: style,
+        children: [
+          TextSpan(
+            text: value.text,
+            style: const TextStyle(color: Colors.transparent),
+          ),
+          TextSpan(
+            text: hint,
+            style: TextStyle(color: hintColor),
+          ),
+        ],
+      ),
+      textDirection: TextDirection.ltr,
+      textScaler: textScaler,
+      locale: locale,
+      maxLines: 1,
+    )..layout();
+    canvas
+      ..save()
+      ..clipRect(bounds);
+    painter.paint(
+      canvas,
+      Offset(bounds.left - scrollOffset, bounds.center.dy - painter.height / 2),
+    );
+    canvas.restore();
+    painter.dispose();
+  }
+
+  @override
+  bool shouldRepaint(_PhoneMaskPainter oldDelegate) =>
+      controller != oldDelegate.controller ||
+      scrollController != oldDelegate.scrollController ||
+      formatter != oldDelegate.formatter ||
+      country.e164Key != oldDelegate.country.e164Key ||
+      country.mask != oldDelegate.country.mask ||
+      padding != oldDelegate.padding ||
+      style != oldDelegate.style ||
+      hintColor != oldDelegate.hintColor ||
+      textScaler != oldDelegate.textScaler ||
+      locale != oldDelegate.locale;
 }
 
 /// Dividre painter for [CountryPhoneInput$Extended].

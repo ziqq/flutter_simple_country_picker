@@ -1343,6 +1343,25 @@ void _$extendedCountryPhoneInputTest() {
       expect(find.byType(CountryListView), findsWidgets);
     });
 
+    testWidgets('uses the original name when the translation is missing', (
+      tester,
+    ) async {
+      final country = Country.ru().copyWith(
+        countryCode: 'ZZ',
+        name: 'Custom country',
+      );
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          locale: const Locale('en'),
+          builder: (_) => Scaffold(
+            body: CountryPhoneInput.extended(initialCountry: country),
+          ),
+        ),
+      );
+
+      expect(find.text('${country.flagEmoji} ${country.name}'), findsOneWidget);
+    });
+
     testWidgets('formatting: applies mask to typed digits', (tester) async {
       final initialCountry = getCountryByISO2asJSON('FR');
       await tester.pumpWidget(

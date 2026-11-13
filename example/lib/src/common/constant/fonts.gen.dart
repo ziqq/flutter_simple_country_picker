@@ -12,7 +12,4 @@ class FontFamily {
 
   /// Font family: NotoColorEmoji
   static const String notoColorEmoji = 'NotoColorEmoji';
-
-  /// Font family: SF-Pro-Rounded
-  static const String sFProRounded = 'SF-Pro-Rounded';
 }

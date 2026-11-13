@@ -359,15 +359,20 @@ void main() => group('CountryListView -', () {
     },
   );
 
-  testWidgets('missing Turkish translation keeps Croatia visible and grouped', (
+  testWidgets('a missing translation keeps Croatia visible and grouped', (
     tester,
   ) async {
-    await pumpList(
-      tester,
-      locale: const Locale('tr'),
-      filter: const ['HR'],
-      showGroup: true,
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        locale: const Locale('en'),
+        builder: (context) => Localizations.override(
+          context: context,
+          delegates: const [_MissingCountryNamesDelegate()],
+          child: const CountryListView(filter: ['HR'], showGroup: true),
+        ),
+      ),
     );
+    await tester.pumpAndSettle();
     expect(find.text('Croatia'), findsWidgets);
     expect(find.byKey(const ValueKey<String>('header_C')), findsOneWidget);
   });

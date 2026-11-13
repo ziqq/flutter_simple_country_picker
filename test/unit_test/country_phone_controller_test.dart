@@ -245,6 +245,38 @@ void main() => group('CountryPhoneController -', () {
       expect(controller.valueStatus.expectedLength, 10);
       expect(controller.valueStatus.isOverflow, isFalse);
     });
+
+    test('tracks all-zero national digits across external edits', () {
+      final controller = CountryPhoneController.apply('+62 000 000000');
+      addTearDown(controller.dispose);
+
+      expect(controller.valueStatus.isAllZeros, isTrue);
+      controller.value = controller.value.copyWith(
+        valueStatus: controller.valueStatus.copyWith(expectedLength: 9),
+      );
+      expect(controller.valueStatus.isComplete, isFalse);
+
+      controller.text = '+62 812 345678';
+      expect(controller.valueStatus.isAllZeros, isFalse);
+      expect(controller.valueStatus.isComplete, isTrue);
+
+      controller.clear();
+      expect(controller.valueStatus.isAllZeros, isFalse);
+      expect(controller.valueStatus.isEmpty, isTrue);
+    });
+
+    test('distinguishes all-zero statuses in a set', () {
+      const status = CountryPhoneValueStatus(
+        currentLength: 9,
+        expectedLength: 9,
+        isOverflow: false,
+      );
+      final allZeros = status.copyWith(isAllZeros: true);
+      final statuses = {status, allZeros, allZeros.copyWith()};
+
+      expect(statuses, hasLength(2));
+      expect(statuses.contains(allZeros.copyWith()), isTrue);
+    });
   });
 
   group('resolution behavior -', () {

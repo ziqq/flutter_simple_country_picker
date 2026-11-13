@@ -42,7 +42,7 @@ generate: ## Generate code
 
 .PHONY: generate-json
 generate-json: ## Generate json country data from dart code
-				@mise exec -- dart --disable-analytics run tool/generate_json.dart
+				@mise exec -- dart --disable-analytics run tool/dart/generate_json.dart
 
 .PHONY: build-runner
 build-runner: ## Run build_runner:build
@@ -110,7 +110,7 @@ test-unit: ## Runs unit and widget tests
 
 .PHONY: tag
 tag: ## Add a tag to the current commit
-	@mise exec -- dart run tool/tag.dart
+	@mise exec -- dart run tool/dart/tag.dart
 
 .PHONY: tag-add
 tag-add: ## Make command to add TAG. E.g: make tag-add TAG=v1.0.0

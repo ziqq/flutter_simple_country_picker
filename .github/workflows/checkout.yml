@@ -191,7 +191,7 @@ jobs:
         id: check-format
         timeout-minutes: 1
         run: |
-          find lib test example/integration_test tool/generate_json.dart tool/generate_phone_rules.dart \
+          find lib test example/integration_test tool/dart/generate_json.dart tool/dart/generate_phone_rules.dart \
           -path '*/generated/*' -prune -o \
           -type f -name '*.dart' \
           ! -name '*.*.dart' \
@@ -204,7 +204,7 @@ jobs:
         id: check-analyzer
         timeout-minutes: 1
         run: |
-          flutter analyze --fatal-warnings --no-fatal-infos lib/ test/ example/integration_test/ tool/generate_json.dart tool/generate_phone_rules.dart
+          flutter analyze --fatal-warnings --no-fatal-infos lib/ test/ example/integration_test/ tool/dart/generate_json.dart tool/dart/generate_phone_rules.dart
 
       - name: Unit & Widget tests
         run: |

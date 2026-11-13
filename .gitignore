@@ -76,6 +76,11 @@ reports/
 !/test/**/fixtures/*.json
 integration_test/screenshots
 
+# Local credentials
+/.env
+/.env.*
+!/.env.example
+
 # Temp
 .venv/
 venv/

@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:flutter_simple_country_picker/src/controller/country_controller.dart';
+import 'package:flutter_simple_country_picker/src/localization/translations/tr.dart';
 import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -120,9 +121,7 @@ void _$controllerTest() => group('CountryController -', () {
         Country.fromCountryCode('DE'),
       ],
     );
-    controller.initLocalization(
-      await CountryLocalizations.delegate.load(const Locale('tr')),
-    );
+    controller.initLocalization(const _MissingCroatianName());
 
     final localized = (await controller.getCountries())!;
 
@@ -384,3 +383,25 @@ void _$stateTest() => group('CountryState -', () {
     );
   });
 });
+
+final class _MissingCroatianName extends CountryLocalizations {
+  const _MissingCroatianName();
+
+  static const _delegate = CountryLocalizationsTr();
+
+  @override
+  String get cancelButton => _delegate.cancelButton;
+
+  @override
+  String get phonePlaceholder => _delegate.phonePlaceholder;
+
+  @override
+  String get searchPlaceholder => _delegate.searchPlaceholder;
+
+  @override
+  String get selectCountryLabel => _delegate.selectCountryLabel;
+
+  @override
+  String? countryName(String code) =>
+      code == 'HR' ? null : _delegate.countryName(code);
+}

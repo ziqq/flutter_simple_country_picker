@@ -23,7 +23,7 @@ Future<void> _runGitCommand(List<String> args) async {
   exit(1);
 }
 
-/// dart run tool/tag.dart
+/// dart run tool/dart/tag.dart
 void main() => runZonedGuarded<void>(
   () async {
     // Check if there are any uncommitted or unpushed changes

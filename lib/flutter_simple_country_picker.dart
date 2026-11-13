@@ -17,7 +17,7 @@
 /// | [CountryScope] | Pre-loads the country list into the widget tree. |
 /// | [CountryPickerTheme] | Visual customization via `ThemeExtension`. |
 /// | [CountryPickerSurface] | Custom surfaces (e.g. liquid glass) for picker controls. |
-/// | [CountryLocalizations] | Localization delegate — 36 built-in locales. |
+/// | [CountryLocalizations] | Localization delegate — 75 built-in locales. |
 ///
 /// ## Minimal setup
 ///
