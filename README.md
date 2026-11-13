@@ -110,13 +110,17 @@ MaterialApp(
 );
 ```
 
-> **Tip:** pass `CountryLocalizations.supportedLocales` to `supportedLocales` to
-> enable all 36 built-in locales at once.
+> `CountryLocalizations.supportedLocales` lists all 75 picker locales. When
+> configuring `MaterialApp.supportedLocales`, make sure the app also provides
+> Flutter's widget localizations for the enabled locales. The SDK delegates
+> do not cover every picker locale.
 
-Supported locales: `ar`, `bg`, `ca`, `cs`, `da`, `de`, `el`, `en`, `es`, `et`,
-`fa`, `fr`, `he`, `hi`, `hr`, `ht`, `id`, `it`, `ja`, `ko`, `ku`, `lt`, `lv`,
-`nb`, `ne`, `nl`, `nn`, `pl`, `pt`, `ro`, `ru`, `sk`, `tr`, `uk`,
-`zh-Hans` (Simplified Chinese), `zh-Hant` (Traditional Chinese).
+Supported locales: `af`, `am`, `ar`, `az`, `be`, `bg`, `bn`, `ca`, `cs`, `da`, `de`,
+`el`, `en`, `eo`, `es`, `et`, `eu`, `fa`, `fi`, `fil`, `fr`, `ga`, `gl`, `gu`, `he`,
+`hi`, `hr`, `ht`, `hu`, `hy`, `id`, `it`, `ja`, `ka`, `kk`, `km`, `kn`, `ko`, `ku`,
+`lt`, `lv`, `ml`, `mr`, `ms`, `mt`, `my`, `nb`, `ne`, `nl`, `nn`, `or`, `pl`, `pt`,
+`pt-BR`, `pt-PT`, `ro`, `ru`, `sk`, `sl`, `sq`, `sr`, `sv`, `sw`, `ta`, `te`, `tg`,
+`th`, `tk`, `tr`, `uk`, `ur`, `uz`, `vi`, `zh-Hans`, `zh-Hant`.
 
 ### Custom localizations
 
@@ -322,6 +326,9 @@ ValueListenableBuilder<CountryPhoneEditingValue>(
 )
 ```
 
+`isComplete` requires a supported length and at least one non-zero national
+digit. `isAllZeros` identifies a non-empty number made entirely of zeros.
+
 External updates should go through the immutable value API:
 
 ```dart
@@ -390,9 +397,11 @@ final formatter = CountryInputFormatter.forCountry(
 );
 ```
 
-The extended input accepts the same option. Automatic formatting chooses a
-country/prefix pattern and preserves all digits beyond its capacity, including
-separators. For Indonesian mobile inputs, all supported lengths from 9 to 12
+The extended input accepts the same option. Automatic formatting chooses the
+longest matching prefix from the country's display templates and uses the first
+template when no prefix matches. The field shows the unfilled part of the
+template in gray. Digits beyond the template are appended without changing
+its separators. For Indonesian mobile inputs, all supported lengths from 9 to 12
 digits can be complete. `expectedLength` is the next supported length at or
 above the current input, or the maximum for overflow. This describes length,
 not assignment, reachability or SMS support. Both selection endpoints follow
@@ -404,12 +413,46 @@ manual formatting; `updateCountry` selects automatic rules. The bundled rules
 cover 238 countries. HM, GS and VA retain the bundled mask as a soft fallback;
 number-prefix transforms that add or rewrite digits are not implemented.
 Metadata comes from pinned Apache-2.0 libphonenumber data; generation is in
-`tool/generate_phone_rules.dart`, with attribution under `assets/licenses/`.
-Run `fvm dart run tool/generate_phone_rules.dart` to regenerate, or
+`tool/dart/generate_phone_rules.dart`, with attribution under `assets/licenses/`.
+Run `fvm dart run tool/dart/generate_phone_rules.dart` to regenerate, or
 add `--metadata /path/PhoneNumberMetadata.xml --check` for an offline check.
 The generator verifies the pinned XML SHA-256 and runs the pinned Dart formatter
 before writing or comparing the output.
 
+### Updating display templates
+
+`tool/python/update_phone_display_patterns.py` compares the bundled display templates
+with a saved [Telegram countries response](https://core.telegram.org/method/help.getCountriesList).
+The offline comparison uses Python's standard library.
+
+```sh
+python3 tool/python/update_phone_display_patterns.py --snapshot /path/to/countries.json
+```
+
+To fetch a snapshot, install `Telethon==1.45.0` in a virtual environment and
+get your own `api_id` and `api_hash` from **API development tools** at
+[my.telegram.org](https://my.telegram.org/apps). Save them once in a local
+`.env` file at the repository root.
+
+```sh
+export TELEGRAM_API_ID=123456
+export TELEGRAM_API_HASH='your_api_hash'
+```
+
+Load the file in each new shell before refreshing the snapshot.
+
+```sh
+. ./.env
+python3 tool/python/update_phone_display_patterns.py --snapshot /path/to/countries.json --refresh
+```
+
+The command uses an unauthenticated MTProto connection and reuses the saved
+response hash for the same language.
+
+The comparison prints a unified diff and exits with status 1 when the table
+differs. Review the diff, then pass `--write` to regenerate
+`country_phone_display_patterns.g.dart` from the saved snapshot. Apps use the
+bundled templates offline.
 
 ## Gotchas
 

@@ -25,6 +25,8 @@ final class CountryLocalizationsTr extends CountryLocalizations {
   String? countryName(String code) => _names[code];
 }
 
+// Additional territory names from Unicode CLDR 47.0.
+// See assets/licenses/unicode-cldr-LICENSE.txt.
 const Map<String, String> _names = {
   'AF': 'Afganistan',
   'AB': 'Abhazya',
@@ -160,12 +162,14 @@ const Map<String, String> _names = {
   'MG': 'Madagaskar',
   'MW': 'Malavi',
   'BEN': 'Malezya',
+  'MY': 'Malezya',
   'MV': 'Maldivler',
   'ML': 'Mali',
   'MT': 'Malta',
   'MH': 'Marshall Adaları',
   'MQ': 'Martinik',
   'BAY': 'Moritanya',
+  'MR': 'Moritanya',
   'MU': 'Mauritius',
   'YT': 'Mayotte',
   'MX': 'Meksika',
@@ -178,9 +182,11 @@ const Map<String, String> _names = {
   'MA': 'Fas',
   'MZ': 'Mozambik',
   'AA': 'Myanmar [Burma]',
+  'MM': 'Myanmar (Burma)',
   'NA': 'Namibya',
   'NR': 'Nauru',
   'NP': 'Nepal',
+  'HR': 'Hırvatistan',
   'NL': 'Hollanda',
   'NC': 'Yeni Kaledonya',
   'NZ': 'Yeni Zelanda',
@@ -192,6 +198,7 @@ const Map<String, String> _names = {
   'KP': 'Kuzey Kore',
   'MP': 'Kuzey Mariana Adaları',
   'HAYIR': 'Norveç',
+  'NO': 'Norveç',
   'OM': 'Umman',
   'PK': 'Pakistan',
   'PW': 'Palau',
@@ -204,6 +211,7 @@ const Map<String, String> _names = {
   'PL': 'Polonya',
   'PT': 'Portekiz',
   'PR': 'Porto Riko',
+  'ME': 'Karadağ',
   'QA': 'Katar',
   'RE': 'Reunion',
   'RO': 'Romanya',

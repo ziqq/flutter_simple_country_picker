@@ -10,6 +10,7 @@ import 'package:flutter_simple_country_picker/src/controller/country_phone_contr
     show CountryPhoneValueStatus;
 import 'package:flutter_simple_country_picker/src/model/country.dart';
 import 'package:flutter_simple_country_picker/src/util/country_phone_format_resolver.dart';
+import 'package:meta/meta.dart';
 
 /// Default filter for country input formatter.
 final _kDefaultFilter = <String, RegExp>{
@@ -132,6 +133,11 @@ class CountryInputFormatter implements TextInputFormatter {
   /// The format resolver for the selected country, or null in manual mode.
   CountryPhoneFormatResolver? _formatResolver;
 
+  /// The remaining display template for the automatic input.
+  @internal
+  String? get maskHint => _maskHint;
+  String? _maskHint;
+
   /// Changes the selected country while preserving explicit manual constructors.
   TextEditingValue updateCountry(
     Country country, {
@@ -153,7 +159,9 @@ class CountryInputFormatter implements TextInputFormatter {
       shouldTryStripPhoneCode: shouldTryStripPhoneCode,
       shouldTryStripLeadingPrefix: shouldTryStripLeadingPrefix,
     );
-    _formatResolver = CountryPhoneFormatResolver(country);
+    final resolver = CountryPhoneFormatResolver(country);
+    _formatResolver = resolver;
+    _maskHint = resolver.formatWithHint('').hint;
     return formatEditUpdate(TextEditingValue.empty, value);
   }
 
@@ -356,6 +364,9 @@ class CountryInputFormatter implements TextInputFormatter {
     currentLength: _resultTextArray.length,
     expectedLength: _expectedPhoneLength(),
     isOverflow: _isOverflow(_resultTextArray.length),
+    isAllZeros:
+        _resultTextArray.length > 0 &&
+        _resultTextArray.symbols.every((digit) => digit == '0'),
   );
 
   /// Clear the masked text.
@@ -364,6 +375,7 @@ class CountryInputFormatter implements TextInputFormatter {
   void clear() {
     _mask = _savedMask ?? _mask;
     _setFlatMode(false);
+    _maskHint = _formatResolver?.formatWithHint('').hint;
     _resultTextMasked = '';
     _resultTextArray.clear();
     _setIncomplete(false);
@@ -974,7 +986,8 @@ class CountryInputFormatter implements TextInputFormatter {
         }
       }
     }
-    final formatted = resolver.format(digits);
+    final (text: formatted, :hint) = resolver.formatWithHint(digits);
+    _maskHint = hint;
     _resultTextArray.set(digits);
     _resultTextMasked = formatted;
     _setFlatMode(false);

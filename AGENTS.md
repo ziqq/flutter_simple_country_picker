@@ -29,7 +29,7 @@ Treat this repository as a **published package**, not an app-first codebase.
 - `lib/src/constant/country_codes.g.json`: generated JSON mirror of the dataset
 - `lib/src/localization/`: localization delegate and translations
 - `example/`: example application that is published with sources but not platform/build artifacts
-- `tool/generate_json.dart`: regenerates the JSON mirror from the Dart dataset
+- `tool/dart/generate_json.dart`: regenerates the JSON mirror from the Dart dataset
 
 ### Toolchain (pre-installed on the VM snapshot)
 

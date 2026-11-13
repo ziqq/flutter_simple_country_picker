@@ -2,7 +2,7 @@ import 'package:flutter_simple_country_picker/src/localization/country_localizat
 import 'package:meta/meta.dart';
 
 /// {@template countryLocalizationsNp}
-/// Nepali / Hindi localizations for [CountryLocalizations].
+/// Nepali localizations for [CountryLocalizations].
 /// {@endtemplate}
 @internal
 final class CountryLocalizationsNp extends CountryLocalizations {

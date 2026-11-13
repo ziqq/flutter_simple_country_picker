@@ -9,10 +9,13 @@ import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart
 /// {@endtemplate}
 class CommonLogo extends StatelessWidget {
   /// {@macro common_logo}
-  const CommonLogo({super.key}) : _useText = false;
+  const CommonLogo({this.size = 76, super.key}) : _useText = false;
 
   /// {@macro common_logo}
-  const CommonLogo.text({super.key}) : _useText = true;
+  const CommonLogo.text({this.size = 76, super.key}) : _useText = true;
+
+  /// The diameter of the logo.
+  final double size;
 
   /// Use text?
   final bool _useText;
@@ -22,14 +25,12 @@ class CommonLogo extends StatelessWidget {
     final localization = ExampleLocalization.of(context);
     final pickerTheme = CountryPickerTheme.of(context);
     final theme = Theme.of(context);
-    final logo = CircleAvatar(
-      radius: 38,
-      child: ClipOval(
-        child: Image.asset(
-          'assets/icons/icon-1024x1024.jpg',
-          width: 100,
-          height: 100,
-        ),
+    final logo = ClipOval(
+      child: Image.asset(
+        'assets/icons/icon-1024x1024.jpg',
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
       ),
     );
     final spacer = SizedBox(height: pickerTheme.padding);

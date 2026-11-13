@@ -58,19 +58,19 @@ void main() {
     });
 
     group('format', () {
-      test('selects distinct landline and mobile layouts by prefix', () {
-        expect(indonesia.format('212345678'), '21 2345678');
-        expect(indonesia.format('812345678'), '812-345-678');
+      test('uses the ID display template across prefixes', () {
+        expect(indonesia.format('212345678'), '212 345678');
+        expect(indonesia.format('812345678'), '812 345678');
       });
 
-      test('preserves the tail beyond the longest matching template', () {
+      test('preserves the tail beyond the selected template', () {
         final resolver = CountryPhoneFormatResolver(
           Country.fromCountryCode('EE'),
         );
         expect(resolver.format('512345678'), '5123 45678');
       });
 
-      test('prefers the more specific prefix when capacities are equal', () {
+      test('uses the AL display template', () {
         final resolver = CountryPhoneFormatResolver(
           Country.fromCountryCode('AL'),
         );

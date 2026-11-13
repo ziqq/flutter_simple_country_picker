@@ -9,7 +9,7 @@ import 'package:meta/meta.dart';
 ///
 /// Keep [countries] and `country_codes.g.json` in sync. After editing this file,
 /// regenerate the JSON mirror with `fvm dart --disable-analytics run
-/// tool/generate_json.dart`.
+/// tool/dart/generate_json.dart`.
 @internal
 const List<Map<String, Object?>> countries = <Map<String, Object?>>[
   {

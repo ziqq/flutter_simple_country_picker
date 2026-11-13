@@ -59,7 +59,7 @@ void main() {
           _edit(digits),
         );
         expect(result.text.replaceAll(RegExp(r'\D'), ''), digits);
-        expect(result.text, contains('-'));
+        expect(result.text, '${digits.substring(0, 3)} ${digits.substring(3)}');
         expect(formatter.valueStatus.isComplete, isTrue);
         expect(formatter.valueStatus.isOverflow, isFalse);
         expect(formatter.valueStatus.expectedLength, length);
@@ -75,7 +75,7 @@ void main() {
         _edit('81234567890123'),
       );
       expect(result.text.replaceAll(RegExp(r'\D'), ''), '81234567890123');
-      expect(result.text, contains('-'));
+      expect(result.text, '812 34567890123');
       expect(formatter.valueStatus.isOverflow, isTrue);
       expect(formatter.valueStatus.isComplete, isFalse);
     });
@@ -114,22 +114,22 @@ void main() {
     }
 
     test(
-      'prefix chooses ID fixed-line grouping rather than mobile grouping',
+      'ID uses the same display template for fixed-line and mobile numbers',
       () {
         final formatter = CountryInputFormatter.forCountry(
           country: Country.fromCountryCode('ID'),
         );
-        expect(formatter.maskText('212345678'), '21 2345678');
-        expect(formatter.maskText('812345678'), '812-345-678');
+        expect(formatter.maskText('212345678'), '212 345678');
+        expect(formatter.maskText('812345678'), '812 345678');
       },
     );
 
     for (final (iso, digits, expected) in <(String, String, String)>[
       ('EE', '51234567', '5123 4567'),
-      ('CN', '1012345678', '10 1234 5678'),
-      ('IR', '2123456789', '21 2345 6789'),
+      ('CN', '1012345678', '101 2345 678'),
+      ('IR', '2123456789', '212 345 6789'),
     ]) {
-      test('$iso uses a full-length format before extending a shorter one', () {
+      test('$iso uses its bundled display template', () {
         final formatter = CountryInputFormatter.forCountry(
           country: Country.fromCountryCode(iso),
         );
@@ -137,7 +137,7 @@ void main() {
       });
     }
 
-    test('overflow extends the longest applicable EE template', () {
+    test('overflow extends the EE display template', () {
       final formatter = CountryInputFormatter.forCountry(
         country: Country.fromCountryCode('EE'),
       );
@@ -151,7 +151,7 @@ void main() {
       expect(formatter.valueStatus.isOverflow, isTrue);
     });
 
-    test('AL overflow keeps the more specific of equal-capacity templates', () {
+    test('AL keeps its display groups after the template is full', () {
       final formatter = CountryInputFormatter.forCountry(
         country: Country.fromCountryCode('AL'),
       );
@@ -243,7 +243,7 @@ void main() {
         composing,
         composing.copyWith(composing: TextRange.empty),
       );
-      expect(committed.text, '812-3456-789');
+      expect(committed.text, '812 3456789');
       expect(committed.composing, TextRange.empty);
     });
 
@@ -257,9 +257,9 @@ void main() {
       );
       final result = formatter.formatEditUpdate(
         previous.copyWith(selection: const TextSelection.collapsed(offset: 4)),
-        _edit('812345-678', caret: 3),
+        _edit('812345678', caret: 3),
       );
-      expect(result.text.replaceAll(RegExp(r'\D'), ''), '81345678');
+      expect(result.text, '813 45678');
       expect(result.selection.extentOffset, 2);
     });
 

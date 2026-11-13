@@ -23,3 +23,12 @@ example/.dart_tool/
 example/.flutter-plugins
 example/.flutter-plugins-dependencies
 example/.metadata
+
+# Local tooling output
+/log.pana.json
+**/integration_test/screenshots/
+/venv/
+/temp/
+/tmp/
+*.log
+__pycache__/
