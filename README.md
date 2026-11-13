@@ -111,11 +111,11 @@ MaterialApp(
 ```
 
 > **Tip:** pass `CountryLocalizations.supportedLocales` to `supportedLocales` to
-> enable all 36 built-in locales at once.
+> enable all 39 built-in locales at once.
 
-Supported locales: `ar`, `bg`, `ca`, `cs`, `da`, `de`, `el`, `en`, `es`, `et`,
+Supported locales: `ar`, `be`, `bg`, `ca`, `cs`, `da`, `de`, `el`, `en`, `es`, `et`,
 `fa`, `fr`, `he`, `hi`, `hr`, `ht`, `id`, `it`, `ja`, `ko`, `ku`, `lt`, `lv`,
-`nb`, `ne`, `nl`, `nn`, `pl`, `pt`, `ro`, `ru`, `sk`, `tr`, `uk`,
+`ms`, `nb`, `ne`, `nl`, `nn`, `pl`, `pt`, `ro`, `ru`, `sk`, `tr`, `uk`, `uz`,
 `zh-Hans` (Simplified Chinese), `zh-Hant` (Traditional Chinese).
 
 ### Custom localizations

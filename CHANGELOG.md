@@ -1,7 +1,10 @@
 # Changelog
 
 ## Unreleased
+- **ADDED**: Belarusian (`be`), Malay (`ms`), and Uzbek (`uz`) localizations for the picker interface and country names
 - **FIXED**: phone input completion rejects national numbers made entirely of zeros, [#25](https://github.com/ziqq/flutter_simple_country_picker/issues/25)
+- **FIXED**: Hindi (`hi`) uses its own translations, and Turkish (`tr`) includes the six missing country names
+- **FIXED**: the extended phone input falls back to the original country name when a translation is missing
 - **CHANGED**: automatic phone formatting uses country templates with the longest matching prefix, shows the unfilled template in gray in both input variants, and retains digits beyond the template without regrouping, [#25](https://github.com/ziqq/flutter_simple_country_picker/issues/25)
 
 ## 0.11.2

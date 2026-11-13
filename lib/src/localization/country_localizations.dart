@@ -3,6 +3,7 @@ import 'package:flutter/material.dart' show Locale;
 import 'package:flutter/widgets.dart'
     show BuildContext, Localizations, LocalizationsDelegate;
 import 'package:flutter_simple_country_picker/src/localization/translations/ar.dart';
+import 'package:flutter_simple_country_picker/src/localization/translations/be.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/bg.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/ca.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/cn.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_simple_country_picker/src/localization/translations/fa.d
 import 'package:flutter_simple_country_picker/src/localization/translations/fr.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/gr.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/he.dart';
+import 'package:flutter_simple_country_picker/src/localization/translations/hi.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/hr.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/ht.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/id.dart';
@@ -25,6 +27,7 @@ import 'package:flutter_simple_country_picker/src/localization/translations/ko.d
 import 'package:flutter_simple_country_picker/src/localization/translations/ku.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/lt.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/lv.dart';
+import 'package:flutter_simple_country_picker/src/localization/translations/ms.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/nb.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/nl.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/nn.dart';
@@ -37,6 +40,7 @@ import 'package:flutter_simple_country_picker/src/localization/translations/sk.d
 import 'package:flutter_simple_country_picker/src/localization/translations/tr.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/tw.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/uk.dart';
+import 'package:flutter_simple_country_picker/src/localization/translations/uz.dart';
 
 /// {@template country_localizations}
 /// Defines all localizable strings used by the flutter_simple_country_picker
@@ -144,6 +148,7 @@ abstract class CountryLocalizations {
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
     Locale('ar'),
+    Locale('be'),
     Locale('bg'),
     Locale('ca'),
     Locale('cs'),
@@ -165,6 +170,7 @@ abstract class CountryLocalizations {
     Locale('ku'),
     Locale('lt'),
     Locale('lv'),
+    Locale('ms'),
     Locale('nb'),
     Locale('ne'),
     Locale('nl'),
@@ -176,6 +182,7 @@ abstract class CountryLocalizations {
     Locale('sk'),
     Locale('tr'),
     Locale('uk'),
+    Locale('uz'),
     Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
     Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
   ];
@@ -190,6 +197,7 @@ class _CountryLocalizationsDelegate
   static const Set<String> _supported = {
     'en',
     'ar',
+    'be',
     'bg',
     'ca',
     'cs',
@@ -211,6 +219,7 @@ class _CountryLocalizationsDelegate
     'ku',
     'lt',
     'lv',
+    'ms',
     'nb',
     'ne',
     'nl',
@@ -222,6 +231,7 @@ class _CountryLocalizationsDelegate
     'sk',
     'tr',
     'uk',
+    'uz',
     'zh',
   };
 
@@ -232,6 +242,7 @@ class _CountryLocalizationsDelegate
   Future<CountryLocalizations> load(Locale locale) =>
       SynchronousFuture<CountryLocalizations>(switch (locale.languageCode) {
         'ar' => const CountryLocalizationsAr(),
+        'be' => const CountryLocalizationsBe(),
         'bg' => const CountryLocalizationsBg(),
         'ca' => const CountryLocalizationsCa(),
         'cs' => const CountryLocalizationsCs(),
@@ -243,7 +254,7 @@ class _CountryLocalizationsDelegate
         'fa' => const CountryLocalizationsFa(),
         'fr' => const CountryLocalizationsFr(),
         'he' => const CountryLocalizationsHe(),
-        'hi' || 'ne' => const CountryLocalizationsNp(),
+        'hi' => const CountryLocalizationsHi(),
         'hr' => const CountryLocalizationsHr(),
         'ht' => const CountryLocalizationsHt(),
         'id' => const CountryLocalizationsId(),
@@ -253,7 +264,9 @@ class _CountryLocalizationsDelegate
         'ku' => const CountryLocalizationsKu(),
         'lt' => const CountryLocalizationsLt(),
         'lv' => const CountryLocalizationsLv(),
+        'ms' => const CountryLocalizationsMs(),
         'nb' => const CountryLocalizationsNb(),
+        'ne' => const CountryLocalizationsNp(),
         'nl' => const CountryLocalizationsNl(),
         'nn' => const CountryLocalizationsNn(),
         'pl' => const CountryLocalizationsPl(),
@@ -263,6 +276,7 @@ class _CountryLocalizationsDelegate
         'sk' => const CountryLocalizationsSk(),
         'tr' => const CountryLocalizationsTr(),
         'uk' => const CountryLocalizationsUk(),
+        'uz' => const CountryLocalizationsUz(),
         'zh' =>
           locale.scriptCode == 'Hant'
               ? const CountryLocalizationsZhHant()

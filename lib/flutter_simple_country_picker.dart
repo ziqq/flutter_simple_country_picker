@@ -16,7 +16,7 @@
 /// | [CountryInputFormatter] | Masks phone input according to a dial-format. |
 /// | [CountryScope] | Pre-loads the country list into the widget tree. |
 /// | [CountryPickerTheme] | Visual customization via `ThemeExtension`. |
-/// | [CountryLocalizations] | Localization delegate — 36 built-in locales. |
+/// | [CountryLocalizations] | Localization delegate — 39 built-in locales. |
 ///
 /// ## Minimal setup
 ///

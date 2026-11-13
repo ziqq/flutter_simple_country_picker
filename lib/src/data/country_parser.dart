@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/ar.dart';
+import 'package:flutter_simple_country_picker/src/localization/translations/be.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/bg.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/ca.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/cn.dart';
@@ -15,6 +16,7 @@ import 'package:flutter_simple_country_picker/src/localization/translations/fa.d
 import 'package:flutter_simple_country_picker/src/localization/translations/fr.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/gr.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/he.dart';
+import 'package:flutter_simple_country_picker/src/localization/translations/hi.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/hr.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/ht.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/id.dart';
@@ -24,6 +26,7 @@ import 'package:flutter_simple_country_picker/src/localization/translations/ko.d
 import 'package:flutter_simple_country_picker/src/localization/translations/ku.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/lt.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/lv.dart';
+import 'package:flutter_simple_country_picker/src/localization/translations/ms.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/nb.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/nl.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/nn.dart';
@@ -36,6 +39,7 @@ import 'package:flutter_simple_country_picker/src/localization/translations/sk.d
 import 'package:flutter_simple_country_picker/src/localization/translations/tr.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/tw.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/uk.dart';
+import 'package:flutter_simple_country_picker/src/localization/translations/uz.dart';
 import 'package:meta/meta.dart';
 
 /// {@template country_parser}
@@ -213,6 +217,7 @@ abstract final class CountryParser {
   static CountryLocalizations _getLocalization(Locale locale) =>
       switch (locale.languageCode) {
         'ar' => const CountryLocalizationsAr(),
+        'be' => const CountryLocalizationsBe(),
         'bg' => const CountryLocalizationsBg(),
         'ca' => const CountryLocalizationsCa(),
         'cs' => const CountryLocalizationsCs(),
@@ -224,7 +229,7 @@ abstract final class CountryParser {
         'fa' => const CountryLocalizationsFa(),
         'fr' => const CountryLocalizationsFr(),
         'he' => const CountryLocalizationsHe(),
-        'hi' || 'ne' => const CountryLocalizationsNp(),
+        'hi' => const CountryLocalizationsHi(),
         'hr' => const CountryLocalizationsHr(),
         'ht' => const CountryLocalizationsHt(),
         'id' => const CountryLocalizationsId(),
@@ -234,7 +239,9 @@ abstract final class CountryParser {
         'ku' => const CountryLocalizationsKu(),
         'lt' => const CountryLocalizationsLt(),
         'lv' => const CountryLocalizationsLv(),
+        'ms' => const CountryLocalizationsMs(),
         'nb' => const CountryLocalizationsNb(),
+        'ne' => const CountryLocalizationsNp(),
         'nl' => const CountryLocalizationsNl(),
         'nn' => const CountryLocalizationsNn(),
         'pl' => const CountryLocalizationsPl(),
@@ -244,6 +251,7 @@ abstract final class CountryParser {
         'sk' => const CountryLocalizationsSk(),
         'tr' => const CountryLocalizationsTr(),
         'uk' => const CountryLocalizationsUk(),
+        'uz' => const CountryLocalizationsUz(),
         'zh' =>
           locale.scriptCode == 'Hant'
               ? const CountryLocalizationsZhHant()

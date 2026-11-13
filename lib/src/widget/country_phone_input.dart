@@ -731,7 +731,8 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
               child: SizedBox(
                 width: double.infinity,
                 child: Text(
-                  '${selected.flagEmoji} ${localization.getFormatedCountryNameByCode(selected.countryCode)}',
+                  '${selected.flagEmoji} '
+                  '${localization.getFormatedCountryNameByCode(selected.countryCode) ?? selected.name}',
                   style: textStyle?.copyWith(fontWeight: FontWeight.w500),
                 ),
               ),

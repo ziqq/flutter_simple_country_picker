@@ -1,9 +1,11 @@
 // ignore_for_file: avoid_dynamic_calls
 
 import 'package:flutter/material.dart' show Locale;
+import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart'
     show CountryLocalizations;
 import 'package:flutter_simple_country_picker/src/localization/translations/ar.dart';
+import 'package:flutter_simple_country_picker/src/localization/translations/be.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/bg.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/ca.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/cn.dart';
@@ -17,6 +19,7 @@ import 'package:flutter_simple_country_picker/src/localization/translations/fa.d
 import 'package:flutter_simple_country_picker/src/localization/translations/fr.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/gr.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/he.dart';
+import 'package:flutter_simple_country_picker/src/localization/translations/hi.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/hr.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/ht.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/id.dart';
@@ -26,6 +29,7 @@ import 'package:flutter_simple_country_picker/src/localization/translations/ko.d
 import 'package:flutter_simple_country_picker/src/localization/translations/ku.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/lt.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/lv.dart';
+import 'package:flutter_simple_country_picker/src/localization/translations/ms.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/nb.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/nl.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/nn.dart';
@@ -38,6 +42,7 @@ import 'package:flutter_simple_country_picker/src/localization/translations/sk.d
 import 'package:flutter_simple_country_picker/src/localization/translations/tr.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/tw.dart';
 import 'package:flutter_simple_country_picker/src/localization/translations/uk.dart';
+import 'package:flutter_simple_country_picker/src/localization/translations/uz.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // ---------------------------------------------------------------------------
@@ -75,14 +80,15 @@ void main() {
   group('CountryLocalizations -', () {
     // ── supportedLocales ────────────────────────────────────────────────────
     group('supportedLocales -', () {
-      test('contains exactly 36 entries', () {
-        expect(CountryLocalizations.supportedLocales, hasLength(36));
+      test('contains exactly 39 entries', () {
+        expect(CountryLocalizations.supportedLocales, hasLength(39));
       });
 
       test('contains all expected language locales', () {
         const expected = <String>[
           'en',
           'ar',
+          'be',
           'bg',
           'ca',
           'cs',
@@ -104,6 +110,7 @@ void main() {
           'ku',
           'lt',
           'lv',
+          'ms',
           'nb',
           'ne',
           'nl',
@@ -115,6 +122,7 @@ void main() {
           'sk',
           'tr',
           'uk',
+          'uz',
         ];
         final langs = CountryLocalizations.supportedLocales.map(
           (l) => l.languageCode,
@@ -148,6 +156,7 @@ void main() {
         const supportedLanguages = <String>[
           'en',
           'ar',
+          'be',
           'bg',
           'ca',
           'cs',
@@ -169,6 +178,7 @@ void main() {
           'ku',
           'lt',
           'lv',
+          'ms',
           'nb',
           'ne',
           'nl',
@@ -180,6 +190,7 @@ void main() {
           'sk',
           'tr',
           'uk',
+          'uz',
           'zh',
         ];
 
@@ -196,6 +207,24 @@ void main() {
         });
       });
 
+      test('has country names for every bundled locale', () async {
+        for (final locale in CountryLocalizations.supportedLocales) {
+          final localization = await delegate.load(locale);
+          for (final country in countries) {
+            final code = country['iso2_cc']! as String;
+            expect(
+              localization.countryName(code),
+              isA<String>().having(
+                (name) => name.isNotEmpty,
+                'isNotEmpty',
+                true,
+              ),
+              reason: '$locale / $code',
+            );
+          }
+        }
+      });
+
       test('shouldReload returns false', () {
         expect(delegate.shouldReload(delegate), isFalse);
       });
@@ -203,6 +232,7 @@ void main() {
       group('load -', () {
         final loadCases = <(Locale, Type)>[
           (_l('ar'), CountryLocalizationsAr),
+          (_l('be'), CountryLocalizationsBe),
           (_l('bg'), CountryLocalizationsBg),
           (_l('ca'), CountryLocalizationsCa),
           (_l('cs'), CountryLocalizationsCs),
@@ -215,7 +245,7 @@ void main() {
           (_l('fa'), CountryLocalizationsFa),
           (_l('fr'), CountryLocalizationsFr),
           (_l('he'), CountryLocalizationsHe),
-          (_l('hi'), CountryLocalizationsNp),
+          (_l('hi'), CountryLocalizationsHi),
           (_l('hr'), CountryLocalizationsHr),
           (_l('ht'), CountryLocalizationsHt),
           (_l('id'), CountryLocalizationsId),
@@ -225,6 +255,7 @@ void main() {
           (_l('ku'), CountryLocalizationsKu),
           (_l('lt'), CountryLocalizationsLt),
           (_l('lv'), CountryLocalizationsLv),
+          (_l('ms'), CountryLocalizationsMs),
           (_l('nb'), CountryLocalizationsNb),
           (_l('ne'), CountryLocalizationsNp),
           (_l('nl'), CountryLocalizationsNl),
@@ -236,6 +267,7 @@ void main() {
           (_l('sk'), CountryLocalizationsSk),
           (_l('tr'), CountryLocalizationsTr),
           (_l('uk'), CountryLocalizationsUk),
+          (_l('uz'), CountryLocalizationsUz),
           (_lScript('zh', 'Hans'), CountryLocalizationsZhHans),
           (_lScript('zh', 'Hant'), CountryLocalizationsZhHant),
         ];
@@ -257,11 +289,11 @@ void main() {
           expect(loc, isA<CountryLocalizationsEn>());
         });
 
-        test('hi and ne share the same CountryLocalizationsNp class', () async {
+        test('hi and ne load their own interface strings', () async {
           final hi = await delegate.load(_l('hi'));
           final ne = await delegate.load(_l('ne'));
-          expect(hi.runtimeType, ne.runtimeType);
-          expect(hi, isA<CountryLocalizationsNp>());
+          expect(hi.cancelButton, 'रद्द करें');
+          expect(ne.cancelButton, 'रद्द गर्नुहोस्');
         });
       });
     });
