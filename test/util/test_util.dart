@@ -24,6 +24,6 @@ Widget createWidgetUnderTest({
 
 /// Gets [Country] by its ISO2 country code from JSON list.
 Country getCountryByISO2asJSON(String iso2) {
-  final countryJSON = kCountries.firstWhere((c) => c['iso2_cc'] == iso2);
+  final countryJSON = countries.firstWhere((c) => c['iso2_cc'] == iso2);
   return Country.fromJson(countryJSON);
 }

@@ -6,9 +6,9 @@
 import 'package:flutter/widgets.dart' show BuildContext, Locale;
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart'
-    show kCountries;
+    show countries;
 import 'package:flutter_simple_country_picker/src/constant/country_region_aliases.dart'
-    show kCountryRegionAliases;
+    show countryRegionAliases;
 import 'package:flutter_simple_country_picker/src/data/country_parser.dart';
 import 'package:flutter_simple_country_picker/src/util/country_util.dart'
     show CountryUtil;
@@ -40,12 +40,12 @@ class Country {
   /// Create a `RU` country.
   /// {@macro country}
   factory Country.ru() =>
-      Country.fromJson(kCountries.firstWhere((c) => c['e164_key'] == '7-RU-0'));
+      Country.fromJson(countries.firstWhere((c) => c['e164_key'] == '7-RU-0'));
 
   /// Create a `United States` country.
   /// {@macro country}
   factory Country.us() =>
-      Country.fromJson(kCountries.firstWhere((c) => c['e164_key'] == '1-US-0'));
+      Country.fromJson(countries.firstWhere((c) => c['e164_key'] == '1-US-0'));
 
   /// Create a country from a JSON object
   /// {@macro country}
@@ -291,7 +291,7 @@ class Country {
   static String normalizeRegionCode(String countryCode) {
     final normalized = countryCode.trim().toUpperCase();
     if (normalized.isEmpty) return normalized;
-    return kCountryRegionAliases[normalized] ?? normalized;
+    return countryRegionAliases[normalized] ?? normalized;
   }
 
   /// Convert the country to a JSON object

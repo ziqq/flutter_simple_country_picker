@@ -294,7 +294,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
 
   /// Returns null for countries that use the legacy prefix defaults.
   Set<String>? _manualLeadingPrefixes(Country country) =>
-      switch (kCountryPhoneRules[country.countryCode.toUpperCase()]) {
+      switch (countryPhoneRules[country.countryCode.toUpperCase()]) {
         null => null,
         CountryPhoneRules(literalTrunkPrefix: String prefix) => {prefix},
         _ => const {},

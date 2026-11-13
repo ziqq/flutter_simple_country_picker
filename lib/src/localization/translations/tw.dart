@@ -22,10 +22,10 @@ final class CountryLocalizationsZhHant extends CountryLocalizations {
   String get selectCountryLabel => '選擇國家';
 
   @override
-  String? countryName(String code) => _kNames[code];
+  String? countryName(String code) => _names[code];
 }
 
-const Map<String, String> _kNames = {
+const Map<String, String> _names = {
   'AB': '阿布哈茲',
   'AF': '阿富汗',
   'AX': '奧蘭',

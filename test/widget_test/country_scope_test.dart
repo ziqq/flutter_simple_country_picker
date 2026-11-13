@@ -10,9 +10,9 @@ import '../util/test_util.dart';
 void main() => group('CountryScope -', () {
   testWidgets('should filter countries by name in scope', (tester) async {
     final expectedCountry = Country.fromJson(
-      kCountries[0],
+      countries[0],
     ).copyWith(countryCode: 'CA', name: 'Canada');
-    final expected = kCountries
+    final expected = countries
         .map(Country.fromJson)
         .firstWhere((e) => e.countryCode == expectedCountry.countryCode);
 
@@ -57,10 +57,8 @@ void main() => group('CountryScope -', () {
   });
 
   testWidgets('should return <Country?> from getCountryByCode', (tester) async {
-    final index = math.Random().nextInt(kCountries.length - 1);
-    final expectedArr = kCountries
-        .map(Country.fromJson)
-        .toList(growable: false);
+    final index = math.Random().nextInt(countries.length - 1);
+    final expectedArr = countries.map(Country.fromJson).toList(growable: false);
     final country = expectedArr[index];
     final code = country.countryCode;
 

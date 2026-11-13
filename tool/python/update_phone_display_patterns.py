@@ -125,7 +125,7 @@ def render(snapshot, patterns):
         "/// Display templates in source order, keyed by the bundled country e164 key.",
         "/// An empty list means the source explicitly has no display template.",
         "@internal",
-        "const kCountryPhoneDisplayPatterns = <String, List<String>>{",
+        "const countryPhoneDisplayPatterns = <String, List<String>>{",
     ]
     for key, templates in sorted(patterns.items()):
         values = ", ".join(f"'{template}'" for template in templates)

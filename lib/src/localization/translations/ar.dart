@@ -22,10 +22,10 @@ final class CountryLocalizationsAr extends CountryLocalizations {
   String get selectCountryLabel => 'اختر الدولة';
 
   @override
-  String? countryName(String code) => _kNames[code];
+  String? countryName(String code) => _names[code];
 }
 
-const Map<String, String> _kNames = {
+const Map<String, String> _names = {
   'AF': 'أفغانستان',
   'AB': 'أبخازيا',
   'AX': 'جزر أولاند',

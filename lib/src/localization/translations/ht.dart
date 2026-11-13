@@ -22,10 +22,10 @@ final class CountryLocalizationsHt extends CountryLocalizations {
   String get selectCountryLabel => 'Chwazi peyi';
 
   @override
-  String? countryName(String code) => _kNames[code];
+  String? countryName(String code) => _names[code];
 }
 
-const Map<String, String> _kNames = {
+const Map<String, String> _names = {
   'AF': 'Afganistan',
   'AB': 'Abkaz',
   'AX': 'Zil Aland',

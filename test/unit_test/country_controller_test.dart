@@ -19,7 +19,7 @@ void _$controllerTest() => group('CountryController -', () {
   setUp(() {
     provider = MockCountryProvider();
     controller = CountryController(provider: provider);
-    mockCountry = Country.fromJson(kCountries[0]);
+    mockCountry = Country.fromJson(countries[0]);
   });
 
   test('Initial state is idle with empty countries list', () {
@@ -177,8 +177,8 @@ void _$controllerTest() => group('CountryController -', () {
 });
 
 void _$stateTest() => group('CountryState -', () {
-  final country1 = Country.fromJson(kCountries[0]);
-  final country2 = Country.fromJson(kCountries[1]);
+  final country1 = Country.fromJson(countries[0]);
+  final country2 = Country.fromJson(countries[1]);
   final countriesList = [country1, country2];
 
   test(r'CountryState$Loading should be loading state', () {

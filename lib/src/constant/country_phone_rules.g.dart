@@ -88,7 +88,7 @@ final class CountryPhoneFormat {
 /// added. Regions without formats inherit their calling code's main region.
 @internal
 const Map<String, CountryPhoneRules>
-kCountryPhoneRules = <String, CountryPhoneRules>{
+countryPhoneRules = <String, CountryPhoneRules>{
   'AC': CountryPhoneRules(
     callingCode: '247',
     regionPrefix: '',

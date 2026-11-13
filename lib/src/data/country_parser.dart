@@ -138,14 +138,14 @@ abstract final class CountryParser {
   /// the [countryCode] (e164_cc) and [e164Key] (e164Key)
   static Country _getFromPhoneCode(String phoneCode, String e164Key) =>
       Country.fromJson(
-        kCountries.singleWhere(
+        countries.singleWhere(
           (j) => j['e164_cc'] == phoneCode && j['e164_key'] == e164Key,
         ),
       );
 
   /// Returns a country that matches the [countryCode] (iso2_cc).
   static Country _getFromCode(String countryCode) => Country.fromJson(
-    kCountries.singleWhere((j) => j['iso2_cc'] == countryCode),
+    countries.singleWhere((j) => j['iso2_cc'] == countryCode),
   );
 
   /// Returns a country code that matches a country with the given [name] for
@@ -200,7 +200,7 @@ abstract final class CountryParser {
   /// Returns null if no match is found.
   static String? _localizedNameToCode(String name, Locale locale) {
     final loc = _getLocalization(locale);
-    for (final entry in kCountries) {
+    for (final entry in countries) {
       final code = entry['iso2_cc']?.toString();
       if (code == null) continue;
       if (loc.countryName(code)?.toLowerCase() == name) return code;

@@ -35,7 +35,7 @@ final class ExampleLocalization extends generated.ExampleGeneratedLocalization {
 
   /// Get language by code.
   static ({String name, String nativeName})? getLanguageByCode(String code) =>
-      switch (_kIsoLangs[code.toLowerCase()]) {
+      switch (_isoLangs[code.toLowerCase()]) {
         (String, String) lang => (name: lang.$1, nativeName: lang.$2),
         _ => null,
       };
@@ -75,7 +75,7 @@ final class _ExampleLocalizationDelegate
       _delegate.shouldReload(old._delegate);
 }
 
-const Map<String, (String name, String nativeName)> _kIsoLangs =
+const Map<String, (String name, String nativeName)> _isoLangs =
     <String, (String name, String nativeName)>{
       'ab': ('Abkhaz', 'аҧсуа'),
       'aa': ('Afar', 'Afaraf'),

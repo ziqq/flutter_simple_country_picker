@@ -44,14 +44,14 @@ void main(List<String> args) {
 }
 
 String _extractCountriesListLiteral(String source) {
-  final anchorIndex = source.indexOf('kCountries');
+  final anchorIndex = source.indexOf('countries');
   if (anchorIndex == -1) {
-    throw const FormatException('Could not find `kCountries` in source.');
+    throw const FormatException('Could not find `countries` in source.');
   }
 
   final assignIndex = source.indexOf('=', anchorIndex);
   if (assignIndex == -1) {
-    throw const FormatException('Could not find assignment for `kCountries`.');
+    throw const FormatException('Could not find assignment for `countries`.');
   }
 
   final listStart = source.indexOf('[', assignIndex);

@@ -2,7 +2,7 @@ import 'package:meta/meta.dart';
 
 /// Internal aliases for region codes that should resolve to a supported ISO2.
 @internal
-const Map<String, String> kCountryRegionAliases = <String, String>{
+const Map<String, String> countryRegionAliases = <String, String>{
   'AC': 'SH',
   'AN': 'NL',
   'BU': 'MM',
