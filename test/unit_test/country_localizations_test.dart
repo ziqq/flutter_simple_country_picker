@@ -80,8 +80,13 @@ void main() {
   group('CountryLocalizations -', () {
     // ── supportedLocales ────────────────────────────────────────────────────
     group('supportedLocales -', () {
-      test('contains exactly 39 entries', () {
-        expect(CountryLocalizations.supportedLocales, hasLength(39));
+      test('contains 75 distinct locale tags', () {
+        final locales = CountryLocalizations.supportedLocales;
+        expect(locales, hasLength(75));
+        expect(
+          locales.map((locale) => locale.toLanguageTag()).toSet(),
+          hasLength(75),
+        );
       });
 
       test('contains all expected language locales', () {
@@ -209,7 +214,15 @@ void main() {
 
       test('has country names for every bundled locale', () async {
         for (final locale in CountryLocalizations.supportedLocales) {
+          expect(delegate.isSupported(locale), isTrue, reason: '$locale');
           final localization = await delegate.load(locale);
+          if (locale.languageCode != 'en') {
+            expect(
+              localization,
+              isNot(isA<CountryLocalizationsEn>()),
+              reason: '$locale',
+            );
+          }
           for (final country in countries) {
             final code = country['iso2_cc']! as String;
             expect(
@@ -230,6 +243,16 @@ void main() {
       });
 
       group('load -', () {
+        test('uses regional Portuguese names and falls back to pt', () async {
+          final brazilian = await delegate.load(const Locale('pt', 'BR'));
+          final european = await delegate.load(const Locale('pt', 'PT'));
+          final angolan = await delegate.load(const Locale('pt', 'AO'));
+
+          expect(brazilian.countryName('PL'), 'Polônia');
+          expect(european.countryName('PL'), 'Polónia');
+          expect(angolan, isA<CountryLocalizationsPt>());
+        });
+
         final loadCases = <(Locale, Type)>[
           (_l('ar'), CountryLocalizationsAr),
           (_l('be'), CountryLocalizationsBe),

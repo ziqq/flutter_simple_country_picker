@@ -1,7 +1,7 @@
 # Changelog
 
-## Unreleased
-- **ADDED**: Belarusian (`be`), Malay (`ms`), and Uzbek (`uz`) localizations for the picker interface and country names
+## 0.11.3
+- **ADDED**: expanded the picker to 75 built-in locales, including all 71 entries in the Telegram Translations catalog and separate Brazilian (`pt-BR`) and European (`pt-PT`) Portuguese translations
 - **FIXED**: phone input completion rejects national numbers made entirely of zeros, [#25](https://github.com/ziqq/flutter_simple_country_picker/issues/25)
 - **FIXED**: Hindi (`hi`) uses its own translations, and Turkish (`tr`) includes the six missing country names
 - **FIXED**: the extended phone input falls back to the original country name when a translation is missing

@@ -19,6 +19,16 @@ void main() => group('CountryParser -', () {
 
   tearDownAll(() async {});
 
+  test('parses the country name for each Portuguese variant', () {
+    for (final (region, name) in [('BR', 'Polônia'), ('PT', 'Polónia')]) {
+      final country = CountryParser.parseCountryName(
+        name,
+        locales: [Locale('pt', region)],
+      );
+      expect(country.countryCode, 'PL', reason: region);
+    }
+  });
+
   test('parses country names in the added and corrected locales', () {
     const cases = [
       ('be', 'Харватыя', 'HR'),

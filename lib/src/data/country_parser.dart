@@ -1,45 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/ar.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/be.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/bg.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/ca.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/cn.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/cs.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/da.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/de.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/en.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/es.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/et.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/fa.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/fr.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/gr.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/he.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/hi.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/hr.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/ht.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/id.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/it.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/ja.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/ko.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/ku.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/lt.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/lv.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/ms.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/nb.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/nl.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/nn.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/np.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/pl.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/pt.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/ro.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/ru.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/sk.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/tr.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/tw.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/uk.dart';
-import 'package:flutter_simple_country_picker/src/localization/translations/uz.dart';
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart'
+    show resolveCountryLocalizations;
 import 'package:meta/meta.dart';
 
 /// {@template country_parser}
@@ -203,7 +166,7 @@ abstract final class CountryParser {
   ///
   /// Returns null if no match is found.
   static String? _localizedNameToCode(String name, Locale locale) {
-    final loc = _getLocalization(locale);
+    final loc = resolveCountryLocalizations(locale);
     for (final entry in countries) {
       final code = entry['iso2_cc']?.toString();
       if (code == null) continue;
@@ -211,53 +174,6 @@ abstract final class CountryParser {
     }
     return null;
   }
-
-  // TODO(ziqq): solution to prevent manual update on adding new localizations?
-  /// Returns a [CountryLocalizations] instance for the given [locale].
-  static CountryLocalizations _getLocalization(Locale locale) =>
-      switch (locale.languageCode) {
-        'ar' => const CountryLocalizationsAr(),
-        'be' => const CountryLocalizationsBe(),
-        'bg' => const CountryLocalizationsBg(),
-        'ca' => const CountryLocalizationsCa(),
-        'cs' => const CountryLocalizationsCs(),
-        'da' => const CountryLocalizationsDa(),
-        'de' => const CountryLocalizationsDe(),
-        'el' => const CountryLocalizationsEl(),
-        'es' => const CountryLocalizationsEs(),
-        'et' => const CountryLocalizationsEt(),
-        'fa' => const CountryLocalizationsFa(),
-        'fr' => const CountryLocalizationsFr(),
-        'he' => const CountryLocalizationsHe(),
-        'hi' => const CountryLocalizationsHi(),
-        'hr' => const CountryLocalizationsHr(),
-        'ht' => const CountryLocalizationsHt(),
-        'id' => const CountryLocalizationsId(),
-        'it' => const CountryLocalizationsIt(),
-        'ja' => const CountryLocalizationsJa(),
-        'ko' => const CountryLocalizationsKo(),
-        'ku' => const CountryLocalizationsKu(),
-        'lt' => const CountryLocalizationsLt(),
-        'lv' => const CountryLocalizationsLv(),
-        'ms' => const CountryLocalizationsMs(),
-        'nb' => const CountryLocalizationsNb(),
-        'ne' => const CountryLocalizationsNp(),
-        'nl' => const CountryLocalizationsNl(),
-        'nn' => const CountryLocalizationsNn(),
-        'pl' => const CountryLocalizationsPl(),
-        'pt' => const CountryLocalizationsPt(),
-        'ro' => const CountryLocalizationsRo(),
-        'ru' => const CountryLocalizationsRu(),
-        'sk' => const CountryLocalizationsSk(),
-        'tr' => const CountryLocalizationsTr(),
-        'uk' => const CountryLocalizationsUk(),
-        'uz' => const CountryLocalizationsUz(),
-        'zh' =>
-          locale.scriptCode == 'Hant'
-              ? const CountryLocalizationsZhHant()
-              : const CountryLocalizationsZhHans(),
-        _ => const CountryLocalizationsEn(),
-      };
 
   /// A list of the supported locales, except those included in the [exclude]
   /// list. Derived from [CountryLocalizations.supportedLocales].

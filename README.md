@@ -110,13 +110,17 @@ MaterialApp(
 );
 ```
 
-> **Tip:** pass `CountryLocalizations.supportedLocales` to `supportedLocales` to
-> enable all 39 built-in locales at once.
+> `CountryLocalizations.supportedLocales` lists all 75 picker locales. When
+> configuring `MaterialApp.supportedLocales`, make sure the app also provides
+> Flutter's widget localizations for the enabled locales. The SDK delegates
+> do not cover every picker locale.
 
-Supported locales: `ar`, `be`, `bg`, `ca`, `cs`, `da`, `de`, `el`, `en`, `es`, `et`,
-`fa`, `fr`, `he`, `hi`, `hr`, `ht`, `id`, `it`, `ja`, `ko`, `ku`, `lt`, `lv`,
-`ms`, `nb`, `ne`, `nl`, `nn`, `pl`, `pt`, `ro`, `ru`, `sk`, `tr`, `uk`, `uz`,
-`zh-Hans` (Simplified Chinese), `zh-Hant` (Traditional Chinese).
+Supported locales: `af`, `am`, `ar`, `az`, `be`, `bg`, `bn`, `ca`, `cs`, `da`, `de`,
+`el`, `en`, `eo`, `es`, `et`, `eu`, `fa`, `fi`, `fil`, `fr`, `ga`, `gl`, `gu`, `he`,
+`hi`, `hr`, `ht`, `hu`, `hy`, `id`, `it`, `ja`, `ka`, `kk`, `km`, `kn`, `ko`, `ku`,
+`lt`, `lv`, `ml`, `mr`, `ms`, `mt`, `my`, `nb`, `ne`, `nl`, `nn`, `or`, `pl`, `pt`,
+`pt-BR`, `pt-PT`, `ro`, `ru`, `sk`, `sl`, `sq`, `sr`, `sv`, `sw`, `ta`, `te`, `tg`,
+`th`, `tk`, `tr`, `uk`, `ur`, `uz`, `vi`, `zh-Hans`, `zh-Hant`.
 
 ### Custom localizations
 
