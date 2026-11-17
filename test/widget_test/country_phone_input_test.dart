@@ -1536,10 +1536,12 @@ void _$extendedCountryPhoneInputTest() {
           find.byType(CountryListView),
         );
         expect(listView.filter, contains('FR'));
-        // Should show France tile and not Russia tile.
-        // Key for France constructed from Country.e164Key pattern. We derive dynamically.
-        // Fallback: assert that only one list tile is present.
-        expect(find.byType(InkWell), findsOneWidget);
+        final rows = find.byType(CustomScrollView);
+        expect(
+          find.descendant(of: rows, matching: find.byType(InkWell)),
+          findsOneWidget,
+        );
+        expect(find.byKey(const ValueKey<String>('33-FR-0')), findsOneWidget);
         expect(find.byKey(const ValueKey<String>('7-RU-0')), findsNothing);
       });
 

@@ -433,10 +433,12 @@ class _CountryPickerGlassFakeState extends State<_CountryPickerGlassFake>
   }
 }
 
-/// Displays a compact Cupertino navigation bar above the progressive scroll edge.
+/// Displays the picker title using the platform-appropriate toolbar.
+///
+/// Android renderers without shader filters use a Material [AppBar].
 @internal
 class CountryPickerHeader extends StatelessWidget {
-  /// Creates the fixed title and independent glass close control.
+  /// Creates the fixed title and close control.
   const CountryPickerHeader({
     required this.onClose,
     required this.onScrollToTop,
@@ -458,6 +460,54 @@ class CountryPickerHeader extends StatelessWidget {
     final theme = CountryPickerTheme.resolve(context);
     final background = countryPickerSheetBackgroundColor(context, theme);
     final padding = countryPickerHeaderPadding(theme);
+    final controlHeight = countryPickerMinimumControlHeight(context);
+    final title = Text(
+      CountryLocalizations.of(context).selectCountryLabel,
+      style: theme.textStyle?.copyWith(fontWeight: .w600),
+      overflow: .ellipsis,
+      maxLines: 1,
+    );
+    const closeButtonKey = ValueKey<String>(
+      'country_picker_header_close_button',
+    );
+
+    // Use the solid SDK toolbar on Android renderers without shader filters.
+    if (!kIsWeb &&
+        defaultTargetPlatform == TargetPlatform.android &&
+        !ui.ImageFilter.isShaderFilterSupported) {
+      final builder = surfaceBuilder;
+      return GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        excludeFromSemantics: true,
+        onTap: onScrollToTop,
+        child: AppBar(
+          automaticallyImplyLeading: false,
+          centerTitle: true,
+          toolbarHeight: controlHeight + padding.vertical,
+          backgroundColor: background,
+          foregroundColor: theme.textStyle?.color,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          leadingWidth: builder == null ? null : theme.padding + controlHeight,
+          leading: builder == null
+              ? CloseButton(key: closeButtonKey, onPressed: onClose)
+              : Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: SizedBox.square(
+                    dimension: controlHeight,
+                    child: _CountryPickerCloseButton(
+                      key: closeButtonKey,
+                      onClose: onClose,
+                      surfaceBuilder: builder,
+                      pressAlignment: Alignment.topCenter,
+                    ),
+                  ),
+                ),
+          title: title,
+        ),
+      );
+    }
+
     return Stack(
       fit: StackFit.passthrough,
       clipBehavior: Clip.none,
@@ -500,12 +550,7 @@ class CountryPickerHeader extends StatelessWidget {
                 behavior: HitTestBehavior.opaque,
                 excludeFromSemantics: true,
                 onTap: onScrollToTop,
-                child: Text(
-                  CountryLocalizations.of(context).selectCountryLabel,
-                  style: theme.textStyle?.copyWith(fontWeight: .w600),
-                  overflow: .ellipsis,
-                  maxLines: 1,
-                ),
+                child: title,
               ),
             ),
           ),
@@ -521,14 +566,12 @@ class CountryPickerHeader extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsetsDirectional.only(start: theme.padding),
                   child: SizedBox.square(
-                    dimension: countryPickerMinimumControlHeight(context),
+                    dimension: controlHeight,
                     child: _CountryPickerCloseButton(
+                      key: closeButtonKey,
                       onClose: onClose,
                       surfaceBuilder: surfaceBuilder,
                       pressAlignment: Alignment.topCenter,
-                      key: const ValueKey<String>(
-                        'country_picker_header_close_button',
-                      ),
                     ),
                   ),
                 ),

@@ -600,13 +600,42 @@ void main() => group('showCountryPicker -', () {
           final bounds = tester.getRect(sheet());
           expect(close.left - bounds.left, 16);
           expect(close.top - bounds.top, 16);
-          expect(
-            close.size,
-            defaultTargetPlatform == TargetPlatform.android
-                ? const Size(48, 48)
-                : const Size(44, 44),
-          );
+          expect(close.size, const Size(44, 44));
         },
+        variant: TargetPlatformVariant.only(.iOS),
+      );
+
+      testWidgets(
+        'Android AppBar keeps its height, dock and scroll-to-top: dark=$dark',
+        (tester) async {
+          await pumpPicker(tester, dark: dark, filter: null);
+          final appBar = find.byType(AppBar);
+          final dock = find.byType(CupertinoSearchTextField);
+          expect(appBar, findsOneWidget);
+          expect(tester.widget<AppBar>(appBar).toolbarHeight, 72);
+          expect(tester.widget(find.byKey(headerClose)), isA<CloseButton>());
+          expect(dock, findsOneWidget);
+          final dockRect = tester.getRect(dock);
+
+          final list = find.byType(CustomScrollView);
+          final scrollable = tester.state<ScrollableState>(
+            find.descendant(of: list, matching: find.byType(Scrollable)).first,
+          );
+          await tester.drag(list, const Offset(0, -400));
+          await tester.pumpAndSettle();
+          expect(scrollable.position.pixels, greaterThan(0));
+
+          final barRect = tester.getRect(appBar);
+          await tester.tapAt(Offset(barRect.right - 16, barRect.center.dy));
+          await tester.pumpAndSettle();
+          expect(scrollable.position.pixels, 0);
+          expect(tester.getRect(dock), dockRect);
+
+          await tester.tap(find.byKey(headerClose));
+          await tester.pumpAndSettle();
+          expect(find.byType(CountryListView), findsNothing);
+        },
+        variant: TargetPlatformVariant.only(.android),
       );
 
       testWidgets('full list opens at full available height: dark=$dark', (

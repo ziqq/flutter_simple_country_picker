@@ -73,9 +73,9 @@ class CountryPickerSurface {
 /// `child` is the surface content without the background.
 ///
 /// Passed to `showCountryPicker` or `CountryPhoneInput`, like
-/// `TextField.contextMenuBuilder`. When `null`, the picker paints
-/// [CountryPickerSurface.decoration] with backdrop blur. Search and close
-/// controls share scale and content-opacity feedback on press.
+/// `TextField.contextMenuBuilder`. When `null`, glass controls paint
+/// [CountryPickerSurface.decoration] with backdrop blur and animate on press.
+/// The solid Android header uses the Material close button by default.
 ///
 /// ```dart
 /// Widget glassSurface(
