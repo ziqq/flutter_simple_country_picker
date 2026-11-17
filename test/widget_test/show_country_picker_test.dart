@@ -613,7 +613,28 @@ void main() => group('showCountryPicker -', () {
           final dock = find.byType(CupertinoSearchTextField);
           expect(appBar, findsOneWidget);
           expect(tester.widget<AppBar>(appBar).toolbarHeight, 72);
-          expect(tester.widget(find.byKey(headerClose)), isA<CloseButton>());
+          final closeButton = find.byKey(headerClose);
+          final closeRect = tester.getRect(closeButton);
+          final sheetRect = tester.getRect(sheet());
+          expect(closeRect.left - sheetRect.left, 16);
+          expect(closeRect.top - sheetRect.top, 16);
+          expect(closeRect.size, const Size(48, 48));
+          expect(
+            find.descendant(
+              of: closeButton,
+              matching: find.byIcon(CupertinoIcons.xmark),
+            ),
+            findsOneWidget,
+          );
+          final title = find.text('Select country');
+          final titleRect = tester.getRect(title);
+          final titleStyle = tester.widget<Text>(title).style;
+          expect(titleStyle?.inherit, isFalse);
+          expect(titleStyle?.fontSize, 17);
+          expect(titleStyle?.fontWeight, FontWeight.w500);
+          expect(titleStyle?.letterSpacing, -.41);
+          expect(titleRect.center.dx, tester.getCenter(appBar).dx);
+          expect(titleRect.center.dy, closeRect.center.dy);
           expect(dock, findsOneWidget);
           final dockRect = tester.getRect(dock);
 

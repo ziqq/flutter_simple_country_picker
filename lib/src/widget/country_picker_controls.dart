@@ -461,99 +461,91 @@ class CountryPickerHeader extends StatelessWidget {
     final background = countryPickerSheetBackgroundColor(context, theme);
     final padding = countryPickerHeaderPadding(theme);
     final controlHeight = countryPickerMinimumControlHeight(context);
+    // Use the solid SDK toolbar on Android renderers without shader filters.
+    final useMaterialAppBar =
+        !kIsWeb &&
+        defaultTargetPlatform == TargetPlatform.android &&
+        !ui.ImageFilter.isShaderFilterSupported;
+    final textStyle = CountryPickerTheme.maybeOf(context)?.textStyle;
+    final titleStyle = CupertinoTheme.of(context).textTheme.navTitleTextStyle
+        .copyWith(color: theme.textStyle?.color)
+        .merge(textStyle)
+        .copyWith(
+          inherit: false,
+          // The stock Android font on Skia uses its bold face for w600.
+          fontWeight: useMaterialAppBar && textStyle?.fontFamily == null
+              ? .w500
+              : .w600,
+        );
     final title = Text(
       CountryLocalizations.of(context).selectCountryLabel,
-      style: theme.textStyle?.copyWith(fontWeight: .w600),
+      style: titleStyle,
       overflow: .ellipsis,
       maxLines: 1,
     );
-    const closeButtonKey = ValueKey<String>(
-      'country_picker_header_close_button',
-    );
-
-    // Use the solid SDK toolbar on Android renderers without shader filters.
-    if (!kIsWeb &&
-        defaultTargetPlatform == TargetPlatform.android &&
-        !ui.ImageFilter.isShaderFilterSupported) {
-      final builder = surfaceBuilder;
-      return GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        excludeFromSemantics: true,
-        onTap: onScrollToTop,
-        child: AppBar(
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          toolbarHeight: controlHeight + padding.vertical,
-          backgroundColor: background,
-          foregroundColor: theme.textStyle?.color,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          leadingWidth: builder == null ? null : theme.padding + controlHeight,
-          leading: builder == null
-              ? CloseButton(key: closeButtonKey, onPressed: onClose)
-              : Align(
-                  alignment: AlignmentDirectional.centerEnd,
-                  child: SizedBox.square(
-                    dimension: controlHeight,
-                    child: _CountryPickerCloseButton(
-                      key: closeButtonKey,
-                      onClose: onClose,
-                      surfaceBuilder: builder,
-                      pressAlignment: Alignment.topCenter,
-                    ),
-                  ),
-                ),
-          title: title,
-        ),
-      );
-    }
 
     return Stack(
       fit: StackFit.passthrough,
       clipBehavior: Clip.none,
       children: <Widget>[
-        Positioned.fill(
-          child: CountryPickerScrollEdgeEffect(
-            color: background,
-            extent: theme.padding * 2,
+        if (!useMaterialAppBar)
+          Positioned.fill(
+            child: CountryPickerScrollEdgeEffect(
+              color: background,
+              extent: theme.padding * 2,
+            ),
           ),
-        ),
         GestureDetector(
           behavior: HitTestBehavior.opaque,
           excludeFromSemantics: true,
           onTap: onScrollToTop,
-          child: Padding(
-            padding: padding,
-            child: CupertinoNavigationBar(
-              bottom: Theme.of(context).platform == TargetPlatform.android
-                  ? const PreferredSize(
-                      preferredSize: Size.fromHeight(4),
-                      child: SizedBox(height: 4),
-                    )
-                  : null,
-              backgroundColor: background.withValues(alpha: 0),
-              border: null,
-              automaticBackgroundVisibility: false,
-              enableBackgroundFilterBlur: false,
-              automaticallyImplyLeading: false,
-              automaticallyImplyMiddle: false,
-              transitionBetweenRoutes: false,
-              padding: EdgeInsetsDirectional.symmetric(
-                horizontal: theme.padding,
-              ),
-              // Reserve the original leading width; the control paints outside
-              // CupertinoNavigationBar's unconditional background ClipRect.
-              leading: const SizedBox.square(
-                dimension: kCountryPickerControlHeight,
-              ),
-              middle: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                excludeFromSemantics: true,
-                onTap: onScrollToTop,
-                child: title,
-              ),
-            ),
-          ),
+          child: useMaterialAppBar
+              ? AppBar(
+                  automaticallyImplyLeading: false,
+                  centerTitle: true,
+                  toolbarHeight: controlHeight + padding.vertical,
+                  // Keep the centered title clear of the floating close control.
+                  titleSpacing: theme.padding + controlHeight,
+                  backgroundColor: background,
+                  foregroundColor: titleStyle.color,
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  title: Padding(
+                    padding: EdgeInsets.only(top: padding.top - padding.bottom),
+                    child: title,
+                  ),
+                )
+              : Padding(
+                  padding: padding,
+                  child: CupertinoNavigationBar(
+                    bottom: Theme.of(context).platform == TargetPlatform.android
+                        ? const PreferredSize(
+                            preferredSize: Size.fromHeight(4),
+                            child: SizedBox(height: 4),
+                          )
+                        : null,
+                    backgroundColor: background.withValues(alpha: 0),
+                    border: null,
+                    automaticBackgroundVisibility: false,
+                    enableBackgroundFilterBlur: false,
+                    automaticallyImplyLeading: false,
+                    automaticallyImplyMiddle: false,
+                    transitionBetweenRoutes: false,
+                    padding: EdgeInsetsDirectional.symmetric(
+                      horizontal: theme.padding,
+                    ),
+                    // The control paints above the toolbar's background clip.
+                    leading: const SizedBox.square(
+                      dimension: kCountryPickerControlHeight,
+                    ),
+                    middle: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      excludeFromSemantics: true,
+                      onTap: onScrollToTop,
+                      child: title,
+                    ),
+                  ),
+                ),
         ),
         Positioned.fill(
           child: Padding(
@@ -568,7 +560,9 @@ class CountryPickerHeader extends StatelessWidget {
                   child: SizedBox.square(
                     dimension: controlHeight,
                     child: _CountryPickerCloseButton(
-                      key: closeButtonKey,
+                      key: const ValueKey<String>(
+                        'country_picker_header_close_button',
+                      ),
                       onClose: onClose,
                       surfaceBuilder: surfaceBuilder,
                       pressAlignment: Alignment.topCenter,

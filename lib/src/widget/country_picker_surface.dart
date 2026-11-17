@@ -75,7 +75,6 @@ class CountryPickerSurface {
 /// Passed to `showCountryPicker` or `CountryPhoneInput`, like
 /// `TextField.contextMenuBuilder`. When `null`, glass controls paint
 /// [CountryPickerSurface.decoration] with backdrop blur and animate on press.
-/// The solid Android header uses the Material close button by default.
 ///
 /// ```dart
 /// Widget glassSurface(
