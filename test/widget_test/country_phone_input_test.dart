@@ -699,6 +699,55 @@ void _$defaultCountryPhoneInputTest() {
     });
 
     group('countryController -', () {
+      for (final useCountryFormatting in [false, true]) {
+        testWidgets('parses with the new country when both controllers change '
+            '(useCountryFormatting: $useCountryFormatting)', (tester) async {
+          const internationalNumber = '+628123456789';
+          final previousCountry = ValueNotifier(Country.ru());
+          final replacementCountry = ValueNotifier(
+            Country.fromCountryCode('ID'),
+          );
+          final previousPhone = CountryPhoneController.apply('+71234567890');
+          final replacementPhone = CountryPhoneController.apply(
+            internationalNumber,
+          );
+          addTearDown(previousCountry.dispose);
+          addTearDown(replacementCountry.dispose);
+          addTearDown(previousPhone.dispose);
+          addTearDown(replacementPhone.dispose);
+
+          Future<void> show(
+            ValueNotifier<Country> country,
+            CountryPhoneController phone,
+          ) => tester.pumpWidget(
+            createWidgetUnderTest(
+              builder: (_) => Scaffold(
+                body: CountryPhoneInput(
+                  countryController: country,
+                  controller: phone,
+                  useCountryFormatting: useCountryFormatting,
+                ),
+              ),
+            ),
+          );
+
+          await show(previousCountry, previousPhone);
+          final previousValue = previousPhone.value;
+          final publishedNumbers = <String>[];
+          replacementPhone.addListener(
+            () => publishedNumbers.add(replacementPhone.phone),
+          );
+          await show(replacementCountry, replacementPhone);
+
+          expect(find.textContaining('+62'), findsOneWidget);
+          expect(replacementPhone.phone, internationalNumber);
+          expect(replacementPhone.number, '8123456789');
+          expect(previousPhone.value, previousValue);
+          expect(publishedNumbers, everyElement(internationalNumber));
+          await tester.pumpWidget(const SizedBox.shrink());
+        });
+      }
+
       testWidgets('detaches replaced external country controllers', (
         tester,
       ) async {

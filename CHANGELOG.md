@@ -4,6 +4,7 @@
 - **FIXED**: align the automatic mask hint with the editable text at custom and default phone field heights, [#27](https://github.com/ziqq/flutter_simple_country_picker/issues/27)
 - **FIXED**: derive phone hints and masks from the picker text style so the country search can be styled independently
 - **FIXED**: detach the old country controller and preserve the values of both external controllers when `initialCountry` changes during replacement
+- **FIXED**: parse the new number using the newly selected country when both phone input controllers are replaced together
 
 ## 0.11.3
 - **ADDED**: expanded the picker to 75 built-in locales, including all 71 entries in the Telegram Translations catalog and separate Brazilian (`pt-BR`) and European (`pt-PT`) Portuguese translations

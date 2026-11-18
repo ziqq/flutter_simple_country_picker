@@ -250,16 +250,33 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       oldWidget.countryController,
       widget.countryController,
     );
+    final phoneControllerChanged = !identical(
+      oldWidget.controller,
+      widget.controller,
+    );
+    final formattingChanged =
+        widget.shouldReplace8 != oldWidget.shouldReplace8 ||
+        widget.useCountryFormatting != oldWidget.useCountryFormatting;
 
     // A replacement controller already supplies its selected country.
-    if (!countryControllerChanged &&
-        widget.initialCountry != oldWidget.initialCountry) {
+    if (countryControllerChanged) {
+      final current = _countryController..removeListener(_onCountryChanged);
+      if (oldWidget.countryController == null) {
+        scheduleMicrotask(current.dispose);
+      }
+      _countryController =
+          widget.countryController ?? ValueNotifier<Country>(_initialCountry);
+      _countryController.addListener(_onCountryChanged);
+    } else if (widget.initialCountry != oldWidget.initialCountry) {
       _countryController.value = _initialCountry;
       _updateFormatter();
     }
 
-    // Check if the controller has changed
-    if (!identical(oldWidget.controller, widget.controller)) {
+    if (countryControllerChanged || formattingChanged) {
+      _updateFormatter(reformatPhone: !phoneControllerChanged);
+    }
+
+    if (phoneControllerChanged) {
       final current = _controller;
       if (oldWidget.controller == null) scheduleMicrotask(current.dispose);
       _controller =
@@ -270,31 +287,13 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
         allowImplicitCountryCodeStrip: true,
         allowLeadingPrefixStrip: widget.shouldReplace8,
       );
-    }
-
-    // Check if the country controller has changed
-    if (countryControllerChanged) {
-      final current = _countryController..removeListener(_onCountryChanged);
-      if (oldWidget.countryController == null) {
-        scheduleMicrotask(current.dispose);
-      }
-      _countryController =
-          widget.countryController ?? ValueNotifier<Country>(_initialCountry);
-      _countryController.addListener(_onCountryChanged);
-      _updateFormatter();
-    }
-
-    // Reconfigure the formatter when its options change.
-    if (widget.shouldReplace8 != oldWidget.shouldReplace8 ||
-        widget.useCountryFormatting != oldWidget.useCountryFormatting) {
-      _updateFormatter();
-      if (!widget.useCountryFormatting) {
-        _applyPhoneText(
-          _phoneController.text,
-          allowLeadingPrefixStrip: widget.shouldReplace8,
-          selection: _phoneController.selection,
-        );
-      }
+      _syncControllerValue();
+    } else if (formattingChanged && !widget.useCountryFormatting) {
+      _applyPhoneText(
+        _phoneController.text,
+        allowLeadingPrefixStrip: widget.shouldReplace8,
+        selection: _phoneController.selection,
+      );
     }
   }
 
@@ -306,15 +305,20 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
         _ => const {},
       };
 
-  void _updateFormatter() {
+  void _updateFormatter({bool reformatPhone = true}) {
     final country = _countryController.value;
     if (widget.useCountryFormatting) {
-      _phoneController.value = _formatter.updateCountry(
+      final formatted = _formatter.updateCountry(
         country,
-        newValue: _phoneController.value,
+        newValue: reformatPhone
+            ? _phoneController.value
+            : TextEditingValue.empty,
         shouldTryStripLeadingPrefix: widget.shouldReplace8,
       );
-      _syncControllerValue();
+      if (reformatPhone) {
+        _phoneController.value = formatted;
+        _syncControllerValue();
+      }
       return;
     }
     final leadingPrefixes = _manualLeadingPrefixes(country);
@@ -322,13 +326,14 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       mask: country.mask,
       example: country.example,
       phoneCode: country.phoneCode,
+      newValue: reformatPhone ? null : TextEditingValue.empty,
       shouldTryStripPhoneCode: true,
       shouldTryStripLeadingPrefix:
           widget.shouldReplace8 &&
           (leadingPrefixes == null || leadingPrefixes.isNotEmpty),
       leadingPrefixes: leadingPrefixes ?? const {},
     );
-    _syncControllerValue();
+    if (reformatPhone) _syncControllerValue();
   }
 
   void _syncControllerValue({String? text}) {
