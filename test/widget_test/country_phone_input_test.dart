@@ -19,6 +19,39 @@ void _$defaultCountryPhoneInputTest() {
   const buttonKey = ValueKey<String>('country_picker_phone_code');
   const phoneFieldKey = ValueKey<String>('country_phone_number');
   group('CountryPhoneInput -', () {
+    testWidgets('centers the entered digits on the automatic mask line', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          builder: (_) => Scaffold(
+            body: InheritedCountryPickerTheme(
+              data: CountryPickerTheme(
+                textStyle: const TextStyle(fontSize: 16, height: 1.25),
+              ),
+              child: CountryPhoneInput(
+                initialCountry: Country.fromCountryCode('ID'),
+                useCountryFormatting: true,
+              ),
+            ),
+          ),
+        ),
+      );
+      final input = find.byKey(phoneFieldKey);
+      final editable = find.descendant(
+        of: input,
+        matching: find.byType(EditableText),
+      );
+      await tester.enterText(editable, '4342');
+      await tester.pump();
+
+      final editor = tester.state<EditableTextState>(editable).renderEditable;
+      final lineCenter = editor.localToGlobal(
+        Offset(0, editor.size.height / 2),
+      );
+      expect(lineCenter.dy, closeTo(tester.getCenter(input).dy, 0.5));
+    });
+
     testWidgets('should use numeric keyboard type', (tester) async {
       await tester.pumpWidget(
         createWidgetUnderTest(

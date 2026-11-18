@@ -525,7 +525,6 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       cursorHeight: textStyle?.fontSize,
       cursorColor: textStyle?.color,
       style: textStyle,
-      textAlignVertical: showMask ? TextAlignVertical.center : null,
       textDirection: showMask ? TextDirection.ltr : null,
       decoration: decoration,
     );
