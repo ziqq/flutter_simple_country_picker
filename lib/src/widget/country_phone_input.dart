@@ -3,8 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart'
-    show RenderCustomPaint, RenderEditable, RenderObject;
+import 'package:flutter/rendering.dart' show RenderEditable, RenderObject;
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_phone_rules.g.dart';
 import 'package:meta/meta.dart';
@@ -450,12 +449,8 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
         widget.placeholder == null &&
         _formatter.maskHint != null;
     final searchStyle = pickerTheme.searchTextStyle;
-    final hintColor =
-        (searchStyle?.foreground?.color ??
-                searchStyle?.color ??
-                textStyle?.foreground?.color ??
-                textStyle?.color)
-            ?.withValues(alpha: .5);
+    final hintColor = (searchStyle?.foreground?.color ?? searchStyle?.color)
+        ?.withValues(alpha: .5);
     final decoration = InputDecoration(
       hintText: showMask
           ? null
@@ -488,12 +483,19 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     );
     return Semantics(
       label: showMask ? localization.phonePlaceholder : null,
-      child: _PhoneMask(
-        controller: _phoneController,
-        scrollController: _phoneScrollController,
-        formatter: _formatter,
-        color: showMask ? hintColor : null,
-        child: field,
+      child: Builder(
+        builder: (context) => CustomPaint(
+          foregroundPainter: showMask && hintColor != null
+              ? _PhoneMaskPainter(
+                  findField: context.findRenderObject,
+                  controller: _phoneController,
+                  scrollController: _phoneScrollController,
+                  formatter: _formatter,
+                  color: hintColor,
+                )
+              : null,
+          child: field,
+        ),
       ),
     );
   }
@@ -758,60 +760,17 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
   }
 }
 
-/// Gives the painter access to the render subtree of the phone field.
-class _PhoneMask extends SingleChildRenderObjectWidget {
-  const _PhoneMask({
-    required this.controller,
-    required this.scrollController,
-    required this.formatter,
-    required this.color,
-    required super.child,
-  });
-
-  final TextEditingController controller;
-  final ScrollController scrollController;
-  final CountryInputFormatter formatter;
-  final Color? color;
-
-  @override
-  RenderCustomPaint createRenderObject(BuildContext context) {
-    final renderObject = RenderCustomPaint();
-    return renderObject..foregroundPainter = _createPainter(renderObject);
-  }
-
-  @override
-  void updateRenderObject(
-    BuildContext context,
-    RenderCustomPaint renderObject,
-  ) {
-    renderObject.foregroundPainter = _createPainter(renderObject);
-  }
-
-  _PhoneMaskPainter? _createPainter(RenderCustomPaint renderObject) {
-    final color = this.color;
-    return color == null
-        ? null
-        : _PhoneMaskPainter(
-            field: renderObject,
-            controller: controller,
-            scrollController: scrollController,
-            formatter: formatter,
-            color: color,
-          );
-  }
-}
-
 /// Paints the unfilled template without adding characters to the text field.
 class _PhoneMaskPainter extends CustomPainter {
   _PhoneMaskPainter({
-    required this.field,
+    required this.findField,
     required this.controller,
     required ScrollController scrollController,
     required this.formatter,
     required this.color,
   }) : super(repaint: Listenable.merge([controller, scrollController]));
 
-  final RenderCustomPaint field;
+  final RenderObject? Function() findField;
   final TextEditingController controller;
   final CountryInputFormatter formatter;
   final Color color;
@@ -831,6 +790,8 @@ class _PhoneMaskPainter extends CustomPainter {
     final value = controller.value;
     if (hint == null || hint.isEmpty || !value.composing.isCollapsed) return;
 
+    final field = findField();
+    if (field == null) return;
     final editable = _findEditable(field);
     if (editable == null || !editable.hasSize) return;
 
