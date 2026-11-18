@@ -246,8 +246,14 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
   void didUpdateWidget(covariant T oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Check if the initial country has changed
-    if (widget.initialCountry != oldWidget.initialCountry) {
+    final countryControllerChanged = !identical(
+      oldWidget.countryController,
+      widget.countryController,
+    );
+
+    // A replacement controller already supplies its selected country.
+    if (!countryControllerChanged &&
+        widget.initialCountry != oldWidget.initialCountry) {
       _countryController.value = _initialCountry;
       _updateFormatter();
     }
@@ -267,7 +273,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     }
 
     // Check if the country controller has changed
-    if (!identical(oldWidget.countryController, widget.countryController)) {
+    if (countryControllerChanged) {
       final current = _countryController..removeListener(_onCountryChanged);
       if (oldWidget.countryController == null) {
         scheduleMicrotask(current.dispose);

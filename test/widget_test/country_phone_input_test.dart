@@ -727,6 +727,39 @@ void _$defaultCountryPhoneInputTest() {
       });
 
       testWidgets(
+        'keeps both controller values when initialCountry also changes',
+        (tester) async {
+          final previous = ValueNotifier(Country.ru());
+          final replacement = ValueNotifier(Country.fromCountryCode('US'));
+          addTearDown(previous.dispose);
+          addTearDown(replacement.dispose);
+
+          Future<void> show(
+            ValueNotifier<Country> controller,
+            Country country,
+          ) => tester.pumpWidget(
+            createWidgetUnderTest(
+              builder: (_) => Scaffold(
+                body: CountryPhoneInput(
+                  initialCountry: country,
+                  countryController: controller,
+                  useCountryFormatting: true,
+                ),
+              ),
+            ),
+          );
+
+          await show(previous, Country.ru());
+          await show(replacement, Country.fromCountryCode('ID'));
+
+          expect(previous.value.countryCode, 'RU');
+          expect(replacement.value.countryCode, 'US');
+          expect(find.textContaining('+1'), findsOneWidget);
+          await tester.pumpWidget(const SizedBox.shrink());
+        },
+      );
+
+      testWidgets(
         'should respond to external countryController value changes',
         (tester) async {
           final ruCountry = getCountryByISO2asJSON('RU');
