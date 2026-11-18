@@ -448,16 +448,19 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
         widget.useCountryFormatting &&
         widget.placeholder == null &&
         _formatter.maskHint != null;
-    final searchStyle = pickerTheme.searchTextStyle;
-    final hintColor = (searchStyle?.foreground?.color ?? searchStyle?.color)
-        ?.withValues(alpha: .5);
+    final pickerTextStyle = pickerTheme.textStyle;
+    final hintColor =
+        (pickerTextStyle?.foreground?.color ?? pickerTextStyle?.color)
+            ?.withValues(alpha: .5);
     final decoration = InputDecoration(
       hintText: showMask
           ? null
           : widget.placeholder ??
                 (widget.useCountryFormatting ? null : country.mask) ??
                 localization.phonePlaceholder,
-      hintStyle: textStyle?.copyWith(color: hintColor),
+      hintStyle: hintColor == null
+          ? textStyle
+          : textStyle?.copyWith(foreground: Paint()..color = hintColor),
       contentPadding: contentPadding,
       border: InputBorder.none,
       errorBorder: InputBorder.none,

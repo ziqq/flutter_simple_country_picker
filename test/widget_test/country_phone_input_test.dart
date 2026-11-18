@@ -40,7 +40,7 @@ void _$defaultCountryPhoneInputTest() {
                   inputHeight: height,
                   onBackgroundColor: Colors.white,
                   textStyle: const TextStyle(
-                    color: Colors.black,
+                    color: Color(0xFF0000FF),
                     fontSize: 16,
                     height: 1.25,
                   ),
@@ -83,9 +83,12 @@ void _$defaultCountryPhoneInputTest() {
                 final green = pixels.getUint8(offset + 1);
                 final blue = pixels.getUint8(offset + 2);
                 final pixel = Rect.fromLTWH(x.toDouble(), y.toDouble(), 1, 1);
-                if (red < 32 && green < 32 && blue < 32) {
+                if (red < 32 && green < 32 && blue > 240) {
                   digits = digits?.expandToInclude(pixel) ?? pixel;
-                } else if (red > green + 80 && red > blue + 80) {
+                } else if (red >= 120 &&
+                    red <= 160 &&
+                    red == green &&
+                    blue > 240) {
                   hint = hint?.expandToInclude(pixel) ?? pixel;
                 }
               }
@@ -98,7 +101,7 @@ void _$defaultCountryPhoneInputTest() {
 
         final (digits, hint) = bounds!;
         expect(digits, isNotNull, reason: 'the entered digits are visible');
-        expect(hint, isNotNull, reason: 'the remaining mask is visible');
+        expect(hint, isNotNull, reason: 'the mask uses the dimmed phone color');
         expect(hint!.top, closeTo(digits!.top, 1));
         expect(hint.bottom, closeTo(digits.bottom, 1));
         expect(hint.left, closeTo(digits.right, 1));

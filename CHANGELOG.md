@@ -2,6 +2,7 @@
 
 ## Unreleased
 - **FIXED**: align the automatic mask hint with the editable text at custom and default phone field heights, [#27](https://github.com/ziqq/flutter_simple_country_picker/issues/27)
+- **FIXED**: derive phone hints and masks from the picker text style so the country search can be styled independently
 - **FIXED**: detach the listener when a phone input replaces its country controller
 
 ## 0.11.3

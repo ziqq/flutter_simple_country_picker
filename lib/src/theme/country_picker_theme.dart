@@ -144,9 +144,9 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   ]) {
     final defaults = CountryPickerTheme.defaults(context);
     final theme = CountryPickerTheme.maybeOf(context);
-    final searchTextStyle = (defaults.textStyle ?? const TextStyle())
-        .merge(theme?.searchTextStyle)
-        .merge(other?.searchTextStyle);
+    final textStyle = (defaults.textStyle ?? const TextStyle())
+        .merge(theme?.textStyle)
+        .merge(other?.textStyle);
     return CountryPickerTheme(
       accentColor:
           other?.accentColor ?? theme?.accentColor ?? defaults.accentColor,
@@ -179,18 +179,14 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       secondaryTextStyle: defaults.secondaryTextStyle
           ?.merge(theme?.secondaryTextStyle)
           .merge(other?.secondaryTextStyle),
-      searchTextStyle:
-          searchTextStyle.color != null || searchTextStyle.foreground != null
-          ? searchTextStyle
-          : searchTextStyle.copyWith(
-              color: CupertinoDynamicColor.resolve(
-                CupertinoColors.label,
-                context,
-              ),
+      searchTextStyle: defaults.textStyle
+          ?.merge(theme?.searchTextStyle)
+          .merge(other?.searchTextStyle),
+      textStyle: textStyle.color != null || textStyle.foreground != null
+          ? textStyle
+          : textStyle.copyWith(
+              color: CupertinoColors.label.resolveFrom(context),
             ),
-      textStyle: defaults.textStyle
-          ?.merge(theme?.textStyle)
-          .merge(other?.textStyle),
       flagSize: other?.flagSize ?? theme?.flagSize ?? defaults.flagSize,
       padding: other?.padding ?? theme?.padding ?? defaults.padding,
       indent: other?.indent ?? theme?.indent ?? defaults.indent,
