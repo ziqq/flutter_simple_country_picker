@@ -5,6 +5,7 @@
 - **FIXED**: derive phone hints and masks from the picker text style so the country search can be styled independently
 - **FIXED**: detach the old country controller and preserve the values of both external controllers when `initialCountry` changes during replacement
 - **FIXED**: parse the new number using the newly selected country when both phone input controllers are replaced together
+- **FIXED**: keep an empty replacement phone controller unchanged when only the phone controller is replaced
 
 ## 0.11.3
 - **ADDED**: expanded the picker to 75 built-in locales, including all 71 entries in the Telegram Translations catalog and separate Brazilian (`pt-BR`) and European (`pt-PT`) Portuguese translations

@@ -611,6 +611,58 @@ void _$defaultCountryPhoneInputTest() {
         expect(find.textContaining('123 456 7890'), findsOneWidget);
       });
 
+      for (final useCountryFormatting in [false, true]) {
+        testWidgets('preserves an empty replacement phone controller '
+            '(useCountryFormatting: $useCountryFormatting)', (tester) async {
+          final previous = CountryPhoneController.empty();
+          final firstReplacement = CountryPhoneController.empty();
+          final secondReplacement = CountryPhoneController.empty();
+          addTearDown(previous.dispose);
+          addTearDown(firstReplacement.dispose);
+          addTearDown(secondReplacement.dispose);
+
+          Future<void> show(CountryPhoneController controller) =>
+              tester.pumpWidget(
+                createWidgetUnderTest(
+                  builder: (_) => Scaffold(
+                    body: CountryPhoneInput(
+                      controller: controller,
+                      useCountryFormatting: useCountryFormatting,
+                    ),
+                  ),
+                ),
+              );
+
+          final field = find.byKey(phoneFieldKey);
+          Future<void> expectEmptySwap(
+            CountryPhoneController controller,
+          ) async {
+            var notifications = 0;
+            void onChanged() => notifications++;
+            controller.addListener(onChanged);
+            await show(controller);
+            controller.removeListener(onChanged);
+
+            expect(
+              tester.widget<TextFormField>(field).controller!.text,
+              isEmpty,
+            );
+            expect(controller.text, isEmpty);
+            expect(notifications, 0);
+          }
+
+          await show(previous);
+          await tester.showKeyboard(field);
+          await expectEmptySwap(firstReplacement);
+
+          await tester.enterText(field, '123');
+          expect(firstReplacement.number, '123');
+          await expectEmptySwap(secondReplacement);
+
+          await tester.pumpWidget(const SizedBox.shrink());
+        });
+      }
+
       testWidgets(
         'should recreate internal controller when external controller is removed',
         (tester) async {

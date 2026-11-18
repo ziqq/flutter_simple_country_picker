@@ -254,6 +254,8 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       oldWidget.controller,
       widget.controller,
     );
+    final initialCountryChanged =
+        widget.initialCountry != oldWidget.initialCountry;
     final formattingChanged =
         widget.shouldReplace8 != oldWidget.shouldReplace8 ||
         widget.useCountryFormatting != oldWidget.useCountryFormatting;
@@ -267,7 +269,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       _countryController =
           widget.countryController ?? ValueNotifier<Country>(_initialCountry);
       _countryController.addListener(_onCountryChanged);
-    } else if (widget.initialCountry != oldWidget.initialCountry) {
+    } else if (initialCountryChanged) {
       _countryController.value = _initialCountry;
       _updateFormatter();
     }
@@ -282,6 +284,20 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       _controller =
           widget.controller ??
           CountryPhoneController.apply(_initialCountry.countryCode);
+      if (_controller.text.isEmpty &&
+          !countryControllerChanged &&
+          !initialCountryChanged &&
+          !formattingChanged) {
+        // Keep the replacement controller empty while clearing the field.
+        _formatter.clear();
+        _phoneController.removeListener(_onPhoneChanged);
+        try {
+          _phoneController.clear();
+        } finally {
+          _phoneController.addListener(_onPhoneChanged);
+        }
+        return;
+      }
       _applyPhoneText(
         _controller.text,
         allowImplicitCountryCodeStrip: true,
