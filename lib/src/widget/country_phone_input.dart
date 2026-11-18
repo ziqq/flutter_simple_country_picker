@@ -3,7 +3,8 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart' show RenderEditable, RenderObject;
+import 'package:flutter/rendering.dart'
+    show RenderCustomPaint, RenderEditable, RenderObject;
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_phone_rules.g.dart';
 import 'package:meta/meta.dart';
@@ -184,11 +185,10 @@ class CountryPhoneInput extends StatefulWidget {
 /// Mixin for state [CountryPhoneInput].
 mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
   final ValueNotifier<CountryPickerTheme?> _pickerTheme = ValueNotifier(null);
+  final ScrollController _phoneScrollController = ScrollController();
   late final _painter = _BackgroundPainter(pickerTheme: _pickerTheme);
   late final TextEditingController _phoneController;
   late final CountryInputFormatter _formatter;
-  final ScrollController _phoneScrollController = ScrollController();
-  final GlobalKey _phoneMaskKey = GlobalKey();
   late CountryPhoneController _controller;
   late ValueNotifier<Country> _countryController;
 
@@ -437,8 +437,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     widget.onCountryChanged?.call(country);
   }
 
-  Widget _buildPhoneField(
-    BuildContext context, {
+  Widget _buildPhoneField({
     required Key key,
     required Country country,
     required CountryLocalizations localization,
@@ -450,16 +449,20 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
         widget.useCountryFormatting &&
         widget.placeholder == null &&
         _formatter.maskHint != null;
-    final hintStyle = textStyle?.copyWith(
-      color: pickerTheme.searchTextStyle?.color?.withValues(alpha: .5),
-    );
+    final searchStyle = pickerTheme.searchTextStyle;
+    final hintColor =
+        (searchStyle?.foreground?.color ??
+                searchStyle?.color ??
+                textStyle?.foreground?.color ??
+                textStyle?.color)
+            ?.withValues(alpha: .5);
     final decoration = InputDecoration(
       hintText: showMask
           ? null
           : widget.placeholder ??
                 (widget.useCountryFormatting ? null : country.mask) ??
                 localization.phonePlaceholder,
-      hintStyle: hintStyle,
+      hintStyle: textStyle?.copyWith(color: hintColor),
       contentPadding: contentPadding,
       border: InputBorder.none,
       errorBorder: InputBorder.none,
@@ -485,18 +488,11 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     );
     return Semantics(
       label: showMask ? localization.phonePlaceholder : null,
-      child: CustomPaint(
-        key: _phoneMaskKey,
-        foregroundPainter: showMask
-            ? _PhoneMaskPainter(
-                fieldKey: _phoneMaskKey,
-                controller: _phoneController,
-                scrollController: _phoneScrollController,
-                formatter: _formatter,
-                hintColor: hintStyle?.color,
-                fallbackTextColor: Theme.of(context).colorScheme.onSurface,
-              )
-            : null,
+      child: _PhoneMask(
+        controller: _phoneController,
+        scrollController: _phoneScrollController,
+        formatter: _formatter,
+        color: showMask ? hintColor : null,
         child: field,
       ),
     );
@@ -577,7 +573,6 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                   painter: _painter,
                   child: Center(
                     child: _buildPhoneField(
-                      context,
                       key: const ValueKey<String>('country_phone_number'),
                       country: selected,
                       localization: localization,
@@ -743,7 +738,6 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                       horizontal: padding.horizontal / 2.5,
                     ),
                     child: _buildPhoneField(
-                      context,
                       key: const ValueKey<String>(
                         'country_phone_input_extended',
                       ),
@@ -764,22 +758,63 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
   }
 }
 
+/// Gives the painter access to the render subtree of the phone field.
+class _PhoneMask extends SingleChildRenderObjectWidget {
+  const _PhoneMask({
+    required this.controller,
+    required this.scrollController,
+    required this.formatter,
+    required this.color,
+    required super.child,
+  });
+
+  final TextEditingController controller;
+  final ScrollController scrollController;
+  final CountryInputFormatter formatter;
+  final Color? color;
+
+  @override
+  RenderCustomPaint createRenderObject(BuildContext context) {
+    final renderObject = RenderCustomPaint();
+    return renderObject..foregroundPainter = _createPainter(renderObject);
+  }
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    RenderCustomPaint renderObject,
+  ) {
+    renderObject.foregroundPainter = _createPainter(renderObject);
+  }
+
+  _PhoneMaskPainter? _createPainter(RenderCustomPaint renderObject) {
+    final color = this.color;
+    return color == null
+        ? null
+        : _PhoneMaskPainter(
+            field: renderObject,
+            controller: controller,
+            scrollController: scrollController,
+            formatter: formatter,
+            color: color,
+          );
+  }
+}
+
 /// Paints the unfilled template without adding characters to the text field.
 class _PhoneMaskPainter extends CustomPainter {
   _PhoneMaskPainter({
-    required this.fieldKey,
+    required this.field,
     required this.controller,
     required ScrollController scrollController,
     required this.formatter,
-    required this.hintColor,
-    required this.fallbackTextColor,
+    required this.color,
   }) : super(repaint: Listenable.merge([controller, scrollController]));
 
-  final GlobalKey fieldKey;
+  final RenderCustomPaint field;
   final TextEditingController controller;
   final CountryInputFormatter formatter;
-  final Color? hintColor;
-  final Color fallbackTextColor;
+  final Color color;
 
   static RenderEditable? _findEditable(RenderObject renderObject) {
     if (renderObject is RenderEditable) return renderObject;
@@ -796,8 +831,6 @@ class _PhoneMaskPainter extends CustomPainter {
     final value = controller.value;
     if (hint == null || hint.isEmpty || !value.composing.isCollapsed) return;
 
-    final field = fieldKey.currentContext?.findRenderObject();
-    if (field == null) return;
     final editable = _findEditable(field);
     if (editable == null || !editable.hasSize) return;
 
@@ -819,10 +852,6 @@ class _PhoneMaskPainter extends CustomPainter {
     if (baseline == null || origin.dx + end.dx >= bounds.right) return;
 
     final style = editable.text?.style ?? const TextStyle();
-    final color =
-        hintColor ??
-        (style.foreground?.color ?? style.color ?? fallbackTextColor)
-            .withValues(alpha: .5);
     final painter = TextPainter(
       text: TextSpan(
         text: hint,
