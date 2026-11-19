@@ -169,14 +169,13 @@ void showCountryPicker({
 
   /// Show adaptive bottom sheet for `iOS` platform, if [adaptive] is `true`.
   if (adaptive && isIOS) {
-    final themes = InheritedTheme.capture(
-      from: context,
-      to: Navigator.of(context, rootNavigator: true).context,
-    );
     showCupertinoSheet<void>(
       context: context,
-      scrollableBuilder: (context, controller) =>
-          themes.wrap(builder(context, controller)),
+      scrollableBuilder: (context, scrollController) =>
+          InheritedCountryPickerTheme(
+            data: pickerTheme,
+            child: builder(context, scrollController),
+          ),
     ).whenComplete(() => (whenComplete ?? onDone)?.call()).ignore();
 
     /// Show material bottom sheet for other platforms.
