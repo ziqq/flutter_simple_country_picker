@@ -8,7 +8,7 @@
 - **FIXED**: keep an empty replacement phone controller unchanged when only the phone controller is replaced
 - **FIXED**: recognize barrier color changes, preserve exact theme values and background color fallbacks in `copyWith`, and retain `inputDecoration` during theme transitions
 - **FIXED**: preserve local themes and follow app theme changes in open adaptive iOS sheets, and refresh grouped headers when the theme changes
-- **FIXED**: preserve an explicit local picker theme in adaptive iOS sheets when it shares the app's theme instance
+- **FIXED**: preserve explicit local picker themes in adaptive iOS sheets, including shared theme instances, and keep app theme updates when local Material styling reuses the app's extensions
 - **FIXED**: apply `searchTextStyle` to the query and clear grouped results when no countries match
 - **FIXED**: honor `showPhoneCode` and show favorite calling-code entries only once
 - **FIXED**: keep `CountryState` snapshots and their hash codes stable when the source country list changes

@@ -126,18 +126,11 @@ void showCountryPicker({
   final effectiveExpand = expand || useCupertinoSheet;
   final effectiveUseHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
 
-  final openingTheme = useCupertinoSheet
-      ? CountryPickerTheme.maybeOf(context)
-      : null;
-  final themeOverride =
-      openingTheme != null &&
-          !identical(
-            _pickerThemeSource(context),
-            _pickerThemeSource(
-              Navigator.of(context, rootNavigator: true).context,
-            ),
-          )
-      ? openingTheme
+  final themeOverride = useCupertinoSheet
+      ? _capturePickerTheme(
+          from: context,
+          to: Navigator.of(context, rootNavigator: true).context,
+        )
       : null;
 
   Widget builder(BuildContext context, [ScrollController? scrollController]) {
@@ -213,19 +206,30 @@ void showCountryPicker({
   }
 }
 
-/// Finds the scope that supplies [CountryPickerTheme.maybeOf].
-Element? _pickerThemeSource(BuildContext context) {
-  final inheritedTheme = context
-      .getElementForInheritedWidgetOfExactType<InheritedCountryPickerTheme>();
-  if (inheritedTheme != null) return inheritedTheme;
+/// Captures the picker theme between the opener and the route's navigator.
+CountryPickerTheme? _capturePickerTheme({
+  required BuildContext from,
+  required BuildContext to,
+}) {
+  if (from == to) return null;
 
-  Element? materialTheme;
-  context.visitAncestorElements((ancestor) {
-    if (ancestor.widget is! Theme) return true;
-    materialTheme = ancestor;
-    return false;
-  });
-  return materialTheme;
+  if (from.getInheritedWidgetOfExactType<InheritedCountryPickerTheme>() !=
+      null) {
+    CountryPickerTheme? theme;
+    from.visitAncestorElements((ancestor) {
+      if (ancestor == to) return false;
+      if (ancestor.widget case InheritedCountryPickerTheme(:final data)) {
+        theme = data;
+        return false;
+      }
+      return true;
+    });
+    return theme;
+  }
+
+  final extensions = Theme.of(from).extensions;
+  if (identical(extensions, Theme.of(to).extensions)) return null;
+  return extensions[CountryPickerTheme] as CountryPickerTheme?;
 }
 
 /// {@template country_picker_options}

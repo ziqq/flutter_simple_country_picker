@@ -179,6 +179,7 @@ void main() => group('showCountryPicker -', () {
   final initialTheme = CountryPickerTheme(flagSize: 22, radius: 11);
   for (final (scope, localTheme, useMaterialTheme) in [
     ('global', null, false),
+    ('local Material styling with inherited extensions', null, true),
     ('local', CountryPickerTheme(flagSize: 34, radius: 17), false),
     ('shared instance in local picker theme', initialTheme, false),
     ('shared instance in local Material theme', initialTheme, true),
@@ -202,7 +203,13 @@ void main() => group('showCountryPicker -', () {
         ),
       );
       final home = switch ((localTheme, useMaterialTheme)) {
-        (null, _) => launcher,
+        (null, false) => launcher,
+        (null, true) => Builder(
+          builder: (context) => Theme(
+            data: Theme.of(context).copyWith(splashColor: Colors.transparent),
+            child: launcher,
+          ),
+        ),
         (final CountryPickerTheme theme, true) => Theme(
           data: ThemeData(extensions: [theme]),
           child: launcher,
