@@ -1,0 +1,1425 @@
+{
+  "protocol": "Flutter 3.47.5 stock renderer, fresh processes. iOS trace ablations and A8 before/after timings are separate.",
+  "ios_frame_11": [
+    {
+      "run": "layer-control-trace-7plus-1",
+      "source_fingerprint": "d90762eeb70ec300e5ec147f02aee5145af9878bbf5749cb207864186a6614f4",
+      "raw_sha256": "1eff56330835799d50a95558496bee07afd7c70c4299f0c17427fc714f345701",
+      "early_timeline_sha256": "9446a316d7c924e17199f64bd3539b94ac898f7ec292cc7a0aedc35a672dcf53",
+      "frame": {
+        "frame_number": 11,
+        "build_start_us": 1130341663401,
+        "raster_start_us": 1130341827277,
+        "raster_finish_us": 1130342013960,
+        "ui_us": 30310,
+        "raster_us": 186683,
+        "queue_us": 133566,
+        "total_us": 350629
+      },
+      "encode_us": 186465,
+      "encode_save_layer_us_in_order": [
+        152,
+        74391,
+        784,
+        880,
+        920,
+        501,
+        27062
+      ],
+      "header_scene_markers": [
+        {
+          "component": 0,
+          "single_pass": false,
+          "sdk_gaussian": false,
+          "opacity": 1.0
+        },
+        {
+          "component": 1,
+          "single_pass": false,
+          "sdk_gaussian": false,
+          "opacity": 1.0
+        },
+        {
+          "component": 2,
+          "single_pass": false,
+          "sdk_gaussian": false,
+          "opacity": 1.0
+        },
+        {
+          "component": 3,
+          "single_pass": false,
+          "sdk_gaussian": false,
+          "opacity": 1.0
+        },
+        {
+          "component": 4,
+          "single_pass": false,
+          "sdk_gaussian": false,
+          "opacity": 1.0
+        }
+      ],
+      "start_battery_celsius": 31.7
+    },
+    {
+      "run": "layer-no-header-trace-7plus-1",
+      "source_fingerprint": "2498eb75f0c26e8256655c5f2e43b3af73e88581480278801e57ba9657f2aa0f",
+      "raw_sha256": "9197e05ec7a412c94e6ef3f142f9718b7a56b34c9b5e3f8a2c24f70ff9d57905",
+      "early_timeline_sha256": "6c4ce2ebb3dd07c4ed15a6bfa68f8ef88b4741a6f7f4836b6f9103d9cc8266af",
+      "frame": {
+        "frame_number": 11,
+        "build_start_us": 1130631161755,
+        "raster_start_us": 1130631317234,
+        "raster_finish_us": 1130631401025,
+        "ui_us": 29442,
+        "raster_us": 83791,
+        "queue_us": 126037,
+        "total_us": 239343
+      },
+      "encode_us": 83579,
+      "encode_save_layer_us_in_order": [
+        182,
+        37840
+      ],
+      "header_scene_markers": [],
+      "start_battery_celsius": 32.5
+    },
+    {
+      "run": "layer-no-controls-trace-7plus-1",
+      "source_fingerprint": "694c7fef8e8d32c2b5231997a73598de086d4a10b1eec772160ba66162304a9c",
+      "raw_sha256": "211d4ed326866bf8d35ec58f130f2918e9509073d235ab407af4a59e5e161672",
+      "early_timeline_sha256": "be8acbaad0177527951a0a67e824b4acb0c225ac95c31f0e7d6769774f8787f8",
+      "frame": {
+        "frame_number": 11,
+        "build_start_us": 1131038825132,
+        "raster_start_us": 1131038988270,
+        "raster_finish_us": 1131039159165,
+        "ui_us": 36419,
+        "raster_us": 170895,
+        "queue_us": 126719,
+        "total_us": 334249
+      },
+      "encode_us": 170666,
+      "encode_save_layer_us_in_order": [
+        166,
+        79810,
+        791,
+        739,
+        887,
+        391
+      ],
+      "header_scene_markers": [
+        {
+          "component": 0,
+          "single_pass": false,
+          "sdk_gaussian": false,
+          "opacity": 1.0
+        },
+        {
+          "component": 1,
+          "single_pass": false,
+          "sdk_gaussian": false,
+          "opacity": 1.0
+        },
+        {
+          "component": 2,
+          "single_pass": false,
+          "sdk_gaussian": false,
+          "opacity": 1.0
+        },
+        {
+          "component": 3,
+          "single_pass": false,
+          "sdk_gaussian": false,
+          "opacity": 1.0
+        },
+        {
+          "component": 4,
+          "single_pass": false,
+          "sdk_gaussian": false,
+          "opacity": 1.0
+        }
+      ],
+      "start_battery_celsius": 33.4
+    },
+    {
+      "run": "layer-stage0-identity-trace-7plus-1",
+      "source_fingerprint": "7344aa6203f1693c0fd82bd7b2b9ed14b995e4b68291600781e212338a0b6515",
+      "raw_sha256": "111b61e23478992787964df5d4b5417b341587fe985b6eeaaf2117bd47e2559a",
+      "early_timeline_sha256": "69c023f0589715c26a0ec48ab86da34661de6a3049f31d519da58737a7f94c1a",
+      "frame": {
+        "frame_number": 11,
+        "build_start_us": 1131666626352,
+        "raster_start_us": 1131666800073,
+        "raster_finish_us": 1131666993527,
+        "ui_us": 33039,
+        "raster_us": 193454,
+        "queue_us": 140682,
+        "total_us": 367294
+      },
+      "encode_us": 193229,
+      "encode_save_layer_us_in_order": [
+        175,
+        79122,
+        807,
+        670,
+        908,
+        399,
+        28183
+      ],
+      "header_scene_markers": [
+        {
+          "component": 0,
+          "single_pass": false,
+          "sdk_gaussian": false,
+          "opacity": 1.0
+        },
+        {
+          "component": 1,
+          "single_pass": false,
+          "sdk_gaussian": false,
+          "opacity": 1.0
+        },
+        {
+          "component": 2,
+          "single_pass": false,
+          "sdk_gaussian": false,
+          "opacity": 1.0
+        },
+        {
+          "component": 3,
+          "single_pass": false,
+          "sdk_gaussian": false,
+          "opacity": 1.0
+        },
+        {
+          "component": 4,
+          "single_pass": false,
+          "sdk_gaussian": false,
+          "opacity": 1.0
+        }
+      ],
+      "start_battery_celsius": 32.5
+    }
+  ],
+  "a8": [
+    {
+      "run": "nov09-compose-close-tint-a8-before-1",
+      "source_fingerprint": "72eb8c326764b58ebeae7a813770236310708d38387a8793b0e4ef1a6f86a1b7",
+      "raw_sha256": "6e7e5cf25e1e5f0f8c7008bbc86c4a66663a11e416114de11004a8b9888232c6",
+      "start_battery_celsius": 25.5,
+      "start_charge_percent": 100,
+      "usb_powered": true,
+      "aggregates": {
+        "first_open": {
+          "ui": {
+            "n": 10,
+            "p50_ms": 6.097,
+            "p95_ms": 87.069,
+            "max_ms": 87.069,
+            "over_budget": 2,
+            "over_budget_percent": 20.0
+          },
+          "raster": {
+            "n": 10,
+            "p50_ms": 15.951,
+            "p95_ms": 429.717,
+            "max_ms": 429.717,
+            "over_budget": 5,
+            "over_budget_percent": 50.0
+          },
+          "queue": {
+            "n": 10,
+            "p50_ms": 7.1,
+            "p95_ms": 352.769,
+            "max_ms": 352.769,
+            "over_budget": 4,
+            "over_budget_percent": 40.0
+          },
+          "total": {
+            "n": 10,
+            "p50_ms": 43.315,
+            "p95_ms": 598.148,
+            "max_ms": 598.148,
+            "over_budget": 10,
+            "over_budget_percent": 100.0
+          }
+        },
+        "repeat_open": {
+          "ui": {
+            "n": 102,
+            "p50_ms": 1.794,
+            "p95_ms": 12.2,
+            "max_ms": 36.428,
+            "over_budget": 5,
+            "over_budget_percent": 4.901960784313726
+          },
+          "raster": {
+            "n": 102,
+            "p50_ms": 14.221,
+            "p95_ms": 26.227,
+            "max_ms": 42.358,
+            "over_budget": 28,
+            "over_budget_percent": 27.45098039215686
+          },
+          "queue": {
+            "n": 102,
+            "p50_ms": 0.253,
+            "p95_ms": 13.844,
+            "max_ms": 30.489,
+            "over_budget": 4,
+            "over_budget_percent": 3.9215686274509802
+          },
+          "total": {
+            "n": 102,
+            "p50_ms": 19.441,
+            "p95_ms": 45.322,
+            "max_ms": 68.509,
+            "over_budget": 66,
+            "over_budget_percent": 64.70588235294117
+          }
+        },
+        "drag": {
+          "ui": {
+            "n": 208,
+            "p50_ms": 2.868,
+            "p95_ms": 7.633,
+            "max_ms": 18.082,
+            "over_budget": 3,
+            "over_budget_percent": 1.4423076923076923
+          },
+          "raster": {
+            "n": 208,
+            "p50_ms": 15.909,
+            "p95_ms": 23.735,
+            "max_ms": 37.168,
+            "over_budget": 91,
+            "over_budget_percent": 43.75
+          },
+          "queue": {
+            "n": 208,
+            "p50_ms": 3.328,
+            "p95_ms": 12.448,
+            "max_ms": 26.593,
+            "over_budget": 1,
+            "over_budget_percent": 0.4807692307692308
+          },
+          "total": {
+            "n": 208,
+            "p50_ms": 26.33,
+            "p95_ms": 36.144,
+            "max_ms": 50.763,
+            "over_budget": 177,
+            "over_budget_percent": 85.09615384615384
+          }
+        },
+        "fling_down": {
+          "ui": {
+            "n": 270,
+            "p50_ms": 4.705,
+            "p95_ms": 12.221,
+            "max_ms": 30.69,
+            "over_budget": 4,
+            "over_budget_percent": 1.4814814814814814
+          },
+          "raster": {
+            "n": 270,
+            "p50_ms": 16.249,
+            "p95_ms": 27.751,
+            "max_ms": 32.76,
+            "over_budget": 121,
+            "over_budget_percent": 44.81481481481482
+          },
+          "queue": {
+            "n": 270,
+            "p50_ms": 0.294,
+            "p95_ms": 10.299,
+            "max_ms": 26.183,
+            "over_budget": 2,
+            "over_budget_percent": 0.7407407407407407
+          },
+          "total": {
+            "n": 270,
+            "p50_ms": 25.04,
+            "p95_ms": 42.205,
+            "max_ms": 60.389,
+            "over_budget": 251,
+            "over_budget_percent": 92.96296296296296
+          }
+        },
+        "fling_up": {
+          "ui": {
+            "n": 277,
+            "p50_ms": 4.395,
+            "p95_ms": 11.803,
+            "max_ms": 23.271,
+            "over_budget": 3,
+            "over_budget_percent": 1.0830324909747293
+          },
+          "raster": {
+            "n": 277,
+            "p50_ms": 15.751,
+            "p95_ms": 22.432,
+            "max_ms": 26.807,
+            "over_budget": 100,
+            "over_budget_percent": 36.101083032490976
+          },
+          "queue": {
+            "n": 277,
+            "p50_ms": 0.697,
+            "p95_ms": 10.739,
+            "max_ms": 17.585,
+            "over_budget": 1,
+            "over_budget_percent": 0.36101083032490977
+          },
+          "total": {
+            "n": 277,
+            "p50_ms": 24.751,
+            "p95_ms": 36.096,
+            "max_ms": 46.193,
+            "over_budget": 253,
+            "over_budget_percent": 91.33574007220217
+          }
+        },
+        "keyboard": {
+          "ui": {
+            "n": 144,
+            "p50_ms": 1.178,
+            "p95_ms": 4.779,
+            "max_ms": 44.014,
+            "over_budget": 6,
+            "over_budget_percent": 4.166666666666667
+          },
+          "raster": {
+            "n": 144,
+            "p50_ms": 15.107,
+            "p95_ms": 24.101,
+            "max_ms": 77.229,
+            "over_budget": 51,
+            "over_budget_percent": 35.416666666666664
+          },
+          "queue": {
+            "n": 144,
+            "p50_ms": 0.241,
+            "p95_ms": 18.398,
+            "max_ms": 58.604,
+            "over_budget": 10,
+            "over_budget_percent": 6.944444444444445
+          },
+          "total": {
+            "n": 144,
+            "p50_ms": 19.041,
+            "p95_ms": 62.961,
+            "max_ms": 114.721,
+            "over_budget": 102,
+            "over_budget_percent": 70.83333333333333
+          }
+        },
+        "search": {
+          "ui": {
+            "n": 142,
+            "p50_ms": 1.164,
+            "p95_ms": 2.313,
+            "max_ms": 88.965,
+            "over_budget": 3,
+            "over_budget_percent": 2.112676056338028
+          },
+          "raster": {
+            "n": 142,
+            "p50_ms": 13.831,
+            "p95_ms": 20.128,
+            "max_ms": 26.368,
+            "over_budget": 23,
+            "over_budget_percent": 16.197183098591548
+          },
+          "queue": {
+            "n": 142,
+            "p50_ms": 0.197,
+            "p95_ms": 7.326,
+            "max_ms": 19.483,
+            "over_budget": 1,
+            "over_budget_percent": 0.704225352112676
+          },
+          "total": {
+            "n": 142,
+            "p50_ms": 16.449,
+            "p95_ms": 27.814,
+            "max_ms": 130.324,
+            "over_budget": 67,
+            "over_budget_percent": 47.183098591549296
+          }
+        },
+        "close": {
+          "ui": {
+            "n": 29,
+            "p50_ms": 5.139,
+            "p95_ms": 7.148,
+            "max_ms": 7.638,
+            "over_budget": 0,
+            "over_budget_percent": 0.0
+          },
+          "raster": {
+            "n": 29,
+            "p50_ms": 13.279,
+            "p95_ms": 35.444,
+            "max_ms": 50.031,
+            "over_budget": 11,
+            "over_budget_percent": 37.93103448275862
+          },
+          "queue": {
+            "n": 29,
+            "p50_ms": 0.348,
+            "p95_ms": 19.732,
+            "max_ms": 34.957,
+            "over_budget": 2,
+            "over_budget_percent": 6.896551724137931
+          },
+          "total": {
+            "n": 29,
+            "p50_ms": 24.681,
+            "p95_ms": 56.602,
+            "max_ms": 60.017,
+            "over_budget": 19,
+            "over_budget_percent": 65.51724137931035
+          }
+        }
+      }
+    },
+    {
+      "run": "nov09-compose-close-tint-a8-after-1",
+      "source_fingerprint": "ab72df3b16a2d60fe990629727ef566f810fc281245e1dab9b5d963d41438b4f",
+      "raw_sha256": "63e6071a9d645a7caf23bb808e9f441166fe4a31371ae331d882237749e98d36",
+      "start_battery_celsius": 25.0,
+      "start_charge_percent": 100,
+      "usb_powered": true,
+      "aggregates": {
+        "first_open": {
+          "ui": {
+            "n": 9,
+            "p50_ms": 6.777,
+            "p95_ms": 101.475,
+            "max_ms": 101.475,
+            "over_budget": 2,
+            "over_budget_percent": 22.22222222222222
+          },
+          "raster": {
+            "n": 9,
+            "p50_ms": 18.705,
+            "p95_ms": 356.016,
+            "max_ms": 356.016,
+            "over_budget": 7,
+            "over_budget_percent": 77.77777777777777
+          },
+          "queue": {
+            "n": 9,
+            "p50_ms": 3.336,
+            "p95_ms": 320.466,
+            "max_ms": 320.466,
+            "over_budget": 2,
+            "over_budget_percent": 22.22222222222222
+          },
+          "total": {
+            "n": 9,
+            "p50_ms": 45.052,
+            "p95_ms": 510.58,
+            "max_ms": 510.58,
+            "over_budget": 9,
+            "over_budget_percent": 100.0
+          }
+        },
+        "repeat_open": {
+          "ui": {
+            "n": 93,
+            "p50_ms": 2.084,
+            "p95_ms": 19.954,
+            "max_ms": 45.426,
+            "over_budget": 5,
+            "over_budget_percent": 5.376344086021505
+          },
+          "raster": {
+            "n": 93,
+            "p50_ms": 15.915,
+            "p95_ms": 28.286,
+            "max_ms": 43.177,
+            "over_budget": 32,
+            "over_budget_percent": 34.40860215053763
+          },
+          "queue": {
+            "n": 93,
+            "p50_ms": 0.277,
+            "p95_ms": 17.322,
+            "max_ms": 31.531,
+            "over_budget": 6,
+            "over_budget_percent": 6.451612903225806
+          },
+          "total": {
+            "n": 93,
+            "p50_ms": 20.086,
+            "p95_ms": 52.068,
+            "max_ms": 98.727,
+            "over_budget": 81,
+            "over_budget_percent": 87.09677419354838
+          }
+        },
+        "drag": {
+          "ui": {
+            "n": 202,
+            "p50_ms": 2.973,
+            "p95_ms": 7.659,
+            "max_ms": 20.017,
+            "over_budget": 2,
+            "over_budget_percent": 0.9900990099009901
+          },
+          "raster": {
+            "n": 202,
+            "p50_ms": 15.999,
+            "p95_ms": 22.969,
+            "max_ms": 35.887,
+            "over_budget": 86,
+            "over_budget_percent": 42.57425742574257
+          },
+          "queue": {
+            "n": 202,
+            "p50_ms": 2.532,
+            "p95_ms": 11.353,
+            "max_ms": 17.282,
+            "over_budget": 1,
+            "over_budget_percent": 0.49504950495049505
+          },
+          "total": {
+            "n": 202,
+            "p50_ms": 25.521,
+            "p95_ms": 38.048,
+            "max_ms": 42.041,
+            "over_budget": 178,
+            "over_budget_percent": 88.11881188118812
+          }
+        },
+        "fling_down": {
+          "ui": {
+            "n": 261,
+            "p50_ms": 5.974,
+            "p95_ms": 15.207,
+            "max_ms": 21.768,
+            "over_budget": 7,
+            "over_budget_percent": 2.681992337164751
+          },
+          "raster": {
+            "n": 261,
+            "p50_ms": 16.579,
+            "p95_ms": 26.069,
+            "max_ms": 32.672,
+            "over_budget": 128,
+            "over_budget_percent": 49.04214559386973
+          },
+          "queue": {
+            "n": 261,
+            "p50_ms": 0.569,
+            "p95_ms": 10.525,
+            "max_ms": 18.068,
+            "over_budget": 2,
+            "over_budget_percent": 0.7662835249042146
+          },
+          "total": {
+            "n": 261,
+            "p50_ms": 28.364,
+            "p95_ms": 41.957,
+            "max_ms": 52.935,
+            "over_budget": 248,
+            "over_budget_percent": 95.01915708812261
+          }
+        },
+        "fling_up": {
+          "ui": {
+            "n": 288,
+            "p50_ms": 4.122,
+            "p95_ms": 9.243,
+            "max_ms": 23.995,
+            "over_budget": 2,
+            "over_budget_percent": 0.6944444444444444
+          },
+          "raster": {
+            "n": 288,
+            "p50_ms": 15.711,
+            "p95_ms": 21.912,
+            "max_ms": 26.903,
+            "over_budget": 116,
+            "over_budget_percent": 40.27777777777778
+          },
+          "queue": {
+            "n": 288,
+            "p50_ms": 1.244,
+            "p95_ms": 10.981,
+            "max_ms": 16.235,
+            "over_budget": 0,
+            "over_budget_percent": 0.0
+          },
+          "total": {
+            "n": 288,
+            "p50_ms": 24.914,
+            "p95_ms": 34.845,
+            "max_ms": 44.673,
+            "over_budget": 271,
+            "over_budget_percent": 94.09722222222223
+          }
+        },
+        "keyboard": {
+          "ui": {
+            "n": 147,
+            "p50_ms": 1.302,
+            "p95_ms": 4.137,
+            "max_ms": 44.698,
+            "over_budget": 6,
+            "over_budget_percent": 4.081632653061225
+          },
+          "raster": {
+            "n": 147,
+            "p50_ms": 16.588,
+            "p95_ms": 24.767,
+            "max_ms": 74.736,
+            "over_budget": 68,
+            "over_budget_percent": 46.25850340136054
+          },
+          "queue": {
+            "n": 147,
+            "p50_ms": 2.983,
+            "p95_ms": 15.534,
+            "max_ms": 45.542,
+            "over_budget": 6,
+            "over_budget_percent": 4.081632653061225
+          },
+          "total": {
+            "n": 147,
+            "p50_ms": 25.572,
+            "p95_ms": 58.292,
+            "max_ms": 136.454,
+            "over_budget": 134,
+            "over_budget_percent": 91.15646258503402
+          }
+        },
+        "search": {
+          "ui": {
+            "n": 143,
+            "p50_ms": 1.279,
+            "p95_ms": 2.516,
+            "max_ms": 84.051,
+            "over_budget": 3,
+            "over_budget_percent": 2.097902097902098
+          },
+          "raster": {
+            "n": 143,
+            "p50_ms": 14.024,
+            "p95_ms": 19.727,
+            "max_ms": 23.354,
+            "over_budget": 35,
+            "over_budget_percent": 24.475524475524477
+          },
+          "queue": {
+            "n": 143,
+            "p50_ms": 0.244,
+            "p95_ms": 11.169,
+            "max_ms": 17.206,
+            "over_budget": 1,
+            "over_budget_percent": 0.6993006993006993
+          },
+          "total": {
+            "n": 143,
+            "p50_ms": 17.256,
+            "p95_ms": 30.716,
+            "max_ms": 116.4,
+            "over_budget": 88,
+            "over_budget_percent": 61.53846153846154
+          }
+        },
+        "close": {
+          "ui": {
+            "n": 27,
+            "p50_ms": 5.726,
+            "p95_ms": 6.745,
+            "max_ms": 7.207,
+            "over_budget": 0,
+            "over_budget_percent": 0.0
+          },
+          "raster": {
+            "n": 27,
+            "p50_ms": 11.151,
+            "p95_ms": 35.675,
+            "max_ms": 35.991,
+            "over_budget": 11,
+            "over_budget_percent": 40.74074074074074
+          },
+          "queue": {
+            "n": 27,
+            "p50_ms": 0.266,
+            "p95_ms": 19.392,
+            "max_ms": 20.125,
+            "over_budget": 2,
+            "over_budget_percent": 7.407407407407407
+          },
+          "total": {
+            "n": 27,
+            "p50_ms": 24.686,
+            "p95_ms": 49.697,
+            "max_ms": 53.742,
+            "over_budget": 16,
+            "over_budget_percent": 59.25925925925926
+          }
+        }
+      }
+    },
+    {
+      "run": "nov09-clip-close-tint-a8-after-1",
+      "source_fingerprint": "06f7c890994994955ef0e406507da8f246b6bff16c371a729556c2449b99e339",
+      "raw_sha256": "64aed923db3d05ee2234485921a97b66bf06612f1ddd1cb9f71468333cf13ffc",
+      "start_battery_celsius": 25.9,
+      "start_charge_percent": 100,
+      "usb_powered": true,
+      "aggregates": {
+        "first_open": {
+          "ui": {
+            "n": 10,
+            "p50_ms": 5.43,
+            "p95_ms": 119.3,
+            "max_ms": 119.3,
+            "over_budget": 2,
+            "over_budget_percent": 20.0
+          },
+          "raster": {
+            "n": 10,
+            "p50_ms": 14.799,
+            "p95_ms": 357.191,
+            "max_ms": 357.191,
+            "over_budget": 5,
+            "over_budget_percent": 50.0
+          },
+          "queue": {
+            "n": 10,
+            "p50_ms": 0.2,
+            "p95_ms": 235.902,
+            "max_ms": 235.902,
+            "over_budget": 2,
+            "over_budget_percent": 20.0
+          },
+          "total": {
+            "n": 10,
+            "p50_ms": 21.766,
+            "p95_ms": 520.895,
+            "max_ms": 520.895,
+            "over_budget": 7,
+            "over_budget_percent": 70.0
+          }
+        },
+        "repeat_open": {
+          "ui": {
+            "n": 90,
+            "p50_ms": 1.928,
+            "p95_ms": 20.791,
+            "max_ms": 46.51,
+            "over_budget": 6,
+            "over_budget_percent": 6.666666666666667
+          },
+          "raster": {
+            "n": 90,
+            "p50_ms": 15.209,
+            "p95_ms": 31.726,
+            "max_ms": 51.328,
+            "over_budget": 32,
+            "over_budget_percent": 35.55555555555556
+          },
+          "queue": {
+            "n": 90,
+            "p50_ms": 0.471,
+            "p95_ms": 19.746,
+            "max_ms": 41.486,
+            "over_budget": 6,
+            "over_budget_percent": 6.666666666666667
+          },
+          "total": {
+            "n": 90,
+            "p50_ms": 21.613,
+            "p95_ms": 61.924,
+            "max_ms": 102.448,
+            "over_budget": 66,
+            "over_budget_percent": 73.33333333333333
+          }
+        },
+        "drag": {
+          "ui": {
+            "n": 210,
+            "p50_ms": 2.862,
+            "p95_ms": 7.703,
+            "max_ms": 16.375,
+            "over_budget": 0,
+            "over_budget_percent": 0.0
+          },
+          "raster": {
+            "n": 210,
+            "p50_ms": 16.14,
+            "p95_ms": 25.006,
+            "max_ms": 41.04,
+            "over_budget": 90,
+            "over_budget_percent": 42.857142857142854
+          },
+          "queue": {
+            "n": 210,
+            "p50_ms": 1.798,
+            "p95_ms": 13.582,
+            "max_ms": 26.125,
+            "over_budget": 4,
+            "over_budget_percent": 1.9047619047619047
+          },
+          "total": {
+            "n": 210,
+            "p50_ms": 23.516,
+            "p95_ms": 40.099,
+            "max_ms": 61.714,
+            "over_budget": 186,
+            "over_budget_percent": 88.57142857142857
+          }
+        },
+        "fling_down": {
+          "ui": {
+            "n": 262,
+            "p50_ms": 5.649,
+            "p95_ms": 14.19,
+            "max_ms": 24.056,
+            "over_budget": 5,
+            "over_budget_percent": 1.9083969465648856
+          },
+          "raster": {
+            "n": 262,
+            "p50_ms": 16.02,
+            "p95_ms": 27.761,
+            "max_ms": 34.945,
+            "over_budget": 114,
+            "over_budget_percent": 43.51145038167939
+          },
+          "queue": {
+            "n": 262,
+            "p50_ms": 0.268,
+            "p95_ms": 11.713,
+            "max_ms": 19.358,
+            "over_budget": 2,
+            "over_budget_percent": 0.7633587786259542
+          },
+          "total": {
+            "n": 262,
+            "p50_ms": 27.055,
+            "p95_ms": 41.932,
+            "max_ms": 53.965,
+            "over_budget": 242,
+            "over_budget_percent": 92.36641221374046
+          }
+        },
+        "fling_up": {
+          "ui": {
+            "n": 283,
+            "p50_ms": 4.321,
+            "p95_ms": 11.251,
+            "max_ms": 15.88,
+            "over_budget": 0,
+            "over_budget_percent": 0.0
+          },
+          "raster": {
+            "n": 283,
+            "p50_ms": 15.669,
+            "p95_ms": 21.289,
+            "max_ms": 39.197,
+            "over_budget": 100,
+            "over_budget_percent": 35.3356890459364
+          },
+          "queue": {
+            "n": 283,
+            "p50_ms": 1.329,
+            "p95_ms": 9.7,
+            "max_ms": 25.008,
+            "over_budget": 3,
+            "over_budget_percent": 1.0600706713780919
+          },
+          "total": {
+            "n": 283,
+            "p50_ms": 24.992,
+            "p95_ms": 35.603,
+            "max_ms": 47.826,
+            "over_budget": 263,
+            "over_budget_percent": 92.93286219081273
+          }
+        },
+        "keyboard": {
+          "ui": {
+            "n": 147,
+            "p50_ms": 1.254,
+            "p95_ms": 2.945,
+            "max_ms": 40.74,
+            "over_budget": 6,
+            "over_budget_percent": 4.081632653061225
+          },
+          "raster": {
+            "n": 147,
+            "p50_ms": 16.274,
+            "p95_ms": 25.821,
+            "max_ms": 72.592,
+            "over_budget": 64,
+            "over_budget_percent": 43.53741496598639
+          },
+          "queue": {
+            "n": 147,
+            "p50_ms": 5.692,
+            "p95_ms": 14.42,
+            "max_ms": 29.969,
+            "over_budget": 5,
+            "over_budget_percent": 3.401360544217687
+          },
+          "total": {
+            "n": 147,
+            "p50_ms": 25.783,
+            "p95_ms": 52.318,
+            "max_ms": 135.313,
+            "over_budget": 119,
+            "over_budget_percent": 80.95238095238095
+          }
+        },
+        "search": {
+          "ui": {
+            "n": 143,
+            "p50_ms": 1.201,
+            "p95_ms": 2.664,
+            "max_ms": 86.62,
+            "over_budget": 3,
+            "over_budget_percent": 2.097902097902098
+          },
+          "raster": {
+            "n": 143,
+            "p50_ms": 14.332,
+            "p95_ms": 21.638,
+            "max_ms": 28.937,
+            "over_budget": 33,
+            "over_budget_percent": 23.076923076923077
+          },
+          "queue": {
+            "n": 143,
+            "p50_ms": 0.204,
+            "p95_ms": 9.095,
+            "max_ms": 19.43,
+            "over_budget": 2,
+            "over_budget_percent": 1.3986013986013985
+          },
+          "total": {
+            "n": 143,
+            "p50_ms": 17.262,
+            "p95_ms": 30.284,
+            "max_ms": 114.755,
+            "over_budget": 83,
+            "over_budget_percent": 58.04195804195804
+          }
+        },
+        "close": {
+          "ui": {
+            "n": 30,
+            "p50_ms": 5.542,
+            "p95_ms": 7.998,
+            "max_ms": 8.152,
+            "over_budget": 0,
+            "over_budget_percent": 0.0
+          },
+          "raster": {
+            "n": 30,
+            "p50_ms": 13.035,
+            "p95_ms": 41.476,
+            "max_ms": 48.057,
+            "over_budget": 10,
+            "over_budget_percent": 33.333333333333336
+          },
+          "queue": {
+            "n": 30,
+            "p50_ms": 0.523,
+            "p95_ms": 32.392,
+            "max_ms": 33.218,
+            "over_budget": 3,
+            "over_budget_percent": 10.0
+          },
+          "total": {
+            "n": 30,
+            "p50_ms": 21.77,
+            "p95_ms": 56.28,
+            "max_ms": 59.088,
+            "over_budget": 21,
+            "over_budget_percent": 70.0
+          }
+        }
+      }
+    }
+  ],
+  "ios_specialized_base_timing": [
+    {
+      "run": "specialized-base-before-timing-7plus-1",
+      "source_fingerprint": "72eb8c326764b58ebeae7a813770236310708d38387a8793b0e4ef1a6f86a1b7",
+      "raw_sha256": "d0aa5f53c7bd4c4a226c70dd774055a1d9c39d5dfb4024675e07971a977d076f",
+      "paired": true,
+      "phases": {
+        "first_open": {
+          "sample_count": 9,
+          "p95_us": {
+            "ui": 23612,
+            "raster": 199657,
+            "queue": 307452,
+            "total": 371349
+          },
+          "action_us": [
+            721507
+          ]
+        },
+        "open": {
+          "sample_count": 31,
+          "p95_us": {
+            "ui": 13514,
+            "raster": 138937,
+            "queue": 121577,
+            "total": 142115
+          },
+          "action_us": [
+            513123,
+            533779,
+            411587
+          ]
+        },
+        "drag": {
+          "sample_count": 131,
+          "p95_us": {
+            "ui": 4734,
+            "raster": 141484,
+            "queue": 127062,
+            "total": 200643
+          },
+          "action_us": [
+            3257172,
+            3160894,
+            3255133
+          ]
+        },
+        "fling_down": {
+          "sample_count": 158,
+          "p95_us": {
+            "ui": 9779,
+            "raster": 138275,
+            "queue": 125842,
+            "total": 194711
+          },
+          "action_us": [
+            3855384,
+            3866729,
+            3965616
+          ]
+        },
+        "fling_up": {
+          "sample_count": 159,
+          "p95_us": {
+            "ui": 8849,
+            "raster": 141538,
+            "queue": 127105,
+            "total": 198035
+          },
+          "action_us": [
+            3917642,
+            3855593,
+            3894867
+          ]
+        },
+        "keyboard": {
+          "sample_count": 38,
+          "p95_us": {
+            "ui": 13694,
+            "raster": 140021,
+            "queue": 130958,
+            "total": 217503
+          },
+          "action_us": [
+            1006930,
+            1007097,
+            1008381
+          ]
+        },
+        "search": {
+          "sample_count": 36,
+          "p95_us": {
+            "ui": 9684,
+            "raster": 149152,
+            "queue": 134527,
+            "total": 196983
+          },
+          "action_us": [
+            904318,
+            903240,
+            909344
+          ]
+        },
+        "close": {
+          "sample_count": 14,
+          "p95_us": {
+            "ui": 2085,
+            "raster": 141245,
+            "queue": 128677,
+            "total": 148224
+          },
+          "action_us": [
+            311297,
+            422479,
+            309293
+          ]
+        }
+      },
+      "start": {
+        "battery_celsius": 31.9,
+        "charge_percent": 100,
+        "external_power": true,
+        "charging": false
+      }
+    },
+    {
+      "run": "specialized-base-after-timing-7plus-2",
+      "source_fingerprint": "4f401d5d25cd28cb0931bc677b6752dabaedab2364034c50d8a55ef99b6bda5e",
+      "raw_sha256": "9d88cfd2359e0b5fe056b48a7597071f5505dfe025050c1683aa1d109dbccf6d",
+      "paired": true,
+      "phases": {
+        "first_open": {
+          "sample_count": 8,
+          "p95_us": {
+            "ui": 72703,
+            "raster": 232840,
+            "queue": 401740,
+            "total": 462970
+          },
+          "action_us": [
+            871092
+          ]
+        },
+        "open": {
+          "sample_count": 35,
+          "p95_us": {
+            "ui": 13037,
+            "raster": 135766,
+            "queue": 128566,
+            "total": 153926
+          },
+          "action_us": [
+            519260,
+            629899,
+            524824
+          ]
+        },
+        "drag": {
+          "sample_count": 132,
+          "p95_us": {
+            "ui": 4642,
+            "raster": 138404,
+            "queue": 125721,
+            "total": 195535
+          },
+          "action_us": [
+            3259745,
+            3256763,
+            3163899
+          ]
+        },
+        "fling_down": {
+          "sample_count": 154,
+          "p95_us": {
+            "ui": 8734,
+            "raster": 138766,
+            "queue": 125809,
+            "total": 200970
+          },
+          "action_us": [
+            3765967,
+            3880943,
+            3789818
+          ]
+        },
+        "fling_up": {
+          "sample_count": 161,
+          "p95_us": {
+            "ui": 9433,
+            "raster": 140641,
+            "queue": 127783,
+            "total": 193045
+          },
+          "action_us": [
+            3986970,
+            3786174,
+            3967200
+          ]
+        },
+        "keyboard": {
+          "sample_count": 39,
+          "p95_us": {
+            "ui": 14919,
+            "raster": 150943,
+            "queue": 135275,
+            "total": 213330
+          },
+          "action_us": [
+            1008809,
+            1004837,
+            1005999
+          ]
+        },
+        "search": {
+          "sample_count": 36,
+          "p95_us": {
+            "ui": 10955,
+            "raster": 144912,
+            "queue": 130192,
+            "total": 210593
+          },
+          "action_us": [
+            903099,
+            904628,
+            906172
+          ]
+        },
+        "close": {
+          "sample_count": 16,
+          "p95_us": {
+            "ui": 4028,
+            "raster": 147599,
+            "queue": 134348,
+            "total": 189756
+          },
+          "action_us": [
+            309265,
+            316921,
+            527801
+          ]
+        }
+      },
+      "start": {
+        "battery_celsius": 32.2,
+        "charge_percent": 100,
+        "external_power": true,
+        "charging": false
+      }
+    },
+    {
+      "run": "specialized-base-after-timing-7plus-1",
+      "source_fingerprint": "4f401d5d25cd28cb0931bc677b6752dabaedab2364034c50d8a55ef99b6bda5e",
+      "raw_sha256": "647b912b3f803708c474dbbaf77948204cd854b85f392b4f82915b5c5748e488",
+      "paired": false,
+      "phases": {
+        "first_open": {
+          "sample_count": 9,
+          "p95_us": {
+            "ui": 49154,
+            "raster": 212384,
+            "queue": 387269,
+            "total": 442341
+          },
+          "action_us": [
+            878294
+          ]
+        },
+        "open": {
+          "sample_count": 34,
+          "p95_us": {
+            "ui": 15845,
+            "raster": 136687,
+            "queue": 121965,
+            "total": 144105
+          },
+          "action_us": [
+            634465,
+            535182,
+            540527
+          ]
+        },
+        "drag": {
+          "sample_count": 132,
+          "p95_us": {
+            "ui": 4506,
+            "raster": 139173,
+            "queue": 125134,
+            "total": 196088
+          },
+          "action_us": [
+            3165475,
+            3272140,
+            3260415
+          ]
+        },
+        "fling_down": {
+          "sample_count": 156,
+          "p95_us": {
+            "ui": 8919,
+            "raster": 138499,
+            "queue": 124850,
+            "total": 198933
+          },
+          "action_us": [
+            3762015,
+            3677620,
+            3902595
+          ]
+        },
+        "fling_up": {
+          "sample_count": 155,
+          "p95_us": {
+            "ui": 9181,
+            "raster": 137861,
+            "queue": 125436,
+            "total": 198980
+          },
+          "action_us": [
+            3756742,
+            3861223,
+            3853870
+          ]
+        },
+        "keyboard": {
+          "sample_count": 40,
+          "p95_us": {
+            "ui": 12134,
+            "raster": 140657,
+            "queue": 129566,
+            "total": 200552
+          },
+          "action_us": [
+            1010888,
+            1005207,
+            1007929
+          ]
+        },
+        "search": {
+          "sample_count": 38,
+          "p95_us": {
+            "ui": 11272,
+            "raster": 146892,
+            "queue": 133899,
+            "total": 205860
+          },
+          "action_us": [
+            903400,
+            903762,
+            904797
+          ]
+        },
+        "close": {
+          "sample_count": 17,
+          "p95_us": {
+            "ui": 3629,
+            "raster": 138701,
+            "queue": 128433,
+            "total": 146873
+          },
+          "action_us": [
+            411648,
+            413576,
+            412654
+          ]
+        }
+      }
+    }
+  ],
+  "ios_specialized_base_native_png": {
+    "pairs": 6,
+    "maximum_channel_delta_below_status_bar": 0,
+    "status_bar_excluded_px": 60
+  }
+}

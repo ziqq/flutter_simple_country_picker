@@ -20,6 +20,74 @@ void main() => group('CountryPhoneController -', () {
         .add(countryCode);
   }
 
+  test('bundled candidates have ISO2 identifiers and integer priorities', () {
+    for (final entry in countries) {
+      expect(entry['iso2_cc'], allOf(isA<String>(), isNotEmpty));
+      expect(entry['level'], isA<int>(), reason: '${entry["iso2_cc"]}');
+    }
+  });
+
+  group('immutable values -', () {
+    test('equal resolutions have equal hashes and deduplicate in sets', () {
+      const first = CountryPhoneResolution(
+        phone: '+712345',
+        phoneCode: '7',
+        nationalNumber: '12345',
+        status: CountryPhoneResolutionStatus.ambiguous,
+        countryCodes: ['RU', 'KZ'],
+      );
+      final second = CountryPhoneResolution(
+        phone: first.phone,
+        phoneCode: first.phoneCode,
+        nationalNumber: first.nationalNumber,
+        status: first.status,
+        countryCodes: List<String>.of(first.countryCodes),
+      );
+      expect(second, first);
+      expect(second.hashCode, first.hashCode);
+      expect({first, second}, hasLength(1));
+    });
+
+    test(
+      'status copyWith preserves omitted fields and replaces supplied fields',
+      () {
+        const status = CountryPhoneValueStatus(
+          currentLength: 5,
+          expectedLength: 10,
+          isOverflow: false,
+        );
+        final unchanged = status.copyWith();
+        expect(unchanged, status);
+        expect(unchanged.hashCode, status.hashCode);
+        expect({status, unchanged}, hasLength(1));
+        expect(
+          status.copyWith(currentLength: 11, isOverflow: true),
+          const CountryPhoneValueStatus(
+            currentLength: 11,
+            expectedLength: 10,
+            isOverflow: true,
+          ),
+        );
+      },
+    );
+
+    test('editing copyWith preserves status when text is unchanged', () {
+      final value = CountryPhoneEditingValue(
+        text: '+7 12345',
+        valueStatus: const CountryPhoneValueStatus(
+          currentLength: 5,
+          expectedLength: 10,
+          isOverflow: false,
+        ),
+      );
+      final unchanged = value.copyWith();
+      expect(unchanged, value);
+      expect(unchanged.valueStatus, same(value.valueStatus));
+      expect(unchanged.hashCode, value.hashCode);
+      expect({value, unchanged}, hasLength(1));
+    });
+  });
+
   group('simple tests -', () {
     const phone = '+71234567890';
     const phoneSpaced = '+7 123 456 78 90';

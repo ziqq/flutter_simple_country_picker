@@ -5,9 +5,64 @@ behavior-changing API updates.
 
 ## Contents
 
+- [To 0.12.0](#to-0120)
 - [To 0.11.1](#to-0111)
 - [To 0.10.0](#to-0100)
 - [To 0.9.0](#to-090)
+
+## To 0.12.0
+
+The picker now has one interface. Remove `CountryPickerStyle` and the `style:`
+argument from `CountryPickerTheme`. Groups have scrolling letter headers;
+the alphabet index and floating search remain available through `showGroup`
+and `showSearch`. Light mode uses inset white groups and dark mode uses a
+continuous dark list. Flags retain their native, uncropped glyphs.
+
+`CountryPickerTheme.radius` is deprecated. Use `baseCornerRadius` for input
+fields and `sheetCornerRadius` for picker sheets:
+
+```dart
+CountryPickerTheme(baseCornerRadius: 12, sheetCornerRadius: 38);
+```
+
+The deprecated `radius` parameter remains an alias for `baseCornerRadius`,
+including in `raw` and `copyWith`; the new parameter wins when both are set.
+An explicit `sheetCornerRadius: 0` permits square sheet corners.
+
+Pickers open at full available height by default. Use `expand: false` for
+partial nonadaptive presentation, or supply an explicit `initialChildSize`.
+Both phone input variants forward their `expand` setting to the picker.
+
+`CountryPickerTheme.indent` is deprecated and no longer has an effect. The
+spacings it used to control are derived from `padding` (`padding / 1.6` for
+gaps between controls and vertical padding). Remove `indent` from your theme
+and adjust `padding` instead.
+
+Before 0.12.0:
+
+```dart
+CountryPickerTheme(padding: 16, indent: 10);
+```
+
+After 0.12.0:
+
+```dart
+CountryPickerTheme(padding: 16);
+```
+
+`indent` will be removed in v1.0.0.
+
+The minimum Flutter version is now 3.44.0, required by the Cupertino sheet
+`scrollableBuilder` API already used by the picker. The package also declares
+a Windows-only font asset for flags.
+
+Behavior changes to be aware of:
+
+- `showWorldWide` now adds the World Wide option; it was ignored before.
+- In grouped mode favorites are shown in a leading section without a letter
+  header.
+- Names with diacritics are sorted with their base letter, and search ignores
+  diacritics.
 
 ## To 0.11.1
 

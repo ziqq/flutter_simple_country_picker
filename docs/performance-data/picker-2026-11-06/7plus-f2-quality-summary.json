@@ -1,0 +1,750 @@
+{
+  "acceptance": "Blur acceptance reserved to root/user; no threshold changed",
+  "all_raw_fullscreen_and_header_diff_pngs": "/private/tmp/country-picker-raster-20261106/ios/quality-raw-differences",
+  "scenes": [
+    {
+      "name": "partial-thirtyeight-opaque-light-rest",
+      "header": {
+        "roi": [
+          0,
+          811,
+          1242,
+          1160
+        ],
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "mse_rgb_8bit_squared": 0.0,
+        "bbox_local": null,
+        "first_maximum_locations_physical": [
+          [
+            0,
+            811
+          ],
+          [
+            1,
+            811
+          ],
+          [
+            2,
+            811
+          ],
+          [
+            3,
+            811
+          ],
+          [
+            4,
+            811
+          ],
+          [
+            5,
+            811
+          ],
+          [
+            6,
+            811
+          ],
+          [
+            7,
+            811
+          ],
+          [
+            8,
+            811
+          ],
+          [
+            9,
+            811
+          ],
+          [
+            10,
+            811
+          ],
+          [
+            11,
+            811
+          ]
+        ]
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-thirtyeight-opaque-light-scrolled",
+      "header": {
+        "roi": [
+          0,
+          811,
+          1242,
+          1160
+        ],
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "mse_rgb_8bit_squared": 0.0,
+        "bbox_local": null,
+        "first_maximum_locations_physical": [
+          [
+            0,
+            811
+          ],
+          [
+            1,
+            811
+          ],
+          [
+            2,
+            811
+          ],
+          [
+            3,
+            811
+          ],
+          [
+            4,
+            811
+          ],
+          [
+            5,
+            811
+          ],
+          [
+            6,
+            811
+          ],
+          [
+            7,
+            811
+          ],
+          [
+            8,
+            811
+          ],
+          [
+            9,
+            811
+          ],
+          [
+            10,
+            811
+          ],
+          [
+            11,
+            811
+          ]
+        ]
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-thirtyeight-opaque-light-keyboard",
+      "header": {
+        "roi": [
+          0,
+          60,
+          1242,
+          408
+        ],
+        "different_pixels": 31951,
+        "max_channel_delta_8bit": 9,
+        "mse_rgb_8bit_squared": 0.11287874581227905,
+        "bbox_local": [
+          0,
+          0,
+          1242,
+          348
+        ]
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-thirtyeight-opaque-dark-rest",
+      "header": {
+        "roi": [
+          0,
+          811,
+          1242,
+          1160
+        ],
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "mse_rgb_8bit_squared": 0.0,
+        "bbox_local": null
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-thirtyeight-opaque-dark-scrolled",
+      "header": {
+        "roi": [
+          0,
+          811,
+          1242,
+          1160
+        ],
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "mse_rgb_8bit_squared": 0.0,
+        "bbox_local": null,
+        "first_maximum_locations_physical": [
+          [
+            0,
+            811
+          ],
+          [
+            1,
+            811
+          ],
+          [
+            2,
+            811
+          ],
+          [
+            3,
+            811
+          ],
+          [
+            4,
+            811
+          ],
+          [
+            5,
+            811
+          ],
+          [
+            6,
+            811
+          ],
+          [
+            7,
+            811
+          ],
+          [
+            8,
+            811
+          ],
+          [
+            9,
+            811
+          ],
+          [
+            10,
+            811
+          ],
+          [
+            11,
+            811
+          ]
+        ]
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-thirtyeight-opaque-dark-keyboard",
+      "header": {
+        "roi": [
+          0,
+          60,
+          1242,
+          408
+        ],
+        "different_pixels": 19728,
+        "max_channel_delta_8bit": 8,
+        "mse_rgb_8bit_squared": 0.09609084346715531,
+        "bbox_local": [
+          80,
+          0,
+          1152,
+          348
+        ]
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-zero-opaque-light-rest",
+      "header": {
+        "roi": [
+          0,
+          811,
+          1242,
+          1160
+        ],
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "mse_rgb_8bit_squared": 0.0,
+        "bbox_local": null
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-zero-opaque-light-scrolled",
+      "header": {
+        "roi": [
+          0,
+          811,
+          1242,
+          1160
+        ],
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "mse_rgb_8bit_squared": 0.0,
+        "bbox_local": null
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-zero-opaque-light-keyboard",
+      "header": {
+        "roi": [
+          0,
+          60,
+          1242,
+          408
+        ],
+        "different_pixels": 32298,
+        "max_channel_delta_8bit": 9,
+        "mse_rgb_8bit_squared": 0.11921045650014499,
+        "bbox_local": [
+          0,
+          0,
+          1242,
+          348
+        ]
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-zero-opaque-dark-rest",
+      "header": {
+        "roi": [
+          0,
+          811,
+          1242,
+          1160
+        ],
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "mse_rgb_8bit_squared": 0.0,
+        "bbox_local": null
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-zero-opaque-dark-scrolled",
+      "header": {
+        "roi": [
+          0,
+          811,
+          1242,
+          1160
+        ],
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "mse_rgb_8bit_squared": 0.0,
+        "bbox_local": null
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-zero-opaque-dark-keyboard",
+      "header": {
+        "roi": [
+          0,
+          60,
+          1242,
+          408
+        ],
+        "different_pixels": 19812,
+        "max_channel_delta_8bit": 8,
+        "mse_rgb_8bit_squared": 0.09886954670812742,
+        "bbox_local": [
+          80,
+          0,
+          1152,
+          348
+        ]
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-twentyfour-opaque-light-rest",
+      "header": {
+        "roi": [
+          0,
+          811,
+          1242,
+          1160
+        ],
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "mse_rgb_8bit_squared": 0.0,
+        "bbox_local": null
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-twentyfour-opaque-light-scrolled",
+      "header": {
+        "roi": [
+          0,
+          811,
+          1242,
+          1160
+        ],
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "mse_rgb_8bit_squared": 0.0,
+        "bbox_local": null
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-twentyfour-opaque-light-keyboard",
+      "header": {
+        "roi": [
+          0,
+          60,
+          1242,
+          408
+        ],
+        "different_pixels": 32256,
+        "max_channel_delta_8bit": 9,
+        "mse_rgb_8bit_squared": 0.1188109648879264,
+        "bbox_local": [
+          0,
+          0,
+          1242,
+          348
+        ]
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-twentyfour-opaque-dark-rest",
+      "header": {
+        "roi": [
+          0,
+          811,
+          1242,
+          1160
+        ],
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "mse_rgb_8bit_squared": 0.0,
+        "bbox_local": null
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-twentyfour-opaque-dark-scrolled",
+      "header": {
+        "roi": [
+          0,
+          811,
+          1242,
+          1160
+        ],
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "mse_rgb_8bit_squared": 0.0,
+        "bbox_local": null
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-twentyfour-opaque-dark-keyboard",
+      "header": {
+        "roi": [
+          0,
+          60,
+          1242,
+          408
+        ],
+        "different_pixels": 19815,
+        "max_channel_delta_8bit": 8,
+        "mse_rgb_8bit_squared": 0.0987399818609214,
+        "bbox_local": [
+          80,
+          0,
+          1152,
+          348
+        ]
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-thirtyeight-translucent-light-rest",
+      "header": {
+        "roi": [
+          0,
+          811,
+          1242,
+          1160
+        ],
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "mse_rgb_8bit_squared": 0.0,
+        "bbox_local": null
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-thirtyeight-translucent-light-scrolled",
+      "header": {
+        "roi": [
+          0,
+          811,
+          1242,
+          1160
+        ],
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "mse_rgb_8bit_squared": 0.0,
+        "bbox_local": null
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-thirtyeight-translucent-light-keyboard",
+      "header": {
+        "roi": [
+          0,
+          60,
+          1242,
+          408
+        ],
+        "different_pixels": 74616,
+        "max_channel_delta_8bit": 9,
+        "mse_rgb_8bit_squared": 0.16033804085611517,
+        "bbox_local": [
+          0,
+          0,
+          1242,
+          348
+        ]
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-thirtyeight-translucent-dark-rest",
+      "header": {
+        "roi": [
+          0,
+          811,
+          1242,
+          1160
+        ],
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "mse_rgb_8bit_squared": 0.0,
+        "bbox_local": null
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-thirtyeight-translucent-dark-scrolled",
+      "header": {
+        "roi": [
+          0,
+          811,
+          1242,
+          1160
+        ],
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "mse_rgb_8bit_squared": 0.0,
+        "bbox_local": null,
+        "first_maximum_locations_physical": [
+          [
+            0,
+            811
+          ],
+          [
+            1,
+            811
+          ],
+          [
+            2,
+            811
+          ],
+          [
+            3,
+            811
+          ],
+          [
+            4,
+            811
+          ],
+          [
+            5,
+            811
+          ],
+          [
+            6,
+            811
+          ],
+          [
+            7,
+            811
+          ],
+          [
+            8,
+            811
+          ],
+          [
+            9,
+            811
+          ],
+          [
+            10,
+            811
+          ],
+          [
+            11,
+            811
+          ]
+        ]
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    },
+    {
+      "name": "partial-thirtyeight-translucent-dark-keyboard",
+      "header": {
+        "roi": [
+          0,
+          60,
+          1242,
+          408
+        ],
+        "different_pixels": 47264,
+        "max_channel_delta_8bit": 8,
+        "mse_rgb_8bit_squared": 0.0959096069249326,
+        "bbox_local": [
+          0,
+          0,
+          1242,
+          348
+        ]
+      },
+      "outside_header": {
+        "different_pixels": 0,
+        "max_channel_delta_8bit": 0,
+        "bbox_physical": null
+      },
+      "caret_metadata_exact": true
+    }
+  ]
+}

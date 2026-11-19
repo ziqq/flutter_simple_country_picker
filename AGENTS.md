@@ -33,7 +33,7 @@ Treat this repository as a **published package**, not an app-first codebase.
 
 ### Toolchain (pre-installed on the VM snapshot)
 
-- **Flutter**: `~/flutter` (stable channel). Ensure `$HOME/flutter/bin` is on `PATH`.
+- **Flutter**: managed via [mise](https://mise.jdx.dev/) and pinned in `mise.toml` (locked in `mise.lock`). Run `mise install` (or `make setup`) after cloning or when `mise.toml` changes. CI installs the same version with `jdx/mise-action`.
 - **Android SDK**: `$HOME/Android/Sdk` with latest platforms, build-tools, emulator, and an x86_64 system image. Set `ANDROID_HOME` and point Flutter at it with `flutter config --android-sdk "$ANDROID_HOME"`.
 - **JDK 21**: OpenJDK 21 (`JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64`).
 
@@ -42,7 +42,8 @@ Treat this repository as a **published package**, not an app-first codebase.
 From repo root:
 
 ```bash
-fvm flutter pub get
+mise install
+mise exec -- flutter pub get
 ```
 
 The VM update script runs the dependency refresh steps above automatically.
@@ -102,6 +103,6 @@ make generate-json
 
 ### Notes for agents
 
-- Prefer `fvm`-prefixed commands, matching the repository Makefile.
+- Run Flutter and Dart through mise (`mise exec -- flutter ...`, `mise exec -- dart ...`), matching the repository Makefile, so local results match CI (formatter output depends on the Dart version).
 - If coverage drops after an API addition, first add focused tests before changing implementation.
 - When a user asks whether the package is release-ready, rely on the latest `make ci` result rather than editor diagnostics alone.

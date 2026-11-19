@@ -1,0 +1,621 @@
+{
+  "before": "before-a8-3",
+  "after": "row-cache-hint-a8-1",
+  "device": "a8",
+  "ROI_note": "Header includes known72dp nav+48dp extended shader extent. Status/nav OS bars excluded. Keyboard state body height estimated from measured native inset. Raw all-body diffs retained; caret/nativeIME differences must be reported, never silently accepted.",
+  "states": {
+    "rest-light": {
+      "body": {
+        "different_pixels": 2039,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.00040095571875568706,
+        "bbox_in_roi": [
+          48,
+          224,
+          1032,
+          1166
+        ],
+        "region": [
+          0,
+          72,
+          1080,
+          2175
+        ]
+      },
+      "header": {
+        "different_pixels": 501,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.0005161179698216736,
+        "bbox_in_roi": [
+          56,
+          224,
+          1024,
+          319
+        ],
+        "region": [
+          0,
+          72,
+          1080,
+          432
+        ]
+      },
+      "rows_flags": {
+        "different_pixels": 1538,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.0004373968113156403,
+        "bbox_in_roi": [
+          48,
+          75,
+          1032,
+          806
+        ],
+        "region": [
+          0,
+          432,
+          1080,
+          1935
+        ]
+      },
+      "dock": {
+        "different_pixels": 0,
+        "max_channel_delta": 0,
+        "mae_rgb": 0.0,
+        "bbox_in_roi": null,
+        "region": [
+          0,
+          1935,
+          1080,
+          2175
+        ]
+      },
+      "top_close": {
+        "different_pixels": 217,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.0013168724279835392,
+        "bbox_in_roi": [
+          56,
+          224,
+          179,
+          270
+        ],
+        "region": [
+          0,
+          72,
+          240,
+          342
+        ]
+      },
+      "bottom_close": {
+        "different_pixels": 0,
+        "max_channel_delta": 0,
+        "mae_rgb": 0.0,
+        "bbox_in_roi": null,
+        "region": [
+          900,
+          1935,
+          1080,
+          2175
+        ]
+      }
+    },
+    "scrolled-light": {
+      "body": {
+        "different_pixels": 1929,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.00037028231274546065,
+        "bbox_in_roi": [
+          99,
+          33,
+          179,
+          998
+        ],
+        "region": [
+          0,
+          72,
+          1080,
+          2175
+        ]
+      },
+      "header": {
+        "different_pixels": 364,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.00036179698216735255,
+        "bbox_in_roi": [
+          99,
+          33,
+          179,
+          271
+        ],
+        "region": [
+          0,
+          72,
+          1080,
+          432
+        ]
+      },
+      "rows_flags": {
+        "different_pixels": 1565,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.0004314416434620471,
+        "bbox_in_roi": [
+          99,
+          35,
+          179,
+          638
+        ],
+        "region": [
+          0,
+          432,
+          1080,
+          1935
+        ]
+      },
+      "dock": {
+        "different_pixels": 0,
+        "max_channel_delta": 0,
+        "mae_rgb": 0.0,
+        "bbox_in_roi": null,
+        "region": [
+          0,
+          1935,
+          1080,
+          2175
+        ]
+      },
+      "top_close": {
+        "different_pixels": 347,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.002042181069958848,
+        "bbox_in_roi": [
+          99,
+          33,
+          179,
+          270
+        ],
+        "region": [
+          0,
+          72,
+          240,
+          342
+        ]
+      },
+      "bottom_close": {
+        "different_pixels": 0,
+        "max_channel_delta": 0,
+        "mae_rgb": 0.0,
+        "bbox_in_roi": null,
+        "region": [
+          900,
+          1935,
+          1080,
+          2175
+        ]
+      }
+    },
+    "keyboard-light": {
+      "body": {
+        "different_pixels": 145414,
+        "max_channel_delta": 234,
+        "mae_rgb": 2.7368441716244254,
+        "bbox_in_roi": [
+          36,
+          33,
+          1067,
+          1077
+        ],
+        "region": [
+          0,
+          72,
+          1080,
+          1149
+        ]
+      },
+      "header": {
+        "different_pixels": 364,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.00036179698216735255,
+        "bbox_in_roi": [
+          99,
+          33,
+          179,
+          271
+        ],
+        "region": [
+          0,
+          72,
+          1080,
+          432
+        ]
+      },
+      "rows_flags": {
+        "different_pixels": 1205,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.0010152185728705644,
+        "bbox_in_roi": [
+          99,
+          35,
+          179,
+          456
+        ],
+        "region": [
+          0,
+          432,
+          1080,
+          909
+        ]
+      },
+      "dock": {
+        "different_pixels": 143845,
+        "max_channel_delta": 234,
+        "mae_rgb": 12.279027777777777,
+        "bbox_in_roi": [
+          36,
+          52,
+          1067,
+          240
+        ],
+        "region": [
+          0,
+          909,
+          1080,
+          1149
+        ]
+      },
+      "top_close": {
+        "different_pixels": 347,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.002042181069958848,
+        "bbox_in_roi": [
+          99,
+          33,
+          179,
+          270
+        ],
+        "region": [
+          0,
+          72,
+          240,
+          342
+        ]
+      },
+      "bottom_close": {
+        "different_pixels": 26156,
+        "max_channel_delta": 228,
+        "mae_rgb": 10.710841049382717,
+        "bbox_in_roi": [
+          0,
+          52,
+          167,
+          240
+        ],
+        "region": [
+          900,
+          909,
+          1080,
+          1149
+        ]
+      },
+      "native_keyboard": {
+        "different_pixels": 1156583,
+        "max_channel_delta": 250,
+        "mae_rgb": 39.72870600915263,
+        "bbox_in_roi": [
+          0,
+          0,
+          1080,
+          1071
+        ],
+        "region": [
+          0,
+          1149,
+          1080,
+          2220
+        ]
+      }
+    },
+    "rest-dark": {
+      "body": {
+        "different_pixels": 2222,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.0004633298697334202,
+        "bbox_in_roi": [
+          99,
+          246,
+          181,
+          855
+        ],
+        "region": [
+          0,
+          72,
+          1080,
+          2175
+        ]
+      },
+      "header": {
+        "different_pixels": 473,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.00046810699588477366,
+        "bbox_in_roi": [
+          99,
+          246,
+          181,
+          318
+        ],
+        "region": [
+          0,
+          72,
+          1080,
+          432
+        ]
+      },
+      "rows_flags": {
+        "different_pixels": 1749,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.0005361704574390314,
+        "bbox_in_roi": [
+          99,
+          75,
+          179,
+          495
+        ],
+        "region": [
+          0,
+          432,
+          1080,
+          1935
+        ]
+      },
+      "dock": {
+        "different_pixels": 0,
+        "max_channel_delta": 0,
+        "mae_rgb": 0.0,
+        "bbox_in_roi": null,
+        "region": [
+          0,
+          1935,
+          1080,
+          2175
+        ]
+      },
+      "top_close": {
+        "different_pixels": 235,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.0013837448559670782,
+        "bbox_in_roi": [
+          101,
+          246,
+          179,
+          270
+        ],
+        "region": [
+          0,
+          72,
+          240,
+          342
+        ]
+      },
+      "bottom_close": {
+        "different_pixels": 0,
+        "max_channel_delta": 0,
+        "mae_rgb": 0.0,
+        "bbox_in_roi": null,
+        "region": [
+          900,
+          1935,
+          1080,
+          2175
+        ]
+      }
+    },
+    "scrolled-dark": {
+      "body": {
+        "different_pixels": 2248,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.00048519751325267255,
+        "bbox_in_roi": [
+          99,
+          32,
+          179,
+          998
+        ],
+        "region": [
+          0,
+          72,
+          1080,
+          2175
+        ]
+      },
+      "header": {
+        "different_pixels": 417,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.0004286694101508916,
+        "bbox_in_roi": [
+          99,
+          32,
+          179,
+          271
+        ],
+        "region": [
+          0,
+          72,
+          1080,
+          432
+        ]
+      },
+      "rows_flags": {
+        "different_pixels": 1831,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.0005762138274890548,
+        "bbox_in_roi": [
+          99,
+          35,
+          179,
+          638
+        ],
+        "region": [
+          0,
+          432,
+          1080,
+          1935
+        ]
+      },
+      "dock": {
+        "different_pixels": 0,
+        "max_channel_delta": 0,
+        "mae_rgb": 0.0,
+        "bbox_in_roi": null,
+        "region": [
+          0,
+          1935,
+          1080,
+          2175
+        ]
+      },
+      "top_close": {
+        "different_pixels": 405,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.0024897119341563785,
+        "bbox_in_roi": [
+          99,
+          32,
+          179,
+          270
+        ],
+        "region": [
+          0,
+          72,
+          240,
+          342
+        ]
+      },
+      "bottom_close": {
+        "different_pixels": 0,
+        "max_channel_delta": 0,
+        "mae_rgb": 0.0,
+        "bbox_in_roi": null,
+        "region": [
+          900,
+          1935,
+          1080,
+          2175
+        ]
+      }
+    },
+    "keyboard-dark": {
+      "body": {
+        "different_pixels": 2398,
+        "max_channel_delta": 228,
+        "mae_rgb": 0.06386596283686968,
+        "bbox_in_roi": [
+          99,
+          32,
+          188,
+          1017
+        ],
+        "region": [
+          0,
+          72,
+          1080,
+          1149
+        ]
+      },
+      "header": {
+        "different_pixels": 417,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.0004286694101508916,
+        "bbox_in_roi": [
+          99,
+          32,
+          179,
+          271
+        ],
+        "region": [
+          0,
+          72,
+          1080,
+          432
+        ]
+      },
+      "rows_flags": {
+        "different_pixels": 1434,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.0014241530139503585,
+        "bbox_in_roi": [
+          99,
+          35,
+          179,
+          456
+        ],
+        "region": [
+          0,
+          432,
+          1080,
+          909
+        ]
+      },
+      "dock": {
+        "different_pixels": 547,
+        "max_channel_delta": 228,
+        "mae_rgb": 0.283125,
+        "bbox_in_roi": [
+          120,
+          101,
+          188,
+          180
+        ],
+        "region": [
+          0,
+          909,
+          1080,
+          1149
+        ]
+      },
+      "top_close": {
+        "different_pixels": 405,
+        "max_channel_delta": 1,
+        "mae_rgb": 0.0024897119341563785,
+        "bbox_in_roi": [
+          99,
+          32,
+          179,
+          270
+        ],
+        "region": [
+          0,
+          72,
+          240,
+          342
+        ]
+      },
+      "bottom_close": {
+        "different_pixels": 0,
+        "max_channel_delta": 0,
+        "mae_rgb": 0.0,
+        "bbox_in_roi": null,
+        "region": [
+          900,
+          909,
+          1080,
+          1149
+        ]
+      },
+      "native_keyboard": {
+        "different_pixels": 1156632,
+        "max_channel_delta": 216,
+        "mae_rgb": 46.75532385793824,
+        "bbox_in_roi": [
+          0,
+          0,
+          1080,
+          1071
+        ],
+        "region": [
+          0,
+          1149,
+          1080,
+          2220
+        ]
+      }
+    }
+  }
+}

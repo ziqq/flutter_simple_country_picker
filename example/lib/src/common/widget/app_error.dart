@@ -1,3 +1,8 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 7 October 2024
+ */
+
 import 'package:flutter/material.dart';
 
 /// {@template app_error}
@@ -33,7 +38,7 @@ class AppError extends StatelessWidget {
     ),
     builder: (context, child) => MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
-      child: child!,
+      child: child ?? const SizedBox.shrink(),
     ),
   );
 }

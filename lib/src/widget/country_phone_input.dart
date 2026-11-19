@@ -1,3 +1,8 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 7 October 2024
+ */
+
 import 'dart:async';
 import 'dart:ui' as ui;
 
@@ -5,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_phone_rules.g.dart';
+import 'package:flutter_simple_country_picker/src/util/country_flag_font_util.dart';
 import 'package:meta/meta.dart';
 
 /// {@template country_phone_input}
@@ -25,7 +31,7 @@ class CountryPhoneInput extends StatefulWidget {
     this.filter,
     this.placeholder,
     this.autofocus = false,
-    this.expand = false,
+    this.expand = true,
     this.enableOpenPicker = true,
     this.showPhoneCode = false,
     this.showWorldWide = false,
@@ -44,6 +50,7 @@ class CountryPhoneInput extends StatefulWidget {
     this.showSearch,
     this.initialChildSize,
     this.minChildSize,
+    this.surfaceBuilder,
     super.key,
   }) : useHaptickFeedback = useHapticFeedback ?? useHaptickFeedback,
        useHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
@@ -83,6 +90,7 @@ class CountryPhoneInput extends StatefulWidget {
     bool? useHapticFeedback,
     double? initialChildSize,
     double? minChildSize,
+    CountryPickerSurfaceBuilder? surfaceBuilder,
     Key? key,
   }) = CountryPhoneInput$Extended;
 
@@ -91,7 +99,7 @@ class CountryPhoneInput extends StatefulWidget {
 
   /// The [expand] argument can be used
   /// to expand the bottom sheet to full height.
-  /// Default is `false`.
+  /// Default is `true`.
   final bool expand;
 
   /// Whether tapping the country-code button opens the country picker.
@@ -175,6 +183,9 @@ class CountryPhoneInput extends StatefulWidget {
 
   /// Called when the country is changed.
   final ValueChanged<Country>? onCountryChanged;
+
+  /// {@macro country_picker_surface_builder}
+  final CountryPickerSurfaceBuilder? surfaceBuilder;
 
   @override
   State<CountryPhoneInput> createState() => _CountryPhoneInputState();
@@ -436,6 +447,11 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     widget.onCountryChanged?.call(country);
   }
 
+  /// Accessibility label of the country button, e.g. `Russia, +7`.
+  String _semanticsLabelOf(CountryLocalizations localization, Country c) =>
+      '${localization.getFormatedCountryNameByCode(c.countryCode) ?? c.name}'
+      ', +${c.phoneCode}';
+
   Widget _buildPhoneField(
     BuildContext context, {
     required Key key,
@@ -522,7 +538,6 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       inputFormatters: [_formatter],
       keyboardType: TextInputType.number,
       onChanged: (_) => widget.onChanged?.call(_controller.text),
-      cursorHeight: textStyle?.fontSize,
       cursorColor: textStyle?.color,
       style: textStyle,
       textAlignVertical: showMask ? TextAlignVertical.center : null,
@@ -530,7 +545,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       decoration: decoration,
     );
     return Semantics(
-      label: showMask ? localization.phonePlaceholder : null,
+      label: localization.phonePlaceholder,
       child: CustomPaint(foregroundPainter: maskPainter, child: field),
     );
   }
@@ -544,90 +559,152 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
     final pickerTheme = CountryPickerTheme.resolve(context);
     final localization = CountryLocalizations.of(context);
     final textStyle = pickerTheme.textStyle;
-    final constraints = BoxConstraints(
-      minHeight: pickerTheme.inputHeight,
-      maxHeight: pickerTheme.inputHeight,
-      minWidth: pickerTheme.inputHeight,
+    final measuredStyle = MediaQuery.boldTextOf(context)
+        ? textStyle?.merge(const TextStyle(fontWeight: FontWeight.bold))
+        : textStyle;
+    final painter = TextPainter(
+      text: TextSpan(text: 'Mg', style: measuredStyle),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout();
+    final height = painter.height + pickerTheme.padding;
+    painter.dispose();
+    final constraints = BoxConstraints.tightFor(
+      height: height > pickerTheme.inputHeight
+          ? height
+          : pickerTheme.inputHeight,
     );
     return ValueListenableBuilder(
       valueListenable: _countryController,
-      builder: (context, selected, _) => Row(
-        spacing: pickerTheme.indent,
-        children: <Widget>[
-          ConstrainedBox(
-            constraints: constraints,
-            child: CupertinoButton(
-              key: const ValueKey<String>('country_picker_phone_code'),
-              padding: EdgeInsets.symmetric(horizontal: pickerTheme.padding),
-              color: pickerTheme.onBackgroundColor,
-              borderRadius: BorderRadius.all(
-                Radius.circular(pickerTheme.radius),
-              ),
-              pressedOpacity: .6,
-              onPressed: () => widget.enableOpenPicker
-                  ? showCountryPicker(
-                      context: context,
-                      exclude: widget.exclude,
-                      favorites: widget.favorites,
-                      filter: widget.filter,
-                      autofocus: widget.autofocus || widget.useAutofocus,
-                      showGroup: widget.showGroup,
-                      showSearch: widget.showSearch,
-                      showPhoneCode: widget.showPhoneCode,
-                      showWorldWide: widget.showWorldWide,
-                      shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
-                      useHapticFeedback: widget.useHapticFeedback,
-                      isScrollControlled: widget.isScrollControlled,
-                      initialChildSize: widget.initialChildSize,
-                      minChildSize: widget.minChildSize,
-                      selected: _countryController,
-                      onSelect: _onSelect,
-                    )
-                  : null,
-              child: Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: 3,
-                  children: <Widget>[
-                    if (selected.flagEmoji.isNotEmpty) ...[
-                      Text(
-                        selected.flagEmoji,
-                        style: textStyle?.copyWith(letterSpacing: 0),
-                      ),
-                    ],
-                    Text('+${selected.phoneCode}', style: textStyle),
-                  ],
+      builder: (context, selected, _) => LayoutBuilder(
+        builder: (context, available) {
+          final label = TextPainter(
+            text: TextSpan(
+              style: measuredStyle,
+              children: [
+                TextSpan(
+                  text: selected.flagEmoji,
+                  style: TextStyle(fontFamily: CountryFlagFontUtil.fontFamily),
                 ),
-              ),
+                TextSpan(text: ' +${selected.phoneCode}'),
+              ],
             ),
-          ),
-          Flexible(
-            child: ConstrainedBox(
-              constraints: constraints,
-              child: RepaintBoundary(
-                key: const ValueKey<String>('country_phone_number_background'),
-                child: CustomPaint(
-                  painter: _painter,
-                  child: Center(
-                    child: _buildPhoneField(
-                      context,
-                      key: const ValueKey<String>('country_phone_number'),
-                      country: selected,
-                      localization: localization,
-                      pickerTheme: pickerTheme,
-                      textStyle: textStyle,
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: pickerTheme.padding,
+            textDirection: Directionality.of(context),
+            textScaler: MediaQuery.textScalerOf(context),
+          )..layout();
+          // Keep a useful number field instead of squeezing it beside a large code.
+          final stacked =
+              available.maxWidth <
+              label.width +
+                  pickerTheme.padding * 2 +
+                  pickerTheme.padding / 1.6 +
+                  pickerTheme.inputHeight * 2;
+          label.dispose();
+          final button = ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.minHeight),
+            child: Semantics(
+              enabled: widget.enableOpenPicker,
+              child: CupertinoButton(
+                key: const ValueKey<String>('country_picker_phone_code'),
+                padding: EdgeInsets.symmetric(horizontal: pickerTheme.padding),
+                color: pickerTheme.onBackgroundColor,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(pickerTheme.baseCornerRadius),
+                ),
+                pressedOpacity: .6,
+                onPressed: widget.enableOpenPicker
+                    ? () => showCountryPicker(
+                        context: context,
+                        exclude: widget.exclude,
+                        favorites: widget.favorites,
+                        filter: widget.filter,
+                        expand: widget.expand,
+                        autofocus: widget.autofocus || widget.useAutofocus,
+                        showGroup: widget.showGroup,
+                        showSearch: widget.showSearch,
+                        showPhoneCode: widget.showPhoneCode,
+                        showWorldWide: widget.showWorldWide,
+                        shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
+                        useHapticFeedback: widget.useHapticFeedback,
+                        isScrollControlled: widget.isScrollControlled,
+                        initialChildSize: widget.initialChildSize,
+                        minChildSize: widget.minChildSize,
+                        surfaceBuilder: widget.surfaceBuilder,
+                        selected: _countryController,
+                        onSelect: _onSelect,
+                      )
+                    : null,
+                child: Semantics(
+                  // Announce the country instead of the emoji flag name.
+                  label: _semanticsLabelOf(localization, selected),
+                  child: ExcludeSemantics(
+                    child: Center(
+                      heightFactor: 1,
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 3,
+                        children: <Widget>[
+                          if (selected.flagEmoji.isNotEmpty) ...[
+                            Text.rich(
+                              TextSpan(
+                                text: selected.flagEmoji,
+                                style: TextStyle(
+                                  fontFamily: CountryFlagFontUtil.fontFamily,
+                                ),
+                              ),
+                              style: textStyle?.copyWith(letterSpacing: 0),
+                            ),
+                          ],
+                          Text('+${selected.phoneCode}', style: textStyle),
+                        ],
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          );
+          final field = ConstrainedBox(
+            constraints: constraints,
+            child: RepaintBoundary(
+              key: const ValueKey<String>('country_phone_number_background'),
+              child: CustomPaint(
+                painter: _painter,
+                child: Center(
+                  child: _buildPhoneField(
+                    context,
+                    key: const ValueKey<String>('country_phone_number'),
+                    country: selected,
+                    localization: localization,
+                    pickerTheme: pickerTheme,
+                    textStyle: textStyle,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: pickerTheme.padding,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+          if (stacked) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: pickerTheme.padding / 1.6,
+              children: [button, field],
+            );
+          }
+          return Row(
+            spacing: pickerTheme.padding / 1.6,
+            children: [
+              button,
+              Flexible(child: field),
+            ],
+          );
+        },
       ),
-    ); // +79378032888
+    );
   }
 }
 
@@ -662,6 +739,7 @@ class CountryPhoneInput$Extended extends CountryPhoneInput {
     super.useHapticFeedback,
     super.initialChildSize,
     super.minChildSize,
+    super.surfaceBuilder,
     super.key,
   });
 
@@ -679,7 +757,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
     final localization = CountryLocalizations.of(context);
     final padding = EdgeInsets.symmetric(
       horizontal: pickerTheme.padding / 2,
-      vertical: pickerTheme.indent,
+      vertical: pickerTheme.padding / 1.6,
     );
     final textStyle = pickerTheme.textStyle?.copyWith(
       fontSize: 20,
@@ -700,40 +778,59 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
             divider,
 
             // --- Country name with flag --- //
-            CupertinoButton(
-              key: const ValueKey<String>('country_picker_button_extended'),
-              padding: EdgeInsets.only(
-                top: pickerTheme.indent,
-                left: pickerTheme.padding,
-                bottom: pickerTheme.indent,
-                right: pickerTheme.padding / 2,
-              ),
-              onPressed: widget.enableOpenPicker
-                  ? () => showCountryPicker(
-                      context: context,
-                      exclude: widget.exclude,
-                      favorites: widget.favorites,
-                      filter: widget.filter,
-                      autofocus: widget.autofocus || widget.useAutofocus,
-                      showGroup: widget.showGroup,
-                      showSearch: widget.showSearch,
-                      showPhoneCode: widget.showPhoneCode,
-                      showWorldWide: widget.showWorldWide,
-                      isScrollControlled: widget.isScrollControlled,
-                      useHapticFeedback: widget.useHapticFeedback,
-                      shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
-                      initialChildSize: widget.initialChildSize,
-                      minChildSize: widget.minChildSize,
-                      selected: _countryController,
-                      onSelect: _onSelect,
-                    )
-                  : null,
-              child: SizedBox(
-                width: double.infinity,
-                child: Text(
-                  '${selected.flagEmoji} '
-                  '${localization.getFormatedCountryNameByCode(selected.countryCode) ?? selected.name}',
-                  style: textStyle?.copyWith(fontWeight: FontWeight.w500),
+            Semantics(
+              enabled: widget.enableOpenPicker,
+              child: CupertinoButton(
+                key: const ValueKey<String>('country_picker_button_extended'),
+                padding: EdgeInsets.only(
+                  top: pickerTheme.padding / 1.6,
+                  left: pickerTheme.padding,
+                  bottom: pickerTheme.padding / 1.6,
+                  right: pickerTheme.padding / 2,
+                ),
+                onPressed: widget.enableOpenPicker
+                    ? () => showCountryPicker(
+                        context: context,
+                        exclude: widget.exclude,
+                        favorites: widget.favorites,
+                        filter: widget.filter,
+                        expand: widget.expand,
+                        autofocus: widget.autofocus || widget.useAutofocus,
+                        showGroup: widget.showGroup,
+                        showSearch: widget.showSearch,
+                        showPhoneCode: widget.showPhoneCode,
+                        showWorldWide: widget.showWorldWide,
+                        isScrollControlled: widget.isScrollControlled,
+                        useHapticFeedback: widget.useHapticFeedback,
+                        shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
+                        initialChildSize: widget.initialChildSize,
+                        minChildSize: widget.minChildSize,
+                        surfaceBuilder: widget.surfaceBuilder,
+                        selected: _countryController,
+                        onSelect: _onSelect,
+                      )
+                    : null,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Text.rich(
+                    TextSpan(
+                      children: <InlineSpan>[
+                        TextSpan(
+                          text: selected.flagEmoji,
+                          style: TextStyle(
+                            fontFamily: CountryFlagFontUtil.fontFamily,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              ' ${localization.getFormatedCountryNameByCode(selected.countryCode) ?? selected.name}',
+                        ),
+                      ],
+                    ),
+                    // Announce the country instead of the emoji flag name.
+                    semanticsLabel: _semanticsLabelOf(localization, selected),
+                    style: textStyle?.copyWith(fontWeight: FontWeight.w500),
+                  ),
                 ),
               ),
             ),
@@ -748,46 +845,55 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
             ),
 
             // --- Input with mask --- //
-            Row(
-              children: <Widget>[
-                // --- Phone code --- //
-                Padding(
-                  padding: padding,
-                  child: Text(
-                    '+${selected.phoneCode}',
-                    style: textStyle,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-
-                // --- Divider --- //
-                SizedBox(
-                  height: 30,
-                  child: VerticalDivider(
-                    color: pickerTheme.dividerColor,
-                    thickness: 1,
-                  ),
-                ),
-
-                // --- Phone input --- //
-                Flexible(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: padding.horizontal / 2.5,
+            LayoutBuilder(
+              builder: (context, constraints) => Row(
+                children: <Widget>[
+                  // --- Phone code --- //
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: constraints.maxWidth / 2,
                     ),
-                    child: _buildPhoneField(
-                      context,
-                      key: const ValueKey<String>(
-                        'country_phone_input_extended',
+                    child: Padding(
+                      padding: padding,
+                      child: Text(
+                        '+${selected.phoneCode}',
+                        style: textStyle,
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      country: selected,
-                      localization: localization,
-                      pickerTheme: pickerTheme,
-                      textStyle: textStyle,
                     ),
                   ),
-                ),
-              ],
+
+                  // --- Divider --- //
+                  SizedBox(
+                    height: 30,
+                    child: VerticalDivider(
+                      color: pickerTheme.dividerColor,
+                      thickness: 1,
+                    ),
+                  ),
+
+                  // --- Phone input --- //
+                  Flexible(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: padding.horizontal / 2.5,
+                      ),
+                      child: _buildPhoneField(
+                        context,
+                        key: const ValueKey<String>(
+                          'country_phone_input_extended',
+                        ),
+                        country: selected,
+                        localization: localization,
+                        pickerTheme: pickerTheme,
+                        textStyle: textStyle,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             divider,
           ],
@@ -922,7 +1028,7 @@ class _BackgroundPainter extends CustomPainter {
   Color? get color => pickerTheme.value?.onBackgroundColor;
 
   /// The radius of the rounded corners of the rectangle.
-  double? get radius => pickerTheme.value?.radius;
+  double? get radius => pickerTheme.value?.baseCornerRadius;
 
   @override
   void paint(Canvas canvas, Size size) {

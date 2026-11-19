@@ -78,6 +78,12 @@ Locale _lScript(String lang, String script) =>
 void main() {
   // ──────────────────────────────────────────────────────────────────────────
   group('CountryLocalizations -', () {
+    test('deprecated countryNameRegExp still matches whitespace', () {
+      // ignore: deprecated_member_use_from_same_package
+      final expression = CountryLocalizations.countryNameRegExp;
+      expect('New   Zealand'.replaceAll(expression, ' '), 'New Zealand');
+    });
+
     // ── supportedLocales ────────────────────────────────────────────────────
     group('supportedLocales -', () {
       test('contains 75 distinct locale tags', () {
