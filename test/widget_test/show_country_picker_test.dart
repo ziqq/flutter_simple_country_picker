@@ -148,6 +148,133 @@ void main() => group('showCountryPicker -', () {
     expect(find.byType(CupertinoSearchTextField), findsOneWidget);
   });
 
+  testWidgets(
+    'the adaptive iOS sheet inherits the local picker theme',
+    (tester) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          builder: (_) => InheritedCountryPickerTheme(
+            data: CountryPickerTheme(flagSize: 42),
+            child: Builder(
+              builder: (context) => TextButton(
+                onPressed: () => showCountryPicker(
+                  context: context,
+                  adaptive: true,
+                  filter: const ['RU'],
+                  useHapticFeedback: false,
+                ),
+                child: const Text('Show Picker'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Show Picker'));
+      await tester.pumpAndSettle();
+
+      final list = tester.element(find.byType(CountryListView));
+      expect(CountryPickerTheme.of(list).flagSize, 42);
+    },
+    variant: TargetPlatformVariant.only(TargetPlatform.iOS),
+  );
+
+  testWidgets('group headers update their background with the theme', (
+    tester,
+  ) async {
+    final color = ValueNotifier<Color>(Colors.red);
+    addTearDown(color.dispose);
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        locale: const Locale('en'),
+        builder: (_) => ValueListenableBuilder(
+          valueListenable: color,
+          child: const CountryListView(showGroup: true, filter: ['RU']),
+          builder: (_, value, child) => InheritedCountryPickerTheme(
+            data: CountryPickerTheme(secondaryBackgroundColor: value),
+            child: child!,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final header = find.byKey(const ValueKey('header_child_R'));
+    Color? headerColor() =>
+        (tester.widget<DecoratedBox>(header).decoration as BoxDecoration).color;
+
+    expect(headerColor(), Colors.red);
+    color.value = Colors.blue;
+    await tester.pumpAndSettle();
+    expect(headerColor(), Colors.blue);
+  });
+
+  testWidgets('applies searchTextStyle to entered text', (tester) async {
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        builder: (_) => InheritedCountryPickerTheme(
+          data: CountryPickerTheme(
+            textStyle: const TextStyle(fontSize: 16, color: Colors.blue),
+            searchTextStyle: const TextStyle(fontSize: 28, color: Colors.red),
+          ),
+          child: const CountryListView(showSearch: true, filter: ['RU']),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    final search = find.byType(CupertinoSearchTextField);
+    await tester.enterText(search, 'RU');
+    await tester.pumpAndSettle();
+    final field = tester.widget<EditableText>(
+      find.descendant(of: search, matching: find.byType(EditableText)),
+    );
+    expect(field.style.fontSize, 28);
+    expect(field.style.color, Colors.red);
+  });
+
+  testWidgets('grouped search clears rows with no matches', (tester) async {
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        builder: (_) => const CountryListView(showGroup: true, filter: ['RU']),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final row = find.byKey(ValueKey(Country.ru().e164Key));
+    final search = find.byType(CupertinoSearchTextField);
+    expect(row, findsOneWidget);
+
+    await tester.enterText(search, 'zzzzzzz');
+    await tester.pumpAndSettle();
+    expect(row, findsNothing);
+
+    await tester.enterText(search, '');
+    await tester.pumpAndSettle();
+    expect(row, findsOneWidget);
+  });
+
+  for (final grouped in [false, true]) {
+    testWidgets('shows dialing codes only when enabled (grouped: $grouped)', (
+      tester,
+    ) async {
+      for (final showPhoneCode in [false, true]) {
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            builder: (_) => CountryListView(
+              filter: const ['RU'],
+              showGroup: grouped,
+              showPhoneCode: showPhoneCode,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.byKey(ValueKey(Country.ru().e164Key)), findsOneWidget);
+        expect(
+          find.textContaining('+7'),
+          showPhoneCode ? findsOneWidget : findsNothing,
+        );
+      }
+    });
+  }
+
   testWidgets('calls onDone callback when picker is dismissed', (tester) async {
     var onDoneCalled = false;
 

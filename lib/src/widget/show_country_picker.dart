@@ -120,8 +120,8 @@ void showCountryPicker({
   double? initialChildSize,
   double? minChildSize,
 }) {
-  final isiOS = defaultTargetPlatform == TargetPlatform.iOS;
-  final effectiveExpand = expand || (adaptive && isiOS);
+  final isIOS = defaultTargetPlatform == TargetPlatform.iOS;
+  final effectiveExpand = expand || (adaptive && isIOS);
   final effectiveUseHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
 
   final pickerTheme = CountryPickerTheme.resolve(context);
@@ -168,10 +168,15 @@ void showCountryPicker({
   if (effectiveUseHapticFeedback) HapticFeedback.heavyImpact().ignore();
 
   /// Show adaptive bottom sheet for `iOS` platform, if [adaptive] is `true`.
-  if (adaptive && isiOS) {
+  if (adaptive && isIOS) {
+    final themes = InheritedTheme.capture(
+      from: context,
+      to: Navigator.of(context, rootNavigator: true).context,
+    );
     showCupertinoSheet<void>(
       context: context,
-      scrollableBuilder: builder,
+      scrollableBuilder: (context, controller) =>
+          themes.wrap(builder(context, controller)),
     ).whenComplete(() => (whenComplete ?? onDone)?.call()).ignore();
 
     /// Show material bottom sheet for other platforms.

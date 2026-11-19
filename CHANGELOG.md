@@ -6,6 +6,11 @@
 - **FIXED**: detach the old country controller and preserve the values of both external controllers when `initialCountry` changes during replacement
 - **FIXED**: parse the new number using the newly selected country when both phone input controllers are replaced together
 - **FIXED**: keep an empty replacement phone controller unchanged when only the phone controller is replaced
+- **FIXED**: recognize barrier color changes, preserve exact theme values in `copyWith`, and retain `inputDecoration` during theme transitions
+- **FIXED**: preserve local themes in adaptive iOS sheets and refresh grouped headers when the theme changes
+- **FIXED**: apply `searchTextStyle` to the query and clear grouped results when no countries match
+- **FIXED**: honor `showPhoneCode` and show favorite calling-code entries only once
+- **FIXED**: compute matching hash codes for equal `CountryState` values
 
 ## 0.11.3
 - **ADDED**: expanded the picker to 75 built-in locales, including all 71 entries in the Telegram Translations catalog and separate Brazilian (`pt-BR`) and European (`pt-PT`) Portuguese translations

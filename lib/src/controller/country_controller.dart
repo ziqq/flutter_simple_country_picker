@@ -85,7 +85,13 @@ abstract base class CountryState {
   Country? getCountryByCode(String countryCode) => _table[countryCode];
 
   @override
-  int get hashCode => Object.hashAll([countries, showGroup, type]);
+  int get hashCode => Object.hash(
+    type,
+    error,
+    showGroup,
+    stackTrace,
+    Object.hashAll(countries),
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -236,7 +242,7 @@ final class CountryController extends ValueNotifier<CountryState> {
           ? null
           : _favorites.map(normalize).toList(growable: false);
 
-      final seenCountryCodes = !_showPhoneCode ? <String>{} : null;
+      final seenCountries = <(String, String?)>{};
 
       final byCode = <String, List<Country>>{};
       for (final country in countries) {
@@ -256,7 +262,12 @@ final class CountryController extends ValueNotifier<CountryState> {
             if (exclude != null && exclude.contains(cc)) continue;
             if (filter != null && !filter.contains(cc)) continue;
 
-            if (seenCountryCodes != null && !seenCountryCodes.add(cc)) continue;
+            if (!seenCountries.add((
+              cc,
+              _showPhoneCode ? country.e164Key : null,
+            ))) {
+              continue;
+            }
 
             favorites.add(country);
           }
@@ -277,7 +288,9 @@ final class CountryController extends ValueNotifier<CountryState> {
         if (exclude != null && exclude.contains(cc)) continue;
         if (filter != null && !filter.contains(cc)) continue;
 
-        if (seenCountryCodes != null && !seenCountryCodes.add(cc)) continue;
+        if (!seenCountries.add((cc, _showPhoneCode ? country.e164Key : null))) {
+          continue;
+        }
 
         $countries.add(country);
       }
