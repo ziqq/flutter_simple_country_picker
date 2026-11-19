@@ -622,7 +622,7 @@ void main() => group('showCountryPicker -', () {
           expect(
             find.descendant(
               of: closeButton,
-              matching: find.byIcon(CupertinoIcons.xmark),
+              matching: find.byIcon(Icons.arrow_back_rounded),
             ),
             findsOneWidget,
           );

@@ -184,6 +184,7 @@ class _CountryPickerCloseButton extends StatelessWidget {
     required this.onClose,
     this.surfaceBuilder,
     this.pressAlignment = Alignment.center,
+    this.isHeader = false,
     super.key,
   });
 
@@ -196,6 +197,9 @@ class _CountryPickerCloseButton extends StatelessWidget {
   /// Keeps expansion inside the sheet when the control touches its upper edge.
   final AlignmentGeometry pressAlignment;
 
+  /// Uses the Android back affordance in the header.
+  final bool isHeader;
+
   @override
   Widget build(BuildContext context) {
     const shape = CircleBorder();
@@ -205,9 +209,30 @@ class _CountryPickerCloseButton extends StatelessWidget {
     final dark = materialTheme.brightness == Brightness.dark;
     final foreground =
         theme.textStyle?.color ?? materialTheme.colorScheme.onSurface;
-    final fill =
-        theme.secondaryBackgroundColor ??
-        materialTheme.colorScheme.surfaceContainer;
+    final android = materialTheme.platform == TargetPlatform.android;
+    final useBackButton = isHeader && android;
+    final surfaceColor =
+        theme.backgroundColor ?? materialTheme.colorScheme.surface;
+    final fill = useBackButton
+        ? Color.alphaBlend(
+            foreground.withValues(alpha: dark ? .18 : .05),
+            surfaceColor,
+          )
+        : theme.secondaryBackgroundColor ??
+              materialTheme.colorScheme.surfaceContainer;
+    final border = highContrast
+        ? foreground
+        : useBackButton
+        ? Color.alphaBlend(
+            foreground.withValues(alpha: dark ? .09 : 0),
+            surfaceColor,
+          )
+        : theme.dividerColor ?? materialTheme.dividerColor;
+    final cancelLabel = CountryLocalizations.of(context).cancelButton;
+    final backLabel = Localizations.of<MaterialLocalizations>(
+      context,
+      MaterialLocalizations,
+    )?.backButtonTooltip;
     return SizedBox.square(
       dimension: countryPickerControlHeight(context, theme),
       child: _Surface(
@@ -216,18 +241,20 @@ class _CountryPickerCloseButton extends StatelessWidget {
         type: CountryPickerSurfaceType.closeButton,
         shape: shape,
         decoration: ShapeDecoration(
-          color: highContrast ? fill : fill.withValues(alpha: .65),
+          color: highContrast || useBackButton
+              ? fill
+              : fill.withValues(alpha: .65),
           shape: shape.copyWith(
             side: BorderSide(
-              width: materialTheme.platform == TargetPlatform.android
+              width: useBackButton
+                  ? 2
+                  : android
                   ? 1 / MediaQuery.devicePixelRatioOf(context)
                   : 1,
-              color: highContrast
-                  ? foreground
-                  : theme.dividerColor ?? materialTheme.dividerColor,
+              color: border,
             ),
           ),
-          shadows: dark || highContrast
+          shadows: dark || highContrast || useBackButton
               ? null
               : [
                   BoxShadow(
@@ -239,17 +266,22 @@ class _CountryPickerCloseButton extends StatelessWidget {
                 ],
         ),
         onPressed: onClose,
-        semanticsLabel: CountryLocalizations.of(context).cancelButton,
-        child: Center(child: Icon(CupertinoIcons.xmark, color: foreground)),
+        semanticsLabel: useBackButton ? backLabel ?? cancelLabel : cancelLabel,
+        child: Center(
+          child: Icon(
+            useBackButton ? Icons.arrow_back_rounded : CupertinoIcons.xmark,
+            color: foreground,
+          ),
+        ),
       ),
     );
   }
 }
 
-/// Shared press feedback from tetradka_app's UILiquidGlass$Fake.
+/// Paints a glass surface and animates its press and hover feedback.
 /// Actions and semantics remain in [_Surface] or the native text-field child.
-class _CountryPickerGlassFake extends StatefulWidget {
-  const _CountryPickerGlassFake({
+class _GlassFake extends StatefulWidget {
+  const _GlassFake({
     required this.surface,
     required this.child,
     required this.pressAlignment,
@@ -262,12 +294,11 @@ class _CountryPickerGlassFake extends StatefulWidget {
   final AlignmentGeometry pressAlignment;
 
   @override
-  State<_CountryPickerGlassFake> createState() =>
-      _CountryPickerGlassFakeState();
+  State<_GlassFake> createState() => _GlassFakeState();
 }
 
 /// Animates glass feedback while the surface or its child owns interaction.
-class _CountryPickerGlassFakeState extends State<_CountryPickerGlassFake>
+class _GlassFakeState extends State<_GlassFake>
     with SingleTickerProviderStateMixin {
   late final AnimationController _progress = AnimationController(
     duration: const Duration(milliseconds: 150),
@@ -285,7 +316,7 @@ class _CountryPickerGlassFakeState extends State<_CountryPickerGlassFake>
   }
 
   @override
-  void didUpdateWidget(_CountryPickerGlassFake oldWidget) {
+  void didUpdateWidget(_GlassFake oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.surface.pressed != widget.surface.pressed) {
       oldWidget.surface.pressed.removeListener(_pressChanged);
@@ -402,7 +433,8 @@ class _CountryPickerGlassFakeState extends State<_CountryPickerGlassFake>
                       clipper: ShapeBorderClipper(shape: shape),
                       child: RepaintBoundary(
                         child: BackdropFilter(
-                          enabled: !highContrast,
+                          // An opaque fill covers the filter output.
+                          enabled: !highContrast && decoration.color?.a != 1,
                           filter: filter,
                           child: DecoratedBox(
                             decoration: ShapeDecoration(
@@ -566,6 +598,7 @@ class CountryPickerHeader extends StatelessWidget {
                       onClose: onClose,
                       surfaceBuilder: surfaceBuilder,
                       pressAlignment: Alignment.topCenter,
+                      isHeader: true,
                     ),
                   ),
                 ),
@@ -851,7 +884,7 @@ class _SurfaceState extends State<_Surface> {
         surface,
         widget.child,
       ),
-      null => _CountryPickerGlassFake(
+      null => _GlassFake(
         surface: surface,
         pressAlignment: widget.pressAlignment,
         child: widget.child,
