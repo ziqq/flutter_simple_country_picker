@@ -148,35 +148,33 @@ void main() => group('showCountryPicker -', () {
     expect(find.byType(CupertinoSearchTextField), findsOneWidget);
   });
 
-  testWidgets(
-    'the adaptive iOS sheet inherits the local picker theme',
-    (tester) async {
-      await tester.pumpWidget(
-        createWidgetUnderTest(
-          builder: (_) => InheritedCountryPickerTheme(
-            data: CountryPickerTheme(flagSize: 42),
-            child: Builder(
-              builder: (context) => TextButton(
-                onPressed: () => showCountryPicker(
-                  context: context,
-                  adaptive: true,
-                  filter: const ['RU'],
-                  useHapticFeedback: false,
-                ),
-                child: const Text('Show Picker'),
+  testWidgets('the adaptive iOS sheet inherits the local picker theme', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        builder: (_) => InheritedCountryPickerTheme(
+          data: CountryPickerTheme(flagSize: 42),
+          child: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => showCountryPicker(
+                context: context,
+                adaptive: true,
+                filter: const ['RU'],
+                useHapticFeedback: false,
               ),
+              child: const Text('Show Picker'),
             ),
           ),
         ),
-      );
-      await tester.tap(find.text('Show Picker'));
-      await tester.pumpAndSettle();
+      ),
+    );
+    await tester.tap(find.text('Show Picker'));
+    await tester.pumpAndSettle();
 
-      final list = tester.element(find.byType(CountryListView));
-      expect(CountryPickerTheme.of(list).flagSize, 42);
-    },
-    variant: TargetPlatformVariant.only(TargetPlatform.iOS),
-  );
+    final list = tester.element(find.byType(CountryListView));
+    expect(CountryPickerTheme.of(list).flagSize, 42);
+  }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
 
   testWidgets('group headers update their background with the theme', (
     tester,
