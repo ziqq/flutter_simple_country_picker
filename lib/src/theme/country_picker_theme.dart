@@ -279,11 +279,14 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   }) => CountryPickerTheme.raw(
     accentColor: accentColor ?? this.accentColor,
     backgroundColor: backgroundColor ?? this.backgroundColor,
-    onBackgroundColor: onBackgroundColor ?? this.onBackgroundColor,
+    onBackgroundColor:
+        onBackgroundColor ?? this.onBackgroundColor ?? secondaryBackgroundColor,
     secondaryBackgroundColor:
         secondaryBackgroundColor ?? this.secondaryBackgroundColor,
     onSecondaryBackgroundColor:
-        onSecondaryBackgroundColor ?? this.onSecondaryBackgroundColor,
+        onSecondaryBackgroundColor ??
+        this.onSecondaryBackgroundColor ??
+        backgroundColor,
     barrierColor: barrierColor ?? this.barrierColor,
     dividerColor: dividerColor ?? this.dividerColor,
     inputDecoration: inputDecoration ?? this.inputDecoration,

@@ -135,33 +135,38 @@ void showCountryPicker({
         minChildSize:
             minChildSize ??
             (effectiveExpand ? (shouldCloseOnSwipeDown ? .99 : 1.0) : .65),
-        builder: (context, sheetScrollController) => ClipRRect(
-          borderRadius: borderRadius,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: borderRadius,
-              color: pickerTheme.backgroundColor,
+        builder: (context, sheetScrollController) {
+          final list = CountryListView(
+            exclude: exclude,
+            favorites: favorites,
+            filter: filter,
+            selected: selected,
+            onSelect: onSelect,
+            adaptive: adaptive,
+            autofocus: autofocus || useAutofocus,
+            showGroup: showGroup,
+            showSearch: showSearch,
+            showPhoneCode: showPhoneCode,
+            showWorldWide: showWorldWide,
+            useRootNavigator: useRootNavigator,
+            useHapticFeedback: effectiveUseHapticFeedback,
+            scrollController: isScrollControlled
+                ? null
+                : scrollController ?? sheetScrollController,
+          );
+          return ClipRRect(
+            borderRadius: borderRadius,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: borderRadius,
+                color: pickerTheme.backgroundColor,
+              ),
+              child: adaptive && isIOS
+                  ? InheritedCountryPickerTheme(data: pickerTheme, child: list)
+                  : list,
             ),
-            child: CountryListView(
-              exclude: exclude,
-              favorites: favorites,
-              filter: filter,
-              selected: selected,
-              onSelect: onSelect,
-              adaptive: adaptive,
-              autofocus: autofocus || useAutofocus,
-              showGroup: showGroup,
-              showSearch: showSearch,
-              showPhoneCode: showPhoneCode,
-              showWorldWide: showWorldWide,
-              useRootNavigator: useRootNavigator,
-              useHapticFeedback: effectiveUseHapticFeedback,
-              scrollController: isScrollControlled
-                  ? null
-                  : scrollController ?? sheetScrollController,
-            ),
-          ),
-        ),
+          );
+        },
       );
 
   /// Provide haptic feedback on opening the picker, if enabled.
@@ -171,11 +176,7 @@ void showCountryPicker({
   if (adaptive && isIOS) {
     showCupertinoSheet<void>(
       context: context,
-      scrollableBuilder: (context, scrollController) =>
-          InheritedCountryPickerTheme(
-            data: pickerTheme,
-            child: builder(context, scrollController),
-          ),
+      scrollableBuilder: builder,
     ).whenComplete(() => (whenComplete ?? onDone)?.call()).ignore();
 
     /// Show material bottom sheet for other platforms.

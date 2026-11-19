@@ -251,6 +251,20 @@ void _$stateTest() => group('CountryState -', () {
     expect({state1}.contains(state2), isTrue);
   });
 
+  test('CountryState snapshots its list and keeps a stable hash code', () {
+    final source = [country1];
+    final state = CountryState.idle(countries: source, showGroup: false);
+    final states = {state};
+    expect(state.getCountryByCode(country1.countryCode), country1);
+
+    source.add(country2);
+
+    expect(state.countries, [country1]);
+    expect(state.getCountryByCode(country2.countryCode), isNull);
+    expect(states.contains(state), isTrue);
+    expect(() => state.countries.add(country2), throwsUnsupportedError);
+  });
+
   test('toString', () {
     final state1 = CountryState.idle(
       countries: [country1, country2],

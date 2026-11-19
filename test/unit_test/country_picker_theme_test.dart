@@ -47,6 +47,16 @@ void main() => group('CountryPickerTheme -', () {
     expect(theme.copyWith(), theme);
   });
 
+  test('copyWith inherits newly supplied background colors when unset', () {
+    final theme = CountryPickerTheme().copyWith(
+      secondaryBackgroundColor: Colors.red,
+      backgroundColor: Colors.blue,
+    );
+
+    expect(theme.onBackgroundColor, Colors.red);
+    expect(theme.onSecondaryBackgroundColor, Colors.blue);
+  });
+
   test('lerp keeps the closer inputDecoration', () {
     const first = InputDecoration(hintText: 'First');
     const second = InputDecoration(hintText: 'Second');

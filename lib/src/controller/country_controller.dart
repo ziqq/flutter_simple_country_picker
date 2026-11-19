@@ -16,11 +16,11 @@ import 'package:flutter_simple_country_picker/src/model/country.dart';
 abstract base class CountryState {
   /// {@macro country_state}
   CountryState._({
-    required this.countries,
+    required List<Country> countries,
     required this.showGroup,
     this.error,
     this.stackTrace,
-  });
+  }) : countries = List<Country>.unmodifiable(countries);
 
   /// Create a [CountryState] in loading state.
   ///
@@ -64,7 +64,7 @@ abstract base class CountryState {
   /// Check if is Idle.
   bool get isIdle => this is CountryState$Idle;
 
-  /// List of countries.
+  /// An unmodifiable snapshot of the countries in this state.
   final List<Country> countries;
 
   /// Show grouped countries by initial letter.
