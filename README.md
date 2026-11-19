@@ -196,7 +196,7 @@ showCountryPicker(
 | `filter`               | `List<String>?`         | `null`  | ISO2 codes to show exclusively. Cannot be combined with `exclude`.                  |
 | `selected`             | `SelectedCountry?`      | `null`  | Notifier holding the pre-selected country.                                          |
 | `expand`               | `bool`                  | `false` | Expand the bottom sheet to full height.                                             |
-| `adaptive`             | `bool`                  | `false` | Uses a Cupertino-style modal on iOS.                                                |
+| `adaptive`             | `bool`                  | `false` | **Deprecated.** Uses a Cupertino-style modal on iOS until removal in `1.0.0`. Omit to use the Material sheet. |
 | `autofocus`            | `bool`                  | `false` | Automatically focuses the search field.                                             |
 | `isDismissible`        | `bool`                  | `true`  | Whether the sheet can be dismissed by tapping the barrier.                          |
 | `isScrollControlled`   | `bool`                  | `true`  | Controls scroll behavior of the modal.                                              |

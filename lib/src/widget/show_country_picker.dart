@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+// TODO(ziqq): Remove the platform check import in 1.0.0.
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'
     show
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart'
         BoxDecoration,
         DecoratedBox,
         DraggableScrollableSheet,
+        // TODO(ziqq): Remove Theme with _capturePickerTheme in 1.0.0.
         Theme,
         Colors;
 import 'package:flutter/services.dart' show HapticFeedback;
@@ -44,7 +46,7 @@ import 'package:meta/meta.dart';
 /// to expand the bottom sheet to full height.
 ///
 /// The [adaptive] argument can be used
-/// to show iOS style bottom sheet on iOS platform.
+/// to show an iOS-style bottom sheet on iOS. Deprecated for removal in 1.0.0.
 ///
 /// The [autofocus] argument can be used to initially expand virtual keyboard.
 ///
@@ -97,6 +99,10 @@ void showCountryPicker({
   VoidCallback? onDone,
   VoidCallback? whenComplete,
   bool expand = false,
+  // TODO(ziqq): Remove the adaptive parameter and its dartdoc in 1.0.0.
+  @Deprecated(
+    'Omit adaptive to use the Material sheet. Will be removed in 1.0.0.',
+  )
   bool adaptive = false,
   bool autofocus = false,
   bool isDismissible = true,
@@ -121,11 +127,14 @@ void showCountryPicker({
   double? initialChildSize,
   double? minChildSize,
 }) {
+  // TODO(ziqq): Remove the Cupertino route check in 1.0.0.
   final isIOS = defaultTargetPlatform == TargetPlatform.iOS;
   final useCupertinoSheet = adaptive && isIOS;
+  // TODO(ziqq): Use expand directly in 1.0.0.
   final effectiveExpand = expand || useCupertinoSheet;
   final effectiveUseHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
 
+  // TODO(ziqq): Remove the Cupertino theme override in 1.0.0.
   final themeOverride = useCupertinoSheet
       ? _capturePickerTheme(
           from: context,
@@ -133,6 +142,7 @@ void showCountryPicker({
         )
       : null;
 
+  // TODO(ziqq): Remove the route scrollController parameter in 1.0.0.
   Widget builder(BuildContext context, [ScrollController? scrollController]) {
     final sheet = DraggableScrollableSheet(
       expand: effectiveExpand,
@@ -160,6 +170,7 @@ void showCountryPicker({
               filter: filter,
               selected: selected,
               onSelect: onSelect,
+              // TODO(ziqq): Stop forwarding adaptive in 1.0.0.
               adaptive: adaptive,
               autofocus: autofocus || useAutofocus,
               showGroup: showGroup,
@@ -170,12 +181,14 @@ void showCountryPicker({
               useHapticFeedback: effectiveUseHapticFeedback,
               scrollController: isScrollControlled
                   ? null
+                  // TODO(ziqq): Use sheetScrollController directly in 1.0.0.
                   : scrollController ?? sheetScrollController,
             ),
           ),
         );
       },
     );
+    // TODO(ziqq): Return sheet directly in 1.0.0.
     return themeOverride == null
         ? sheet
         : InheritedCountryPickerTheme(data: themeOverride, child: sheet);
@@ -184,6 +197,8 @@ void showCountryPicker({
   /// Provide haptic feedback on opening the picker, if enabled.
   if (effectiveUseHapticFeedback) HapticFeedback.heavyImpact().ignore();
 
+  // TODO(ziqq): Remove the Cupertino branch and call showModalBottomSheet
+  // directly in 1.0.0.
   /// Show adaptive bottom sheet for `iOS` platform, if [adaptive] is `true`.
   if (useCupertinoSheet) {
     showCupertinoSheet<void>(
@@ -206,6 +221,7 @@ void showCountryPicker({
   }
 }
 
+// TODO(ziqq): Remove _capturePickerTheme in 1.0.0.
 /// Captures the picker theme between the opener and the route's navigator.
 CountryPickerTheme? _capturePickerTheme({
   required BuildContext from,
@@ -251,6 +267,10 @@ class CountryPickerOptions {
     this.onDone,
     this.whenComplete,
     this.expand = false,
+    // TODO(ziqq): Remove the adaptive constructor argument in 1.0.0.
+    @Deprecated(
+      'Omit adaptive to use the Material sheet. Will be removed in 1.0.0.',
+    )
     this.adaptive = false,
     this.autofocus = false,
     this.isDismissible = true,
@@ -303,8 +323,12 @@ class CountryPickerOptions {
   /// Expand to full height?
   final bool expand;
 
+  // TODO(ziqq): Remove the adaptive field in 1.0.0.
   /// Adaptive style?
   /// Shows iOS style bottom sheet on iOS platform.
+  @Deprecated(
+    'Omit adaptive to use the Material sheet. Will be removed in 1.0.0.',
+  )
   final bool adaptive;
 
   /// Autofocus the search field?

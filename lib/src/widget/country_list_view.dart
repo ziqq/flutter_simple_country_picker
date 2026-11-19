@@ -29,6 +29,7 @@ class CountryListView extends StatefulWidget {
     this.selected,
     this.onSelect,
     this.scrollController,
+    // TODO(ziqq): Remove the adaptive constructor argument in 1.0.0.
     this.adaptive = false,
     this.autofocus = false,
     @Deprecated(
@@ -47,6 +48,7 @@ class CountryListView extends StatefulWidget {
          'Cannot provide both filter and exclude',
        );
 
+  // TODO(ziqq): Remove the adaptive field in 1.0.0.
   /// An optional argument for adaptive modal presentation.
   final bool adaptive;
 
@@ -230,6 +232,7 @@ class _CountriesListViewState extends State<CountryListView>
                       ),
                       backgroundColor: isDark
                           ? pickerTheme.backgroundColor?.withValues(
+                              // TODO(ziqq): Use .5 directly in 1.0.0.
                               alpha: widget.adaptive ? 1 : .5,
                             )
                           : null,
