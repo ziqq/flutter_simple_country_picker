@@ -11,6 +11,7 @@ import 'package:flutter/material.dart'
         BoxDecoration,
         DecoratedBox,
         DraggableScrollableSheet,
+        Theme,
         Colors;
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_simple_country_picker/src/constant/typedef.dart';
@@ -128,14 +129,16 @@ void showCountryPicker({
   final openingTheme = useCupertinoSheet
       ? CountryPickerTheme.maybeOf(context)
       : null;
-  final navigatorTheme = openingTheme == null
-      ? null
-      : CountryPickerTheme.maybeOf(
-          Navigator.of(context, rootNavigator: true).context,
-        );
-  final themeOverride = identical(openingTheme, navigatorTheme)
-      ? null
-      : openingTheme;
+  final themeOverride =
+      openingTheme != null &&
+          !identical(
+            _pickerThemeSource(context),
+            _pickerThemeSource(
+              Navigator.of(context, rootNavigator: true).context,
+            ),
+          )
+      ? openingTheme
+      : null;
 
   Widget builder(BuildContext context, [ScrollController? scrollController]) {
     final sheet = DraggableScrollableSheet(
@@ -208,6 +211,21 @@ void showCountryPicker({
       builder: builder,
     ).whenComplete(() => (whenComplete ?? onDone)?.call()).ignore();
   }
+}
+
+/// Finds the scope that supplies [CountryPickerTheme.maybeOf].
+Element? _pickerThemeSource(BuildContext context) {
+  final inheritedTheme = context
+      .getElementForInheritedWidgetOfExactType<InheritedCountryPickerTheme>();
+  if (inheritedTheme != null) return inheritedTheme;
+
+  Element? materialTheme;
+  context.visitAncestorElements((ancestor) {
+    if (ancestor.widget is! Theme) return true;
+    materialTheme = ancestor;
+    return false;
+  });
+  return materialTheme;
 }
 
 /// {@template country_picker_options}

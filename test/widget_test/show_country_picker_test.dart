@@ -176,71 +176,77 @@ void main() => group('showCountryPicker -', () {
     expect(CountryPickerTheme.of(list).flagSize, 42);
   }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
 
-  for (final useLocalTheme in [false, true]) {
-    testWidgets(
-      'open iOS sheet handles app theme changes (local: $useLocalTheme)',
-      (tester) async {
-        final flagSize = ValueNotifier<double>(22);
-        addTearDown(flagSize.dispose);
-        final launcher = Builder(
-          builder: (context) => Scaffold(
-            body: TextButton(
-              onPressed: () => showCountryPicker(
-                context: context,
-                adaptive: true,
-                filter: const ['RU'],
-                useHapticFeedback: false,
-              ),
-              child: const Text('Show Picker'),
+  final initialTheme = CountryPickerTheme(flagSize: 22, radius: 11);
+  for (final (scope, localTheme, useMaterialTheme) in [
+    ('global', null, false),
+    ('local', CountryPickerTheme(flagSize: 34, radius: 17), false),
+    ('shared instance in local picker theme', initialTheme, false),
+    ('shared instance in local Material theme', initialTheme, true),
+  ]) {
+    testWidgets('open iOS sheet handles app theme changes ($scope)', (
+      tester,
+    ) async {
+      final appTheme = ValueNotifier(initialTheme);
+      addTearDown(appTheme.dispose);
+      final launcher = Builder(
+        builder: (context) => Scaffold(
+          body: TextButton(
+            onPressed: () => showCountryPicker(
+              context: context,
+              adaptive: true,
+              filter: const ['RU'],
+              useHapticFeedback: false,
             ),
+            child: const Text('Show Picker'),
           ),
-        );
-        await tester.pumpWidget(
-          ValueListenableBuilder(
-            valueListenable: flagSize,
-            child: useLocalTheme
-                ? InheritedCountryPickerTheme(
-                    data: CountryPickerTheme(flagSize: 34, radius: 17),
-                    child: launcher,
-                  )
-                : launcher,
-            builder: (_, size, home) => MaterialApp(
-              theme: ThemeData(
-                extensions: [
-                  CountryPickerTheme(flagSize: size, radius: size / 2),
-                ],
-              ),
-              home: home,
-            ),
+        ),
+      );
+      final home = switch ((localTheme, useMaterialTheme)) {
+        (null, _) => launcher,
+        (final CountryPickerTheme theme, true) => Theme(
+          data: ThemeData(extensions: [theme]),
+          child: launcher,
+        ),
+        (final CountryPickerTheme theme, false) => InheritedCountryPickerTheme(
+          data: theme,
+          child: launcher,
+        ),
+      };
+      await tester.pumpWidget(
+        ValueListenableBuilder(
+          valueListenable: appTheme,
+          child: home,
+          builder: (_, theme, home) => MaterialApp(
+            theme: ThemeData(extensions: [theme]),
+            home: home,
           ),
-        );
-        await tester.tap(find.text('Show Picker'));
-        await tester.pumpAndSettle();
+        ),
+      );
+      await tester.tap(find.text('Show Picker'));
+      await tester.pumpAndSettle();
 
-        final list = find.byType(CountryListView);
-        final flag = find.descendant(of: list, matching: find.text('🇷🇺'));
-        final sheet = find.ancestor(
-          of: list,
-          matching: find.byWidgetPredicate(
-            (widget) => widget is ClipRRect && widget.child is DecoratedBox,
-          ),
+      final list = find.byType(CountryListView);
+      final flag = find.descendant(of: list, matching: find.text('🇷🇺'));
+      final sheet = find.ancestor(
+        of: list,
+        matching: find.byWidgetPredicate(
+          (widget) => widget is ClipRRect && widget.child is DecoratedBox,
+        ),
+      );
+      void expectSheetTheme(double expectedFlagSize) {
+        final radius = Radius.circular(expectedFlagSize / 2);
+        expect(tester.widget<Text>(flag).style?.fontSize, expectedFlagSize);
+        expect(
+          tester.widget<ClipRRect>(sheet).borderRadius,
+          BorderRadius.only(topLeft: radius, topRight: radius),
         );
-        void expectSheetTheme(double expectedFlagSize) {
-          final radius = Radius.circular(expectedFlagSize / 2);
-          expect(tester.widget<Text>(flag).style?.fontSize, expectedFlagSize);
-          expect(
-            tester.widget<ClipRRect>(sheet).borderRadius,
-            BorderRadius.only(topLeft: radius, topRight: radius),
-          );
-        }
+      }
 
-        expectSheetTheme(useLocalTheme ? 34 : 22);
-        flagSize.value = 42;
-        await tester.pumpAndSettle();
-        expectSheetTheme(useLocalTheme ? 34 : 42);
-      },
-      variant: TargetPlatformVariant.only(TargetPlatform.iOS),
-    );
+      expectSheetTheme(localTheme?.flagSize ?? 22);
+      appTheme.value = CountryPickerTheme(flagSize: 42, radius: 21);
+      await tester.pumpAndSettle();
+      expectSheetTheme(localTheme?.flagSize ?? 42);
+    }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
   }
 
   testWidgets('group headers update their background with the theme', (
