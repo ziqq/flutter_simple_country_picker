@@ -3,6 +3,8 @@
  * Date: 25 October 2024
  */
 
+import 'dart:ui' show PointerDeviceKind;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart' show kPressTimeout;
@@ -622,7 +624,7 @@ void main() => group('showCountryPicker -', () {
           expect(
             find.descendant(
               of: closeButton,
-              matching: find.byIcon(Icons.arrow_back_rounded),
+              matching: find.byIcon(CupertinoIcons.xmark),
             ),
             findsOneWidget,
           );
@@ -653,6 +655,51 @@ void main() => group('showCountryPicker -', () {
           expect(tester.getRect(dock), dockRect);
 
           await tester.tap(find.byKey(headerClose));
+          await tester.pumpAndSettle();
+          expect(find.byType(CountryListView), findsNothing);
+        },
+        variant: TargetPlatformVariant.only(.android),
+      );
+
+      testWidgets(
+        'Android header paints the rim on hover and press: dark=$dark',
+        (tester) async {
+          await pumpPicker(tester, dark: dark);
+          final button = find.byKey(headerClose);
+          final rim = find.descendant(
+            of: button,
+            matching: find.byWidgetPredicate(
+              (widget) =>
+                  widget is DecoratedBox &&
+                  widget.position == DecorationPosition.foreground,
+            ),
+          );
+          BorderSide side() => switch (tester
+              .widget<DecoratedBox>(rim)
+              .decoration) {
+            ShapeDecoration(shape: CircleBorder(side: BorderSide side)) => side,
+            _ => throw StateError('Expected the close button rim'),
+          };
+
+          final resting = side();
+          final center = tester.getCenter(button);
+          final mouse = await tester.createGesture(
+            kind: PointerDeviceKind.mouse,
+          );
+          await mouse.addPointer(location: Offset.zero);
+          await mouse.moveTo(center);
+          await tester.pumpAndSettle();
+          expect(side().width, greaterThan(resting.width));
+          await mouse.removePointer();
+          await tester.pumpAndSettle();
+          expect(side(), resting);
+
+          final tap = await tester.startGesture(center);
+          await tester.pump(const Duration(milliseconds: 150));
+          await tester.pumpAndSettle();
+          expect(side().width, 2);
+          expect(find.byType(CountryListView), findsOneWidget);
+          await tap.up();
           await tester.pumpAndSettle();
           expect(find.byType(CountryListView), findsNothing);
         },

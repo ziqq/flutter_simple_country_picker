@@ -197,7 +197,7 @@ class _CountryPickerCloseButton extends StatelessWidget {
   /// Keeps expansion inside the sheet when the control touches its upper edge.
   final AlignmentGeometry pressAlignment;
 
-  /// Uses the Android back affordance in the header.
+  /// Identifies the close control in the picker header.
   final bool isHeader;
 
   @override
@@ -209,52 +209,51 @@ class _CountryPickerCloseButton extends StatelessWidget {
     final dark = materialTheme.brightness == Brightness.dark;
     final foreground =
         theme.textStyle?.color ?? materialTheme.colorScheme.onSurface;
+    final fill =
+        theme.secondaryBackgroundColor ??
+        materialTheme.colorScheme.surfaceContainer;
     final android = materialTheme.platform == TargetPlatform.android;
-    final useBackButton = isHeader && android;
-    final surfaceColor =
+    final background =
         theme.backgroundColor ?? materialTheme.colorScheme.surface;
-    final fill = useBackButton
-        ? Color.alphaBlend(
-            foreground.withValues(alpha: dark ? .18 : .05),
-            surfaceColor,
-          )
-        : theme.secondaryBackgroundColor ??
-              materialTheme.colorScheme.surfaceContainer;
-    final border = highContrast
-        ? foreground
-        : useBackButton
-        ? Color.alphaBlend(
-            foreground.withValues(alpha: dark ? .09 : 0),
-            surfaceColor,
-          )
-        : theme.dividerColor ?? materialTheme.dividerColor;
-    final cancelLabel = CountryLocalizations.of(context).cancelButton;
-    final backLabel = Localizations.of<MaterialLocalizations>(
-      context,
-      MaterialLocalizations,
-    )?.backButtonTooltip;
+    final ShapeDecoration? interactionDecoration;
+    if (isHeader && android && !highContrast) {
+      interactionDecoration = ShapeDecoration(
+        color: Color.alphaBlend(
+          foreground.withValues(alpha: dark ? .18 : .05),
+          background,
+        ),
+        shape: shape.copyWith(
+          side: BorderSide(
+            width: 2,
+            color: Color.alphaBlend(
+              foreground.withValues(alpha: dark ? .09 : 0),
+              background,
+            ),
+          ),
+        ),
+      );
+    } else {
+      interactionDecoration = null;
+    }
     return SizedBox.square(
       dimension: countryPickerControlHeight(context, theme),
       child: _Surface(
         builder: surfaceBuilder,
         pressAlignment: pressAlignment,
         type: CountryPickerSurfaceType.closeButton,
+        interactionDecoration: interactionDecoration,
         shape: shape,
         decoration: ShapeDecoration(
-          color: highContrast || useBackButton
-              ? fill
-              : fill.withValues(alpha: .65),
+          color: highContrast ? fill : fill.withValues(alpha: .65),
           shape: shape.copyWith(
             side: BorderSide(
-              width: useBackButton
-                  ? 2
-                  : android
-                  ? 1 / MediaQuery.devicePixelRatioOf(context)
-                  : 1,
-              color: border,
+              width: android ? 1 / MediaQuery.devicePixelRatioOf(context) : 1,
+              color: highContrast
+                  ? foreground
+                  : theme.dividerColor ?? materialTheme.dividerColor,
             ),
           ),
-          shadows: dark || highContrast || useBackButton
+          shadows: dark || highContrast
               ? null
               : [
                   BoxShadow(
@@ -266,13 +265,8 @@ class _CountryPickerCloseButton extends StatelessWidget {
                 ],
         ),
         onPressed: onClose,
-        semanticsLabel: useBackButton ? backLabel ?? cancelLabel : cancelLabel,
-        child: Center(
-          child: Icon(
-            useBackButton ? Icons.arrow_back_rounded : CupertinoIcons.xmark,
-            color: foreground,
-          ),
-        ),
+        semanticsLabel: CountryLocalizations.of(context).cancelButton,
+        child: Center(child: Icon(CupertinoIcons.xmark, color: foreground)),
       ),
     );
   }
@@ -285,6 +279,7 @@ class _GlassFake extends StatefulWidget {
     required this.surface,
     required this.child,
     required this.pressAlignment,
+    this.interactionDecoration,
   });
 
   final CountryPickerSurface surface;
@@ -292,6 +287,9 @@ class _GlassFake extends StatefulWidget {
 
   /// Origin of stock press scaling; custom painters retain their own animation.
   final AlignmentGeometry pressAlignment;
+
+  /// Surface reached at the end of the press animation, when configured.
+  final ShapeDecoration? interactionDecoration;
 
   @override
   State<_GlassFake> createState() => _GlassFakeState();
@@ -371,11 +369,7 @@ class _GlassFakeState extends State<_GlassFake>
     final search = widget.surface.type == CountryPickerSurfaceType.searchField;
     final androidClose =
         !search && Theme.of(context).platform == TargetPlatform.android;
-    final decoration = widget.surface.decoration;
-    final shape = switch (decoration.shape) {
-      OutlinedBorder shape => shape,
-      _ => const CircleBorder(),
-    };
+    final restingDecoration = widget.surface.decoration;
     final filter = ui.ImageFilter.blur(
       sigmaX: 8,
       sigmaY: 8,
@@ -410,6 +404,12 @@ class _GlassFakeState extends State<_GlassFake>
                   ? 1 - .28 * (progress / .3)
                   : .72 - .37 * ((progress - .3) / .7);
               final content = Opacity(opacity: opacity, child: child);
+              final decoration = switch (widget.interactionDecoration) {
+                ShapeDecoration active when progress > 0 =>
+                  ShapeDecoration.lerp(restingDecoration, active, progress) ??
+                      restingDecoration,
+                _ => restingDecoration,
+              };
               // Keep the search field's resting paint and grouped backdrop intact.
               final Widget surface;
               if (search) {
@@ -421,6 +421,10 @@ class _GlassFakeState extends State<_GlassFake>
                   ),
                 );
               } else {
+                final shape = switch (decoration.shape) {
+                  OutlinedBorder shape => shape,
+                  _ => const CircleBorder(),
+                };
                 surface = DecoratedBox(
                   decoration: ShapeDecoration(
                     shape: shape.copyWith(side: BorderSide.none),
@@ -433,8 +437,7 @@ class _GlassFakeState extends State<_GlassFake>
                       clipper: ShapeBorderClipper(shape: shape),
                       child: RepaintBoundary(
                         child: BackdropFilter(
-                          // An opaque fill covers the filter output.
-                          enabled: !highContrast && decoration.color?.a != 1,
+                          enabled: !highContrast,
                           filter: filter,
                           child: DecoratedBox(
                             decoration: ShapeDecoration(
@@ -839,6 +842,7 @@ class _Surface extends StatefulWidget {
     this.onPressed,
     this.semanticsLabel,
     this.pressAlignment = Alignment.center,
+    this.interactionDecoration,
     super.key, // ignore: unused_element_parameter
   });
 
@@ -854,6 +858,9 @@ class _Surface extends StatefulWidget {
 
   /// Origin of the stock surface's press transform.
   final AlignmentGeometry pressAlignment;
+
+  /// Optional stock surface paint for hover and press feedback.
+  final ShapeDecoration? interactionDecoration;
 
   @override
   State<_Surface> createState() => _SurfaceState();
@@ -887,6 +894,7 @@ class _SurfaceState extends State<_Surface> {
       null => _GlassFake(
         surface: surface,
         pressAlignment: widget.pressAlignment,
+        interactionDecoration: widget.interactionDecoration,
         child: widget.child,
       ),
     };
