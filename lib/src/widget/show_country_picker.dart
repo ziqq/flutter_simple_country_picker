@@ -121,59 +121,75 @@ void showCountryPicker({
   double? minChildSize,
 }) {
   final isIOS = defaultTargetPlatform == TargetPlatform.iOS;
-  final effectiveExpand = expand || (adaptive && isIOS);
+  final useCupertinoSheet = adaptive && isIOS;
+  final effectiveExpand = expand || useCupertinoSheet;
   final effectiveUseHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
 
-  final pickerTheme = CountryPickerTheme.resolve(context);
-  final radius = Radius.circular(pickerTheme.radius);
-  final borderRadius = BorderRadius.only(topLeft: radius, topRight: radius);
+  final openingTheme = useCupertinoSheet
+      ? CountryPickerTheme.maybeOf(context)
+      : null;
+  final navigatorTheme = openingTheme == null
+      ? null
+      : CountryPickerTheme.maybeOf(
+          Navigator.of(context, rootNavigator: true).context,
+        );
+  final themeOverride = identical(openingTheme, navigatorTheme)
+      ? null
+      : openingTheme;
 
-  Widget builder(BuildContext context, [ScrollController? scrollController]) =>
-      DraggableScrollableSheet(
-        expand: effectiveExpand,
-        initialChildSize: initialChildSize ?? (effectiveExpand ? 1.0 : .65),
-        minChildSize:
-            minChildSize ??
-            (effectiveExpand ? (shouldCloseOnSwipeDown ? .99 : 1.0) : .65),
-        builder: (context, sheetScrollController) {
-          final list = CountryListView(
-            exclude: exclude,
-            favorites: favorites,
-            filter: filter,
-            selected: selected,
-            onSelect: onSelect,
-            adaptive: adaptive,
-            autofocus: autofocus || useAutofocus,
-            showGroup: showGroup,
-            showSearch: showSearch,
-            showPhoneCode: showPhoneCode,
-            showWorldWide: showWorldWide,
-            useRootNavigator: useRootNavigator,
-            useHapticFeedback: effectiveUseHapticFeedback,
-            scrollController: isScrollControlled
-                ? null
-                : scrollController ?? sheetScrollController,
-          );
-          return ClipRRect(
-            borderRadius: borderRadius,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: borderRadius,
-                color: pickerTheme.backgroundColor,
-              ),
-              child: adaptive && isIOS
-                  ? InheritedCountryPickerTheme(data: pickerTheme, child: list)
-                  : list,
+  Widget builder(BuildContext context, [ScrollController? scrollController]) {
+    final sheet = DraggableScrollableSheet(
+      expand: effectiveExpand,
+      initialChildSize: initialChildSize ?? (effectiveExpand ? 1.0 : .65),
+      minChildSize:
+          minChildSize ??
+          (effectiveExpand ? (shouldCloseOnSwipeDown ? .99 : 1.0) : .65),
+      builder: (context, sheetScrollController) {
+        final pickerTheme = CountryPickerTheme.resolve(context);
+        final radius = Radius.circular(pickerTheme.radius);
+        final borderRadius = BorderRadius.only(
+          topLeft: radius,
+          topRight: radius,
+        );
+        return ClipRRect(
+          borderRadius: borderRadius,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: borderRadius,
+              color: pickerTheme.backgroundColor,
             ),
-          );
-        },
-      );
+            child: CountryListView(
+              exclude: exclude,
+              favorites: favorites,
+              filter: filter,
+              selected: selected,
+              onSelect: onSelect,
+              adaptive: adaptive,
+              autofocus: autofocus || useAutofocus,
+              showGroup: showGroup,
+              showSearch: showSearch,
+              showPhoneCode: showPhoneCode,
+              showWorldWide: showWorldWide,
+              useRootNavigator: useRootNavigator,
+              useHapticFeedback: effectiveUseHapticFeedback,
+              scrollController: isScrollControlled
+                  ? null
+                  : scrollController ?? sheetScrollController,
+            ),
+          ),
+        );
+      },
+    );
+    return themeOverride == null
+        ? sheet
+        : InheritedCountryPickerTheme(data: themeOverride, child: sheet);
+  }
 
   /// Provide haptic feedback on opening the picker, if enabled.
   if (effectiveUseHapticFeedback) HapticFeedback.heavyImpact().ignore();
 
   /// Show adaptive bottom sheet for `iOS` platform, if [adaptive] is `true`.
-  if (adaptive && isIOS) {
+  if (useCupertinoSheet) {
     showCupertinoSheet<void>(
       context: context,
       scrollableBuilder: builder,
@@ -184,7 +200,7 @@ void showCountryPicker({
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
-      barrierColor: pickerTheme.barrierColor,
+      barrierColor: CountryPickerTheme.resolve(context).barrierColor,
       isDismissible: isDismissible,
       isScrollControlled: true,
       useRootNavigator: useRootNavigator,
