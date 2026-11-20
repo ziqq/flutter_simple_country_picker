@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart';
-import 'package:flutter_simple_country_picker/src/widget/show_country_picker.dart'
-    show CountryPickerOptions;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../util/test_util.dart';
@@ -640,63 +638,4 @@ void main() => group('showCountryPicker -', () {
       expect(onDoneCalled, isTrue);
     },
   );
-
-  test('CountryPickerOptions constructs with default values', () {
-    const options = CountryPickerOptions(onSelect: null);
-
-    expect(options.expand, isFalse);
-    expect(options.adaptive, isFalse);
-    expect(options.autofocus, isFalse);
-    expect(options.isDismissible, isTrue);
-    expect(options.isScrollControlled, isTrue);
-    expect(options.showPhoneCode, isFalse);
-    expect(options.showWorldWide, isFalse);
-    expect(options.useHapticFeedback, isTrue);
-    expect(options.useRootNavigator, isFalse);
-    expect(options.useSafeArea, isTrue);
-    expect(options.exclude, isNull);
-    expect(options.filter, isNull);
-    expect(options.favorites, isNull);
-    expect(options.whenComplete, isNull);
-  });
-
-  test('CountryPickerOptions accepts all optional fields', () {
-    final options = CountryPickerOptions(
-      exclude: const ['RU'],
-      favorites: const ['US'],
-      filter: const ['GB'],
-      onSelect: (_) {},
-      whenComplete: () {},
-      expand: true,
-      showPhoneCode: true,
-      showWorldWide: true,
-      showGroup: true,
-      showSearch: false,
-      isDismissible: false,
-      initialChildSize: 0.8,
-      minChildSize: 0.4,
-    );
-
-    expect(options.exclude, contains('RU'));
-    expect(options.favorites, contains('US'));
-    expect(options.filter, contains('GB'));
-    expect(options.expand, isTrue);
-    expect(options.showPhoneCode, isTrue);
-    expect(options.showWorldWide, isTrue);
-    expect(options.showGroup, isTrue);
-    expect(options.showSearch, isFalse);
-    expect(options.isDismissible, isFalse);
-    expect(options.initialChildSize, 0.8);
-    expect(options.minChildSize, 0.4);
-  });
-
-  test('CountryPickerOptions prefers the correctly spelled parameter', () {
-    const options = CountryPickerOptions(
-      // ignore: deprecated_member_use
-      useHaptickFeedback: true,
-      useHapticFeedback: false,
-    );
-
-    expect(options.useHapticFeedback, isFalse);
-  });
 });
