@@ -177,12 +177,14 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
                 ),
                 child: const Text('Show picker (filtered)'),
               ),
+              // TODO(ziqq): Remove the adaptive picker demo in 1.0.0.
               CupertinoButton(
                 key: const ValueKey<String>('adaptive_picker_button'),
                 padding: .symmetric(horizontal: pickerTheme.padding),
                 sizeStyle: .medium,
                 onPressed: () => showCountryPicker(
                   context: context,
+                  // ignore: deprecated_member_use
                   adaptive: true,
                   showGroup: true,
                   onSelect: onSelect,

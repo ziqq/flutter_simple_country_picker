@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.11.4
+- **DEPRECATED**: `adaptive` in `showCountryPicker`. The Cupertino sheet remains available until `1.0.0`. Omit `adaptive` to use the Material sheet
+- **FIXED**: align the automatic mask hint with the editable text at custom and default phone field heights, [#27](https://github.com/ziqq/flutter_simple_country_picker/issues/27)
+- **FIXED**: derive phone hints and masks from the picker text style so the country search can be styled independently
+- **FIXED**: detach the old country controller and preserve the values of both external controllers when `initialCountry` changes during replacement
+- **FIXED**: parse the new number using the newly selected country when both phone input controllers are replaced together
+- **FIXED**: keep an empty replacement phone controller unchanged when only the phone controller is replaced
+- **FIXED**: recognize barrier color changes, preserve exact theme values and background color fallbacks in `copyWith`, and retain `inputDecoration` during theme transitions
+- **FIXED**: preserve local themes and follow app theme changes in open adaptive iOS sheets, and refresh grouped headers when the theme changes
+- **FIXED**: preserve explicit local picker themes in adaptive iOS sheets, including shared theme instances, and keep app theme updates when local Material styling reuses the app's extensions
+- **FIXED**: apply `searchTextStyle` to the query and clear grouped results when no countries match
+- **FIXED**: honor `showPhoneCode` and show favorite calling-code entries only once
+- **FIXED**: keep `CountryState` snapshots and their hash codes stable when the source country list changes
+- **REMOVED**: the unused experimental `CountryPickerOptions` class
+
 ## 0.11.3
 - **ADDED**: expanded the picker to 75 built-in locales, including all 71 entries in the Telegram Translations catalog and separate Brazilian (`pt-BR`) and European (`pt-PT`) Portuguese translations
 - **FIXED**: phone input completion rejects national numbers made entirely of zeros, [#25](https://github.com/ziqq/flutter_simple_country_picker/issues/25)

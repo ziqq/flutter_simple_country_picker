@@ -122,28 +122,27 @@ void _$controllerTest() => group('CountryController -', () {
     expect(controller.state.showGroup, isFalse);
   });
 
-  test('getCountries prepends favorites before regular countries', () async {
-    final allCountries = [
-      mockCountry.copyWith(name: 'Russia', countryCode: 'RU'),
-      mockCountry.copyWith(name: 'United States', countryCode: 'US'),
-      mockCountry.copyWith(name: 'Canada', countryCode: 'CA'),
-    ];
+  test('getCountries prepends each favorite calling-code entry once', () async {
+    final russia = Country.ru();
+    final canada = Country.fromCountryCode('CA');
+    final alternate = canada.copyWith(phoneCode: '1204', e164Key: '1204-CA-0');
 
     when(
       provider.getCountries(),
-    ).thenAnswer((_) async => Future.value(allCountries));
+    ).thenAnswer((_) async => [russia, canada, alternate]);
 
-    // showPhoneCode: true → no dedup, favorites are prepended before list.
     controller = CountryController(
       provider: provider,
-      favorites: ['CA'],
+      favorites: ['CA', 'ca'],
       showPhoneCode: true,
     );
     await controller.getCountries();
 
-    // Canada (favorite) appears first.
-    expect(controller.state.countries.first.countryCode, 'CA');
-    expect(controller.state.countries.length, greaterThanOrEqualTo(3));
+    expect(controller.state.countries.map((country) => country.e164Key), [
+      canada.e164Key,
+      alternate.e164Key,
+      russia.e164Key,
+    ]);
   });
 
   test(
@@ -237,7 +236,7 @@ void _$stateTest() => group('CountryState -', () {
     expect(state1 == state3, isFalse);
   });
 
-  test('hashCode should be not iqual', () {
+  test('separate equal country lists produce equal hash codes', () {
     final state1 = CountryState.idle(
       countries: [country1, country2],
       showGroup: false,
@@ -247,7 +246,23 @@ void _$stateTest() => group('CountryState -', () {
       showGroup: false,
     );
 
-    expect(state1.hashCode != state2.hashCode, isTrue);
+    expect(state1, state2);
+    expect(state1.hashCode, state2.hashCode);
+    expect({state1}.contains(state2), isTrue);
+  });
+
+  test('CountryState snapshots its list and keeps a stable hash code', () {
+    final source = [country1];
+    final state = CountryState.idle(countries: source, showGroup: false);
+    final states = {state};
+    expect(state.getCountryByCode(country1.countryCode), country1);
+
+    source.add(country2);
+
+    expect(state.countries, [country1]);
+    expect(state.getCountryByCode(country2.countryCode), isNull);
+    expect(states.contains(state), isTrue);
+    expect(() => state.countries.add(country2), throwsUnsupportedError);
   });
 
   test('toString', () {

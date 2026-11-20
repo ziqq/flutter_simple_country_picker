@@ -29,6 +29,7 @@ class CountryListView extends StatefulWidget {
     this.selected,
     this.onSelect,
     this.scrollController,
+    // TODO(ziqq): Remove the adaptive constructor argument in 1.0.0.
     this.adaptive = false,
     this.autofocus = false,
     @Deprecated(
@@ -47,6 +48,7 @@ class CountryListView extends StatefulWidget {
          'Cannot provide both filter and exclude',
        );
 
+  // TODO(ziqq): Remove the adaptive field in 1.0.0.
   /// An optional argument for adaptive modal presentation.
   final bool adaptive;
 
@@ -184,6 +186,10 @@ class _CountriesListViewState extends State<CountryListView>
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final pickerTheme = CountryPickerTheme.resolve(context);
     final localization = CountryLocalizations.of(context);
+    final searchStyle = pickerTheme.searchTextStyle;
+    final effectiveSearchStyle = searchStyle?.copyWith(
+      height: searchStyle.height ?? 1.3,
+    );
     void pop() {
       if (widget.useHapticFeedback) HapticFeedback.heavyImpact().ignore();
       Navigator.of(context, rootNavigator: widget.useRootNavigator).pop<void>();
@@ -215,18 +221,18 @@ class _CountriesListViewState extends State<CountryListView>
                       controller: _controller.search,
                       onSuffixTap: _controller.search?.clear,
                       placeholder: localization.searchPlaceholder,
-                      style: pickerTheme.textStyle?.copyWith(height: 1.3),
-                      placeholderStyle: pickerTheme.textStyle?.copyWith(
-                        color: pickerTheme.searchTextStyle?.color?.withValues(
+                      style: effectiveSearchStyle,
+                      placeholderStyle: effectiveSearchStyle?.copyWith(
+                        color: effectiveSearchStyle.color?.withValues(
                           alpha: .5,
                         ),
-                        height: 1.3,
                       ),
                       borderRadius: BorderRadius.all(
                         Radius.circular(pickerTheme.radius),
                       ),
                       backgroundColor: isDark
                           ? pickerTheme.backgroundColor?.withValues(
+                              // TODO(ziqq): Use .5 directly in 1.0.0.
                               alpha: widget.adaptive ? 1 : .5,
                             )
                           : null,
@@ -323,6 +329,7 @@ class _CountriesListViewState extends State<CountryListView>
             // --- Countries list --- //
             _CountriesList(
               controller: _controller,
+              showPhoneCode: widget.showPhoneCode,
               selected: widget.selected,
               onSelect: widget.onSelect,
             ),
@@ -350,6 +357,7 @@ class _CountriesList extends StatefulWidget {
   /// {@macro countries_list_view}
   const _CountriesList({
     required this.controller,
+    required this.showPhoneCode,
     this.selected,
     this.onSelect,
     super.key, // ignore: unused_element_parameter
@@ -357,6 +365,8 @@ class _CountriesList extends StatefulWidget {
 
   /// Countries controller.
   final CountryController controller;
+
+  final bool showPhoneCode;
 
   /// {@macro select_country_notifier}
   final SelectedCountry? selected;
@@ -403,7 +413,7 @@ class _CountriesListState extends State<_CountriesList> {
   void _groupByName() {
     if (!mounted) return;
     final state = widget.controller.state;
-    if (!state.showGroup || !state.isIdle || state.countries.isEmpty) return;
+    if (!state.showGroup || !state.isIdle) return;
 
     if (_showGroup == state.showGroup &&
         identical(_countries, state.countries)) {
@@ -500,6 +510,7 @@ class _CountriesListState extends State<_CountriesList> {
                           final country = countries[index];
                           return _CountryListTile(
                             key: ValueKey<String>(country.e164Key),
+                            showPhoneCode: widget.showPhoneCode,
                             onSelect: (country) {
                               // Notify external listeners first so they can
                               // compare against the previous SelectedCountry
@@ -536,6 +547,7 @@ class _CountriesListState extends State<_CountriesList> {
               final country = state.countries[index];
               return _CountryListTile.simple(
                 key: ValueKey<String>(country.e164Key),
+                showPhoneCode: widget.showPhoneCode,
                 country: country,
                 selected: selected == country,
                 onSelect: (country) {
@@ -559,6 +571,7 @@ class _CountriesListState extends State<_CountriesList> {
 class _CountryListTile extends StatelessWidget {
   const _CountryListTile({
     required this.country,
+    required this.showPhoneCode,
     this.onSelect,
     this.simple = false,
     this.selected = false,
@@ -567,6 +580,7 @@ class _CountryListTile extends StatelessWidget {
 
   const factory _CountryListTile.simple({
     required Country country,
+    required bool showPhoneCode,
     SelectCountryCallback? onSelect,
     bool selected,
     Key? key,
@@ -574,6 +588,8 @@ class _CountryListTile extends StatelessWidget {
 
   /// Use simple variant?
   final bool simple;
+
+  final bool showPhoneCode;
 
   /// Is selected?
   final bool selected;
@@ -617,21 +633,21 @@ class _CountryListTile extends StatelessWidget {
           _Flag(country),
           SizedBox(width: pickerTheme.padding / 4),
           Flexible(child: title),
-          Text(
-            ' (${isRtl ? '' : '+'}${country.phoneCode}${isRtl ? '+' : ''})',
-            style: effectiveTextStyle,
-          ),
+          if (showPhoneCode)
+            Text(
+              ' (${isRtl ? '' : '+'}${country.phoneCode}${isRtl ? '+' : ''})',
+              style: effectiveTextStyle,
+            ),
         ],
       ),
     };
 
-    final effectiveTrailing = switch ((simple, selected)) {
-      (true, true) => Icon(
+    final effectiveTrailing = switch ((simple, selected, showPhoneCode)) {
+      (true, true, _) => Icon(
         CupertinoIcons.checkmark_circle_fill,
         color: pickerTheme.accentColor,
       ),
-      (true, false) => null,
-      (false, _) => Padding(
+      (false, _, true) => Padding(
         padding: EdgeInsets.only(top: pickerTheme.padding / 5),
         child: Text(
           '${isRtl ? '' : '+'}${country.phoneCode}${isRtl ? '+' : ''}',
@@ -644,6 +660,7 @@ class _CountryListTile extends StatelessWidget {
           ),
         ),
       ),
+      _ => null,
     };
 
     return Material(
@@ -719,6 +736,7 @@ class _CountryListTile$Simple extends _CountryListTile {
   /// {@macro countries_list_view}
   const _CountryListTile$Simple({
     required super.country,
+    required super.showPhoneCode,
     super.selected = false,
     super.onSelect,
     super.key, // ignore: unused_element_parameter
@@ -784,5 +802,5 @@ class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
   bool shouldRebuild(covariant _SliverHeaderDelegate oldDelegate) =>
       oldDelegate.minHeight != minHeight ||
       oldDelegate.maxHeight != maxHeight ||
-      oldDelegate.child.key != child.key;
+      oldDelegate.child != child;
 }

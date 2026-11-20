@@ -1,5 +1,8 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/cupertino.dart' show CupertinoButton;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show RenderRepaintBoundary;
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart';
@@ -7,6 +10,12 @@ import 'package:flutter_simple_country_picker/src/widget/country_phone_input.dar
 import 'package:flutter_test/flutter_test.dart';
 
 import '../util/test_util.dart';
+
+class _TrackedCountryController extends ValueNotifier<Country> {
+  _TrackedCountryController(super.value);
+
+  bool get isObserved => hasListeners;
+}
 
 void main() {
   setUpAll(WidgetsFlutterBinding.ensureInitialized);
@@ -19,6 +28,86 @@ void _$defaultCountryPhoneInputTest() {
   const buttonKey = ValueKey<String>('country_picker_phone_code');
   const phoneFieldKey = ValueKey<String>('country_phone_number');
   group('CountryPhoneInput -', () {
+    for (final height in [36.0, 56.0]) {
+      testWidgets('paints the automatic mask on the input line at $height', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            builder: (_) => Scaffold(
+              body: InheritedCountryPickerTheme(
+                data: CountryPickerTheme(
+                  inputHeight: height,
+                  onBackgroundColor: Colors.white,
+                  textStyle: const TextStyle(
+                    color: Color(0xFF0000FF),
+                    fontSize: 16,
+                    height: 1.25,
+                  ),
+                  searchTextStyle: const TextStyle(color: Colors.red),
+                ),
+                child: CountryPhoneInput(
+                  initialCountry: Country.fromCountryCode('ID'),
+                  useCountryFormatting: true,
+                ),
+              ),
+            ),
+          ),
+        );
+        final input = find.byKey(phoneFieldKey);
+        await tester.enterText(input, '4342');
+        final editor = tester.state<EditableTextState>(
+          find.byType(EditableText),
+        );
+        expect(editor.textEditingValue.text, '434 2');
+        editor.widget.focusNode.unfocus();
+        await tester.pumpAndSettle();
+
+        final background = find.byKey(
+          const ValueKey<String>('country_phone_number_background'),
+        );
+        final boundary = tester.renderObject<RenderRepaintBoundary>(background);
+        final bounds = await tester.runAsync(() async {
+          final image = await boundary.toImage();
+          try {
+            final pixels = (await image.toByteData(
+              format: ui.ImageByteFormat.rawRgba,
+            ))!;
+            Rect? digits;
+            Rect? hint;
+            for (var y = 0; y < image.height; y++) {
+              for (var x = 0; x < image.width; x++) {
+                final offset = 4 * (y * image.width + x);
+                if (pixels.getUint8(offset + 3) != 255) continue;
+                final red = pixels.getUint8(offset);
+                final green = pixels.getUint8(offset + 1);
+                final blue = pixels.getUint8(offset + 2);
+                final pixel = Rect.fromLTWH(x.toDouble(), y.toDouble(), 1, 1);
+                if (red < 32 && green < 32 && blue > 240) {
+                  digits = digits?.expandToInclude(pixel) ?? pixel;
+                } else if (red >= 120 &&
+                    red <= 160 &&
+                    red == green &&
+                    blue > 240) {
+                  hint = hint?.expandToInclude(pixel) ?? pixel;
+                }
+              }
+            }
+            return (digits, hint);
+          } finally {
+            image.dispose();
+          }
+        });
+
+        final (digits, hint) = bounds!;
+        expect(digits, isNotNull, reason: 'the entered digits are visible');
+        expect(hint, isNotNull, reason: 'the mask uses the dimmed phone color');
+        expect(hint!.top, closeTo(digits!.top, 1));
+        expect(hint.bottom, closeTo(digits.bottom, 1));
+        expect(hint.left, closeTo(digits.right, 1));
+      });
+    }
+
     testWidgets('should use numeric keyboard type', (tester) async {
       await tester.pumpWidget(
         createWidgetUnderTest(
@@ -522,6 +611,58 @@ void _$defaultCountryPhoneInputTest() {
         expect(find.textContaining('123 456 7890'), findsOneWidget);
       });
 
+      for (final useCountryFormatting in [false, true]) {
+        testWidgets('preserves an empty replacement phone controller '
+            '(useCountryFormatting: $useCountryFormatting)', (tester) async {
+          final previous = CountryPhoneController.empty();
+          final firstReplacement = CountryPhoneController.empty();
+          final secondReplacement = CountryPhoneController.empty();
+          addTearDown(previous.dispose);
+          addTearDown(firstReplacement.dispose);
+          addTearDown(secondReplacement.dispose);
+
+          Future<void> show(CountryPhoneController controller) =>
+              tester.pumpWidget(
+                createWidgetUnderTest(
+                  builder: (_) => Scaffold(
+                    body: CountryPhoneInput(
+                      controller: controller,
+                      useCountryFormatting: useCountryFormatting,
+                    ),
+                  ),
+                ),
+              );
+
+          final field = find.byKey(phoneFieldKey);
+          Future<void> expectEmptySwap(
+            CountryPhoneController controller,
+          ) async {
+            var notifications = 0;
+            void onChanged() => notifications++;
+            controller.addListener(onChanged);
+            await show(controller);
+            controller.removeListener(onChanged);
+
+            expect(
+              tester.widget<TextFormField>(field).controller!.text,
+              isEmpty,
+            );
+            expect(controller.text, isEmpty);
+            expect(notifications, 0);
+          }
+
+          await show(previous);
+          await tester.showKeyboard(field);
+          await expectEmptySwap(firstReplacement);
+
+          await tester.enterText(field, '123');
+          expect(firstReplacement.number, '123');
+          await expectEmptySwap(secondReplacement);
+
+          await tester.pumpWidget(const SizedBox.shrink());
+        });
+      }
+
       testWidgets(
         'should recreate internal controller when external controller is removed',
         (tester) async {
@@ -610,6 +751,115 @@ void _$defaultCountryPhoneInputTest() {
     });
 
     group('countryController -', () {
+      for (final useCountryFormatting in [false, true]) {
+        testWidgets('parses with the new country when both controllers change '
+            '(useCountryFormatting: $useCountryFormatting)', (tester) async {
+          const internationalNumber = '+628123456789';
+          final previousCountry = ValueNotifier(Country.ru());
+          final replacementCountry = ValueNotifier(
+            Country.fromCountryCode('ID'),
+          );
+          final previousPhone = CountryPhoneController.apply('+71234567890');
+          final replacementPhone = CountryPhoneController.apply(
+            internationalNumber,
+          );
+          addTearDown(previousCountry.dispose);
+          addTearDown(replacementCountry.dispose);
+          addTearDown(previousPhone.dispose);
+          addTearDown(replacementPhone.dispose);
+
+          Future<void> show(
+            ValueNotifier<Country> country,
+            CountryPhoneController phone,
+          ) => tester.pumpWidget(
+            createWidgetUnderTest(
+              builder: (_) => Scaffold(
+                body: CountryPhoneInput(
+                  countryController: country,
+                  controller: phone,
+                  useCountryFormatting: useCountryFormatting,
+                ),
+              ),
+            ),
+          );
+
+          await show(previousCountry, previousPhone);
+          final previousValue = previousPhone.value;
+          final publishedNumbers = <String>[];
+          replacementPhone.addListener(
+            () => publishedNumbers.add(replacementPhone.phone),
+          );
+          await show(replacementCountry, replacementPhone);
+
+          expect(find.textContaining('+62'), findsOneWidget);
+          expect(replacementPhone.phone, internationalNumber);
+          expect(replacementPhone.number, '8123456789');
+          expect(previousPhone.value, previousValue);
+          expect(publishedNumbers, everyElement(internationalNumber));
+          await tester.pumpWidget(const SizedBox.shrink());
+        });
+      }
+
+      testWidgets('detaches replaced external country controllers', (
+        tester,
+      ) async {
+        final first = _TrackedCountryController(Country.fromCountryCode('ID'));
+        final second = _TrackedCountryController(Country.ru());
+        addTearDown(first.dispose);
+        addTearDown(second.dispose);
+
+        for (final controller in [first, second]) {
+          await tester.pumpWidget(
+            createWidgetUnderTest(
+              builder: (_) => Scaffold(
+                body: CountryPhoneInput(
+                  countryController: controller,
+                  useCountryFormatting: true,
+                ),
+              ),
+            ),
+          );
+        }
+
+        expect(first.isObserved, isFalse);
+        expect(second.isObserved, isTrue);
+        await tester.pumpWidget(const SizedBox.shrink());
+        expect(second.isObserved, isFalse);
+      });
+
+      testWidgets(
+        'keeps both controller values when initialCountry also changes',
+        (tester) async {
+          final previous = ValueNotifier(Country.ru());
+          final replacement = ValueNotifier(Country.fromCountryCode('US'));
+          addTearDown(previous.dispose);
+          addTearDown(replacement.dispose);
+
+          Future<void> show(
+            ValueNotifier<Country> controller,
+            Country country,
+          ) => tester.pumpWidget(
+            createWidgetUnderTest(
+              builder: (_) => Scaffold(
+                body: CountryPhoneInput(
+                  initialCountry: country,
+                  countryController: controller,
+                  useCountryFormatting: true,
+                ),
+              ),
+            ),
+          );
+
+          await show(previous, Country.ru());
+          await show(replacement, Country.fromCountryCode('ID'));
+
+          expect(previous.value.countryCode, 'RU');
+          expect(replacement.value.countryCode, 'US');
+          expect(find.textContaining('+1'), findsOneWidget);
+          await tester.pumpWidget(const SizedBox.shrink());
+        },
+      );
+
       testWidgets(
         'should respond to external countryController value changes',
         (tester) async {
