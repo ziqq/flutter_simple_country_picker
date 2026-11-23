@@ -18,6 +18,38 @@ class _TrackedCountryController extends ValueNotifier<Country> {
 }
 
 void main() {
+  testWidgets('both phone fields use the app text color for digits and hints', (
+    tester,
+  ) async {
+    const textColor = Colors.deepPurple;
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        builder: (context) => Theme(
+          data: Theme.of(context).copyWith(
+            textTheme: Theme.of(
+              context,
+            ).textTheme.copyWith(bodyLarge: const TextStyle(color: textColor)),
+          ),
+          child: const Scaffold(
+            body: Column(
+              children: [CountryPhoneInput(), CountryPhoneInput.extended()],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final fields = tester.widgetList<TextField>(find.byType(TextField));
+    expect(fields, hasLength(2));
+    for (final field in fields) {
+      expect(field.style?.color, textColor);
+      expect(
+        field.decoration?.hintStyle?.foreground?.color,
+        isSameColorAs(textColor.withValues(alpha: .5)),
+      );
+    }
+  });
+
   setUpAll(WidgetsFlutterBinding.ensureInitialized);
 
   _$defaultCountryPhoneInputTest();

@@ -24,11 +24,14 @@ void main() => group('CountryScope -', () {
     final context = tester.element(find.byType(_CountryName));
     final controller = CountryScope.of(context);
     expect(controller.state.countries.single.countryCode, 'RU');
+    expect(CountryScope.getCountryByCode(context, 'RU'), Country.ru());
 
     await show('US');
     await tester.pumpAndSettle();
     expect(CountryScope.of(context), same(controller));
     expect(CountryScope.countriesOf(context).single.countryCode, 'US');
+    expect(CountryScope.getCountryByCode(context, 'RU'), isNull);
+    expect(CountryScope.getCountryByCode(context, 'US'), Country.us());
   });
 
   testWidgets('scope listeners receive newly localized country names', (

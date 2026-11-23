@@ -91,37 +91,45 @@ import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart'
 /// {@endtemplate}
 void showCountryPicker({
   required BuildContext context,
+
+  // Selection and dismissal callbacks.
+  SelectedCountry? selected,
+  SelectCountryCallback? onSelect,
+  VoidCallback? whenComplete,
+
+  // Country list and search.
   List<String>? exclude,
   List<String>? favorites,
   List<String>? filter,
-  SelectedCountry? selected,
-  SelectCountryCallback? onSelect,
-  @Deprecated('Use whenComplete instead. Will be removed in 1.0.0.')
-  VoidCallback? onDone,
-  VoidCallback? whenComplete,
+  bool? showGroup,
+  bool? showSearch,
+  bool showPhoneCode = false,
+  bool showWorldWide = false,
+  bool autofocus = false,
+
+  // Sheet presentation.
   bool expand = false,
+  bool isDismissible = true,
+  bool isScrollControlled = true,
+  bool shouldCloseOnSwipeDown = false,
+  bool useRootNavigator = true,
+  bool useSafeArea = true,
+  double? initialChildSize,
+  double? minChildSize,
+  bool? useHapticFeedback,
+
+  // Deprecated options.
   // TODO(ziqq): Remove the adaptive parameter and its dartdoc in 1.0.0.
   @Deprecated(
     'Omit adaptive to use the Material sheet. Will be removed in 1.0.0.',
   )
   bool adaptive = false,
-  bool autofocus = false,
-  bool isDismissible = true,
-  bool isScrollControlled = true,
-  bool shouldCloseOnSwipeDown = false,
-  bool showPhoneCode = false,
-  bool showWorldWide = false,
+  @Deprecated('Use whenComplete instead. Will be removed in 1.0.0.')
+  VoidCallback? onDone,
   @Deprecated('Use autofocus instead. Will be removed in 1.0.0.')
   bool useAutofocus = false,
   @Deprecated('Use useHapticFeedback instead. Will be removed in 1.0.0.')
   bool useHaptickFeedback = true,
-  bool? useHapticFeedback,
-  bool useRootNavigator = true,
-  bool useSafeArea = true,
-  bool? showGroup,
-  bool? showSearch,
-  double? initialChildSize,
-  double? minChildSize,
 }) {
   // TODO(ziqq): Remove the Cupertino route check in 1.0.0.
   final isIOS = defaultTargetPlatform == TargetPlatform.iOS;

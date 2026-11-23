@@ -3,7 +3,7 @@
 ## 0.11.4
 - **DEPRECATED**: `adaptive` in `showCountryPicker`. The Cupertino sheet remains available until `1.0.0`. Omit `adaptive` to use the Material sheet
 - **FIXED**: align the automatic mask hint with the editable text at custom and default phone field heights, [#27](https://github.com/ziqq/flutter_simple_country_picker/issues/27)
-- **FIXED**: derive phone hints and masks from the picker text style so the country search can be styled independently
+- **FIXED**: inherit the app's text color for both phone inputs and derive mask hints from the same text style, with independent styling for country search
 - **FIXED**: detach the old country controller and preserve the values of both external controllers when `initialCountry` changes during replacement
 - **FIXED**: parse the new number using the newly selected country when both phone input controllers are replaced together
 - **FIXED**: keep an empty replacement phone controller unchanged when only the phone controller is replaced
@@ -19,6 +19,9 @@
 - **FIXED**: synchronize programmatic phone controller changes with both input variants and apply explicit text styles in the extended input
 - **FIXED**: preserve foreign phone numbers when reconfiguring the field, leave replaced controllers untouched, and suppress change callbacks for rejected input
 - **FIXED**: keep the committed number when changing masks during IME composition and respect controller clears from listeners during reformatting
+- **FIXED**: publish initial phone status after the widget tree builds and preserve E.164 rewrites from controller listeners without repeating notifications
+- **FIXED**: apply initial country changes to external controllers after build and keep controller values unchanged on selection-only phone edits
+- **FIXED**: preserve the controller's E.164 text when input is rejected and keep the manual mask when non-digit characters are appended
 - **FIXED**: strip the matching international calling code after `00` before checking manual phone input length
 - **FIXED**: leave the national field empty when a pasted number contains only the selected calling code
 - **FIXED**: keep picker drag, full-height mode, and navigation after selection working through the route's public options

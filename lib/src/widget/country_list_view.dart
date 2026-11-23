@@ -23,69 +23,45 @@ import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 class CountryListView extends StatefulWidget {
   /// {@macro country_list_view}
   const CountryListView({
+    // Selection.
+    this.selected,
+    this.onSelect,
+
+    // Country list.
     this.exclude,
     this.favorites,
     this.filter,
-    this.selected,
-    this.onSelect,
-    this.scrollController,
-    // TODO(ziqq): Remove the adaptive constructor argument in 1.0.0.
-    this.adaptive = false,
+    this.showGroup,
+    this.showPhoneCode = false,
+    this.showWorldWide = false,
+
+    // Search.
+    this.showSearch,
     this.autofocus = false,
     @Deprecated('Use autofocus instead. Will be removed in 1.0.0.')
     this.useAutofocus = false,
-    this.showPhoneCode = false,
-    this.showWorldWide = false,
+
+    // Sheet presentation.
+    this.scrollController,
+    // TODO(ziqq): Remove the adaptive constructor argument in 1.0.0.
+    this.adaptive = false,
     this.useRootNavigator = true,
     this.useHapticFeedback = true,
-    this.showGroup,
-    this.showSearch,
+
     super.key,
   }) : assert(
          filter == null || exclude == null,
          'Cannot provide both filter and exclude',
        );
 
-  // TODO(ziqq): Remove the adaptive field in 1.0.0.
-  /// An optional argument for adaptive modal presentation.
-  final bool adaptive;
-
-  /// An optional argument for autofocus the search bar.
-  final bool autofocus;
-
-  /// Group countries by their first letter.
-  /// Default is `null`.
-  final bool? showGroup;
-
-  /// An optional [showSearch] argument can be used to show/hide the search bar.
-  /// Default is `null`.
-  final bool? showSearch;
-
-  /// An optional [showPhoneCode] argument can be used to show phone code.
-  final bool showPhoneCode;
-
-  /// An optional argument for showing "World Wide"
-  /// option at the beginning of the list
-  final bool showWorldWide;
-
-  /// An optional argument for autofocus the search bar.
-  @Deprecated('Use autofocus instead. Will be removed in 1.0.0.')
-  final bool useAutofocus;
-
-  /// Whether to use root navigator to display the bottom sheet.
-  final bool useRootNavigator;
-
-  /// Whether to use haptic feedback on user interactions.
-  final bool useHapticFeedback;
-
-  /// Scroll controller.
-  final ScrollController? scrollController;
-
-  /// {@macro select_country_callback}
-  final SelectCountryCallback? onSelect;
+  // Selection.
 
   /// {@macro select_country_notifier}
   final SelectedCountry? selected;
+
+  /// {@macro select_country_callback}
+  final SelectCountryCallback? onSelect;
+  // Country list.
 
   /// An optional [exclude] argument can be used to exclude(remove) one ore more
   /// country from the countries list. It takes a list of country code(iso2).
@@ -100,6 +76,43 @@ class CountryListView extends StatefulWidget {
   /// list of countries. It takes a list of country code(iso2).
   /// Note: Can't provide both [filter] and [exclude]
   final List<String>? filter;
+
+  /// Group countries by their first letter.
+  /// Default is `null`.
+  final bool? showGroup;
+
+  /// An optional [showPhoneCode] argument can be used to show phone code.
+  final bool showPhoneCode;
+
+  /// An optional argument for showing "World Wide"
+  /// option at the beginning of the list
+  final bool showWorldWide;
+  // Search.
+
+  /// An optional [showSearch] argument can be used to show/hide the search bar.
+  /// Default is `null`.
+  final bool? showSearch;
+
+  /// An optional argument for autofocus the search bar.
+  final bool autofocus;
+
+  /// An optional argument for autofocus the search bar.
+  @Deprecated('Use autofocus instead. Will be removed in 1.0.0.')
+  final bool useAutofocus;
+  // Sheet presentation.
+
+  /// Scroll controller.
+  final ScrollController? scrollController;
+
+  // TODO(ziqq): Remove the adaptive field in 1.0.0.
+  /// An optional argument for adaptive modal presentation.
+  final bool adaptive;
+
+  /// Whether to use root navigator to display the bottom sheet.
+  final bool useRootNavigator;
+
+  /// Whether to use haptic feedback on user interactions.
+  final bool useHapticFeedback;
 
   @override
   State<CountryListView> createState() => _CountriesListViewState();

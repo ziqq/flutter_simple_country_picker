@@ -135,8 +135,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   factory CountryPickerTheme.defaults(BuildContext context) =
       _CountryPickerTheme$Default;
 
-  /// The helper method to quickly resolve [PullDownMenuItemTheme] from
-  /// various sources.
+  /// Resolves the picker theme using app defaults and explicit overrides.
   @internal
   factory CountryPickerTheme.resolve(
     BuildContext context, [
@@ -144,12 +143,18 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   ]) {
     final theme = CountryPickerTheme.maybeOf(context);
     final defaults = CountryPickerTheme.defaults(context);
-    var textStyle = (defaults.textStyle ?? const TextStyle())
+    final defaultTextStyle = defaults.textStyle ?? const TextStyle();
+    var textStyle = defaultTextStyle
         .merge(theme?.textStyle)
         .merge(other?.textStyle);
     if (textStyle.color == null && textStyle.foreground == null) {
+      final fallback =
+          defaultTextStyle.color != null || defaultTextStyle.foreground != null
+          ? defaultTextStyle
+          : DefaultTextStyle.of(context).style;
       textStyle = textStyle.copyWith(
-        color: CupertinoColors.label.resolveFrom(context),
+        color: fallback.color,
+        foreground: fallback.foreground,
       );
     }
     return CountryPickerTheme(

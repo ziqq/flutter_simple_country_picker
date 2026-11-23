@@ -211,8 +211,8 @@ final class CountryController extends ValueNotifier<CountryState> {
   /// Cached countries list.
   List<Country> _cache = <Country>[];
 
-  /// The latest load request, used to discard results superseded by a reload.
-  int _loadRequest = 0;
+  /// The most recent fetch, or null before the first load.
+  Future<List<Country>>? _countriesLoad;
 
   /// Current state.
   CountryState get state => value;
@@ -235,8 +235,8 @@ final class CountryController extends ValueNotifier<CountryState> {
     if (changed && _cache.isNotEmpty) getCountries().ignore();
   }
 
-  /// Updates the selection options of a mounted country scope.
-  void updateOptions({
+  /// Applies the selection options of a mounted country scope.
+  void apply({
     required List<String>? exclude,
     required List<String>? favorites,
     required List<String>? filter,
@@ -247,16 +247,21 @@ final class CountryController extends ValueNotifier<CountryState> {
     _favorites = favorites;
     _filter = filter;
     _showPhoneCode = showPhoneCode;
-    if (!lazy || _loadRequest > 0) getCountries().ignore();
+    if (!lazy || _countriesLoad != null) getCountries().ignore();
   }
 
   /// Get countries
-  Future<List<Country>?> getCountries() => _handle<List<Country>>(() async {
-    final request = ++_loadRequest;
+  Future<List<Country>?> getCountries() {
+    final load = Future<List<Country>>.microtask(_provider.getCountries);
+    _countriesLoad = load;
+    return _handle(() => _getCountries(load));
+  }
+
+  Future<List<Country>?> _getCountries(Future<List<Country>> load) async {
     String normalize(String value) => value.trim().toUpperCase();
     final stopwatch = Stopwatch()..start();
     try {
-      final countries = await _provider.getCountries();
+      final countries = await load;
       final exclude = _exclude?.map(normalize).toSet();
       final filter = _filter?.map(normalize).toSet();
       final favoriteCodes = _favorites?.map(normalize).toList(growable: false);
@@ -322,7 +327,7 @@ final class CountryController extends ValueNotifier<CountryState> {
         ..._localize(favorites),
         ..._localize($countries),
       ];
-      if (request != _loadRequest || isDisposed) return result;
+      if (!identical(load, _countriesLoad) || isDisposed) return result;
       _cache = List<Country>.unmodifiable(result);
       _setState(
         CountryState.idle(
@@ -331,10 +336,13 @@ final class CountryController extends ValueNotifier<CountryState> {
         ),
       );
       return result;
+    } on Object {
+      if (!identical(load, _countriesLoad) || isDisposed) return null;
+      rethrow;
     } finally {
       stopwatch.stop();
     }
-  });
+  }
 
   /// Search countries by query.
   Future<void> _onSearch() => _handle(() async {
@@ -425,6 +433,7 @@ final class CountryController extends ValueNotifier<CountryState> {
       ?..removeListener(_onSearch)
       ..dispose();
     _cache = <Country>[];
+    _countriesLoad = null;
     _localization = null;
     _$isDisposed = true;
     super.dispose();

@@ -52,6 +52,16 @@ abstract final class CountryUtil {
         !digits.startsWith('00$callingCode');
   }
 
+  /// Whether [text] contains only an explicit [callingCode].
+  static bool hasOnlyCallingCode(String text, String callingCode) {
+    if (callingCode.isEmpty) return false;
+    final input = trimPhoneInput(text);
+    final digits = input.replaceAll(_nonDigits, '');
+    return input.startsWith('+')
+        ? digits == callingCode
+        : input.startsWith('00') && digits == '00$callingCode';
+  }
+
   /// Convert country code to emoji flag
   static String countryCodeToEmoji(String countryCode) {
     // 0x41 is Letter A

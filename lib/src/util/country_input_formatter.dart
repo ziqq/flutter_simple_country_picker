@@ -904,36 +904,35 @@ class CountryInputFormatter implements TextInputFormatter {
       cursorPos -= nonMaskedCount;
     }
 
-    // overflow => switch to flat (instead of trimming)
     if (_resultTextArray.length > _maskLength) {
-      // Enter flat mode and drop the visible mask.
-      _setFlatMode(true);
+      if (_resultTextArray.symbols.skip(_maskLength).any(_kDigit.hasMatch)) {
+        final flat = _digitsOnly(normalizedValue.text);
+        // Keep the mask capacity so deleting extra digits can restore it.
+        _setFlatMode(true);
+        _savedMask ??= _mask;
+        _mask = null;
+        _resultTextMasked = flat;
+        _resultTextArray.set(flat);
+        _syncIncompleteState(flat.length);
 
-      // Keep original mask so we can restore it when user deletes extra digits.
-      _savedMask ??= _mask;
+        final caret = normalizedValue.selection.isValid
+            ? _digitsCountBefore(
+                normalizedValue.text,
+                normalizedValue.selection.extentOffset,
+              )
+            : flat.length;
 
-      // IMPORTANT:
-      // We DO NOT zero `_maskLength`.
-      // `_maskLength` remains the capacity of the saved mask.
-      _mask = null;
+        return TextEditingValue(
+          text: flat,
+          selection: TextSelection.collapsed(
+            offset: caret.clamp(0, flat.length),
+          ),
+          composing: TextRange.empty,
+        );
+      }
 
-      final flat = _digitsOnly(normalizedValue.text);
-      _resultTextMasked = flat;
-      _resultTextArray.set(flat);
-      _syncIncompleteState(flat.length);
-
-      final caret = normalizedValue.selection.isValid
-          ? _digitsCountBefore(
-              normalizedValue.text,
-              normalizedValue.selection.extentOffset,
-            )
-          : flat.length;
-
-      return TextEditingValue(
-        text: flat,
-        selection: TextSelection.collapsed(offset: caret.clamp(0, flat.length)),
-        composing: TextRange.empty,
-      );
+      // A trailing character can remain after the last mask slot is filled.
+      _resultTextArray.removeRange(_maskLength, _resultTextArray.length);
     }
 
     final finalCursorPosition = cursorPos < 0

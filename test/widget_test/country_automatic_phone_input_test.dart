@@ -230,6 +230,13 @@ void main() {
       final controller = CountryPhoneController.apply('+62 812345678');
       final changes = <String>[];
       addTearDown(controller.dispose);
+      void normalize() {
+        if (!controller.valueStatus.isComplete) return;
+        controller.removeListener(normalize);
+        controller.text = controller.resolution.phone;
+      }
+
+      controller.addListener(normalize);
       await tester.pumpWidget(
         createWidgetUnderTest(
           builder: (_) => Scaffold(
@@ -245,20 +252,28 @@ void main() {
 
       final field = find.byType(EditableText);
       final initial = controller.value;
-      await tester.showKeyboard(field);
-      final draft = TextEditingValue(
+      expect(initial.text, '+62812345678');
+      const draft = TextEditingValue(
         text: foreignNumber,
         selection: TextSelection.collapsed(offset: foreignNumber.length),
         composing: TextRange(end: foreignNumber.length, start: 0),
       );
-      tester.testTextInput.updateEditingValue(draft);
-      await tester.pump();
-      tester.testTextInput.updateEditingValue(
-        draft.copyWith(composing: TextRange.empty),
-      );
-      await tester.pump();
-      expect(controller.value, initial);
-      expect(changes, isEmpty);
+      for (final done in [false, true]) {
+        await tester.showKeyboard(field);
+        tester.testTextInput.updateEditingValue(draft);
+        await tester.pump();
+        if (done) {
+          await tester.testTextInput.receiveAction(TextInputAction.done);
+        } else {
+          tester.testTextInput.updateEditingValue(
+            draft.copyWith(composing: TextRange.empty),
+          );
+        }
+        await tester.pump();
+
+        expect(controller.value, initial);
+        expect(changes, isEmpty);
+      }
 
       await tester.enterText(field, '811234567');
       expect(controller.phone, '+62811234567');
@@ -379,6 +394,161 @@ void main() {
   }
 
   for (final extended in [false, true]) {
+    testWidgets(
+      'updates the external country controller after the ancestor builds '
+      '(extended: $extended)',
+      (tester) async {
+        final initialCountry = ValueNotifier(Country.ru());
+        final controller = ValueNotifier(Country.ru());
+        addTearDown(initialCountry.dispose);
+        addTearDown(controller.dispose);
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            builder: (_) => Scaffold(
+              body: ValueListenableBuilder<Country>(
+                valueListenable: controller,
+                builder: (_, selected, _) => Column(
+                  children: [
+                    ValueListenableBuilder<Country>(
+                      valueListenable: initialCountry,
+                      builder: (_, country, _) => extended
+                          ? CountryPhoneInput.extended(
+                              initialCountry: country,
+                              countryController: controller,
+                            )
+                          : CountryPhoneInput(
+                              initialCountry: country,
+                              countryController: controller,
+                            ),
+                    ),
+                    Text('Selected country: ${selected.countryCode}'),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+
+        initialCountry.value = Country.us();
+        await tester.pumpAndSettle();
+
+        expect(tester.takeException(), isNull);
+        expect(controller.value, Country.us());
+        expect(find.text('Selected country: US'), findsOneWidget);
+      },
+    );
+
+    testWidgets('publishes the initial status after the ancestor builds '
+        '(extended: $extended)', (tester) async {
+      final controller = CountryPhoneController.empty();
+      addTearDown(controller.dispose);
+      final field = extended
+          ? CountryPhoneInput.extended(controller: controller)
+          : CountryPhoneInput(controller: controller);
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          builder: (_) => Scaffold(
+            body: ValueListenableBuilder<CountryPhoneEditingValue>(
+              valueListenable: controller,
+              builder: (_, value, _) => Column(
+                children: [
+                  field,
+                  Text('Expected digits: ${value.valueStatus.expectedLength}'),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('Expected digits: 10'), findsOneWidget);
+      expect(controller.text, isEmpty);
+    });
+
+    testWidgets('an E.164 listener can normalize the published text once '
+        '(extended: $extended)', (tester) async {
+      final controller = CountryPhoneController.empty();
+      addTearDown(controller.dispose);
+      final changes = <String>[];
+      final field = extended
+          ? CountryPhoneInput.extended(
+              controller: controller,
+              onChanged: changes.add,
+              useCountryFormatting: true,
+            )
+          : CountryPhoneInput(
+              controller: controller,
+              onChanged: changes.add,
+              useCountryFormatting: true,
+            );
+      await tester.pumpWidget(
+        createWidgetUnderTest(builder: (_) => Scaffold(body: field)),
+      );
+      var rewrites = 0;
+      void normalize() {
+        final phone = controller.resolution.phone;
+        if (controller.valueStatus.isComplete && controller.text != phone) {
+          // Bound the writes so a regression fails the assertion instead of
+          // overflowing the stack during notification.
+          if (++rewrites < 3) controller.text = phone;
+        }
+      }
+
+      controller.addListener(normalize);
+
+      final editable = find.byType(EditableText);
+      await tester.enterText(editable, '9991234567');
+      await tester.pump();
+
+      expect(rewrites, 1);
+      expect(controller.text, '+79991234567');
+      expect(controller.valueStatus.isComplete, isTrue);
+      expect(changes, ['+79991234567']);
+      expect(
+        tester.widget<EditableText>(editable).controller.text,
+        '999 123 4567',
+      );
+
+      const selection = TextSelection.collapsed(offset: 2);
+      tester.testTextInput.updateEditingValue(
+        const TextEditingValue(text: '989 123 4567', selection: selection),
+      );
+      await tester.pump();
+
+      final editing = tester.widget<EditableText>(editable).controller;
+      expect(editing.selection, selection);
+      expect(controller.text, '+79891234567');
+      expect(rewrites, 2);
+
+      controller.removeListener(normalize);
+      var notifications = 0;
+      controller.addListener(() => notifications++);
+      tester.testTextInput.updateEditingValue(
+        editing.value.copyWith(
+          selection: const TextSelection.collapsed(offset: 5),
+        ),
+      );
+      await tester.pump();
+
+      expect(controller.text, '+79891234567');
+      expect(notifications, 0);
+      expect(editing.selection.baseOffset, 5);
+
+      tester.testTextInput.updateEditingValue(
+        const TextEditingValue(
+          text: '989 123 4567A',
+          selection: TextSelection.collapsed(offset: 13),
+        ),
+      );
+      await tester.pump();
+
+      expect(editing.text, '989 123 4567');
+      expect(controller.text, '+79891234567');
+      expect(notifications, 0);
+    });
+
     testWidgets(
       'selecting a new country clears and focuses the phone (extended: $extended)',
       (tester) async {

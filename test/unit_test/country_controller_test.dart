@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:flutter_simple_country_picker/src/controller/country_controller.dart';
@@ -47,6 +49,25 @@ void _$controllerTest() => group('CountryController -', () {
       verify(provider.getCountries()).called(1);
     },
   );
+
+  test('a superseded load failure keeps the newer countries', () async {
+    final first = Completer<List<Country>>();
+    final second = Completer<List<Country>>();
+    var calls = 0;
+    when(
+      provider.getCountries(),
+    ).thenAnswer((_) => (calls++ == 0 ? first : second).future);
+
+    final oldLoad = controller.getCountries();
+    final newLoad = controller.getCountries();
+    second.complete([mockCountry]);
+    await newLoad;
+    first.completeError(StateError('Superseded load'));
+    await oldLoad;
+
+    expect(controller.state.isIdle, isTrue);
+    expect(controller.state.countries, [mockCountry]);
+  });
 
   test('getCountries excludes countries based on the exclude list', () async {
     final countries = [mockCountry.copyWith(name: 'Canada', countryCode: 'CA')];

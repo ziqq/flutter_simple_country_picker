@@ -32,6 +32,29 @@ void main() => group('CountryInputFormatter -', () {
     expect(formatter.valueStatus.isEmpty, isTrue);
   });
 
+  test('a non-digit after a full mask does not enable flat mode', () {
+    const mask = '000 000 0000';
+    final formatter = CountryInputFormatter(mask: mask);
+    final full = formatter.formatEditUpdate(
+      TextEditingValue.empty,
+      const TextEditingValue(
+        text: '9991234567',
+        selection: TextSelection.collapsed(offset: 10),
+      ),
+    );
+    final result = formatter.formatEditUpdate(
+      full,
+      const TextEditingValue(
+        text: '999 123 4567A',
+        selection: TextSelection.collapsed(offset: 13),
+      ),
+    );
+
+    expect(result.text, '999 123 4567');
+    expect(formatter.getMask(), mask);
+    expect(formatter.valueStatus.isComplete, isTrue);
+  });
+
   test('switches to flat mode when input longer than mask', () {
     final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
 
