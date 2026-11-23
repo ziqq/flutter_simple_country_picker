@@ -307,7 +307,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     double t,
   ) {
     if (other is! CountryPickerTheme || identical(this, other)) return this;
-    return CountryPickerTheme(
+    return CountryPickerTheme.raw(
       accentColor: Color.lerp(accentColor, other.accentColor, t),
       backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t),
       onBackgroundColor: Color.lerp(
@@ -338,12 +338,12 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         other.searchTextStyle,
         t,
       ),
-      inputHeight: ui.lerpDouble(inputHeight, other.inputHeight, t),
+      inputHeight: ui.lerpDouble(inputHeight, other.inputHeight, t)!,
       textStyle: TextStyle.lerp(textStyle, other.textStyle, t),
       flagSize: ui.lerpDouble(flagSize, other.flagSize, t),
-      padding: ui.lerpDouble(padding, other.padding, t),
-      indent: ui.lerpDouble(indent, other.indent, t),
-      radius: ui.lerpDouble(radius, other.radius, t),
+      padding: ui.lerpDouble(padding, other.padding, t)!,
+      indent: ui.lerpDouble(indent, other.indent, t)!,
+      radius: ui.lerpDouble(radius, other.radius, t)!,
     );
   }
 

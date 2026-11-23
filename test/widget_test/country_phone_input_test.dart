@@ -752,6 +752,41 @@ void _$defaultCountryPhoneInputTest() {
 
     group('countryController -', () {
       for (final useCountryFormatting in [false, true]) {
+        testWidgets(
+          'preserves the previous phone controller when replacing '
+          'it and changing initialCountry (automatic: $useCountryFormatting)',
+          (tester) async {
+            final previous = CountryPhoneController.apply('+79212345678');
+            final replacement = CountryPhoneController.apply('+62812345678');
+            addTearDown(previous.dispose);
+            addTearDown(replacement.dispose);
+
+            Future<void> show(Country country, CountryPhoneController phone) =>
+                tester.pumpWidget(
+                  createWidgetUnderTest(
+                    builder: (_) => Scaffold(
+                      body: CountryPhoneInput(
+                        initialCountry: country,
+                        controller: phone,
+                        useCountryFormatting: useCountryFormatting,
+                      ),
+                    ),
+                  ),
+                );
+
+            await show(Country.ru(), previous);
+            final initial = previous.value;
+            var notifications = 0;
+            previous.addListener(() => notifications++);
+
+            await show(Country.fromCountryCode('ID'), replacement);
+            expect(previous.value, initial);
+            expect(notifications, 0);
+            expect(replacement.phone, '+62812345678');
+            expect(replacement.valueStatus.isComplete, isTrue);
+          },
+        );
+
         testWidgets('parses with the new country when both controllers change '
             '(useCountryFormatting: $useCountryFormatting)', (tester) async {
           const internationalNumber = '+628123456789';

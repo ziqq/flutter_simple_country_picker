@@ -3,6 +3,24 @@ import 'package:flutter_simple_country_picker/src/util/country_input_formatter.d
 import 'package:flutter_test/flutter_test.dart';
 
 void main() => group('CountryInputFormatter -', () {
+  test('manual mask waits for the IME to commit', () {
+    final formatter = CountryInputFormatter(mask: '00 00');
+    const composing = TextEditingValue(
+      text: '123',
+      selection: TextSelection.collapsed(offset: 3),
+      composing: TextRange(start: 0, end: 3),
+    );
+
+    expect(
+      formatter.formatEditUpdate(TextEditingValue.empty, composing),
+      composing,
+    );
+    expect(formatter.getMaskedText(), isEmpty);
+
+    final committed = composing.copyWith(composing: TextRange.empty);
+    expect(formatter.formatEditUpdate(composing, committed).text, '12 3');
+  });
+
   test('initializes with default values', () {
     final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
     expect(formatter.getMask(), '+# (###) ###-##-##');

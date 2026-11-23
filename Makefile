@@ -33,8 +33,7 @@ version: ## Check fvm flutter version
 				@fvm flutter --version
 
 .PHONY: generate
-generate: ## Generate code
-				get l10n build-runner
+generate: get l10n build-runner ## Generate code
 
 .PHONY: generate-json
 generate-json: ## Generate json country data from dart code
@@ -46,9 +45,7 @@ build-runner: ## Run build_runner:build
 
 .PHONY: l10n
 l10n: ## Generate localization
-				@fvm dart pub global activate intl_utils
-				@fvm dart pub global run intl_utils:generate
-				@fvm flutter gen-l10n --arb-dir lib/src/localization/translations --output-dir lib/src/localization/generated --template-arb-file intl_ru.arb
+				@$(MAKE) -C example l10n
 
 .PHONY: format
 format: ## Format code
@@ -72,7 +69,7 @@ get: ## Get dependencies
 
 .PHONY: update
 update: get build-runner ## Update dependencies and codegen
-				@cd example fvm flutter pub get || (echo "¯\_(ツ)_/¯Get dependencies error"; exit 1)
+				@cd example && fvm flutter pub get || (echo "¯\_(ツ)_/¯Get dependencies error"; exit 1)
 
 .PHONY: analyze
 analyze: ## Analyze code

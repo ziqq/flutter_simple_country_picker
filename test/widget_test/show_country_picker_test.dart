@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,6 +10,231 @@ import 'package:flutter_test/flutter_test.dart';
 import '../util/test_util.dart';
 
 void main() => group('showCountryPicker -', () {
+  for (final (closeOnSwipe, expand, initialSize, minSize) in [
+    (false, false, null, null),
+    (true, false, null, null),
+    (true, true, null, null),
+    (true, false, .45, null),
+    (true, false, .45, .44),
+    (false, false, .45, .45),
+    (true, false, .45, .45),
+    (true, true, 1.0, 1.0),
+    (false, true, 1.0, 1.0),
+  ]) {
+    testWidgets(
+      'dismisses by the header and honors list swipe dismissal '
+      '(closeOnSwipe: $closeOnSwipe, expand: $expand, '
+      'initialSize: $initialSize, minSize: $minSize)',
+      (tester) async {
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            builder: (context) => Scaffold(
+              body: TextButton(
+                onPressed: () => showCountryPicker(
+                  context: context,
+                  filter: const ['GB', 'US'],
+                  showSearch: false,
+                  isDismissible: false,
+                  shouldCloseOnSwipeDown: closeOnSwipe,
+                  expand: expand,
+                  initialChildSize: initialSize,
+                  minChildSize: minSize,
+                ),
+                child: const Text('Open'),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.text('Open'));
+        await tester.pumpAndSettle();
+
+        final sheet = find.byType(BottomSheet);
+        final bounds = tester.getRect(sheet);
+        final draggableSheet = tester.widget<DraggableScrollableSheet>(
+          find.byType(DraggableScrollableSheet),
+        );
+        expect(
+          draggableSheet.initialChildSize,
+          initialSize ?? (expand ? 1 : .65),
+        );
+        await tester.dragFrom(
+          Offset(bounds.center.dx, bounds.top + 10),
+          Offset(0, bounds.height * .85),
+        );
+        await tester.pumpAndSettle();
+        expect(sheet, findsNothing);
+
+        await tester.tap(find.text('Open'));
+        await tester.pumpAndSettle();
+        final list = find.byType(CustomScrollView);
+        await tester.drag(list, const Offset(0, 320));
+        await tester.pumpAndSettle();
+
+        expect(sheet, closeOnSwipe ? findsNothing : findsOneWidget);
+      },
+      variant: const TargetPlatformVariant({
+        TargetPlatform.android,
+        TargetPlatform.iOS,
+      }),
+    );
+  }
+
+  testWidgets(
+    'scrolls the list during a drag in a full-height Material sheet',
+    (tester) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          builder: (context) => Scaffold(
+            body: TextButton(
+              onPressed: () => showCountryPicker(
+                context: context,
+                expand: true,
+                showSearch: false,
+              ),
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+
+      final list = find.byType(CustomScrollView);
+      final scrollable = find.descendant(
+        of: list,
+        matching: find.byType(Scrollable),
+      );
+      final position = tester.state<ScrollableState>(scrollable).position;
+      expect(position.maxScrollExtent, greaterThan(0));
+
+      final drag = await tester.startGesture(tester.getCenter(list));
+      await drag.moveBy(const Offset(0, -30));
+      await tester.pump(const Duration(milliseconds: 100));
+      await drag.moveBy(const Offset(0, -80));
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(position.pixels, greaterThan(0));
+      await drag.up();
+      await tester.pumpAndSettle();
+    },
+    variant: const TargetPlatformVariant({
+      TargetPlatform.android,
+      TargetPlatform.iOS,
+    }),
+  );
+
+  testWidgets('closes the picker before an onSelect navigation', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        builder: (context) => Scaffold(
+          body: TextButton(
+            onPressed: () => showCountryPicker(
+              context: context,
+              filter: ['RU'],
+              onSelect: (_) {
+                Navigator.of(context).push<void>(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const Scaffold(body: Text('Next page')),
+                  ),
+                );
+              },
+            ),
+            child: const Text('Show Picker'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Show Picker'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(ValueKey(Country.ru().e164Key)));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Next page'), findsOneWidget);
+    expect(find.byType(CountryListView, skipOffstage: false), findsNothing);
+  });
+
+  testWidgets('dragging the country list enlarges a Material sheet', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        builder: (context) => Scaffold(
+          body: TextButton(
+            onPressed: () => showCountryPicker(
+              context: context,
+              filter: ['RU'],
+              initialChildSize: .45,
+              minChildSize: .30,
+            ),
+            child: const Text('Show Picker'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Show Picker'));
+    await tester.pumpAndSettle();
+
+    final list = find.byType(CountryListView);
+    final initialHeight = tester.getSize(list).height;
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -200));
+    await tester.pumpAndSettle();
+    expect(tester.getSize(list).height, greaterThan(initialHeight + 20));
+  });
+
+  testWidgets('grouped countries update when the app locale changes', (
+    tester,
+  ) async {
+    final locale = ValueNotifier(const Locale('en'));
+    addTearDown(locale.dispose);
+    await tester.pumpWidget(
+      ValueListenableBuilder<Locale>(
+        valueListenable: locale,
+        child: const Scaffold(
+          body: CountryListView(showGroup: true, filter: ['RU']),
+        ),
+        builder: (context, locale, child) => MaterialApp(
+          locale: locale,
+          supportedLocales: const [Locale('en'), Locale('ru')],
+          localizationsDelegates: const [
+            CountryLocalizations.delegate,
+            ...GlobalMaterialLocalizations.delegates,
+          ],
+          home: child,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final search = find.byType(CupertinoSearchTextField);
+    await tester.enterText(search, 'RU');
+    await tester.pumpAndSettle();
+    expect(find.text('R'), findsOneWidget);
+
+    locale.value = const Locale('ru');
+    await tester.pumpAndSettle();
+    expect(find.text('Россия'), findsOneWidget);
+    expect(find.text('Р'), findsOneWidget);
+    expect(
+      tester.widget<CupertinoSearchTextField>(search).controller?.text,
+      'RU',
+    );
+  });
+
+  testWidgets('grouped countries use the original name without a translation', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        localizationsDelegates: [_MissingCountryTranslationDelegate()],
+        home: Scaffold(body: CountryListView(showGroup: true, filter: ['RU'])),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('R'), findsOneWidget);
+    expect(find.text('Russia'), findsOneWidget);
+  });
+
   testWidgets('displays bottom sheet with country list view', (tester) async {
     await tester.pumpWidget(
       createWidgetUnderTest(
@@ -328,6 +555,47 @@ void main() => group('showCountryPicker -', () {
   });
 
   for (final grouped in [false, true]) {
+    testWidgets(
+      'showWorldWide adds a selectable first entry (grouped: $grouped)',
+      (tester) async {
+        final selection = ValueNotifier(Country.us());
+        addTearDown(selection.dispose);
+        Country? selected;
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            locale: const Locale('en'),
+            builder: (context) => Scaffold(
+              body: TextButton(
+                onPressed: () => showCountryPicker(
+                  context: context,
+                  filter: const ['US'],
+                  showGroup: grouped,
+                  showSearch: false,
+                  showWorldWide: true,
+                  selected: selection,
+                  onSelect: (country) => selected = country,
+                ),
+                child: const Text('Open'),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.text('Open'));
+        await tester.pumpAndSettle();
+        final worldWide = find.text('Worldwide').hitTestable();
+        expect(worldWide, findsOneWidget);
+        expect(
+          tester.getTopLeft(worldWide).dy,
+          lessThan(tester.getTopLeft(find.text('United States').first).dy),
+        );
+        await tester.tap(worldWide);
+        await tester.pumpAndSettle();
+        expect(selected, Country.worldWide);
+        expect(selection.value, Country.worldWide);
+        expect(worldWide, findsNothing);
+      },
+    );
+
     testWidgets('shows dialing codes only when enabled (grouped: $grouped)', (
       tester,
     ) async {
@@ -639,3 +907,37 @@ void main() => group('showCountryPicker -', () {
     },
   );
 });
+
+class _MissingCountryTranslationDelegate
+    extends LocalizationsDelegate<CountryLocalizations> {
+  const _MissingCountryTranslationDelegate();
+
+  @override
+  bool isSupported(Locale locale) => locale.languageCode == 'en';
+
+  @override
+  Future<CountryLocalizations> load(Locale locale) =>
+      SynchronousFuture(const _MissingCountryTranslation());
+
+  @override
+  bool shouldReload(_MissingCountryTranslationDelegate old) => false;
+}
+
+class _MissingCountryTranslation extends CountryLocalizations {
+  const _MissingCountryTranslation();
+
+  @override
+  String get cancelButton => 'Cancel';
+
+  @override
+  String get phonePlaceholder => 'Phone';
+
+  @override
+  String get searchPlaceholder => 'Search';
+
+  @override
+  String get selectCountryLabel => 'Select country';
+
+  @override
+  String? countryName(String countryCode) => null;
+}

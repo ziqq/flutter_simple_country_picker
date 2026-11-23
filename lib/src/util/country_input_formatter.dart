@@ -10,6 +10,7 @@ import 'package:flutter_simple_country_picker/src/controller/country_phone_contr
     show CountryPhoneValueStatus;
 import 'package:flutter_simple_country_picker/src/model/country.dart';
 import 'package:flutter_simple_country_picker/src/util/country_phone_format_resolver.dart';
+import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 import 'package:meta/meta.dart';
 
 /// Default filter for country input formatter.
@@ -133,6 +134,9 @@ class CountryInputFormatter implements TextInputFormatter {
   /// The format resolver for the selected country, or null in manual mode.
   CountryPhoneFormatResolver? _formatResolver;
 
+  /// Stores the text editing value before the current composition.
+  TextEditingValue? _beforeComposition;
+
   /// The remaining display template for the automatic input.
   @internal
   String? get maskHint => _maskHint;
@@ -165,11 +169,11 @@ class CountryInputFormatter implements TextInputFormatter {
     return formatEditUpdate(TextEditingValue.empty, value);
   }
 
-  /// Regexp to filter input characters for each mask symbol.
-  static final RegExp _kDigit = RegExp(r'\d');
-
   /// Regexp to match non-digit characters for phone normalization.
   static final RegExp _kNonDigits = RegExp(r'\D');
+
+  /// Regexp to filter input characters for each mask symbol.
+  static final RegExp _kDigit = RegExp(r'\d');
 
   /// Indicates whether the formatter is in flat mode (mask overflow).
   ///
@@ -322,8 +326,8 @@ class CountryInputFormatter implements TextInputFormatter {
   CountryInputCompletionType get type => _type;
   CountryInputCompletionType _type;
 
-  String _phoneCode = '';
   String _example = '';
+  String _phoneCode = '';
   bool _shouldTryStripPhoneCode = false;
   bool _shouldTryStripLeadingPrefix = false;
   Set<String> _leadingPrefixes = _kDefaultLeadingPhonePrefixes;
@@ -373,6 +377,7 @@ class CountryInputFormatter implements TextInputFormatter {
   /// Note: Manually call this if you clear the TextField text, as it won't
   /// trigger the formatter on an empty value.
   void clear() {
+    _beforeComposition = null;
     _mask = _savedMask ?? _mask;
     _setFlatMode(false);
     _maskHint = _formatResolver?.formatWithHint('').hint;
@@ -401,13 +406,14 @@ class CountryInputFormatter implements TextInputFormatter {
     var digits = text.replaceAll(_kNonDigits, '');
     if (digits.isEmpty) return '';
 
-    final trimmed = text.trimLeft();
-    if (trimmed.startsWith('00') && digits.startsWith('00')) {
+    final trimmed = CountryUtil.trimPhoneInput(text);
+    final hasAccessCode = trimmed.startsWith('00');
+    if (hasAccessCode && digits.startsWith('00')) {
       digits = digits.substring(2);
     }
 
     final expectedPhoneLength = _expectedPhoneLength();
-    final hasExplicitPhoneCode = trimmed.startsWith('+');
+    final hasExplicitPhoneCode = trimmed.startsWith('+') || hasAccessCode;
     final hasImplicitPhoneCode =
         allowImplicitPhoneCodeStrip &&
         _shouldTryStripPhoneCode &&
@@ -418,7 +424,6 @@ class CountryInputFormatter implements TextInputFormatter {
 
     if (_shouldTryStripPhoneCode &&
         _phoneCode.isNotEmpty &&
-        digits.length > _phoneCode.length &&
         digits.startsWith(_phoneCode) &&
         (hasExplicitPhoneCode || hasImplicitPhoneCode)) {
       digits = digits.substring(_phoneCode.length);
@@ -541,7 +546,7 @@ class CountryInputFormatter implements TextInputFormatter {
   }
 
   bool _looksLikePaste(TextEditingValue oldValue, TextEditingValue newValue) {
-    final trimmed = newValue.text.trimLeft();
+    final trimmed = CountryUtil.trimPhoneInput(newValue.text);
     if (trimmed.startsWith('+') || trimmed.startsWith('00')) return true;
 
     final replacedLength = oldValue.selection.isValid
@@ -612,12 +617,16 @@ class CountryInputFormatter implements TextInputFormatter {
   /// Format the text input according to the mask and filter.
   @override
   TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
+    TextEditingValue previousValue,
     TextEditingValue newValue,
   ) {
+    if (!newValue.composing.isCollapsed) {
+      _beforeComposition ??= previousValue;
+      return newValue;
+    }
+    final oldValue = _beforeComposition ?? previousValue;
+    _beforeComposition = null;
     if (_formatResolver case CountryPhoneFormatResolver resolver) {
-      if (newValue.composing.isValid && !newValue.composing.isCollapsed)
-        return newValue;
       return _formatWithResolver(resolver, oldValue, newValue);
     }
     final normalizedValue = _normalizePhoneEdit(oldValue, newValue);

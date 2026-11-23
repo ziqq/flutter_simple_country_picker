@@ -8,6 +8,33 @@ import '../util/test_util.dart';
 const _key = Key('country_picker_theme');
 
 void main() => group('CountryPickerTheme -', () {
+  test('lerp preserves null raw background colors', () {
+    CountryPickerTheme theme(Color backgroundColor) => CountryPickerTheme.raw(
+      accentColor: null,
+      backgroundColor: backgroundColor,
+      onBackgroundColor: null,
+      secondaryBackgroundColor: backgroundColor,
+      onSecondaryBackgroundColor: null,
+      barrierColor: null,
+      dividerColor: null,
+      inputDecoration: null,
+      inputHeight: 56,
+      secondaryTextStyle: null,
+      searchTextStyle: null,
+      textStyle: null,
+      flagSize: null,
+      padding: 16,
+      indent: 8,
+      radius: 12,
+    );
+    final start = theme(Colors.red);
+    final end = theme(Colors.blue);
+    final middle = start.lerp(end, .5) as CountryPickerTheme;
+    expect(middle.onBackgroundColor, isNull);
+    expect(middle.onSecondaryBackgroundColor, isNull);
+    expect(middle.flagSize, isNull);
+  });
+
   testWidgets('provides theme data to children widgets', (tester) async {
     final themeData = CountryPickerTheme(
       accentColor: CupertinoColors.systemBlue,

@@ -26,6 +26,8 @@ An easy-to-use country selection widget for Flutter. Allows users to select a co
 
 ## Quick Start
 
+Requires Flutter 3.44.0 or newer.
+
 Add the package and register the localization delegate, then open the picker:
 
 ```dart
@@ -57,10 +59,10 @@ showCountryPicker(
 
 ## Getting Started
 
-Add the package to your `pubspec.yaml`:
+Add the package to your project:
 
-```yaml
-flutter_simple_country_picker: ^latest
+```sh
+flutter pub add flutter_simple_country_picker
 ```
 
 Import the library in your Dart file:
@@ -199,8 +201,8 @@ showCountryPicker(
 | `adaptive`             | `bool`                  | `false` | **Deprecated.** Uses a Cupertino-style modal on iOS until removal in `1.0.0`. Omit to use the Material sheet. |
 | `autofocus`            | `bool`                  | `false` | Automatically focuses the search field.                                             |
 | `isDismissible`        | `bool`                  | `true`  | Whether the sheet can be dismissed by tapping the barrier.                          |
-| `isScrollControlled`   | `bool`                  | `true`  | Controls scroll behavior of the modal.                                              |
-| `shouldCloseOnSwipeDown`| `bool`                 | `false` | Closes the sheet on swipe-down gesture.                                             |
+| `isScrollControlled`   | `bool`                  | `true`  | Enables the Material route's scroll-controlled layout. `expand: true` also enables it. |
+| `shouldCloseOnSwipeDown`| `bool`                 | `false` | Dismisses the sheet when dragging the country list to its minimum height.             |
 | `showPhoneCode`        | `bool`                  | `false` | Displays the country phone code in the list.                                        |
 | `showWorldWide`        | `bool`                  | `false` | Shows a "World Wide" entry at the top.                                              |
 | `showGroup`            | `bool?`                 | `null`  | Groups countries by their first letter.                                             |
@@ -407,6 +409,11 @@ above the current input, or the maximum for overflow. This describes length,
 not assignment, reachability or SMS support. Both selection endpoints follow
 digit positions; active IME composition is left untouched until commit.
 
+Both phone input variants keep the current value when a pasted international
+number has a different calling code. Select the matching country before pasting.
+Programmatic updates and `clear()` on the attached `CountryPhoneController`
+also update the visible field.
+
 The regular formatter constructors and the default input mode retain manual
 mask behavior, including custom filters and `mask: null`. `updateMask` selects
 manual formatting; `updateCountry` selects automatic rules. The bundled rules
@@ -498,11 +505,10 @@ explicitly — useful when the list is only needed behind a navigation gate:
 CountryScope(
   lazy: true,
   child: Builder(
-    builder: (context) {
-      // Loading starts here, not on CountryScope creation.
-      CountryScope.of(context).getCountries();
-      return const MyCountryPage();
-    },
+    builder: (context) => TextButton(
+      onPressed: () => CountryScope.of(context).getCountries(),
+      child: const Text('Load countries'),
+    ),
   ),
 )
 ```

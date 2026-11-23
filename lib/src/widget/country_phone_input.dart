@@ -3,9 +3,17 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart' show RenderEditable, RenderObject;
+import 'package:flutter/rendering.dart'
+    show
+        PaintingContext,
+        PipelineOwner,
+        RenderEditable,
+        RenderObject,
+        RenderProxyBox;
+import 'package:flutter/services.dart' show TextInputFormatter;
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_phone_rules.g.dart';
+import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 import 'package:meta/meta.dart';
 
 /// {@template country_phone_input}
@@ -17,194 +25,209 @@ class CountryPhoneInput extends StatefulWidget {
   /// {@macro country_phone_input}
   const CountryPhoneInput({
     this.initialCountry,
-    this.controller,
-    this.onChanged,
     this.countryController,
     this.onCountryChanged,
-    this.exclude,
-    this.favorites,
-    this.filter,
-    this.placeholder,
+    this.controller,
+    this.onChanged,
     this.autofocus = false,
-    this.expand = false,
-    this.enableOpenPicker = true,
-    this.showPhoneCode = false,
-    this.showWorldWide = false,
+    this.placeholder,
     this.shouldReplace8 = true,
     this.useCountryFormatting = false,
-    this.useAutofocus = false,
-    @Deprecated(
-      'Use useHapticFeedback instead. This parameter will be removed in '
-      'v1.0.0 releases.',
-    )
-    bool useHaptickFeedback = true,
-    bool? useHapticFeedback,
-    this.isScrollControlled = false,
+    this.enableOpenPicker = true,
+    this.expand = false,
+    this.isScrollControlled = true,
     this.shouldCloseOnSwipeDown = false,
-    this.showGroup,
-    this.showSearch,
     this.initialChildSize,
     this.minChildSize,
+    this.filter,
+    this.exclude,
+    this.favorites,
+    this.showGroup,
+    this.showSearch,
+    this.showPhoneCode = false,
+    this.showWorldWide = false,
+    bool? useHapticFeedback,
+    this.useAutofocus = false,
+    @Deprecated('Use useHapticFeedback instead. Will be removed in 1.0.0.')
+    bool useHaptickFeedback = true,
     super.key,
   }) : useHaptickFeedback = useHapticFeedback ?? useHaptickFeedback,
        useHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
 
-  /// This constructor creates an extended version of [CountryPhoneInput].
-  /// {@macro country_phone_input}
+  /// Creates a phone input with a country selector above the number field.
   const factory CountryPhoneInput.extended({
     Country? initialCountry,
-    CountryPhoneController? controller,
-    ValueChanged<String>? onChanged,
     ValueNotifier<Country>? countryController,
     ValueChanged<Country>? onCountryChanged,
-    List<String>? exclude,
-    List<String>? favorites,
-    List<String>? filter,
-    String? placeholder,
+    CountryPhoneController? controller,
+    ValueChanged<String>? onChanged,
     bool autofocus,
-    bool expand,
-    bool enableOpenPicker,
-    bool isScrollControlled,
-    bool showPhoneCode,
-    bool showWorldWide,
+    String? placeholder,
     bool shouldReplace8,
     bool useCountryFormatting,
+    bool enableOpenPicker,
+    bool expand,
+    bool isScrollControlled,
     bool shouldCloseOnSwipeDown,
-    bool? showGroup,
-    bool? showSearch,
-    @Deprecated(
-      'Use autofocus instead. This will be removed in v1.0.0 releases.',
-    )
-    bool useAutofocus,
-    @Deprecated(
-      'Use useHapticFeedback instead. This parameter will be removed in '
-      'v1.0.0 releases.',
-    )
-    bool useHaptickFeedback,
-    bool? useHapticFeedback,
     double? initialChildSize,
     double? minChildSize,
+    List<String>? filter,
+    List<String>? exclude,
+    List<String>? favorites,
+    bool? showGroup,
+    bool? showSearch,
+    bool showPhoneCode,
+    bool showWorldWide,
+    bool? useHapticFeedback,
+    @Deprecated('Use autofocus instead. Will be removed in 1.0.0.')
+    bool useAutofocus,
+    @Deprecated('Use useHapticFeedback instead. Will be removed in 1.0.0.')
+    bool useHaptickFeedback,
     Key? key,
   }) = CountryPhoneInput$Extended;
 
-  /// Use autofocus for the search countryies input field.
-  final bool autofocus;
-
-  /// The [expand] argument can be used
-  /// to expand the bottom sheet to full height.
-  /// Default is `false`.
-  final bool expand;
-
-  /// Whether tapping the country-code button opens the country picker.
-  final bool enableOpenPicker;
-
-  /// Controls the scrolling behavior of the modal window.
-  final bool isScrollControlled;
-
-  /// Group countries by their first letter.
-  final bool? showGroup;
-
-  /// Show phone code in countires list.
-  final bool showPhoneCode;
-
-  /// Show "World Wide" in countires list.
-  final bool showWorldWide;
-
-  /// Normalize a leading national prefix for pasted or preset numbers.
-  ///
-  /// Historically this flag handled Russian numbers that start with `8` before
-  /// `+7`. Prefixes now come from the selected country's numbering rules.
-  /// Automatic formatting removes a trunk only when the remaining local length
-  /// is supported; manual formatting retains its fixed-length normalization.
-  final bool shouldReplace8;
-
-  /// Enables country/prefix pattern selection and a non-truncating soft tail.
-  ///
-  /// False preserves manual Country.mask/null behavior. In automatic mode,
-  /// completion uses all supported lengths rather than mask capacity.
-  final bool useCountryFormatting;
-
-  /// Should close the bottom sheet on swipe down gesture.
-  final bool shouldCloseOnSwipeDown;
-
-  /// Show countryies search bar?
-  final bool? showSearch;
-
-  /// Use autofocus for the search countryies input field.
-  @Deprecated('Use autofocus instead. This will be removed in v1.0.0 releases.')
-  final bool useAutofocus;
-
-  /// Whether to use haptic feedback.
-  @Deprecated(
-    'Use useHapticFeedback instead. This property will be removed in '
-    'v1.0.0 releases.',
-  )
-  final bool useHaptickFeedback;
-
-  /// Whether to use haptic feedback.
-  final bool useHapticFeedback;
-
-  /// Initial child size for the modal bottom sheet.
-  final double? initialChildSize;
-
-  /// Min child size for the modal bottom sheet.
-  final double? minChildSize;
-
-  /// List of country codes to exclude.
-  final List<String>? exclude;
-
-  /// List of favorites country codes.
-  final List<String>? favorites;
-
-  /// List of filtered country codes.
-  final List<String>? filter;
-
-  /// Placeholder text.
-  final String? placeholder;
-
-  /// The initial country.
+  /// The initial selection when [countryController] is omitted.
   final Country? initialCountry;
 
-  /// Controller for the phone number input.
-  final CountryPhoneController? controller;
-
-  /// Called when the phone number is changed.
-  final ValueChanged<String>? onChanged;
-
-  /// Controller for the selected country.
+  /// An external controller for the selected country.
   final ValueNotifier<Country>? countryController;
 
-  /// Called when the country is changed.
+  /// Called after the user selects a different country.
   final ValueChanged<Country>? onCountryChanged;
+
+  /// An external controller for the full phone number and its status.
+  final CountryPhoneController? controller;
+
+  /// Called with the full phone number when a user edit changes it.
+  final ValueChanged<String>? onChanged;
+
+  /// Whether to autofocus the phone input and the country search field.
+  final bool autofocus;
+
+  /// Whether to normalize a leading national prefix in pasted or preset text.
+  ///
+  /// This option originally handled the Russian trunk prefix `8`. Automatic
+  /// formatting uses the selected country's prefix and supported lengths,
+  /// while manual formatting retains its fixed-length normalization.
+  final bool shouldReplace8;
+
+  /// Whether to use country-specific masks and retain digits beyond the mask.
+  ///
+  /// Automatic formatting uses the country's supported lengths for completion.
+  /// Manual formatting uses [Country.mask].
+  final bool useCountryFormatting;
+
+  /// Whether tapping the country selector opens the picker.
+  final bool enableOpenPicker;
+
+  /// Whether to expand the picker sheet to its full height.
+  final bool expand;
+
+  /// Whether the picker route can use the full available height.
+  ///
+  /// Defaults to true so country search results have room above the keyboard.
+  final bool isScrollControlled;
+
+  /// Whether dragging the country list to its minimum height dismisses the picker.
+  final bool shouldCloseOnSwipeDown;
+
+  /// The initial fraction of available height occupied by the picker sheet.
+  final double? initialChildSize;
+
+  /// The minimum fraction of available height occupied by the picker sheet.
+  final double? minChildSize;
+
+  /// The placeholder shown in place of the default mask or hint.
+  final String? placeholder;
+
+  /// The country codes allowed in the picker.
+  final List<String>? filter;
+
+  /// The country codes omitted from the picker.
+  final List<String>? exclude;
+
+  /// The country codes shown first in the picker.
+  final List<String>? favorites;
+
+  /// Whether to group countries by their first letter.
+  final bool? showGroup;
+
+  /// Whether to show the country search field.
+  final bool? showSearch;
+
+  /// Whether to display calling codes in the country list.
+  final bool showPhoneCode;
+
+  /// Whether to include the [Country.worldWide] option in the picker.
+  final bool showWorldWide;
+
+  /// Whether picker interactions provide haptic feedback.
+  final bool useHapticFeedback;
+
+  /// Whether to autofocus the country search field.
+  @Deprecated('Use autofocus instead. Will be removed in 1.0.0.')
+  final bool useAutofocus;
+
+  /// Whether picker interactions provide haptic feedback.
+  @Deprecated('Use useHapticFeedback instead. Will be removed in 1.0.0.')
+  final bool useHaptickFeedback;
 
   @override
   State<CountryPhoneInput> createState() => _CountryPhoneInputState();
 }
 
-/// Mixin for state [CountryPhoneInput].
+/// Shares controller ownership and editing behavior between the input layouts.
 mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
+  /// Notifies the layout painters when the resolved theme changes.
   final ValueNotifier<CountryPickerTheme?> _pickerTheme = ValueNotifier(null);
+
+  /// Tracks the horizontal offset shared by the editor and its mask.
   final ScrollController _phoneScrollController = ScrollController();
-  late final _painter = _BackgroundPainter(pickerTheme: _pickerTheme);
+
+  /// Restores keyboard focus after a country selection.
+  final FocusNode _phoneFocusNode = FocusNode();
+
+  /// Owns the local text, selection, and IME composing range.
   late final TextEditingController _phoneController;
-  late final CountryInputFormatter _formatter;
-  late CountryPhoneController _controller;
+
+  /// Applies country checks to edits before they reach the local controller.
+  late final _PhoneInputFormatter _inputFormatter;
+
+  /// Holds the selected country, using the caller's controller when supplied.
   late ValueNotifier<Country> _countryController;
 
-  /// Get current initial country or default to `Russia` if not provided.
+  /// Holds the active mask and its validation status.
+  late final CountryInputFormatter _formatter;
+
+  /// Holds the full phone number published to the caller.
+  late CountryPhoneController _controller;
+
+  /// Guards synchronous updates between the local and full-number controllers.
+  bool _synchronizingPhone = false;
+
+  /// The last visible IME draft, used to detect commits with identical text.
+  String? _composingPhoneText;
+
+  /// Whether the current edit changed the published number.
+  ///
+  /// The text field's callback consumes this value after the controller updates.
+  bool? _phoneChangedByEdit;
+
+  /// The configured initial country, defaulting to Russia.
   Country get _initialCountry => widget.initialCountry ?? Country.ru();
 
   @override
   void initState() {
     super.initState();
-    _phoneController = TextEditingController()..addListener(_onPhoneChanged);
+    _phoneController = _PhoneTextEditingController(_handleCompositionCommitted);
+    _phoneController.addListener(_handleEditingValueChanged);
     _controller =
         widget.controller ??
         CountryPhoneController.apply(_initialCountry.countryCode);
 
     _countryController =
         widget.countryController ?? ValueNotifier<Country>(_initialCountry);
-    _countryController.addListener(_onCountryChanged);
+    _countryController.addListener(_handleCountryChanged);
 
     final leadingPrefixes = _manualLeadingPrefixes(_countryController.value);
     _formatter = widget.useCountryFormatting
@@ -215,25 +238,30 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
         : CountryInputFormatter(
             filter: {'0': RegExp('[0-9]')},
             mask: _countryController.value.mask,
-            phoneCode: _countryController.value.phoneCode,
             example: _countryController.value.example,
+            phoneCode: _countryController.value.phoneCode,
+            leadingPrefixes: leadingPrefixes ?? const <String>{},
             shouldTryStripPhoneCode: true,
             shouldTryStripLeadingPrefix:
                 widget.shouldReplace8 &&
                 (leadingPrefixes == null || leadingPrefixes.isNotEmpty),
-            leadingPrefixes: leadingPrefixes ?? const {},
           );
 
-    _syncControllerValue(text: _controller.text);
+    _inputFormatter = _PhoneInputFormatter(
+      _formatter,
+      countryCode: _countryController.value.phoneCode,
+    );
+    _updateControllerValue(text: _controller.text);
 
     // If the controller has an initial value
     if (_controller.text.isNotEmpty) {
-      _applyPhoneText(
+      _phoneController.value = _formatPhoneText(
         _controller.text,
         allowImplicitCountryCodeStrip: true,
         allowLeadingPrefixStrip: widget.shouldReplace8,
       );
     }
+    _controller.addListener(_handleControllerChanged);
   }
 
   @override
@@ -260,55 +288,58 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
         widget.shouldReplace8 != oldWidget.shouldReplace8 ||
         widget.useCountryFormatting != oldWidget.useCountryFormatting;
 
-    // A replacement controller already supplies its selected country.
-    if (countryControllerChanged) {
-      final current = _countryController..removeListener(_onCountryChanged);
-      if (oldWidget.countryController == null) {
-        scheduleMicrotask(current.dispose);
-      }
-      _countryController =
-          widget.countryController ?? ValueNotifier<Country>(_initialCountry);
-      _countryController.addListener(_onCountryChanged);
-    } else if (initialCountryChanged) {
-      _countryController.value = _initialCountry;
-      _updateFormatter();
-    }
-
-    if (countryControllerChanged || formattingChanged) {
-      _updateFormatter(reformatPhone: !phoneControllerChanged);
-    }
-
     if (phoneControllerChanged) {
-      final current = _controller;
+      final current = _controller..removeListener(_handleControllerChanged);
       if (oldWidget.controller == null) scheduleMicrotask(current.dispose);
       _controller =
           widget.controller ??
           CountryPhoneController.apply(_initialCountry.countryCode);
+    }
+
+    if (countryControllerChanged || initialCountryChanged) {
+      _countryController.removeListener(_handleCountryChanged);
+      if (countryControllerChanged) {
+        if (oldWidget.countryController == null) {
+          scheduleMicrotask(_countryController.dispose);
+        }
+        _countryController =
+            widget.countryController ?? ValueNotifier<Country>(_initialCountry);
+      } else {
+        _countryController.value = _initialCountry;
+      }
+      _countryController.addListener(_handleCountryChanged);
+    }
+
+    if (countryControllerChanged ||
+        initialCountryChanged ||
+        formattingChanged) {
+      _updateFormatter(reformatPhone: !phoneControllerChanged);
+    }
+
+    if (phoneControllerChanged) {
+      _controller.addListener(_handleControllerChanged);
       if (_controller.text.isEmpty &&
           !countryControllerChanged &&
           !initialCountryChanged &&
           !formattingChanged) {
         // Keep the replacement controller empty while clearing the field.
         _formatter.clear();
-        _phoneController.removeListener(_onPhoneChanged);
+        _phoneController.removeListener(_handleEditingValueChanged);
         try {
           _phoneController.clear();
         } finally {
-          _phoneController.addListener(_onPhoneChanged);
+          _phoneController.addListener(_handleEditingValueChanged);
         }
+        _inputFormatter.committedValue = _phoneController.value;
+        _composingPhoneText = null;
         return;
       }
-      _applyPhoneText(
-        _controller.text,
-        allowImplicitCountryCodeStrip: true,
-        allowLeadingPrefixStrip: widget.shouldReplace8,
-      );
-      _syncControllerValue();
-    } else if (formattingChanged && !widget.useCountryFormatting) {
-      _applyPhoneText(
-        _phoneController.text,
-        allowLeadingPrefixStrip: widget.shouldReplace8,
-        selection: _phoneController.selection,
+      _setEditingValue(
+        _formatPhoneText(
+          _controller.text,
+          allowImplicitCountryCodeStrip: true,
+          allowLeadingPrefixStrip: widget.shouldReplace8,
+        ),
       );
     }
   }
@@ -323,51 +354,119 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
 
   void _updateFormatter({bool reformatPhone = true}) {
     final country = _countryController.value;
+    _inputFormatter.countryCode = country.phoneCode;
+    final editingValue = _phoneController.value;
+    final isComposing = !editingValue.composing.isCollapsed;
+    final value = isComposing ? _inputFormatter.committedValue : editingValue;
+    final shouldFormat =
+        reformatPhone &&
+        !CountryUtil.hasForeignCallingCode(value.text, country.phoneCode);
+    var formatted = value;
     if (widget.useCountryFormatting) {
-      final formatted = _formatter.updateCountry(
+      final updated = _formatter.updateCountry(
         country,
-        newValue: reformatPhone
-            ? _phoneController.value
-            : TextEditingValue.empty,
+        newValue: shouldFormat ? value : .empty,
         shouldTryStripLeadingPrefix: widget.shouldReplace8,
       );
-      if (reformatPhone) {
-        _phoneController.value = formatted;
-        _syncControllerValue();
+      if (shouldFormat) formatted = updated;
+    } else {
+      final leadingPrefixes = _manualLeadingPrefixes(country);
+      _formatter.updateMask(
+        newValue: .empty,
+        mask: country.mask,
+        example: country.example,
+        phoneCode: country.phoneCode,
+        shouldTryStripPhoneCode: true,
+        shouldTryStripLeadingPrefix:
+            widget.shouldReplace8 &&
+            (leadingPrefixes == null || leadingPrefixes.isNotEmpty),
+        leadingPrefixes: leadingPrefixes ?? const {},
+      );
+      if (shouldFormat) {
+        formatted = _formatPhoneText(
+          value.text,
+          selection: value.selection,
+          allowLeadingPrefixStrip: widget.shouldReplace8,
+        );
       }
+    }
+    if (!reformatPhone) return;
+    if (isComposing) {
+      // Keep the draft visible while the formatter switches to the new mask.
+      _formatter.formatEditUpdate(formatted, editingValue);
+    } else {
+      _setEditingValue(formatted);
+    }
+  }
+
+  void _setEditingValue(TextEditingValue value) {
+    if (value == _phoneController.value) {
+      // A new mask can change the status without changing the editing value.
+      _updateControllerValue();
+    } else {
+      _phoneController.value = value;
+    }
+  }
+
+  void _updateControllerValue({String? text}) {
+    if (_synchronizingPhone || !_phoneController.value.composing.isCollapsed) {
       return;
     }
-    final leadingPrefixes = _manualLeadingPrefixes(country);
-    _formatter.updateMask(
-      mask: country.mask,
-      example: country.example,
-      phoneCode: country.phoneCode,
-      newValue: reformatPhone ? null : TextEditingValue.empty,
-      shouldTryStripPhoneCode: true,
-      shouldTryStripLeadingPrefix:
-          widget.shouldReplace8 &&
-          (leadingPrefixes == null || leadingPrefixes.isNotEmpty),
-      leadingPrefixes: leadingPrefixes ?? const {},
-    );
-    if (reformatPhone) _syncControllerValue();
-  }
-
-  void _syncControllerValue({String? text}) {
+    final phoneText = _phoneController.text;
+    final countryCode = _countryController.value.phoneCode;
     final resolvedText =
         text ??
-        '+${_countryController.value.phoneCode} ${_phoneController.text}';
-    _controller.value = _controller.value.copyWith(
-      text: resolvedText,
-      valueStatus: _formatter.valueStatus,
-    );
+        switch ((countryCode, phoneText)) {
+          ('', '') => '',
+          ('', _) => '+$phoneText',
+          _ when CountryUtil.hasForeignCallingCode(phoneText, countryCode) =>
+            phoneText,
+          _ => '+$countryCode $phoneText',
+        };
+    _synchronizingPhone = true;
+    try {
+      _controller.value = _controller.value.copyWith(
+        text: resolvedText,
+        valueStatus: _formatter.valueStatus,
+      );
+    } finally {
+      _synchronizingPhone = false;
+    }
+    if (_controller.text != resolvedText) _handleControllerChanged();
   }
 
-  void _applyPhoneText(
+  void _handleControllerChanged() {
+    if (!mounted || _synchronizingPhone) return;
+    final text = _controller.text;
+    _synchronizingPhone = true;
+    try {
+      _phoneController.value = _formatPhoneText(
+        text,
+        allowImplicitCountryCodeStrip: true,
+        allowLeadingPrefixStrip: widget.shouldReplace8,
+      );
+    } finally {
+      _synchronizingPhone = false;
+    }
+    if (text.isNotEmpty) _updateControllerValue();
+  }
+
+  TextEditingValue _formatPhoneText(
     String rawText, {
     bool allowImplicitCountryCodeStrip = false,
     bool allowLeadingPrefixStrip = false,
     TextSelection? selection,
   }) {
+    if (CountryUtil.hasForeignCallingCode(
+      rawText,
+      _countryController.value.phoneCode,
+    )) {
+      _formatter.clear();
+      return TextEditingValue(
+        text: rawText,
+        selection: TextSelection.collapsed(offset: rawText.length),
+      );
+    }
     final normalized = _formatter.normalizePhoneText(
       rawText,
       allowImplicitPhoneCodeStrip: allowImplicitCountryCodeStrip,
@@ -376,8 +475,9 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
 
     _formatter.clear();
     if (normalized.isEmpty) {
-      _phoneController.clear();
-      return;
+      return const TextEditingValue(
+        selection: TextSelection.collapsed(offset: 0),
+      );
     }
 
     final formattedValue = _formatter.formatEditUpdate(
@@ -388,7 +488,7 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       ),
     );
 
-    _phoneController.value = formattedValue.copyWith(
+    return formattedValue.copyWith(
       selection: _mapPhoneSelection(rawText, formattedValue.text, selection),
       composing: TextRange.empty,
     );
@@ -429,52 +529,195 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
   @override
   void dispose() {
     _pickerTheme.dispose();
+    _phoneFocusNode.dispose();
     _phoneScrollController.dispose();
     _phoneController
-      ..removeListener(_onPhoneChanged)
+      ..removeListener(_handleEditingValueChanged)
       ..dispose();
-    _countryController.removeListener(_onCountryChanged);
+    _controller.removeListener(_handleControllerChanged);
+    _countryController.removeListener(_handleCountryChanged);
     if (widget.controller == null) _controller.dispose();
     if (widget.countryController == null) _countryController.dispose();
     super.dispose();
   }
 
-  void _onPhoneChanged() {
+  void _handleEditingValueChanged() {
     if (!mounted) return;
-    _syncControllerValue();
+    final value = _phoneController.value;
+    if (!value.composing.isCollapsed) {
+      _composingPhoneText = value.text;
+      return;
+    }
+    final composingText = _composingPhoneText;
+    final previous = _controller.value;
+    _inputFormatter.committedValue = value;
+    _composingPhoneText = null;
+    _updateControllerValue();
+    // A mask change can regroup the same number when composition ends.
+    final changed = composingText == null
+        ? previous.text != _controller.text
+        : previous.resolution.phone != _controller.resolution.phone;
+    _phoneChangedByEdit = changed;
+    if (composingText == value.text && changed) {
+      widget.onChanged?.call(_controller.text);
+    }
   }
 
-  void _onCountryChanged() {
-    if (!mounted) return;
+  void _handleCompositionCommitted() {
+    final composing = _phoneController.value;
+    final previousPhone = _controller.resolution.phone;
+    _composingPhoneText = null;
+    _phoneController.value = _inputFormatter.formatEditUpdate(
+      composing,
+      composing.copyWith(composing: TextRange.empty),
+    );
+    if (previousPhone != _controller.resolution.phone) {
+      widget.onChanged?.call(_controller.text);
+    }
+  }
 
-    // Update the formatter mask
+  void _handleCountryChanged() {
+    if (!mounted) return;
     _updateFormatter();
-
-    // Manual formatting applies the new mask after changing countries.
-    if (!widget.useCountryFormatting) _applyPhoneText(_phoneController.text);
   }
 
-  void _onSelect(Country country) {
+  void _handleCountrySelected(Country country) {
     if (!mounted) return;
     if (country == _countryController.value) return;
     _formatter.clear();
     _phoneController.clear();
+    _phoneFocusNode.requestFocus();
     _countryController.value = country;
     widget.onCountryChanged?.call(country);
   }
 
-  Widget _buildPhoneField({
-    required Key key,
-    required Country country,
-    required CountryLocalizations localization,
-    required CountryPickerTheme pickerTheme,
-    required TextStyle? textStyle,
-    EdgeInsets? contentPadding,
-  }) {
+  void _handleTextChanged(String _) {
+    final changed = _phoneChangedByEdit;
+    _phoneChangedByEdit = null;
+    // EditableText also reports changes that restore a rejected draft.
+    if (_phoneController.value.composing.isCollapsed && changed != false) {
+      widget.onChanged?.call(_controller.text);
+    }
+  }
+}
+
+/// Applies the country selection and IME rules to edits from the phone field.
+final class _PhoneInputFormatter extends TextInputFormatter {
+  _PhoneInputFormatter(this._formatter, {required this.countryCode});
+
+  /// Formats national digits and retains the current mask and validation status.
+  final CountryInputFormatter _formatter;
+
+  /// The most recent accepted editing value, used while the IME has a draft.
+  TextEditingValue committedValue = .empty;
+
+  /// The selected calling code without a leading plus sign.
+  String countryCode;
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (!newValue.composing.isCollapsed) {
+      return _formatter.formatEditUpdate(oldValue, newValue);
+    }
+    final isForeign = CountryUtil.hasForeignCallingCode(
+      newValue.text,
+      countryCode,
+    );
+    final previousText = oldValue.composing.isCollapsed
+        ? oldValue.text
+        : committedValue.text;
+    if (CountryUtil.hasForeignCallingCode(previousText, countryCode)) {
+      // An externally supplied foreign number can be edited in place.
+      _formatter.clear();
+      return isForeign
+          ? newValue
+          : _formatter.formatEditUpdate(TextEditingValue.empty, newValue);
+    }
+    if (!isForeign) return _formatter.formatEditUpdate(oldValue, newValue);
+    if (oldValue.composing.isCollapsed) return oldValue;
+    final committed = _formatter.getMaskedText();
+    return _formatter.formatEditUpdate(
+      oldValue,
+      TextEditingValue(
+        text: committed,
+        selection: TextSelection.collapsed(offset: committed.length),
+      ),
+    );
+  }
+}
+
+/// The editable national number field shared by both phone input layouts.
+class _PhoneField extends StatelessWidget {
+  const _PhoneField({
+    required this.fieldKey,
+    required this.country,
+    required this.controller,
+    required this.focusNode,
+    required this.scrollController,
+    required this.autofocus,
+    required this.onChanged,
+    required this.useCountryFormatting,
+    required this.formatter,
+    required this.inputFormatter,
+    required this.pickerTheme,
+    required this.textStyle,
+    this.placeholder,
+    this.contentPadding,
+  });
+
+  /// The key attached to the underlying [TextFormField].
+  final Key fieldKey;
+
+  /// The selected country that supplies the fallback mask.
+  final Country country;
+
+  /// The editing controller for the text inside the field.
+  final TextEditingController controller;
+
+  /// The focus node used to return to the field after country selection.
+  final FocusNode focusNode;
+
+  /// The horizontal scroll controller shared by the editor and the mask.
+  final ScrollController scrollController;
+
+  /// Whether the field requests focus when it first appears.
+  final bool autofocus;
+
+  /// Receives changes from [TextFormField.onChanged] before the owning state
+  /// decides whether to emit the full phone number.
+  final ValueChanged<String> onChanged;
+
+  /// Whether the field displays the unfilled part of the country-specific mask.
+  final bool useCountryFormatting;
+
+  /// Provides the remaining mask and the last formatted text for painting.
+  final CountryInputFormatter formatter;
+
+  /// Applies the country check and formatting to edits from the keyboard.
+  final TextInputFormatter inputFormatter;
+
+  /// Provides the color used to derive the mask hint color.
+  final CountryPickerTheme pickerTheme;
+
+  /// The style used for the entered text and the cursor.
+  final TextStyle? textStyle;
+
+  /// A custom hint that takes precedence over the mask and localized hint.
+  final String? placeholder;
+
+  /// The padding applied to the text field's decoration.
+  final EdgeInsets? contentPadding;
+
+  @override
+  Widget build(BuildContext context) {
+    final localization = CountryLocalizations.of(context);
     final showMask =
-        widget.useCountryFormatting &&
-        widget.placeholder == null &&
-        _formatter.maskHint != null;
+        useCountryFormatting &&
+        placeholder == null &&
+        formatter.maskHint != null;
     final pickerTextStyle = pickerTheme.textStyle;
     final hintColor =
         (pickerTextStyle?.foreground?.color ?? pickerTextStyle?.color)
@@ -482,8 +725,8 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     final decoration = InputDecoration(
       hintText: showMask
           ? null
-          : widget.placeholder ??
-                (widget.useCountryFormatting ? null : country.mask) ??
+          : placeholder ??
+                (useCountryFormatting ? null : country.mask) ??
                 localization.phonePlaceholder,
       hintStyle: hintColor == null
           ? textStyle
@@ -498,46 +741,62 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
     );
 
     final field = TextFormField(
-      key: key,
-      autofocus: widget.autofocus,
-      controller: _phoneController,
-      scrollController: showMask ? _phoneScrollController : null,
-      inputFormatters: [_formatter],
-      keyboardType: TextInputType.number,
-      onChanged: (_) => widget.onChanged?.call(_controller.text),
-      cursorHeight: textStyle?.fontSize,
+      key: fieldKey,
+      keyboardType: .number,
+      autofocus: autofocus,
+      focusNode: focusNode,
+      controller: controller,
+      inputFormatters: <TextInputFormatter>[inputFormatter],
+      scrollController: showMask ? scrollController : null,
+      onChanged: onChanged,
       cursorColor: textStyle?.color,
+      cursorHeight: textStyle?.fontSize,
       style: textStyle,
-      textDirection: showMask ? TextDirection.ltr : null,
       decoration: decoration,
+      textDirection: showMask ? TextDirection.ltr : null,
     );
     return Semantics(
       label: showMask ? localization.phonePlaceholder : null,
-      child: Builder(
-        builder: (context) => CustomPaint(
-          foregroundPainter: showMask && hintColor != null
-              ? _PhoneMaskPainter(
-                  findField: context.findRenderObject,
-                  controller: _phoneController,
-                  scrollController: _phoneScrollController,
-                  formatter: _formatter,
-                  color: hintColor,
-                )
-              : null,
-          child: field,
-        ),
+      child: _PhoneMask(
+        color: showMask ? hintColor : null,
+        scrollController: scrollController,
+        controller: controller,
+        formatter: formatter,
+        child: field,
       ),
     );
+  }
+}
+
+/// Commits the formatted phone value when the editor clears composition.
+final class _PhoneTextEditingController extends TextEditingController {
+  _PhoneTextEditingController(this._commitComposition);
+
+  /// Handles composition that ends through Done or a focus change.
+  final VoidCallback _commitComposition;
+
+  @override
+  void clearComposing() {
+    if (value.composing.isCollapsed) {
+      super.clearComposing();
+    } else {
+      // EditableText calls this on Done and focus loss without running formatters.
+      _commitComposition();
+    }
   }
 }
 
 /// State for widget [CountryPhoneInput].
 class _CountryPhoneInputState extends State<CountryPhoneInput>
     with _CountryPhoneInputStateMixin {
+  /// Paints the background of the number field in the compact layout.
+  late final _BackgroundPainter _painter = _BackgroundPainter(
+    pickerTheme: _pickerTheme,
+  );
+
   @override
   Widget build(BuildContext context) {
     final pickerTheme = CountryPickerTheme.resolve(context);
-    final localization = CountryLocalizations.of(context);
     final textStyle = pickerTheme.textStyle;
     final constraints = BoxConstraints(
       minHeight: pickerTheme.inputHeight,
@@ -553,11 +812,9 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
             constraints: constraints,
             child: CupertinoButton(
               key: const ValueKey<String>('country_picker_phone_code'),
-              padding: EdgeInsets.symmetric(horizontal: pickerTheme.padding),
+              padding: .symmetric(horizontal: pickerTheme.padding),
+              borderRadius: .all(.circular(pickerTheme.radius)),
               color: pickerTheme.onBackgroundColor,
-              borderRadius: BorderRadius.all(
-                Radius.circular(pickerTheme.radius),
-              ),
               pressedOpacity: .6,
               onPressed: () => widget.enableOpenPicker
                   ? showCountryPicker(
@@ -565,6 +822,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                       exclude: widget.exclude,
                       favorites: widget.favorites,
                       filter: widget.filter,
+                      expand: widget.expand,
                       autofocus: widget.autofocus || widget.useAutofocus,
                       showGroup: widget.showGroup,
                       showSearch: widget.showSearch,
@@ -576,21 +834,23 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                       initialChildSize: widget.initialChildSize,
                       minChildSize: widget.minChildSize,
                       selected: _countryController,
-                      onSelect: _onSelect,
+                      onSelect: _handleCountrySelected,
                     )
                   : null,
               child: Center(
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
                   spacing: 3,
+                  mainAxisSize: .min,
                   children: <Widget>[
-                    if (selected.flagEmoji.isNotEmpty) ...[
+                    if (selected.flagEmoji.isNotEmpty) ...<Widget>[
                       Text(
                         selected.flagEmoji,
                         style: textStyle?.copyWith(letterSpacing: 0),
                       ),
                     ],
-                    Text('+${selected.phoneCode}', style: textStyle),
+                    if (selected.phoneCode.isNotEmpty) ...<Widget>[
+                      Text('+${selected.phoneCode}', style: textStyle),
+                    ],
                   ],
                 ),
               ),
@@ -604,13 +864,21 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                 child: CustomPaint(
                   painter: _painter,
                   child: Center(
-                    child: _buildPhoneField(
-                      key: const ValueKey<String>('country_phone_number'),
+                    child: _PhoneField(
+                      fieldKey: const ValueKey<String>('country_phone_number'),
+                      useCountryFormatting: widget.useCountryFormatting,
+                      placeholder: widget.placeholder,
+                      autofocus: widget.autofocus,
                       country: selected,
-                      localization: localization,
-                      pickerTheme: pickerTheme,
                       textStyle: textStyle,
-                      contentPadding: EdgeInsets.symmetric(
+                      pickerTheme: pickerTheme,
+                      formatter: _formatter,
+                      focusNode: _phoneFocusNode,
+                      controller: _phoneController,
+                      onChanged: _handleTextChanged,
+                      inputFormatter: _inputFormatter,
+                      scrollController: _phoneScrollController,
+                      contentPadding: .symmetric(
                         horizontal: pickerTheme.padding,
                       ),
                     ),
@@ -632,30 +900,30 @@ class CountryPhoneInput$Extended extends CountryPhoneInput {
   /// {@macro country_phone_input}
   const CountryPhoneInput$Extended({
     super.initialCountry,
-    super.controller,
-    super.onChanged,
     super.countryController,
     super.onCountryChanged,
-    super.exclude,
-    super.favorites,
-    super.filter,
+    super.controller,
+    super.onChanged,
     super.autofocus,
-    super.expand,
-    super.enableOpenPicker,
-    super.isScrollControlled,
     super.placeholder,
     super.shouldReplace8,
     super.useCountryFormatting,
+    super.enableOpenPicker,
+    super.expand,
+    super.isScrollControlled,
     super.shouldCloseOnSwipeDown,
-    super.showPhoneCode,
-    super.showWorldWide,
-    super.showGroup,
-    super.showSearch,
-    super.useAutofocus,
-    super.useHaptickFeedback,
-    super.useHapticFeedback,
     super.initialChildSize,
     super.minChildSize,
+    super.filter,
+    super.exclude,
+    super.favorites,
+    super.showGroup,
+    super.showSearch,
+    super.showPhoneCode,
+    super.showWorldWide,
+    super.useHapticFeedback,
+    super.useAutofocus,
+    super.useHaptickFeedback,
     super.key,
   });
 
@@ -664,7 +932,7 @@ class CountryPhoneInput$Extended extends CountryPhoneInput {
       _CountryPhoneInput$ExtendedState();
 }
 
-/// Stete for widget [CountryPhoneInput$Extended]
+/// State for the layout with the country selector above the phone field.
 class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
     with _CountryPhoneInputStateMixin {
   @override
@@ -675,9 +943,10 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
       horizontal: pickerTheme.padding / 2,
       vertical: pickerTheme.indent,
     );
-    final textStyle = pickerTheme.textStyle?.copyWith(
-      fontSize: 20,
-      color: CupertinoDynamicColor.resolve(CupertinoColors.label, context),
+    final textStyle = CountryPickerTheme.maybeOf(context)?.textStyle;
+    final effectiveTextStyle = pickerTheme.textStyle?.copyWith(
+      fontSize: textStyle?.fontSize ?? 20,
+      color: textStyle?.color ?? CupertinoColors.label.resolveFrom(context),
     );
     final divider = Divider(
       height: 1,
@@ -689,7 +958,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
       child: ValueListenableBuilder(
         valueListenable: _countryController,
         builder: (_, selected, _) => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: <Widget>[
             divider,
 
@@ -705,21 +974,22 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
               onPressed: widget.enableOpenPicker
                   ? () => showCountryPicker(
                       context: context,
+                      selected: _countryController,
+                      onSelect: _handleCountrySelected,
+                      expand: widget.expand,
+                      filter: widget.filter,
                       exclude: widget.exclude,
                       favorites: widget.favorites,
-                      filter: widget.filter,
                       autofocus: widget.autofocus || widget.useAutofocus,
                       showGroup: widget.showGroup,
                       showSearch: widget.showSearch,
                       showPhoneCode: widget.showPhoneCode,
                       showWorldWide: widget.showWorldWide,
-                      isScrollControlled: widget.isScrollControlled,
                       useHapticFeedback: widget.useHapticFeedback,
+                      isScrollControlled: widget.isScrollControlled,
                       shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
                       initialChildSize: widget.initialChildSize,
                       minChildSize: widget.minChildSize,
-                      selected: _countryController,
-                      onSelect: _onSelect,
                     )
                   : null,
               child: SizedBox(
@@ -727,7 +997,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                 child: Text(
                   '${selected.flagEmoji} '
                   '${localization.getFormatedCountryNameByCode(selected.countryCode) ?? selected.name}',
-                  style: textStyle?.copyWith(fontWeight: FontWeight.w500),
+                  style: effectiveTextStyle?.copyWith(fontWeight: .w500),
                 ),
               ),
             ),
@@ -744,24 +1014,26 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
             // --- Input with mask --- //
             Row(
               children: <Widget>[
-                // --- Phone code --- //
-                Padding(
-                  padding: padding,
-                  child: Text(
-                    '+${selected.phoneCode}',
-                    style: textStyle,
-                    textAlign: TextAlign.center,
+                if (selected.phoneCode.isNotEmpty) ...<Widget>[
+                  // --- Phone code --- //
+                  Padding(
+                    padding: padding,
+                    child: Text(
+                      '+${selected.phoneCode}',
+                      textAlign: .center,
+                      style: effectiveTextStyle,
+                    ),
                   ),
-                ),
 
-                // --- Divider --- //
-                SizedBox(
-                  height: 30,
-                  child: VerticalDivider(
-                    color: pickerTheme.dividerColor,
-                    thickness: 1,
+                  // --- Divider --- //
+                  SizedBox(
+                    height: 30,
+                    child: VerticalDivider(
+                      color: pickerTheme.dividerColor,
+                      thickness: 1,
+                    ),
                   ),
-                ),
+                ],
 
                 // --- Phone input --- //
                 Flexible(
@@ -769,14 +1041,22 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                     padding: EdgeInsets.symmetric(
                       horizontal: padding.horizontal / 2.5,
                     ),
-                    child: _buildPhoneField(
-                      key: const ValueKey<String>(
+                    child: _PhoneField(
+                      fieldKey: const ValueKey<String>(
                         'country_phone_input_extended',
                       ),
+                      autofocus: widget.autofocus,
+                      placeholder: widget.placeholder,
                       country: selected,
-                      localization: localization,
                       pickerTheme: pickerTheme,
-                      textStyle: textStyle,
+                      textStyle: effectiveTextStyle,
+                      formatter: _formatter,
+                      focusNode: _phoneFocusNode,
+                      controller: _phoneController,
+                      onChanged: _handleTextChanged,
+                      inputFormatter: _inputFormatter,
+                      scrollController: _phoneScrollController,
+                      useCountryFormatting: widget.useCountryFormatting,
                     ),
                   ),
                 ),
@@ -790,43 +1070,140 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
   }
 }
 
-/// Paints the unfilled template without adding characters to the text field.
-class _PhoneMaskPainter extends CustomPainter {
-  _PhoneMaskPainter({
-    required this.findField,
+/// Paints the unfilled template alongside the field without editing its text.
+class _PhoneMask extends SingleChildRenderObjectWidget {
+  const _PhoneMask({
+    required this.scrollController,
     required this.controller,
-    required ScrollController scrollController,
     required this.formatter,
     required this.color,
-  }) : super(repaint: Listenable.merge([controller, scrollController]));
+    required super.child,
+  });
 
-  final RenderObject? Function() findField;
+  /// The scroll controller that keeps the hint aligned with the editor.
+  final ScrollController scrollController;
+
+  /// The source of the editor text and composing range.
   final TextEditingController controller;
-  final CountryInputFormatter formatter;
-  final Color color;
 
-  static RenderEditable? _findEditable(RenderObject renderObject) {
-    if (renderObject is RenderEditable) return renderObject;
+  /// The source of the formatted text and remaining mask.
+  final CountryInputFormatter formatter;
+
+  /// The hint color. A null value disables mask painting.
+  final Color? color;
+
+  @override
+  _RenderPhoneMask createRenderObject(BuildContext context) => _RenderPhoneMask(
+    scrollController: scrollController,
+    controller: controller,
+    formatter: formatter,
+    color: color,
+  );
+
+  @override
+  void updateRenderObject(BuildContext context, _RenderPhoneMask renderObject) {
+    renderObject.update(
+      scrollController: scrollController,
+      controller: controller,
+      formatter: formatter,
+      color: color,
+    );
+  }
+}
+
+/// Positions the remaining mask using the descendant [RenderEditable].
+class _RenderPhoneMask extends RenderProxyBox {
+  _RenderPhoneMask({
+    required ScrollController scrollController,
+    required TextEditingController controller,
+    required CountryInputFormatter formatter,
+    required Color? color,
+  }) : _scrollController = scrollController,
+       _controller = controller,
+       _formatter = formatter,
+       _color = color;
+
+  /// The editor's horizontal scroll notifications.
+  ScrollController _scrollController;
+
+  /// The text and composition changes that require repainting the hint.
+  TextEditingController _controller;
+
+  /// Supplies the remaining mask for the current editing value.
+  CountryInputFormatter _formatter;
+
+  /// The color of the hint, or null when it is hidden.
+  Color? _color;
+
+  /// Updates the paint inputs and rebinds listeners when controllers change.
+  void update({
+    required ScrollController scrollController,
+    required TextEditingController controller,
+    required CountryInputFormatter formatter,
+    required Color? color,
+  }) {
+    if (_controller != controller || _scrollController != scrollController) {
+      if (attached) _removeListeners();
+      _controller = controller;
+      _scrollController = scrollController;
+      if (attached) _addListeners();
+    }
+    _formatter = formatter;
+    _color = color;
+    markNeedsPaint();
+  }
+
+  @override
+  void attach(PipelineOwner owner) {
+    super.attach(owner);
+    _addListeners();
+  }
+
+  @override
+  void detach() {
+    _removeListeners();
+    super.detach();
+  }
+
+  void _addListeners() {
+    _controller.addListener(markNeedsPaint);
+    _scrollController.addListener(markNeedsPaint);
+  }
+
+  void _removeListeners() {
+    _controller.removeListener(markNeedsPaint);
+    _scrollController.removeListener(markNeedsPaint);
+  }
+
+  static RenderEditable? _findEditable(RenderObject object) {
+    if (object is RenderEditable) return object;
     RenderEditable? editable;
-    renderObject.visitChildren((child) {
+    object.visitChildren((child) {
       editable ??= _findEditable(child);
     });
     return editable;
   }
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final hint = formatter.maskHint;
-    final value = controller.value;
-    if (hint == null || hint.isEmpty || !value.composing.isCollapsed) return;
+  void paint(PaintingContext context, Offset offset) {
+    super.paint(context, offset);
+    final child = this.child;
+    final color = _color;
+    final hint = _formatter.maskHint;
+    final value = _controller.value;
+    if (child == null ||
+        color == null ||
+        hint == null ||
+        hint.isEmpty ||
+        !value.composing.isCollapsed ||
+        value.text != _formatter.getMaskedText()) {
+      return;
+    }
 
-    final field = findField();
-    if (field == null) return;
-    final editable = _findEditable(field);
+    final editable = _findEditable(child);
     if (editable == null || !editable.hasSize) return;
-
-    final origin = editable.localToGlobal(Offset.zero, ancestor: field);
-    final bounds = (origin & editable.size).intersect(Offset.zero & size);
+    final origin = offset + editable.localToGlobal(Offset.zero, ancestor: this);
+    final bounds = (origin & editable.size).intersect(offset & size);
     if (bounds.isEmpty) return;
 
     // The collapsed selection endpoint includes the horizontal scroll offset.
@@ -855,7 +1232,8 @@ class _PhoneMaskPainter extends CustomPainter {
       textHeightBehavior: editable.textHeightBehavior,
       maxLines: 1,
     )..layout();
-    canvas
+
+    final canvas = context.canvas
       ..save()
       ..clipRect(bounds);
     painter.paint(
@@ -872,12 +1250,9 @@ class _PhoneMaskPainter extends CustomPainter {
     canvas.restore();
     painter.dispose();
   }
-
-  @override
-  bool shouldRepaint(_PhoneMaskPainter oldDelegate) => true;
 }
 
-/// Dividre painter for [CountryPhoneInput$Extended].
+/// Paints the divider under the extended phone field.
 /// {@macro country_phone_input}
 class _DividerPainter extends CustomPainter {
   /// Creates a [_DividerPainter].
@@ -900,7 +1275,7 @@ class _DividerPainter extends CustomPainter {
     ];
     final paint = Paint()
       ..color = dividerColor ?? Colors.black
-      ..strokeCap = StrokeCap.round
+      ..strokeCap = .round
       ..strokeWidth = 1;
     canvas.drawPoints(ui.PointMode.polygon, points, paint);
   }

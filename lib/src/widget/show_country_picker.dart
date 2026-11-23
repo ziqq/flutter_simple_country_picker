@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/cupertino.dart';
 // TODO(ziqq): Remove the platform check import in 1.0.0.
 import 'package:flutter/foundation.dart';
@@ -55,8 +57,10 @@ import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart'
 /// The [isScrollControlled] argument can be used
 /// to make the bottom sheet scrollable.
 ///
-/// The [shouldCloseOnSwipeDown] argument can be used
-/// to close the bottom sheet on swipe down gesture.
+/// The [shouldCloseOnSwipeDown] argument controls dismissal when dragging the
+/// country list brings the sheet to its minimum height. The Material sheet
+/// uses a slightly lower minimum if it opens at that height, so the list can
+/// trigger dismissal. Its header also supports drag dismissal.
 ///
 /// The [showPhoneCode] argument can be used
 /// to show phone code before the country name.
@@ -92,9 +96,7 @@ void showCountryPicker({
   List<String>? filter,
   SelectedCountry? selected,
   SelectCountryCallback? onSelect,
-  @Deprecated(
-    'Use whenComplete instead. This method will be removed in v1.0.0 releases.',
-  )
+  @Deprecated('Use whenComplete instead. Will be removed in 1.0.0.')
   VoidCallback? onDone,
   VoidCallback? whenComplete,
   bool expand = false,
@@ -109,14 +111,9 @@ void showCountryPicker({
   bool shouldCloseOnSwipeDown = false,
   bool showPhoneCode = false,
   bool showWorldWide = false,
-  @Deprecated(
-    'Use autofocus instead. This propery will be removed in v1.0.0 releases.',
-  )
+  @Deprecated('Use autofocus instead. Will be removed in 1.0.0.')
   bool useAutofocus = false,
-  @Deprecated(
-    'Use useHapticFeedback instead. This parameter will be removed in '
-    'v1.0.0 releases.',
-  )
+  @Deprecated('Use useHapticFeedback instead. Will be removed in 1.0.0.')
   bool useHaptickFeedback = true,
   bool? useHapticFeedback,
   bool useRootNavigator = true,
@@ -143,12 +140,20 @@ void showCountryPicker({
 
   // TODO(ziqq): Remove the route scrollController parameter in 1.0.0.
   Widget builder(BuildContext context, [ScrollController? scrollController]) {
+    final defaultSize = effectiveExpand ? 1.0 : .65;
+    final initialSize = initialChildSize ?? defaultSize;
+    // Flutter only notifies the route if the sheet's extent changes.
+    final minimumForDrag = shouldCloseOnSwipeDown
+        ? initialSize * .99
+        : initialSize;
+    final minSize = !useCupertinoSheet && minChildSize == initialSize
+        ? minimumForDrag
+        : minChildSize ?? math.min(defaultSize, minimumForDrag);
     final sheet = DraggableScrollableSheet(
       expand: effectiveExpand,
-      initialChildSize: initialChildSize ?? (effectiveExpand ? 1.0 : .65),
-      minChildSize:
-          minChildSize ??
-          (effectiveExpand ? (shouldCloseOnSwipeDown ? .99 : 1.0) : .65),
+      initialChildSize: initialSize,
+      minChildSize: minSize,
+      shouldCloseOnMinExtent: shouldCloseOnSwipeDown,
       builder: (context, sheetScrollController) {
         final pickerTheme = CountryPickerTheme.resolve(context);
         final radius = Radius.circular(pickerTheme.radius);
@@ -178,10 +183,11 @@ void showCountryPicker({
               showWorldWide: showWorldWide,
               useRootNavigator: useRootNavigator,
               useHapticFeedback: effectiveUseHapticFeedback,
-              scrollController: isScrollControlled
-                  ? null
-                  // TODO(ziqq): Use sheetScrollController directly in 1.0.0.
-                  : scrollController ?? sheetScrollController,
+              // A sheet fixed at full height cannot resize to handle a drag.
+              // TODO(ziqq): Remove the route scrollController in 1.0.0.
+              scrollController:
+                  scrollController ??
+                  (minSize == 1.0 ? null : sheetScrollController),
             ),
           ),
         );
@@ -212,7 +218,7 @@ void showCountryPicker({
       backgroundColor: Colors.transparent,
       barrierColor: CountryPickerTheme.resolve(context).barrierColor,
       isDismissible: isDismissible,
-      isScrollControlled: true,
+      isScrollControlled: isScrollControlled || expand,
       useRootNavigator: useRootNavigator,
       useSafeArea: useSafeArea,
       builder: builder,
@@ -244,5 +250,6 @@ CountryPickerTheme? _capturePickerTheme({
 
   final extensions = Theme.of(from).extensions;
   if (identical(extensions, Theme.of(to).extensions)) return null;
-  return extensions[CountryPickerTheme] as CountryPickerTheme?;
+  if (extensions[CountryPickerTheme] case CountryPickerTheme? t) return t;
+  return null;
 }
