@@ -1,4 +1,4 @@
-import 'package:collection/collection.dart' show DeepCollectionEquality;
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/controller/country_controller.dart';
@@ -28,13 +28,36 @@ class CountryScope extends StatefulWidget {
   /// {@macro country_scope}
   const CountryScope({
     required this.child,
+
+    // Country selection.
     this.exclude,
     this.favorites,
     this.filter,
-    this.lazy = false,
     this.showPhoneCode = false,
+
+    // Loading.
+    this.lazy = false,
     super.key, // ignore: unused_element
   });
+
+  /// The widget subtree that can read this scope's countries.
+  final Widget child;
+
+  // Country selection.
+
+  /// The country codes omitted from this scope.
+  final List<String>? exclude;
+
+  /// The country codes shown first in this scope.
+  final List<String>? favorites;
+
+  /// The country codes allowed in this scope.
+  final List<String>? filter;
+
+  /// Whether the list includes separate entries for each calling code.
+  final bool showPhoneCode;
+
+  // Loading.
 
   /// Whether to defer loading countries until [CountryController.getCountries]
   /// is called explicitly.
@@ -50,21 +73,6 @@ class CountryScope extends StatefulWidget {
   /// CountryScope.of(context).getCountries();
   /// ```
   final bool lazy;
-
-  /// Show phone code in countires list.
-  final bool showPhoneCode;
-
-  /// List of country codes to exclude.
-  final List<String>? exclude;
-
-  /// List of favorites country codes.
-  final List<String>? favorites;
-
-  /// List of filtered country codes.
-  final List<String>? filter;
-
-  /// The widget below this widget in the tree.
-  final Widget child;
 
   /// Get the [CountryController] from the closest instance of this class
   /// that encloses the given context, if any.
@@ -95,7 +103,7 @@ class CountryScope extends StatefulWidget {
   }) => _InheritedCountries.of(
     context,
     aspect: listen ? _CountryScopeAspect.countries : _CountryScopeAspect.none,
-  ).state.getCountryByCode(countryCode);
+  ).getCountryByCode(countryCode);
 
   @override
   State<CountryScope> createState() => _CountriesScopeState();
@@ -103,26 +111,24 @@ class CountryScope extends StatefulWidget {
 
 /// State for widget [CountryScope].
 class _CountriesScopeState extends State<CountryScope> {
+  /// The controller shared with descendants for the lifetime of this scope.
   late final CountryController _controller;
-  late CountryState _state;
 
-  List<Country> _countries = const <Country>[];
-  Map<String, Country> _table = const <String, Country>{};
+  /// The latest non-loading state exposed to descendants.
+  late CountryState _state;
 
   @override
   void initState() {
     super.initState();
-    _controller =
-        CountryController(
-            provider: CountryProvider(),
-            favorites: widget.favorites,
-            exclude: widget.exclude,
-            filter: widget.filter,
-            showPhoneCode: widget.showPhoneCode,
-          )
-          ..getCountries()
-          ..addListener(_onStateChanded);
+    _controller = CountryController(
+      provider: CountryProvider(),
+      favorites: widget.favorites,
+      exclude: widget.exclude,
+      filter: widget.filter,
+      showPhoneCode: widget.showPhoneCode,
+    )..addListener(_onStateChanded);
     _state = _controller.state;
+    if (!widget.lazy) _controller.getCountries().ignore();
   }
 
   @override
@@ -130,6 +136,24 @@ class _CountriesScopeState extends State<CountryScope> {
     super.didChangeDependencies();
     final localization = CountryLocalizations.of(context);
     _controller.initLocalization(localization);
+  }
+
+  @override
+  void didUpdateWidget(covariant CountryScope oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!listEquals(oldWidget.exclude, widget.exclude) ||
+        !listEquals(oldWidget.favorites, widget.favorites) ||
+        !listEquals(oldWidget.filter, widget.filter) ||
+        oldWidget.showPhoneCode != widget.showPhoneCode ||
+        (oldWidget.lazy && !widget.lazy)) {
+      _controller.apply(
+        exclude: widget.exclude,
+        favorites: widget.favorites,
+        filter: widget.filter,
+        showPhoneCode: widget.showPhoneCode,
+        lazy: widget.lazy,
+      );
+    }
   }
 
   @override
@@ -141,22 +165,16 @@ class _CountriesScopeState extends State<CountryScope> {
   }
 
   void _onStateChanded() {
-    if (!mounted) return;
-    if (_controller.state.isLoading) return;
-    if (identical(_controller.state, _state)) return;
-    _state = _controller.state;
-    _countries = _controller.state.countries.toList(growable: false);
-    _table = {for (final country in _countries) country.countryCode: country};
-    setState(() {});
+    final state = _controller.state;
+    if (!mounted || state.isLoading || identical(state, _state)) return;
+    setState(() {
+      _state = state;
+    });
   }
 
   @override
-  Widget build(BuildContext context) => _InheritedCountries(
-    scope: this,
-    state: _state,
-    table: _table,
-    child: widget.child,
-  );
+  Widget build(BuildContext context) =>
+      _InheritedCountries(scope: this, state: _state, child: widget.child);
 }
 
 /// Aspect for country scope.
@@ -173,10 +191,9 @@ enum _CountryScopeAspect {
 
 /// Inherited widget for quick access in the element tree.
 class _InheritedCountries extends InheritedModel<_CountryScopeAspect> {
-  const _InheritedCountries({
+  _InheritedCountries({
     required this.scope,
     required this.state,
-    required this.table,
     required super.child,
   });
 
@@ -185,12 +202,17 @@ class _InheritedCountries extends InheritedModel<_CountryScopeAspect> {
   /// The list of countries.
   List<Country> get countries => state.countries;
 
-  /// A table of countries by country code.
-  final Map<String, Country> table;
+  /// Countries indexed by code when the first lookup is requested.
+  late final Map<String, Country> _table = <String, Country>{
+    for (final country in countries) country.countryCode: country,
+  };
 
   /// This country scope state.
   /// This is the state of the country scope.
   final _CountriesScopeState scope;
+
+  /// Returns the country associated with [countryCode].
+  Country? getCountryByCode(String countryCode) => _table[countryCode];
 
   /// The state from the closest instance of this class
   /// that encloses the given context, if any.
@@ -232,8 +254,6 @@ class _InheritedCountries extends InheritedModel<_CountryScopeAspect> {
 
   @override
   bool updateShouldNotify(covariant _InheritedCountries oldWidget) =>
-      !const DeepCollectionEquality().equals(oldWidget.countries, countries) ||
-      !identical(oldWidget.table, table) ||
       !identical(oldWidget.state, state);
 
   @override
@@ -244,10 +264,7 @@ class _InheritedCountries extends InheritedModel<_CountryScopeAspect> {
     for (final d in dependencies) {
       switch (d) {
         case _CountryScopeAspect.countries
-            when !const DeepCollectionEquality().equals(
-              oldWidget.countries,
-              countries,
-            ):
+            when _countriesChanged(oldWidget.countries):
           // Notify about changes in countries list.
           return true;
         case _CountryScopeAspect.state when !identical(oldWidget.state, state):
@@ -255,6 +272,20 @@ class _InheritedCountries extends InheritedModel<_CountryScopeAspect> {
           return true;
         default:
           continue;
+      }
+    }
+    return false;
+  }
+
+  bool _countriesChanged(List<Country> previous) {
+    final current = countries;
+    if (identical(previous, current)) return false;
+    if (previous.length != current.length) return true;
+    for (var i = 0; i < current.length; i++) {
+      final before = previous[i];
+      final after = current[i];
+      if (before != after || before.nameLocalized != after.nameLocalized) {
+        return true;
       }
     }
     return false;

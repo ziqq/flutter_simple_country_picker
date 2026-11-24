@@ -16,11 +16,11 @@ import 'package:flutter_simple_country_picker/src/model/country.dart';
 abstract base class CountryState {
   /// {@macro country_state}
   CountryState._({
-    required this.countries,
+    required List<Country> countries,
     required this.showGroup,
     this.error,
     this.stackTrace,
-  });
+  }) : countries = List<Country>.unmodifiable(countries);
 
   /// Create a [CountryState] in loading state.
   ///
@@ -64,7 +64,7 @@ abstract base class CountryState {
   /// Check if is Idle.
   bool get isIdle => this is CountryState$Idle;
 
-  /// List of countries.
+  /// An unmodifiable snapshot of the countries in this state.
   final List<Country> countries;
 
   /// Show grouped countries by initial letter.
@@ -85,7 +85,13 @@ abstract base class CountryState {
   Country? getCountryByCode(String countryCode) => _table[countryCode];
 
   @override
-  int get hashCode => Object.hashAll([countries, showGroup, type]);
+  int get hashCode => Object.hash(
+    type,
+    error,
+    showGroup,
+    stackTrace,
+    Object.hashAll(countries),
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -182,19 +188,19 @@ final class CountryController extends ValueNotifier<CountryState> {
   /// An optional [exclude] argument can be used to exclude(remove) one ore more
   /// country from the countries list. It takes a list of country code(iso2).
   /// Note: Can't provide both [exclude] and [countryFilter]
-  final List<String>? _exclude;
+  List<String>? _exclude;
 
   /// An optional [favorites] argument can be used to show countries
   /// at the top of the list. It takes a list of country code(iso2).
-  final List<String>? _favorites;
+  List<String>? _favorites;
 
   /// An optional [filter] argument can be used to filter the
   /// list of countries. It takes a list of country code(iso2).
   /// Note: Can't provide both [filter] and [exclude]
-  final List<String>? _filter;
+  List<String>? _filter;
 
   /// Used to show phone code.
-  final bool _showPhoneCode;
+  bool _showPhoneCode;
 
   /// Search controller.
   TextEditingController? search;
@@ -204,6 +210,9 @@ final class CountryController extends ValueNotifier<CountryState> {
 
   /// Cached countries list.
   List<Country> _cache = <Country>[];
+
+  /// The most recent fetch, or null before the first load.
+  Future<List<Country>>? _countriesLoad;
 
   /// Current state.
   CountryState get state => value;
@@ -218,45 +227,72 @@ final class CountryController extends ValueNotifier<CountryState> {
   @mustCallSuper
   void initLocalization(CountryLocalizations? localization) {
     if (isDisposed) return;
-    if (_localization != null) search?.removeListener(_onSearch);
+    final changed = !identical(_localization, localization);
     _localization = localization;
-    search?.addListener(_onSearch);
+    search
+      ?..removeListener(_onSearch)
+      ..addListener(_onSearch);
+    if (changed && _cache.isNotEmpty) getCountries().ignore();
+  }
+
+  /// Applies the selection options of a mounted country scope.
+  void apply({
+    required List<String>? exclude,
+    required List<String>? favorites,
+    required List<String>? filter,
+    required bool showPhoneCode,
+    required bool lazy,
+  }) {
+    _exclude = exclude;
+    _favorites = favorites;
+    _filter = filter;
+    _showPhoneCode = showPhoneCode;
+    if (!lazy || _countriesLoad != null) getCountries().ignore();
   }
 
   /// Get countries
-  Future<List<Country>?> getCountries() => _handle<List<Country>>(() async {
+  Future<List<Country>?> getCountries() {
+    final load = Future<List<Country>>.microtask(_provider.getCountries);
+    _countriesLoad = load;
+    return _handle(() => _getCountries(load));
+  }
+
+  Future<List<Country>?> _getCountries(Future<List<Country>> load) async {
     String normalize(String value) => value.trim().toUpperCase();
     final stopwatch = Stopwatch()..start();
     try {
-      final countries = await _provider.getCountries();
-
+      final countries = await load;
       final exclude = _exclude?.map(normalize).toSet();
       final filter = _filter?.map(normalize).toSet();
-      final favoritesCodes = (_favorites == null || _favorites.isEmpty)
-          ? null
-          : _favorites.map(normalize).toList(growable: false);
+      final favoriteCodes = _favorites?.map(normalize).toList(growable: false);
+      final showPhoneCode = _showPhoneCode;
 
-      final seenCountryCodes = !_showPhoneCode ? <String>{} : null;
+      final seenCountries = <(String, String?)>{};
 
       final byCode = <String, List<Country>>{};
       for (final country in countries) {
-        final cc = normalize(country.countryCode);
-        (byCode[cc] ??= <Country>[]).add(country);
+        final countryCode = normalize(country.countryCode);
+        (byCode[countryCode] ??= <Country>[]).add(country);
       }
 
       final favorites = <Country>[];
-      if (favoritesCodes != null) {
-        for (final code in favoritesCodes) {
+      if (favoriteCodes != null) {
+        for (final code in favoriteCodes) {
           final list = byCode[code];
           if (list == null) continue;
 
           for (final country in list) {
-            final cc = normalize(country.countryCode);
+            final countryCode = normalize(country.countryCode);
 
-            if (exclude != null && exclude.contains(cc)) continue;
-            if (filter != null && !filter.contains(cc)) continue;
+            if (exclude != null && exclude.contains(countryCode)) continue;
+            if (filter != null && !filter.contains(countryCode)) continue;
 
-            if (seenCountryCodes != null && !seenCountryCodes.add(cc)) continue;
+            if (!seenCountries.add((
+              countryCode,
+              showPhoneCode ? country.e164Key : null,
+            ))) {
+              continue;
+            }
 
             favorites.add(country);
           }
@@ -266,18 +302,23 @@ final class CountryController extends ValueNotifier<CountryState> {
       final $countries = <Country>[];
       for (var i = 0; i < countries.length; i++) {
         final country = countries[i];
-        final cc = normalize(country.countryCode);
+        final countryCode = normalize(country.countryCode);
 
         if (stopwatch.elapsedMilliseconds > 8) {
-          await Future<void>.delayed(Duration.zero);
+          await Future<void>.delayed(.zero);
           stopwatch
             ..reset()
             ..start();
         }
-        if (exclude != null && exclude.contains(cc)) continue;
-        if (filter != null && !filter.contains(cc)) continue;
+        if (exclude != null && exclude.contains(countryCode)) continue;
+        if (filter != null && !filter.contains(countryCode)) continue;
 
-        if (seenCountryCodes != null && !seenCountryCodes.add(cc)) continue;
+        if (!seenCountries.add((
+          countryCode,
+          showPhoneCode ? country.e164Key : null,
+        ))) {
+          continue;
+        }
 
         $countries.add(country);
       }
@@ -286,54 +327,53 @@ final class CountryController extends ValueNotifier<CountryState> {
         ..._localize(favorites),
         ..._localize($countries),
       ];
+      if (!identical(load, _countriesLoad) || isDisposed) return result;
       _cache = List<Country>.unmodifiable(result);
       _setState(
         CountryState.idle(
-          countries: result.toList(growable: false),
+          countries: _resolveFilteredCountries(),
           showGroup: state.showGroup,
         ),
       );
       return result;
+    } on Object {
+      if (!identical(load, _countriesLoad) || isDisposed) return null;
+      rethrow;
     } finally {
       stopwatch.stop();
     }
-  });
+  }
 
   /// Search countries by query.
   Future<void> _onSearch() => _handle(() async {
-    final query = search?.text ?? '';
-    var countries = <Country>[];
-
-    if (query.isEmpty) {
-      countries = [..._cache];
-    } else {
-      countries = _cache
-          .where((c) => c.startsWith(query, _localization))
-          .toList();
-    }
-
     _setState(
       CountryState.idle(
-        countries: countries.toList(growable: false),
+        countries: _resolveFilteredCountries(),
         showGroup: state.showGroup,
       ),
     );
   });
 
+  List<Country> _resolveFilteredCountries() {
+    final query = search?.text ?? '';
+    if (query.isEmpty) return _cache;
+    return _cache
+        .where((country) => country.startsWith(query, _localization))
+        .toList(growable: false);
+  }
+
   /// Localize country names using the current localization.
   List<Country> _localize(List<Country> countries) {
-    final localization = _localization;
+    final l = _localization;
 
     // Important to tests and performance,
     // if localization is null,
     // we can skip localizing and sorting.
-    if (localization == null) return countries.toList(growable: false);
+    if (l == null) return countries.toList(growable: false);
 
     final result = <Country>[];
     for (final country in countries) {
-      final formatted = localization.getFormatedCountryNameByCode(
-        country.countryCode,
-      );
+      final formatted = l.getFormatedCountryNameByCode(country.countryCode);
 
       // If localization is not available for a country,
       // we can use the original name.
@@ -393,6 +433,7 @@ final class CountryController extends ValueNotifier<CountryState> {
       ?..removeListener(_onSearch)
       ..dispose();
     _cache = <Country>[];
+    _countriesLoad = null;
     _localization = null;
     _$isDisposed = true;
     super.dispose();

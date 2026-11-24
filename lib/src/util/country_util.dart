@@ -19,6 +19,48 @@ abstract final class CountryUtil {
   const CountryUtil._();
 
   static final _codeRegExp = RegExp(r'^[A-Za-z]{2}$');
+  static final _nonDigits = RegExp('[^0-9]');
+  static final _leadingPhonePadding = RegExp(
+    r'^[\s\u061C\u200E\u200F\u202A-\u202E\u2066-\u2069]+',
+  );
+
+  /// Skips leading whitespace, bidirectional controls, and an opening
+  /// parenthesis before an explicit plus sign.
+  static String trimPhoneInput(String text) {
+    final input = text.trimLeft().replaceFirst(_leadingPhonePadding, '');
+    if (!input.startsWith('(')) return input;
+
+    final afterParenthesis = input
+        .substring(1)
+        .trimLeft()
+        .replaceFirst(_leadingPhonePadding, '');
+    return afterParenthesis.startsWith('+') ? afterParenthesis : input;
+  }
+
+  /// Whether [text] specifies an international number outside [callingCode].
+  static bool hasForeignCallingCode(String text, String callingCode) {
+    if (callingCode.isEmpty) return false;
+    final input = trimPhoneInput(text);
+    if (!input.startsWith('+') && !input.startsWith('00')) return false;
+    final digits = input.replaceAll(_nonDigits, '');
+    if (input.startsWith('+')) {
+      return digits.isNotEmpty && !digits.startsWith(callingCode);
+    }
+    return input.startsWith('00') &&
+        digits.length > 2 &&
+        digits[2] != '0' &&
+        !digits.startsWith('00$callingCode');
+  }
+
+  /// Whether [text] contains only an explicit [callingCode].
+  static bool hasOnlyCallingCode(String text, String callingCode) {
+    if (callingCode.isEmpty) return false;
+    final input = trimPhoneInput(text);
+    final digits = input.replaceAll(_nonDigits, '');
+    return input.startsWith('+')
+        ? digits == callingCode
+        : input.startsWith('00') && digits == '00$callingCode';
+  }
 
   /// Convert country code to emoji flag
   static String countryCodeToEmoji(String countryCode) {

@@ -3,6 +3,24 @@ import 'package:flutter_simple_country_picker/src/util/country_input_formatter.d
 import 'package:flutter_test/flutter_test.dart';
 
 void main() => group('CountryInputFormatter -', () {
+  test('manual mask waits for the IME to commit', () {
+    final formatter = CountryInputFormatter(mask: '00 00');
+    const composing = TextEditingValue(
+      text: '123',
+      selection: TextSelection.collapsed(offset: 3),
+      composing: TextRange(start: 0, end: 3),
+    );
+
+    expect(
+      formatter.formatEditUpdate(TextEditingValue.empty, composing),
+      composing,
+    );
+    expect(formatter.getMaskedText(), isEmpty);
+
+    final committed = composing.copyWith(composing: TextRange.empty);
+    expect(formatter.formatEditUpdate(composing, committed).text, '12 3');
+  });
+
   test('initializes with default values', () {
     final formatter = CountryInputFormatter(mask: '+# (###) ###-##-##');
     expect(formatter.getMask(), '+# (###) ###-##-##');
@@ -12,6 +30,29 @@ void main() => group('CountryInputFormatter -', () {
     expect(formatter.valueStatus.currentLength, 0);
     expect(formatter.valueStatus.expectedLength, 11);
     expect(formatter.valueStatus.isEmpty, isTrue);
+  });
+
+  test('a non-digit after a full mask does not enable flat mode', () {
+    const mask = '000 000 0000';
+    final formatter = CountryInputFormatter(mask: mask);
+    final full = formatter.formatEditUpdate(
+      TextEditingValue.empty,
+      const TextEditingValue(
+        text: '9991234567',
+        selection: TextSelection.collapsed(offset: 10),
+      ),
+    );
+    final result = formatter.formatEditUpdate(
+      full,
+      const TextEditingValue(
+        text: '999 123 4567A',
+        selection: TextSelection.collapsed(offset: 13),
+      ),
+    );
+
+    expect(result.text, '999 123 4567');
+    expect(formatter.getMask(), mask);
+    expect(formatter.valueStatus.isComplete, isTrue);
   });
 
   test('switches to flat mode when input longer than mask', () {

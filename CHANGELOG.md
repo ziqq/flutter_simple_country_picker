@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.11.4
+- **DEPRECATED**: `adaptive` in `showCountryPicker`. The Cupertino sheet remains available until `1.0.0`. Omit `adaptive` to use the Material sheet
+- **FIXED**: align the automatic mask hint with the editable text at custom and default phone field heights, [#27](https://github.com/ziqq/flutter_simple_country_picker/issues/27)
+- **FIXED**: inherit the app's text color for both phone inputs and derive mask hints from the same text style, with independent styling for country search
+- **FIXED**: detach the old country controller and preserve the values of both external controllers when `initialCountry` changes during replacement
+- **FIXED**: parse the new number using the newly selected country when both phone input controllers are replaced together
+- **FIXED**: keep an empty replacement phone controller unchanged when only the phone controller is replaced
+- **FIXED**: recognize barrier color changes, preserve exact theme values and background color fallbacks in `copyWith`, and retain `inputDecoration` during theme transitions
+- **FIXED**: preserve local themes and follow app theme changes in open adaptive iOS sheets, and refresh grouped headers when the theme changes
+- **FIXED**: preserve explicit local picker themes in adaptive iOS sheets, including shared theme instances, and keep app theme updates when local Material styling reuses the app's extensions
+- **FIXED**: apply `searchTextStyle` to the query and clear grouped results when no countries match
+- **FIXED**: honor `showPhoneCode` and show favorite calling-code entries only once
+- **FIXED**: show the selectable World Wide entry when `showWorldWide` is enabled
+- **FIXED**: keep `CountryState` snapshots and their hash codes stable when the source country list changes
+- **FIXED**: reject pasted international numbers with a different calling code and preserve the committed phone value during IME composition
+- **FIXED**: recognize international calling codes written in parentheses before formatting pasted phone numbers
+- **FIXED**: synchronize programmatic phone controller changes with both input variants and apply explicit text styles in the extended input
+- **FIXED**: preserve foreign phone numbers when reconfiguring the field, leave replaced controllers untouched, and suppress change callbacks for rejected input
+- **FIXED**: keep the committed number when changing masks during IME composition and respect controller clears from listeners during reformatting
+- **FIXED**: publish initial phone status after the widget tree builds and preserve E.164 rewrites from controller listeners without repeating notifications
+- **FIXED**: apply initial country changes to external controllers after build and keep controller values unchanged on selection-only phone edits
+- **FIXED**: preserve the controller's E.164 text when input is rejected and keep the manual mask when non-digit characters are appended
+- **FIXED**: strip the matching international calling code after `00` before checking manual phone input length
+- **FIXED**: leave the national field empty when a pasted number contains only the selected calling code
+- **FIXED**: keep picker drag, full-height mode, and navigation after selection working through the route's public options
+- **FIXED**: honor `shouldCloseOnSwipeDown` when dragging the Material country list to its minimum height, including when it opens at that height, and allow header drag dismissal
+- **FIXED**: restore country list scrolling in the full-height Material picker when swipe-down dismissal is disabled
+- **FIXED**: keep country search results visible above the keyboard by default in both phone inputs
+- **FIXED**: focus the cleared phone field after selecting a different country so the numeric keyboard opens
+- **FIXED**: preserve grouped countries without translations, refresh grouped results when the locale changes, and honor lazy `CountryScope` loading
+- **FIXED**: refresh the mounted `CountryScope` when its country filters change
+- **FIXED**: preserve explicit null colors when interpolating raw picker themes
+- **FIXED**: run the build targets for `make generate` and refresh example dependencies with `make update`
+- **FIXED**: refuse to tag a release when the current branch has unpushed commits
+- **CHANGED**: declare Flutter 3.44.0 as the minimum SDK for the Cupertino sheet and ship a smaller flags-only font with the example
+- **REMOVED**: the unused experimental `CountryPickerOptions` class
+
 ## 0.11.3
 - **ADDED**: expanded the picker to 75 built-in locales, including all 71 entries in the Telegram Translations catalog and separate Brazilian (`pt-BR`) and European (`pt-PT`) Portuguese translations
 - **FIXED**: phone input completion rejects national numbers made entirely of zeros, [#25](https://github.com/ziqq/flutter_simple_country_picker/issues/25)

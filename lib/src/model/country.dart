@@ -138,7 +138,8 @@ class Country {
   ///```dart
   /// Text(country.flagEmoji)
   /// ```
-  String get flagEmoji => CountryUtil.countryCodeToEmoji(countryCode);
+  String get flagEmoji =>
+      iswWorldWide ? '🌍' : CountryUtil.countryCodeToEmoji(countryCode);
 
   /// Check to world wide
   bool get iswWorldWide => countryCode == Country.worldWide.countryCode;
