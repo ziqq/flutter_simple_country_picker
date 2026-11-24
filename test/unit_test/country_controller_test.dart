@@ -166,6 +166,25 @@ void _$controllerTest() => group('CountryController -', () {
     ]);
   });
 
+  test('getCountries applies exclude and filter to favorites', () async {
+    final russia = Country.ru();
+    final unitedStates = Country.us();
+    final canada = Country.fromCountryCode('CA');
+    when(
+      provider.getCountries(),
+    ).thenAnswer((_) async => [russia, unitedStates, canada]);
+
+    controller = CountryController(
+      provider: provider,
+      favorites: ['US', 'CA', 'RU'],
+      exclude: ['US'],
+      filter: ['US', 'RU'],
+    );
+    await controller.getCountries();
+
+    expect(controller.state.countries, [russia]);
+  });
+
   test(
     'getCountries deduplicates favorites when showPhoneCode is false',
     () async {

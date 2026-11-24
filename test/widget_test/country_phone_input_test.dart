@@ -50,6 +50,40 @@ void main() {
     }
   });
 
+  testWidgets('phone hint uses the field style when it has no color', (
+    tester,
+  ) async {
+    const textStyle = TextStyle(
+      inherit: false,
+      fontSize: 17,
+      textBaseline: TextBaseline.alphabetic,
+    );
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        builder: (context) => Theme(
+          data: Theme.of(context).copyWith(
+            textTheme: Theme.of(
+              context,
+            ).textTheme.copyWith(bodyLarge: textStyle),
+          ),
+          child: const Scaffold(
+            body: DefaultTextStyle(
+              style: textStyle,
+              child: CountryPhoneInput(placeholder: 'Phone number'),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final field = tester.widget<TextField>(find.byType(TextField));
+    expect(field.style?.fontSize, 17);
+    expect(field.style?.color, isNull);
+    expect(field.style?.foreground, isNull);
+    expect(field.decoration?.hintText, 'Phone number');
+    expect(field.decoration?.hintStyle, field.style);
+  });
+
   setUpAll(WidgetsFlutterBinding.ensureInitialized);
 
   _$defaultCountryPhoneInputTest();
@@ -60,6 +94,26 @@ void _$defaultCountryPhoneInputTest() {
   const buttonKey = ValueKey<String>('country_picker_phone_code');
   const phoneFieldKey = ValueKey<String>('country_phone_number');
   group('CountryPhoneInput -', () {
+    testWidgets('publishes international digits for World Wide', (
+      tester,
+    ) async {
+      final controller = CountryPhoneController.empty();
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          builder: (_) => Scaffold(
+            body: CountryPhoneInput(
+              controller: controller,
+              initialCountry: Country.worldWide,
+            ),
+          ),
+        ),
+      );
+
+      await tester.enterText(find.byKey(phoneFieldKey), '79991234567');
+      expect(controller.text, '+79991234567');
+    });
+
     for (final height in [36.0, 56.0]) {
       testWidgets('paints the automatic mask on the input line at $height', (
         tester,

@@ -84,6 +84,43 @@ void main() => group('CountryScope -', () {
     expect(CountryScope.countriesOf(context, listen: false), [Country.ru()]);
   });
 
+  testWidgets('changing lazy and showPhoneCode refreshes a mounted scope', (
+    tester,
+  ) async {
+    const child = _CountryName();
+    Future<void> show({required bool lazy, required bool showPhoneCode}) =>
+        tester.pumpWidget(
+          createWidgetUnderTest(
+            builder: (_) => CountryScope(
+              lazy: lazy,
+              showPhoneCode: showPhoneCode,
+              filter: const ['RU'],
+              child: child,
+            ),
+          ),
+        );
+
+    await show(lazy: true, showPhoneCode: false);
+    await tester.pumpAndSettle();
+    final context = tester.element(find.byType(_CountryName));
+    final controller = CountryScope.of(context);
+    expect(CountryScope.countriesOf(context), isEmpty);
+
+    await show(lazy: false, showPhoneCode: false);
+    await tester.pumpAndSettle();
+    expect(CountryScope.of(context), same(controller));
+    expect(CountryScope.countriesOf(context), [Country.ru()]);
+
+    final loading = <bool>[];
+    controller.addListener(() => loading.add(controller.state.isLoading));
+
+    await show(lazy: false, showPhoneCode: true);
+    await tester.pumpAndSettle();
+    expect(CountryScope.of(context), same(controller));
+    expect(loading, [true, false]);
+    expect(CountryScope.countriesOf(context), [Country.ru()]);
+  });
+
   testWidgets('should filter countries by name in scope', (tester) async {
     final expectedCountry = Country.fromJson(
       countries[0],

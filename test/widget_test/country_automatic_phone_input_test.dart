@@ -17,31 +17,33 @@ void main() {
   final indonesia = Country.fromCountryCode('ID');
 
   for (final automatic in [false, true]) {
-    testWidgets('pasting a calling code alone keeps the local field empty '
-        '(automatic: $automatic)', (tester) async {
-      final controller = CountryPhoneController.empty();
-      addTearDown(controller.dispose);
-      await tester.pumpWidget(
-        createWidgetUnderTest(
-          builder: (_) => Scaffold(
-            body: CountryPhoneInput(
-              controller: controller,
-              initialCountry: indonesia,
-              useCountryFormatting: automatic,
+    for (final prefix in ['+62', '0062']) {
+      testWidgets('pasting $prefix alone keeps the local field empty '
+          '(automatic: $automatic)', (tester) async {
+        final controller = CountryPhoneController.empty();
+        addTearDown(controller.dispose);
+        await tester.pumpWidget(
+          createWidgetUnderTest(
+            builder: (_) => Scaffold(
+              body: CountryPhoneInput(
+                controller: controller,
+                initialCountry: indonesia,
+                useCountryFormatting: automatic,
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      final field = find.byType(EditableText);
-      final editor = tester.widget<EditableText>(field).controller;
-      const nationalNumber = '8123456';
-      for (final prefix in ['+62', '0062']) {
+        final field = find.byType(EditableText);
+        final editor = tester.widget<EditableText>(field).controller;
+        expect(editor.text, isEmpty);
+        expect(controller.phone, isEmpty);
         await tester.enterText(field, prefix);
         expect(editor.text, isEmpty);
         expect(controller.phone, '+62');
         expect(controller.valueStatus.isEmpty, isTrue);
 
+        const nationalNumber = '8123456';
         for (final digit in nationalNumber.split('')) {
           final text = editor.text + digit;
           tester.testTextInput.updateEditingValue(
@@ -54,8 +56,8 @@ void main() {
         }
         expect(controller.phone, '+62$nationalNumber');
         expect(controller.valueStatus.currentLength, nationalNumber.length);
-      }
-    });
+      });
+    }
 
     testWidgets('keeps a foreign number when the selected country changes '
         '(automatic: $automatic)', (tester) async {

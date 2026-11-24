@@ -1285,10 +1285,14 @@ class _RenderPhoneMask extends RenderProxyBox {
     required Color? color,
   }) {
     if (_controller != controller || _scrollController != scrollController) {
+      // Both controllers are owned by the field's state and keep their identity
+      // across rebuilds.
+      // coverage:ignore-start
       if (attached) _removeListeners();
       _controller = controller;
       _scrollController = scrollController;
       if (attached) _addListeners();
+      // coverage:ignore-end
     }
     _formatter = formatter;
     _color = color;
