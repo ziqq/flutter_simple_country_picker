@@ -29,7 +29,6 @@ dependencies:
   material_ui: ^1.0.0
   cupertino_ui: ^1.0.0
   cupertino_icons: ^1.0.8
-  pull_down_button: ^0.10.2
 
   flutter_simple_country_picker:
     path: ../

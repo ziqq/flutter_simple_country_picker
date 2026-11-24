@@ -17,6 +17,7 @@
 - **CHANGED**: grouped countries use white rounded sections on the light theme's secondary background, with equal horizontal theme padding; dark mode keeps the continuous dark list, the alphabet is centered in the outer padding, and the first letter header is compact
 - **CHANGED**: pickers open at full available height by default; `expand: false` retains partial presentation, and explicit initial sheet sizes remain supported
 - **CHANGED**: the grouped example opens an alphabetically sorted list with first-letter headers and an alphabet index, without pinned favorites preceding it
+- **CHANGED**: the example uses standalone Cupertino menus for language selection and the Linux country preview
 - **CHANGED**: the minimum SDK versions are Flutter 3.44.0 and Dart 3.12.0
 - **CHANGED**: the country picker follows the supplied Telegram reference: centered title, flat country rows with scrolling letter headers and an alphabet index, plus floating bottom search that follows the keyboard; letter headers scroll with their groups, a nonzero bottom safe area replaces the search padding, search focus expands the sheet, results hide letter navigation, and list dragging dismisses the keyboard
 - **CHANGED**: the compact header uses a transparent `CupertinoNavigationBar` above the country list and an adaptation of `tetradka_app`'s `UIScrollEdgeEffect`: blur narrows toward the list and the shade continues below the header as a soft tail; initial spacing and alphabet jumps keep countries below the title, the `GlassFake` close control keeps its size and feedback

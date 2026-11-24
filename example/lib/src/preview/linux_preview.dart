@@ -14,7 +14,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:pull_down_button/pull_down_button.dart';
 
 /// Default height for [CountryPicker] for Linux.
 const double _kDefaultCountyInputHeight = 44;
@@ -241,38 +240,32 @@ class _CountryPicker$LinuxState extends State<CountryPicker$Linux> {
       ? FontFamily.notoColorEmoji
       : null;
 
-  List<PullDownMenuItem> _itemBuilder(
-    List<Country> countries, [
-    Country? selected,
-  ]) {
+  /// Builds country menu items with each flag and dialing code.
+  List<CupertinoMenuItem> _itemBuilder(List<Country> countries) {
     final localization = CountryLocalizations.of(context);
-    final itemTheme = PullDownMenuItemTheme(
-      textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 14),
-    );
-    return countries
-        .map<PullDownMenuItem>((e) {
-          final title = localization.getFormatedCountryNameByCode(
-            e.countryCode,
-          );
-          return PullDownMenuItem(
-            itemTheme: itemTheme,
-            iconWidget: Text(
-              e.flagEmoji,
-              style: itemTheme.textStyle?.copyWith(
-                fontSize: 14,
-                fontFamily: _effectiveFontFamily,
-              ),
-            ),
-            title: '$title +${e.phoneCode}',
-            onTap: () => widget.onSelect?.call(e),
-          );
-        })
-        .toList(growable: false);
+    final textStyle = Theme.of(
+      context,
+    ).textTheme.bodyLarge?.copyWith(fontSize: 14);
+    return [
+      for (final country in countries)
+        CupertinoMenuItem(
+          leading: Text(
+            country.flagEmoji,
+            style: textStyle?.copyWith(fontFamily: _effectiveFontFamily),
+          ),
+          onPressed: () => widget.onSelect?.call(country),
+          child: Text(
+            '${localization.getFormatedCountryNameByCode(country.countryCode)}'
+            ' +${country.phoneCode}',
+            style: textStyle,
+          ),
+        ),
+    ];
   }
 
   Widget _buttonBuilder(
     BuildContext context,
-    Future<void> Function() showMenu,
+    VoidCallback showMenu,
     Country selected,
   ) {
     final textStyle = Theme.of(context).textTheme.bodyLarge;
@@ -330,7 +323,6 @@ class _CountryPicker$LinuxState extends State<CountryPicker$Linux> {
   Widget build(BuildContext context) {
     // final isRtl = Directionality.of(context) == TextDirection.rtl;
     final localizations = CountryLocalizations.of(context);
-    final pickerTheme = CountryPickerTheme.of(context);
 
     Widget scope({
       required Widget Function(BuildContext context, CountryState state)
@@ -366,11 +358,12 @@ class _CountryPicker$LinuxState extends State<CountryPicker$Linux> {
               ) ??
               state.countries[0];
 
-          return PullDownButton(
-            menuOffset: pickerTheme.padding,
-            itemBuilder: (_) => _itemBuilder(state.countries, $selected),
-            buttonBuilder: (_, showMenu) =>
-                _buttonBuilder(context, showMenu, $selected),
+          return CupertinoMenuAnchor(
+            consumeOutsideTaps: true,
+            constrainCrossAxis: true,
+            menuChildren: _itemBuilder(state.countries),
+            builder: (context, controller, child) =>
+                _buttonBuilder(context, controller.open, $selected),
           );
         },
       ),

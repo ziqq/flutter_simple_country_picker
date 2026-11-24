@@ -7,7 +7,6 @@ import 'package:example/src/common/theme/theme.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:pull_down_button/pull_down_button.dart';
 
 /// {@template app}
 /// App widget.
@@ -110,13 +109,9 @@ class _AppState extends State<App> {
       builder: (context, _) => MediaQuery(
         key: _builderKey,
         data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
-        // The example's pull_down_button still reads the SDK Material theme.
-        // ignore: deprecated_member_use
-        child: MaterialUiCompatibilityBridge(
-          child: ExampleNavigator(
-            key: const ValueKey<String>('home'),
-            pages: <ExamplePage>[HomePage<Object?>(child: widget.home)],
-          ),
+        child: ExampleNavigator(
+          key: const ValueKey<String>('home'),
+          pages: <ExamplePage>[HomePage<Object?>(child: widget.home)],
         ),
       ),
     ),
@@ -155,65 +150,48 @@ class AppLocaleSwitcherButton extends StatelessWidget {
     super.key, // ignore: unused_element
   });
 
-  List<PullDownMenuItem> _itemBuilder(BuildContext context) {
-    final itemTheme = PullDownMenuItemTheme(
-      textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 14),
-    );
-    final locale = App.of(context)?.locale;
-    return ExampleLocalization.supportedLocales
-        .map<PullDownMenuItem>(
-          (e) => PullDownMenuItem.selectable(
-            selected: locale?.value == e,
-            title: e.languageCode,
-            itemTheme: itemTheme,
-            onTap: () {
-              HapticFeedback.mediumImpact().ignore();
-              locale?.value = e;
-            },
-          ),
-        )
-        .toList(growable: false);
-  }
-
-  Widget _buttonBuilder(
-    BuildContext context,
-    Future<void> Function() showMenu,
-  ) {
-    final locale = Localizations.localeOf(context);
-    return SizedBox(
-      width: 40,
-      height: 28,
-      child: CupertinoButton(
-        color: CupertinoDynamicColor.resolve(
-          CupertinoColors.secondarySystemFill,
-          context,
-        ),
-        minimumSize: Size.zero,
-        padding: EdgeInsets.zero,
-        onPressed: () {
-          HapticFeedback.heavyImpact().ignore();
-          showMenu.call();
-        },
-        child: Text(
-          locale.languageCode.toUpperCase(),
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final pickerTheme = CountryPickerTheme.of(context);
-    return SizedBox(
-      width: 40,
-      height: 28,
-      child: PullDownButton(
-        buttonBuilder: _buttonBuilder,
-        menuOffset: pickerTheme.padding,
-        itemBuilder: (_) => _itemBuilder(context),
+    final locale = App.of(context)?.locale;
+    final languageCode = Localizations.localeOf(context).languageCode;
+    final textTheme = Theme.of(context).textTheme;
+    return CupertinoMenuAnchor(
+      consumeOutsideTaps: true,
+      menuChildren: [
+        for (final option in ExampleLocalization.supportedLocales)
+          CupertinoMenuItem(
+            trailing: locale?.value == option
+                ? const Icon(CupertinoIcons.check_mark)
+                : null,
+            onPressed: () {
+              HapticFeedback.mediumImpact().ignore();
+              locale?.value = option;
+            },
+            child: Text(
+              option.languageCode,
+              style: textTheme.bodyLarge?.copyWith(fontSize: 14),
+            ),
+          ),
+      ],
+      builder: (context, controller, child) => SizedBox(
+        width: 40,
+        height: 28,
+        child: CupertinoButton(
+          color: CupertinoDynamicColor.resolve(
+            CupertinoColors.secondarySystemFill,
+            context,
+          ),
+          minimumSize: Size.zero,
+          padding: EdgeInsets.zero,
+          onPressed: () {
+            HapticFeedback.heavyImpact().ignore();
+            controller.open();
+          },
+          child: Text(
+            languageCode.toUpperCase(),
+            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+          ),
+        ),
       ),
     );
   }
