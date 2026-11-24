@@ -11,12 +11,16 @@
 <!-- [![GitHub stars](https://img.shields.io/github/stars/ziqq/flutter_simple_country_picker?style=social)](https://github.com/ziqq/flutter_simple_country_picker/) -->
 
 
-<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_full_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_full_dark.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_filtered_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_filtered_dark.png" width="385px">
+<img src=".github/images/mobile_preview_full_light.png" alt="iOS full country list in light mode" width="385">
+<img src=".github/images/mobile_preview_full_dark.png" alt="iOS full country list in dark mode" width="385">
 
-<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/macos_preview_light.png" width="770px">
-<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/macos_preview_dark.png" width="770px">
-<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/web_preview_light.png" width="770px">
-<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/web_preview_dark.png" width="770px">
+<img src=".github/images/mobile_preview_filtered_light.png" alt="iOS filtered country list in light mode" width="385">
+<img src=".github/images/mobile_preview_filtered_dark.png" alt="iOS filtered country list in dark mode" width="385">
+
+<img src=".github/images/macos_preview_light.png" alt="macOS phone input preview in light mode" width="770">
+<img src=".github/images/macos_preview_dark.png" alt="macOS phone input preview in dark mode" width="770">
+<img src=".github/images/web_preview_light.png" alt="Web phone input preview in light mode" width="770">
+<img src=".github/images/web_preview_dark.png" alt="Web phone input preview in dark mode" width="770">
 
 
 ## Description
