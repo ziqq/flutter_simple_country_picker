@@ -15,9 +15,9 @@
 
 <img src=".github/images/mobile_preview_filtered_light.png" alt="iOS filtered country list in light mode" width="50%"><img src=".github/images/mobile_preview_filtered_dark.png" alt="iOS filtered country list in dark mode" width="50%">
 
-<img src=".github/images/macos_preview_light.png" alt="macOS phone input preview in light mode" width="50%"><img src=".github/images/macos_preview_dark.png" alt="macOS phone input preview in dark mode" width="50%">
+<img src=".github/images/macos_preview_full_light.png" alt="macOS phone input preview in light mode" width="50%"><img src=".github/images/macos_preview_full_dark.png" alt="macOS phone input preview in dark mode" width="50%">
 
-<img src=".github/images/web_preview_light.png" alt="Web phone input preview in light mode" width="50%"><img src=".github/images/web_preview_dark.png" alt="Web phone input preview in dark mode" width="50%">
+<img src=".github/images/web_preview_full_light.png" alt="Web phone input preview in light mode" width="50%"><img src=".github/images/web_preview_full_dark.png" alt="Web phone input preview in dark mode" width="50%">
 
 
 ## Description
