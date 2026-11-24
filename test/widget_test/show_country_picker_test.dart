@@ -128,6 +128,51 @@ void main() => group('showCountryPicker -', () {
     }),
   );
 
+  testWidgets('reversing one pull restores the sheet and scrolls the list', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        builder: (context) => Scaffold(
+          body: TextButton(
+            onPressed: () => showCountryPicker(
+              context: context,
+              initialChildSize: 1,
+              minChildSize: 1,
+              shouldCloseOnSwipeDown: true,
+            ),
+            child: const Text('Open'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+
+    final list = find.byType(CustomScrollView);
+    final scrollable = find.descendant(
+      of: list,
+      matching: find.byType(Scrollable),
+    );
+    final position = tester.state<ScrollableState>(scrollable).position;
+    final top = tester.getTopLeft(list).dy;
+
+    final drag = await tester.startGesture(tester.getCenter(list));
+    await drag.moveBy(const Offset(0, 25));
+    await drag.moveBy(const Offset(0, 70));
+    await tester.pump();
+    expect(tester.getTopLeft(list).dy, greaterThan(top));
+    expect(position.pixels, position.minScrollExtent);
+
+    await drag.moveBy(const Offset(0, -160));
+    await tester.pump();
+    expect(tester.getTopLeft(list).dy, closeTo(top, .01));
+    expect(position.pixels, greaterThan(position.minScrollExtent));
+    await drag.up();
+    await tester.pumpAndSettle();
+    expect(list, findsOneWidget);
+  });
+
   testWidgets('closes the picker before an onSelect navigation', (
     tester,
   ) async {

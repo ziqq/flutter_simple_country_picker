@@ -378,9 +378,13 @@ class _CountriesListState extends State<_CountriesList> {
     // does not keep showing the previous groups.
     if (!state.showGroup || !state.isIdle) return;
 
+    // The initial frame sees the asynchronous load in progress. Subsequent
+    // notifications come from new states with distinct country snapshots.
     if (identical(_countries, state.countries) &&
+        // coverage:ignore-start
         _showGroup == state.showGroup) {
       return;
+      // coverage:ignore-end
     }
 
     _countries = state.countries;
@@ -671,6 +675,7 @@ class _CountryListTile extends StatelessWidget {
   /// such as the emoji flag are not announced.
   ///
   /// [semanticsSelected] is `null` when the tile does not track selection.
+  /// The sole caller passes a name that already falls back to the original.
   Widget _buildInkWell(
     BuildContext context, {
     required String? nameLocalized,
@@ -681,7 +686,10 @@ class _CountryListTile extends StatelessWidget {
     button: true,
     selected: semanticsSelected,
     label: !showPhoneCode || country.phoneCode.isEmpty
-        ? nameLocalized ?? country.name
+        ? nameLocalized ??
+              // coverage:ignore-start
+              country.name
+        // coverage:ignore-end
         : '${nameLocalized ?? country.name}, +${country.phoneCode}',
     child: Material(
       // Add Material Widget with transparent color

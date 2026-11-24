@@ -393,6 +393,71 @@ void main() => group('CountryListView -', () {
     expect(tester.testTextInput.isVisible, isFalse);
   });
 
+  testWidgets('submitting search hides the keyboard and retains results', (
+    tester,
+  ) async {
+    await pumpList(tester, autofocus: true);
+    final field = find.byType(CupertinoSearchTextField);
+    await tester.enterText(field, 'Russia');
+    await tester.pumpAndSettle();
+    expect(tester.testTextInput.isVisible, isTrue);
+
+    await tester.testTextInput.receiveAction(TextInputAction.search);
+    await tester.pumpAndSettle();
+
+    expect(tester.testTextInput.isVisible, isFalse);
+    expect(
+      tester.widget<CupertinoSearchTextField>(field).controller?.text,
+      'Russia',
+    );
+    expect(find.text('Russia'), findsWidgets);
+    expect(find.text('United States'), findsNothing);
+  });
+
+  testWidgets('search press cancels and honors reduced motion changes', (
+    tester,
+  ) async {
+    final reducedMotion = ValueNotifier(false);
+    addTearDown(reducedMotion.dispose);
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        appBuilder: (context, child) => ValueListenableBuilder(
+          valueListenable: reducedMotion,
+          child: child,
+          builder: (context, disabled, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(disableAnimations: disabled),
+            child: child ?? const SizedBox.shrink(),
+          ),
+        ),
+        builder: (_) => const CountryListView(filter: ['RU'], showSearch: true),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final field = find.byType(CupertinoSearchTextField);
+    final feedback = find.ancestor(of: field, matching: find.byType(Opacity));
+    double opacity() => tester.widget<Opacity>(feedback).opacity;
+    expect(opacity(), 1);
+
+    final cancelled = await tester.startGesture(tester.getCenter(field));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 150));
+    expect(opacity(), closeTo(.35, .001));
+    await cancelled.cancel();
+    await tester.pumpAndSettle();
+    expect(opacity(), 1);
+
+    final held = await tester.startGesture(tester.getCenter(field));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 150));
+    expect(opacity(), closeTo(.35, .001));
+    reducedMotion.value = true;
+    await tester.pump();
+    expect(opacity(), 1);
+    await held.cancel();
+    await tester.pumpAndSettle();
+  });
+
   testWidgets('a custom localization retains the original worldwide label', (
     tester,
   ) async {

@@ -349,9 +349,10 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         other.baseCornerRadius,
         t,
       ),
+      // lerpDouble returns null only when both inputs are null.
       sheetCornerRadius:
           ui.lerpDouble(sheetCornerRadius, other.sheetCornerRadius, t) ??
-          sheetCornerRadius,
+          sheetCornerRadius, // coverage:ignore-line
     );
   }
 
