@@ -11,7 +11,7 @@
 <!-- [![GitHub stars](https://img.shields.io/github/stars/ziqq/flutter_simple_country_picker?style=social)](https://github.com/ziqq/flutter_simple_country_picker/) -->
 
 
-<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_full_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_full_dark.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_adaptive_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_adaptive_dark.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_filtered_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_filtered_dark.png" width="385px">
+<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_full_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_full_dark.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_filtered_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_filtered_dark.png" width="385px">
 
 <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/macos_preview_light.png" width="770px">
 <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/macos_preview_dark.png" width="770px">
@@ -21,7 +21,7 @@
 
 ## Description
 
-An easy-to-use country selection widget for Flutter. Allows users to select a country from a comprehensive list. Supports **Android**, **iOS**, **macOS**, **Web**, **Windows** and **Linux** platforms. Includes a phone-number input widget with automatic mask formatting, adaptive bottom sheet, theme customization, and 35+ locales.
+An easy-to-use country selection widget for Flutter. Allows users to select a country from a comprehensive list. Supports **Android**, **iOS**, **macOS**, **Web**, **Windows** and **Linux** platforms. Includes a phone-number input widget with automatic mask formatting, country picker bottom sheet, theme customization, and 35+ locales.
 
 
 ## Quick Start
@@ -199,7 +199,6 @@ showCountryPicker(
 | `filter`               | `List<String>?`         | `null`  | ISO2 codes to show exclusively. Cannot be combined with `exclude`.                  |
 | `selected`             | `SelectedCountry?`      | `null`  | Notifier holding the pre-selected country.                                          |
 | `expand`               | `bool`                  | `false` | Expand the bottom sheet to full height.                                             |
-| `adaptive`             | `bool`                  | `false` | **Deprecated.** Uses a Cupertino-style modal on iOS until removal in `1.0.0`. Omit to use the Material sheet. |
 | `autofocus`            | `bool`                  | `false` | Automatically focuses the search field.                                             |
 | `isDismissible`        | `bool`                  | `true`  | Whether the sheet can be dismissed by tapping the barrier.                          |
 | `isScrollControlled`   | `bool`                  | `true`  | Enables the Material route's scroll-controlled layout. `expand: true` also enables it. |
@@ -556,13 +555,11 @@ Sheet corners use superellipse geometry with a default radius of 38 logical pixe
 CountryPickerTheme(sheetCornerRadius: 24, baseCornerRadius: 12)
 ```
 
-`radius` is deprecated; use `baseCornerRadius` instead. If both are supplied, `baseCornerRadius` takes precedence.
-
-`sheetCornerRadius` also applies to adaptive Cupertino presentation, including smaller and square corners. Phone inputs retain their default `baseCornerRadius: 12`. At the default `padding: 16`, the header close button has 16 logical pixels above and beside it, with 8 below the navigation bar.
+Use `sheetCornerRadius: 0` for square sheet corners. Phone inputs retain their default `baseCornerRadius: 12`. At the default `padding: 16`, the header close button has 16 logical pixels above and beside it, with 8 below the navigation bar.
 
 Leave the colors unset to let the list resolve them from the ambient Cupertino theme, with a black list background in dark mode.
 
-Pickers open at full available height by default. Set `expand: false` for a partial nonadaptive sheet; scrolling the list or focusing search then expands it. Search results hide the alphabet index and letter headers; dragging the list dismisses the keyboard. The default close-button treatment is adapted from `tetradka_app`'s glass controls, using Flutter backdrop blur and press feedback without an app dependency. Reduced motion disables this feedback and high contrast uses opaque close buttons.
+Pickers open at full available height by default. Set `expand: false` for a partial sheet; scrolling the list or focusing search then expands it. Search results hide the alphabet index and letter headers; dragging the list dismisses the keyboard. The default close-button treatment is adapted from `tetradka_app`'s glass controls, using Flutter backdrop blur and press feedback without an app dependency. Reduced motion disables this feedback and high contrast uses opaque close buttons.
 
 With `shouldCloseOnSwipeDown: true`, a gesture started inside the scrolled list returns it to the beginning without dismissing the sheet, including during inertia. A new downward gesture started at the beginning can dismiss it. Tapping the compact app bar or the native iOS status bar scrolls the list to the beginning.
 

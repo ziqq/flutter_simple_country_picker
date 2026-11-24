@@ -18,43 +18,31 @@ the alphabet index and floating search remain available through `showGroup`
 and `showSearch`. Light mode uses inset white groups and dark mode uses a
 continuous dark list. Flags retain their native, uncropped glyphs.
 
-`CountryPickerTheme.radius` is deprecated. Use `baseCornerRadius` for input
-fields and `sheetCornerRadius` for picker sheets:
+Use `baseCornerRadius` for input fields and `sheetCornerRadius` for picker sheets.
+Remove the old `radius` argument and replace `indent` with `padding` if you
+need to adjust spacing. Remove `inputDecoration` from the picker theme.
 
 ```dart
 CountryPickerTheme(baseCornerRadius: 12, sheetCornerRadius: 38);
 ```
 
-The deprecated `radius` parameter remains an alias for `baseCornerRadius`,
-including in `raw` and `copyWith`; the new parameter wins when both are set.
 An explicit `sheetCornerRadius: 0` permits square sheet corners.
 
-Pickers open at full available height by default. Use `expand: false` for
-partial nonadaptive presentation, or supply an explicit `initialChildSize`.
+Remove `adaptive` from `showCountryPicker`. It now uses the Material modal on
+all platforms. Pickers open at full available height by default. Use
+`expand: false` for a partial sheet, or supply an explicit `initialChildSize`.
 Both phone input variants forward their `expand` setting to the picker.
 
-`CountryPickerTheme.indent` is deprecated and no longer has an effect. The
-spacings it used to control are derived from `padding` (`padding / 1.6` for
-gaps between controls and vertical padding). Remove `indent` from your theme
-and adjust `padding` instead.
+Use `whenComplete` in place of `onDone`, `autofocus` in place of
+`useAutofocus`, and `useHapticFeedback` in place of `useHaptickFeedback`.
+Omit `useHapticFeedback` to keep feedback enabled.
 
-Before 0.12.0:
+Replace `Country.getTranslatedName` with `Country.toLocalizedString`. For
+formatted country names, use `CountryLocalizations.getFormatedCountryNameByCode`
+in place of `CountryLocalizations.countryNameRegExp`.
 
-```dart
-CountryPickerTheme(padding: 16, indent: 10);
-```
-
-After 0.12.0:
-
-```dart
-CountryPickerTheme(padding: 16);
-```
-
-`indent` will be removed in v1.0.0.
-
-The minimum Flutter version is now 3.44.0, required by the Cupertino sheet
-`scrollableBuilder` API already used by the picker. The package also declares
-a Windows-only font asset for flags.
+The minimum Flutter version is 3.44.0. The package declares a Windows-only
+font asset for flags.
 
 Behavior changes to be aware of:
 

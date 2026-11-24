@@ -1,8 +1,6 @@
 # Changelog
 
 ## 0.12.0-pre.1
-- **DEPRECATED**: `CountryPickerTheme.indent`; it no longer has an effect and will be removed in v1.0.0. Gaps between controls, the search clear icon inset and the vertical padding of `CountryPhoneInput.extended` are now derived from `padding` (`padding / 1.6`, `padding / 3.2`); with the default `padding` the layout is unchanged, [#17](https://github.com/ziqq/flutter_simple_country_picker/issues/17)
-- **DEPRECATED**: `CountryPickerTheme.radius`; use `baseCornerRadius` instead, which takes precedence when both parameters are supplied; the getter, constructors and `copyWith` retain the alias for compatibility
 - **ADDED**: scrolling the country list expands the sheet, which snaps to its initial or full height
 - **ADDED**: `surfaceBuilder` to `showCountryPicker`, `CountryPhoneInput` and `CountryPhoneInput.extended`, and `CountryPickerSurface`, to paint custom surfaces (e.g. liquid glass) behind the search field and close button
 - **ADDED**: semantics for country tiles, group headers and the `CountryPhoneInput` country buttons; emoji flags are no longer announced
@@ -10,12 +8,15 @@
 - **ADDED**: accessibility regression coverage for Android/iOS, large and bold system text, nonlinear text scaling, phone/tablet and landscape layouts, RTL, safe areas, keyboard geometry, contrast, labelled touch targets and screen-reader country selection
 - **ADDED**: flag-cache regression tests for bounded preparation, selection, text scaling, RTL, pixel density, font loading, memory pressure, eviction, disabled caching and selectable text
 - **ADDED**: integration checks for iOS 26 scroll-before-dismiss gestures, short pulls, disabled dismissal, app-bar and native status-bar scroll-to-top, and search expansion from a partial sheet
+- **CHANGED**: **BREAKING**: removed deprecated picker options `adaptive`, `onDone`, `useAutofocus` and `useHaptickFeedback`. The picker uses a Material modal on every platform. Use `whenComplete`, `autofocus` and `useHapticFeedback` for the remaining options
+- **CHANGED**: **BREAKING**: removed `CountryPickerTheme.indent`, `radius` and `inputDecoration`. Spacing uses `padding` and the theme exposes separate `baseCornerRadius` and `sheetCornerRadius` values, [#17](https://github.com/ziqq/flutter_simple_country_picker/issues/17)
+- **CHANGED**: **BREAKING**: removed `Country.getTranslatedName` and `CountryLocalizations.countryNameRegExp`. Use `toLocalizedString` and `getFormatedCountryNameByCode`
 - **CHANGED**: **BREAKING**: one picker implementation replaces the legacy interface; `CountryPickerStyle` and `CountryPickerTheme.style` are removed, and compact native flags, localized names, English subtitles, trailing phone codes and selected-row checkmarks are always used
-- **CHANGED**: sheet corners use superellipse geometry and `CountryPickerTheme.sheetCornerRadius`, defaulting to 38 logical pixels to match the native UIKit sheet measured on iOS 26.5; theme overrides apply in both modal presentations, including smaller and square corners; phone fields retain `baseCornerRadius: 12`, and the adaptive route retains SDK transitions and inherited themes
+- **CHANGED**: sheet corners use superellipse geometry and `CountryPickerTheme.sheetCornerRadius`, defaulting to 38 logical pixels to match the native UIKit sheet measured on iOS 26.5; theme overrides include smaller and square corners, and phone fields retain `baseCornerRadius: 12`
 - **CHANGED**: grouped countries use white rounded sections on the light theme's secondary background, with equal horizontal theme padding; dark mode keeps the continuous dark list, the alphabet is centered in the outer padding, and the first letter header is compact
-- **CHANGED**: pickers open at full available height by default; `expand: false` retains partial nonadaptive presentation, and explicit initial sheet sizes remain supported
+- **CHANGED**: pickers open at full available height by default; `expand: false` retains partial presentation, and explicit initial sheet sizes remain supported
 - **CHANGED**: the grouped example opens an alphabetically sorted list with first-letter headers and an alphabet index, without pinned favorites preceding it
-- **CHANGED**: the minimum Flutter version is now 3.44.0, required by the Cupertino sheet scrollableBuilder API
+- **CHANGED**: the minimum Flutter version is now 3.44.0
 - **CHANGED**: the country picker follows the supplied Telegram reference: centered title, flat country rows with scrolling letter headers and an alphabet index, plus floating bottom search that follows the keyboard; letter headers scroll with their groups, a nonzero bottom safe area replaces the search padding, search focus expands the sheet, results hide letter navigation, and list dragging dismisses the keyboard
 - **CHANGED**: the compact header uses a transparent `CupertinoNavigationBar` above the country list and an adaptation of `tetradka_app`'s `UIScrollEdgeEffect`: blur narrows toward the list and the shade continues below the header as a soft tail; initial spacing and alphabet jumps keep countries below the title, the `GlassFake` close control keeps its size and feedback
 - **CHANGED**: Android uses a solid Material `AppBar` when shader filters are unavailable. The Android header close button animates a themed fill and rim on hover and press. The fallback keeps the compact header height, floating bottom search and tap-to-scroll-to-top behavior

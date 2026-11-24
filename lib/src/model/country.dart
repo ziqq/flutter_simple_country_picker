@@ -148,13 +148,6 @@ class Country {
   String? toLocalizedString(BuildContext context) =>
       CountryLocalizations.of(context).getCountryNameByCode(countryCode);
 
-  /// Get the localized country name
-  @Deprecated(
-    'Use [toLocalizedString] instead. '
-    'This method will be removed in next releases.',
-  )
-  String? getTranslatedName(BuildContext context) => toLocalizedString(context);
-
   /// Check if the country starts with a query
   ///
   /// Diacritics are ignored, so `osterreich` matches `Österreich`.

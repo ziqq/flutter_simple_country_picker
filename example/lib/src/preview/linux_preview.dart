@@ -180,7 +180,6 @@ class CountryPicker$Linux extends StatefulWidget {
   /// {@macro county_picker_macos}
   const CountryPicker$Linux({
     this.placeholder = 'Phone number', // ignore: unused_element
-    this.onDone, // ignore: unused_element
     this.onSelect,
     this.selected,
     this.exclude, // ignore: unused_element
@@ -189,7 +188,6 @@ class CountryPicker$Linux extends StatefulWidget {
     this.isScrollControlled = false, // ignore: unused_element
     this.showPhoneCode = false, // ignore: unused_element
     this.showWorldWide = false, // ignore: unused_element
-    this.useAutofocus = false, // ignore: unused_element
     this.useHapticFeedback = true, // ignore: unused_element
     this.showSearch, // ignore: unused_element
     super.key, // ignore: unused_element
@@ -199,7 +197,6 @@ class CountryPicker$Linux extends StatefulWidget {
   final String? placeholder;
 
   /// Called when the country was selected.
-  final VoidCallback? onDone;
 
   /// {@macro select_country_callback}
   final SelectCountryCallback? onSelect;
@@ -229,7 +226,6 @@ class CountryPicker$Linux extends StatefulWidget {
   final bool? showSearch;
 
   /// Use autofocus for the search countryies input field.
-  final bool useAutofocus;
 
   /// Use haptic feedback?
   final bool useHapticFeedback;

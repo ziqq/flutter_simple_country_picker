@@ -173,14 +173,6 @@ abstract class CountryLocalizations {
   static const LocalizationsDelegate<CountryLocalizations> delegate =
       _CountryLocalizationsDelegate();
 
-  /// Regular expression for a localized country name (whitespace normalization).
-  @Deprecated(
-    'Use getFormatedCountryNameByCode instead. '
-    'This field will be removed in v1.0.0 releases.',
-  )
-  // ignore: prefer_final_fields
-  static RegExp countryNameRegExp = RegExp(r'\s+');
-
   /// All locales supported by the built-in translations.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),

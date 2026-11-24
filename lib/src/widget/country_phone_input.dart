@@ -58,14 +58,8 @@ class CountryPhoneInput extends StatefulWidget {
     this.showPhoneCode = false,
     this.showWorldWide = false,
 
-    // Deprecated options.
-    this.useAutofocus = false,
-    @Deprecated('Use useHapticFeedback instead. Will be removed in 1.0.0.')
-    bool useHaptickFeedback = true,
-
     super.key,
-  }) : useHaptickFeedback = useHapticFeedback ?? useHaptickFeedback,
-       useHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
+  }) : useHapticFeedback = useHapticFeedback ?? true;
 
   /// Creates a phone input with a country selector above the number field.
   const factory CountryPhoneInput.extended({
@@ -100,12 +94,6 @@ class CountryPhoneInput extends StatefulWidget {
     bool? showSearch,
     bool showPhoneCode,
     bool showWorldWide,
-
-    // Deprecated options.
-    @Deprecated('Use autofocus instead. Will be removed in 1.0.0.')
-    bool useAutofocus,
-    @Deprecated('Use useHapticFeedback instead. Will be removed in 1.0.0.')
-    bool useHaptickFeedback,
 
     Key? key,
   }) = CountryPhoneInput$Extended;
@@ -195,15 +183,6 @@ class CountryPhoneInput extends StatefulWidget {
 
   /// Whether to include the [Country.worldWide] option in the picker.
   final bool showWorldWide;
-  // Deprecated options.
-
-  /// Whether to autofocus the country search field.
-  @Deprecated('Use autofocus instead. Will be removed in 1.0.0.')
-  final bool useAutofocus;
-
-  /// Whether picker interactions provide haptic feedback.
-  @Deprecated('Use useHapticFeedback instead. Will be removed in 1.0.0.')
-  final bool useHaptickFeedback;
 
   @override
   State<CountryPhoneInput> createState() => _CountryPhoneInputState();
@@ -1029,7 +1008,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
                         favorites: widget.favorites,
                         filter: widget.filter,
                         expand: widget.expand,
-                        autofocus: widget.autofocus || widget.useAutofocus,
+                        autofocus: widget.autofocus,
                         showGroup: widget.showGroup,
                         showSearch: widget.showSearch,
                         showPhoneCode: widget.showPhoneCode,
@@ -1155,10 +1134,6 @@ class CountryPhoneInput$Extended extends CountryPhoneInput {
     super.showPhoneCode,
     super.showWorldWide,
 
-    // Deprecated options.
-    super.useAutofocus,
-    super.useHaptickFeedback,
-
     super.key,
   });
 
@@ -1213,7 +1188,7 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
                         favorites: widget.favorites,
                         filter: widget.filter,
                         expand: widget.expand,
-                        autofocus: widget.autofocus || widget.useAutofocus,
+                        autofocus: widget.autofocus,
                         showGroup: widget.showGroup,
                         showSearch: widget.showSearch,
                         showPhoneCode: widget.showPhoneCode,

@@ -243,39 +243,6 @@ void main() => group('showCountryPicker -', () {
     expect(find.bySemanticsLabel('Russia'), findsOneWidget);
   });
 
-  testWidgets('adaptive iOS sheet selects a country and calls whenComplete', (
-    tester,
-  ) async {
-    Country? selected;
-    var completed = 0;
-    await tester.pumpWidget(
-      createWidgetUnderTest(
-        locale: const Locale('en'),
-        builder: (context) => Scaffold(
-          body: ElevatedButton(
-            onPressed: () => showCountryPicker(
-              context: context,
-              adaptive: true,
-              showPhoneCode: true,
-              filter: const ['RU'],
-              onSelect: (country) => selected = country,
-              whenComplete: () => completed++,
-            ),
-            child: const Text('Open adaptive picker'),
-          ),
-        ),
-      ),
-    );
-    await tester.tap(find.text('Open adaptive picker'));
-    await tester.pumpAndSettle();
-    expect(find.byType(CountryListView), findsOneWidget);
-    await tester.tap(find.bySemanticsLabel('Russia, +7'));
-    await tester.pumpAndSettle();
-    expect(selected!.countryCode, 'RU');
-    expect(completed, 1);
-    expect(find.byType(CountryListView), findsNothing);
-  }, variant: TargetPlatformVariant.only(.iOS));
-
   testWidgets('displays bottom sheet with country list view', (tester) async {
     await tester.pumpWidget(
       createWidgetUnderTest(
@@ -349,9 +316,7 @@ void main() => group('showCountryPicker -', () {
       inputHeight: 70,
       flagSize: 25,
       padding: 10,
-      indent: 10,
       sheetCornerRadius: 15,
-      inputDecoration: const InputDecoration(),
     );
 
     await tester.pumpWidget(
@@ -416,9 +381,7 @@ void main() => group('showCountryPicker -', () {
     expect(find.byType(CupertinoSearchTextField), findsOneWidget);
   });
 
-  testWidgets('the adaptive iOS sheet inherits the local picker theme', (
-    tester,
-  ) async {
+  testWidgets('the iOS picker inherits the local picker theme', (tester) async {
     await tester.pumpWidget(
       createWidgetUnderTest(
         builder: (_) => InheritedCountryPickerTheme(
@@ -427,7 +390,6 @@ void main() => group('showCountryPicker -', () {
             builder: (context) => TextButton(
               onPressed: () => showCountryPicker(
                 context: context,
-                adaptive: true,
                 filter: const ['RU'],
                 useHapticFeedback: false,
               ),
@@ -447,12 +409,11 @@ void main() => group('showCountryPicker -', () {
   final initialTheme = CountryPickerTheme(flagSize: 22, sheetCornerRadius: 11);
   for (final (scope, localTheme, useMaterialTheme) in [
     ('global', null, false),
-    ('local Material styling with inherited extensions', null, true),
     ('local', CountryPickerTheme(flagSize: 34, sheetCornerRadius: 17), false),
     ('shared instance in local picker theme', initialTheme, false),
     ('shared instance in local Material theme', initialTheme, true),
   ]) {
-    testWidgets('open iOS sheet handles app theme changes ($scope)', (
+    testWidgets('open Material sheet handles app theme changes ($scope)', (
       tester,
     ) async {
       final appTheme = ValueNotifier(initialTheme);
@@ -462,7 +423,6 @@ void main() => group('showCountryPicker -', () {
           body: TextButton(
             onPressed: () => showCountryPicker(
               context: context,
-              adaptive: true,
               filter: const ['RU'],
               useHapticFeedback: false,
             ),
@@ -471,13 +431,7 @@ void main() => group('showCountryPicker -', () {
         ),
       );
       final home = switch ((localTheme, useMaterialTheme)) {
-        (null, false) => launcher,
-        (null, true) => Builder(
-          builder: (context) => Theme(
-            data: Theme.of(context).copyWith(splashColor: Colors.transparent),
-            child: launcher,
-          ),
-        ),
+        (null, _) => launcher,
         (final CountryPickerTheme theme, true) => Theme(
           data: ThemeData(extensions: [theme]),
           child: launcher,
@@ -663,8 +617,10 @@ void main() => group('showCountryPicker -', () {
     });
   }
 
-  testWidgets('calls onDone callback when picker is dismissed', (tester) async {
-    var onDoneCalled = false;
+  testWidgets('calls whenComplete callback when picker is dismissed', (
+    tester,
+  ) async {
+    var whenCompleteCalled = false;
 
     await tester.pumpWidget(
       createWidgetUnderTest(
@@ -675,7 +631,7 @@ void main() => group('showCountryPicker -', () {
                 showCountryPicker(
                   context: context,
                   onSelect: (_) {},
-                  whenComplete: () => onDoneCalled = true,
+                  whenComplete: () => whenCompleteCalled = true,
                 );
               },
               child: const Text('Show Picker'),
@@ -693,7 +649,7 @@ void main() => group('showCountryPicker -', () {
     Navigator.of(tester.element(find.text('Show Picker'))).pop();
     await tester.pumpAndSettle();
 
-    expect(onDoneCalled, isTrue);
+    expect(whenCompleteCalled, isTrue);
   });
 
   testWidgets('applies haptic feedback on show', (tester) async {
@@ -847,115 +803,11 @@ void main() => group('showCountryPicker -', () {
     );
   });
 
-  testWidgets('deprecated parameter remains supported', (tester) async {
-    await tester.pumpWidget(
-      createWidgetUnderTest(
-        builder: (context) => Scaffold(
-          body: Builder(
-            builder: (context) => ElevatedButton(
-              onPressed: () {
-                showCountryPicker(
-                  context: context,
-                  onSelect: (_) {},
-                  // ignore: deprecated_member_use
-                  useHaptickFeedback: false,
-                );
-              },
-              child: const Text('Show Picker'),
-            ),
-          ),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Show Picker'));
-    await tester.pumpAndSettle();
-
-    final listView = tester.widget<CountryListView>(
-      find.byType(CountryListView),
-    );
-    expect(listView.useHapticFeedback, isFalse);
-  });
-
-  testWidgets('new parameter takes precedence over deprecated parameter', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      createWidgetUnderTest(
-        builder: (context) => Scaffold(
-          body: Builder(
-            builder: (context) => ElevatedButton(
-              onPressed: () {
-                showCountryPicker(
-                  context: context,
-                  onSelect: (_) {},
-                  // ignore: deprecated_member_use
-                  useHaptickFeedback: true,
-                  useHapticFeedback: false,
-                );
-              },
-              child: const Text('Show Picker'),
-            ),
-          ),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Show Picker'));
-    await tester.pumpAndSettle();
-
-    final listView = tester.widget<CountryListView>(
-      find.byType(CountryListView),
-    );
-    expect(listView.useHapticFeedback, isFalse);
-  });
-
-  // ignore: deprecated_member_use
-  testWidgets(
-    'onDone (deprecated) callback is called when picker is dismissed',
-    (tester) async {
-      var onDoneCalled = false;
-
-      await tester.pumpWidget(
-        createWidgetUnderTest(
-          builder: (context) => Scaffold(
-            body: Builder(
-              builder: (context) => ElevatedButton(
-                onPressed: () {
-                  showCountryPicker(
-                    context: context,
-                    onSelect: (_) {},
-                    // ignore: deprecated_member_use
-                    onDone: () => onDoneCalled = true,
-                    // whenComplete is intentionally null so onDone is used.
-                  );
-                },
-                child: const Text('Show Picker'),
-              ),
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Show Picker'));
-      await tester.pumpAndSettle();
-
-      Navigator.of(tester.element(find.text('Show Picker'))).pop();
-      await tester.pumpAndSettle();
-
-      expect(onDoneCalled, isTrue);
-    },
-  );
-
   group('unified picker -', () {
     Future<void> pumpPicker(
       WidgetTester tester, {
       CountryPickerTheme? theme,
       bool dark = false,
-      bool adaptive = false,
       bool expand = true,
       double? initialSize,
       bool showGroup = true,
@@ -979,7 +831,6 @@ void main() => group('showCountryPicker -', () {
                   child: ElevatedButton(
                     onPressed: () => showCountryPicker(
                       context: context,
-                      adaptive: adaptive,
                       expand: expand,
                       initialChildSize: initialSize,
                       showGroup: showGroup,
@@ -1013,32 +864,24 @@ void main() => group('showCountryPicker -', () {
     const dockClose = ValueKey<String>('country_picker_close_button');
     const badge = ValueKey<String>('country_picker_selected_badge');
 
-    for (final adaptive in <bool>[false, true]) {
-      for (final radius in <double>[0, 24, 38]) {
-        testWidgets(
-          'theme overrides sheet corners in both presentations: adaptive=$adaptive radius=$radius',
-          (tester) async {
-            await pumpPicker(
-              tester,
-              adaptive: adaptive,
-              theme: CountryPickerTheme(
-                sheetCornerRadius: radius,
-                baseCornerRadius: 9,
-              ),
-            );
-            final clip = tester.widget<ClipRSuperellipse>(sheet());
-            expect(
-              clip.borderRadius.resolve(TextDirection.ltr).topLeft.x,
-              radius,
-            );
-            expect(clip.clipBehavior, Clip.antiAliasWithSaveLayer);
-            final context = tester.element(find.byType(CountryListView));
-            expect(CountryPickerTheme.resolve(context).baseCornerRadius, 9);
-            expect(tester.takeException(), isNull);
-          },
-          variant: TargetPlatformVariant.only(.iOS),
+    for (final radius in <double>[0, 24, 38]) {
+      testWidgets('theme overrides sheet corners: radius=$radius', (
+        tester,
+      ) async {
+        await pumpPicker(
+          tester,
+          theme: CountryPickerTheme(
+            sheetCornerRadius: radius,
+            baseCornerRadius: 9,
+          ),
         );
-      }
+        final clip = tester.widget<ClipRSuperellipse>(sheet());
+        expect(clip.borderRadius.resolve(TextDirection.ltr).topLeft.x, radius);
+        expect(clip.clipBehavior, Clip.antiAliasWithSaveLayer);
+        final context = tester.element(find.byType(CountryListView));
+        expect(CountryPickerTheme.resolve(context).baseCornerRadius, 9);
+        expect(tester.takeException(), isNull);
+      }, variant: TargetPlatformVariant.only(.iOS));
     }
 
     for (final dark in <bool>[false, true]) {
@@ -1319,24 +1162,14 @@ void main() => group('showCountryPicker -', () {
       );
     }
 
-    testWidgets(
-      'search-to-close gap follows padding rather than deprecated indent',
-      (tester) async {
-        await pumpPicker(
-          tester,
-          theme: CountryPickerTheme(
-            padding: 24,
-            // ignore: deprecated_member_use_from_same_package
-            indent: 40,
-          ),
-        );
-        expect(
-          tester.getTopLeft(find.byKey(dockClose)).dx -
-              tester.getTopRight(find.byType(CupertinoSearchTextField)).dx,
-          24 / 1.6,
-        );
-      },
-    );
+    testWidgets('search-to-close gap follows padding', (tester) async {
+      await pumpPicker(tester, theme: CountryPickerTheme(padding: 24));
+      expect(
+        tester.getTopLeft(find.byKey(dockClose)).dx -
+            tester.getTopRight(find.byType(CupertinoSearchTextField)).dx,
+        24 / 1.6,
+      );
+    });
 
     testWidgets('flags retain native glyphs without a circular crop', (
       tester,

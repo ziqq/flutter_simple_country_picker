@@ -4,12 +4,10 @@
  */
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'
     show
         BuildContext,
         VoidCallback,
-        Theme,
         BorderRadius,
         Radius,
         showModalBottomSheet,
@@ -48,10 +46,7 @@ import 'package:flutter_simple_country_picker/src/widget/country_picker_surface.
 ///
 /// The [expand] argument can be used
 /// to expand the bottom sheet to full height.
-/// Defaults to `true`; set it to `false` for a partial nonadaptive sheet.
-///
-/// The [adaptive] argument can be used
-/// to show iOS style bottom sheet on iOS platform.
+/// Defaults to `true`; set it to `false` for a partial sheet.
 ///
 /// The [autofocus] argument can be used to initially expand virtual keyboard.
 ///
@@ -106,31 +101,14 @@ void showCountryPicker({
   List<String>? filter,
   SelectedCountry? selected,
   SelectCountryCallback? onSelect,
-  @Deprecated(
-    'Use whenComplete instead. This method will be removed in v1.0.0 releases.',
-  )
-  VoidCallback? onDone,
   VoidCallback? whenComplete,
   bool expand = true,
-  @Deprecated(
-    'Omit adaptive to use the Material sheet. Will be removed in 1.0.0.',
-  )
-  bool adaptive = false,
   bool autofocus = false,
   bool isDismissible = true,
   bool isScrollControlled = true,
   bool shouldCloseOnSwipeDown = false,
   bool showPhoneCode = false,
   bool showWorldWide = false,
-  @Deprecated(
-    'Use autofocus instead. This propery will be removed in v1.0.0 releases.',
-  )
-  bool useAutofocus = false,
-  @Deprecated(
-    'Use useHapticFeedback instead. This parameter will be removed in '
-    'v1.0.0 releases.',
-  )
-  bool useHaptickFeedback = true,
   bool? useHapticFeedback,
   bool useRootNavigator = true,
   bool useSafeArea = true,
@@ -140,23 +118,18 @@ void showCountryPicker({
   double? minChildSize,
   CountryPickerSurfaceBuilder? surfaceBuilder,
 }) {
-  final isiOS = defaultTargetPlatform == .iOS;
-  final useCupertinoSheet = adaptive && isiOS;
-  final effectiveExpand = expand || useCupertinoSheet;
   final effectiveMinChildSize =
       minChildSize ??
       initialChildSize ??
-      (effectiveExpand ? (shouldCloseOnSwipeDown ? .99 : 1.0) : .65);
-  final effectiveUseHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
+      (expand ? (shouldCloseOnSwipeDown ? .99 : 1.0) : .65);
 
   final pickerTheme = CountryPickerTheme.resolve(context);
-  void complete() => (whenComplete ?? onDone)?.call();
+  final hapticFeedbackEnabled = useHapticFeedback ?? true;
 
   Widget buildSheet(BuildContext context) => CountryPickerSheetGesture(
-    initialSize: initialChildSize ?? (effectiveExpand ? 1.0 : .65),
+    initialSize: initialChildSize ?? (expand ? 1.0 : .65),
     minSize: effectiveMinChildSize,
     canDismiss: shouldCloseOnSwipeDown,
-    canDismissFromHeader: !useCupertinoSheet,
     onDismiss: () =>
         Navigator.of(context, rootNavigator: useRootNavigator).pop<void>(),
     builder: (context, controller) {
@@ -170,14 +143,13 @@ void showCountryPicker({
         filter: filter,
         selected: selected,
         onSelect: onSelect,
-        adaptive: adaptive,
-        autofocus: autofocus || useAutofocus,
+        autofocus: autofocus,
         showGroup: showGroup,
         showSearch: showSearch,
         showPhoneCode: showPhoneCode,
         showWorldWide: showWorldWide,
         useRootNavigator: useRootNavigator,
-        useHapticFeedback: effectiveUseHapticFeedback,
+        useHapticFeedback: hapticFeedbackEnabled,
         surfaceBuilder: surfaceBuilder,
         scrollController: controller,
       );
@@ -199,105 +171,20 @@ void showCountryPicker({
     },
   );
 
-  /// Uses the base Cupertino surface for the country list background.
-  Widget builder(BuildContext context, [ScrollController? _]) =>
-      CupertinoUserInterfaceLevel(
-        data: .base,
-        child: Builder(builder: buildSheet),
-      );
+  if (hapticFeedbackEnabled) HapticFeedback.heavyImpact().ignore();
 
-  /// Provide haptic feedback on opening the picker, if enabled.
-  if (effectiveUseHapticFeedback) HapticFeedback.heavyImpact().ignore();
-
-  /// Show adaptive bottom sheet for `iOS` platform, if [adaptive] is `true`.
-  if (useCupertinoSheet) {
-    final navigator = Navigator.of(context, rootNavigator: useRootNavigator);
-    final themeOverride = _capturePickerTheme(
-      from: context,
-      to: navigator.context,
-    );
-    navigator
-        .push<void>(
-          _CountryPickerCupertinoRoute(
-            contentBuilder: (context) {
-              final sheet = builder(context);
-              return themeOverride == null
-                  ? sheet
-                  : InheritedCountryPickerTheme(
-                      data: themeOverride,
-                      child: sheet,
-                    );
-            },
-          ),
-        )
-        .whenComplete(complete)
-        .ignore();
-
-    /// Show material bottom sheet for other platforms.
-  } else {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      barrierColor: pickerTheme.barrierColor,
-      isDismissible: isDismissible,
-      isScrollControlled: isScrollControlled || expand,
-      enableDrag: false,
-      useRootNavigator: useRootNavigator,
-      useSafeArea: useSafeArea,
-      builder: builder,
-    ).whenComplete(complete).ignore();
-  }
-}
-
-/// Retains SDK sheet transitions while the picker owns clipping and gestures.
-///
-/// The stock route clips its content to a fixed radius before the builder runs.
-/// Overriding this public hook lets the picker theme also specify smaller or
-/// square corners, without a second clip truncating them.
-class _CountryPickerCupertinoRoute extends CupertinoSheetRoute<void> {
-  _CountryPickerCupertinoRoute({required WidgetBuilder contentBuilder})
-    : _contentBuilder = contentBuilder,
-      super(
-        enableDrag: false,
-        scrollableBuilder: (context, _) => contentBuilder(context),
-      );
-
-  /// Builds the picker with its coordinated scroll position and themed surface.
-  final WidgetBuilder _contentBuilder;
-
-  @override
-  Widget buildContent(BuildContext context) => MediaQuery.removePadding(
+  showModalBottomSheet<void>(
     context: context,
-    removeTop: true,
-    child: Builder(builder: _contentBuilder),
-  );
-}
-
-// TODO(ziqq): Remove _capturePickerTheme in 1.0.0.
-/// Captures the picker theme between the opener and the route's navigator.
-CountryPickerTheme? _capturePickerTheme({
-  required BuildContext from,
-  required BuildContext to,
-}) {
-  if (from == to) return null;
-
-  if (from.getInheritedWidgetOfExactType<InheritedCountryPickerTheme>() !=
-      null) {
-    CountryPickerTheme? theme;
-    from.visitAncestorElements((ancestor) {
-      if (ancestor == to) return false;
-      if (ancestor.widget case InheritedCountryPickerTheme(:final data)) {
-        theme = data;
-        return false;
-      }
-      return true;
-    });
-    return theme;
-  }
-
-  final extensions = Theme.of(from).extensions;
-  if (identical(extensions, Theme.of(to).extensions)) return null;
-  if (extensions[CountryPickerTheme] case CountryPickerTheme theme)
-    return theme;
-  return null;
+    backgroundColor: Colors.transparent,
+    barrierColor: pickerTheme.barrierColor,
+    isDismissible: isDismissible,
+    isScrollControlled: isScrollControlled || expand,
+    enableDrag: false,
+    useRootNavigator: useRootNavigator,
+    useSafeArea: useSafeArea,
+    builder: (_) => CupertinoUserInterfaceLevel(
+      data: .base,
+      child: Builder(builder: buildSheet),
+    ),
+  ).whenComplete(() => whenComplete?.call()).ignore();
 }

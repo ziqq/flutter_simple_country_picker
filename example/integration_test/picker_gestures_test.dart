@@ -17,104 +17,90 @@ import 'package:integration_test/integration_test.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  for (final adaptive in <bool>[false, true]) {
-    testWidgets('scroll before dismiss and scroll to top; adaptive=$adaptive', (
-      tester,
-    ) async {
-      var dismissals = 0;
-      await tester.pumpWidget(
-        _Host(
-          adaptive: adaptive,
-          canDismiss: true,
-          onDismiss: () => dismissals++,
-        ),
-      );
-      await tester.tap(find.text('Open'));
-      await tester.pumpAndSettle();
-      final list = find.byType(CustomScrollView).last;
-      final scrollable = find
-          .descendant(of: list, matching: find.byType(Scrollable))
-          .first;
-      final position = tester.state<ScrollableState>(scrollable).position
-        ..jumpTo(600);
+  testWidgets('scroll before dismiss and scroll to top', (tester) async {
+    var dismissals = 0;
+    await tester.pumpWidget(
+      _Host(canDismiss: true, onDismiss: () => dismissals++),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    final list = find.byType(CustomScrollView).last;
+    final scrollable = find
+        .descendant(of: list, matching: find.byType(Scrollable))
+        .first;
+    final position = tester.state<ScrollableState>(scrollable).position
+      ..jumpTo(600);
 
-      // Tap empty app-bar space, not only the title text.
-      await tester.pumpAndSettle();
-      final bar = tester.getRect(find.byType(CupertinoNavigationBar).last);
-      await tester.tapAt(Offset(bar.right - 30, bar.bottom - 12));
-      await tester.pumpAndSettle();
-      expect(position.pixels, closeTo(position.minScrollExtent, .5));
+    // Tap empty app-bar space, not only the title text.
+    await tester.pumpAndSettle();
+    final bar = tester.getRect(find.byType(CupertinoNavigationBar).last);
+    await tester.tapAt(Offset(bar.right - 30, bar.bottom - 12));
+    await tester.pumpAndSettle();
+    expect(position.pixels, closeTo(position.minScrollExtent, .5));
 
-      // Exercise the same SDK channel used by a native iOS status-bar tap.
-      position.jumpTo(600);
-      await tester.pumpAndSettle();
-      ui.channelBuffers.push(
-        SystemChannels.statusBar.name,
-        SystemChannels.statusBar.codec.encodeMethodCall(
-          const MethodCall('handleScrollToTop'),
-        ),
-        (_) {},
-      );
-      await tester.pumpAndSettle();
-      expect(position.pixels, closeTo(position.minScrollExtent, .5));
+    // Exercise the same SDK channel used by a native iOS status-bar tap.
+    position.jumpTo(600);
+    await tester.pumpAndSettle();
+    ui.channelBuffers.push(
+      SystemChannels.statusBar.name,
+      SystemChannels.statusBar.codec.encodeMethodCall(
+        const MethodCall('handleScrollToTop'),
+      ),
+      (_) {},
+    );
+    await tester.pumpAndSettle();
+    expect(position.pixels, closeTo(position.minScrollExtent, .5));
 
-      // A fast gesture crosses the top and continues ballistically.
-      // Its remaining distance and velocity must never dismiss the sheet.
-      position.jumpTo(300);
-      await tester.pumpAndSettle();
-      await tester.fling(list, const Offset(0, 500), 4000);
-      await tester.pumpAndSettle();
-      expect(dismissals, 0);
-      expect(find.byType(CupertinoNavigationBar), findsOneWidget);
-      expect(position.pixels, closeTo(position.minScrollExtent, .5));
+    // A fast gesture crosses the top and continues ballistically.
+    // Its remaining distance and velocity must never dismiss the sheet.
+    position.jumpTo(300);
+    await tester.pumpAndSettle();
+    await tester.fling(list, const Offset(0, 500), 4000);
+    await tester.pumpAndSettle();
+    expect(dismissals, 0);
+    expect(find.byType(CupertinoNavigationBar), findsOneWidget);
+    expect(position.pixels, closeTo(position.minScrollExtent, .5));
 
-      // Only the next deliberate downward gesture may dismiss it.
-      await tester.timedDrag(
-        list,
-        const Offset(0, 60),
-        const Duration(seconds: 1),
-      );
-      await tester.pumpAndSettle();
-      expect(dismissals, 0);
-      expect(
-        tester.getRect(find.byType(CupertinoNavigationBar).last).top,
-        closeTo(bar.top, .5),
-      );
-      await tester.fling(list, const Offset(0, 250), 2000);
-      await tester.pumpAndSettle();
-      expect(dismissals, 1);
-      expect(find.byType(CupertinoNavigationBar), findsNothing);
-    });
+    // Only the next deliberate downward gesture may dismiss it.
+    await tester.timedDrag(
+      list,
+      const Offset(0, 60),
+      const Duration(seconds: 1),
+    );
+    await tester.pumpAndSettle();
+    expect(dismissals, 0);
+    expect(
+      tester.getRect(find.byType(CupertinoNavigationBar).last).top,
+      closeTo(bar.top, .5),
+    );
+    await tester.fling(list, const Offset(0, 250), 2000);
+    await tester.pumpAndSettle();
+    expect(dismissals, 1);
+    expect(find.byType(CupertinoNavigationBar), findsNothing);
+  });
 
-    testWidgets('disabled dismissal keeps scrolling; adaptive=$adaptive', (
-      tester,
-    ) async {
-      var dismissals = 0;
-      await tester.pumpWidget(
-        _Host(
-          adaptive: adaptive,
-          canDismiss: false,
-          onDismiss: () => dismissals++,
-        ),
-      );
-      await tester.tap(find.text('Open'));
-      await tester.pumpAndSettle();
-      final list = find.byType(CustomScrollView).last;
-      await tester.fling(list, const Offset(0, 250), 2000);
-      await tester.pumpAndSettle();
-      expect(dismissals, 0);
-      await tester.drag(list, const Offset(0, -250));
-      await tester.pumpAndSettle();
-      final scrollable = find
-          .descendant(of: list, matching: find.byType(Scrollable))
-          .first;
-      expect(
-        tester.state<ScrollableState>(scrollable).position.pixels,
-        greaterThan(0),
-      );
-      expect(tester.takeException(), isNull);
-    });
-  }
+  testWidgets('disabled dismissal keeps scrolling', (tester) async {
+    var dismissals = 0;
+    await tester.pumpWidget(
+      _Host(canDismiss: false, onDismiss: () => dismissals++),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    final list = find.byType(CustomScrollView).last;
+    await tester.fling(list, const Offset(0, 250), 2000);
+    await tester.pumpAndSettle();
+    expect(dismissals, 0);
+    await tester.drag(list, const Offset(0, -250));
+    await tester.pumpAndSettle();
+    final scrollable = find
+        .descendant(of: list, matching: find.byType(Scrollable))
+        .first;
+    expect(
+      tester.state<ScrollableState>(scrollable).position.pixels,
+      greaterThan(0),
+    );
+    expect(tester.takeException(), isNull);
+  });
 
   for (final dark in <bool>[false, true]) {
     for (final expanded in <bool>[false, true]) {
@@ -124,7 +110,6 @@ void main() {
           final captureKey = GlobalKey();
           await tester.pumpWidget(
             _Host(
-              adaptive: false,
               canDismiss: true,
               expand: expanded,
               dark: dark,
@@ -180,11 +165,7 @@ void main() {
     await tester.pumpWidget(
       Opacity(
         opacity: .85,
-        child: _Host(
-          adaptive: false,
-          canDismiss: true,
-          onDismiss: () => dismissed = true,
-        ),
+        child: _Host(canDismiss: true, onDismiss: () => dismissed = true),
       ),
     );
     await tester.tap(find.text('Open'));
@@ -208,7 +189,7 @@ void main() {
 
   testWidgets('search expands the partial sheet', (tester) async {
     await tester.pumpWidget(
-      _Host(adaptive: false, canDismiss: true, expand: false, onDismiss: () {}),
+      _Host(canDismiss: true, expand: false, onDismiss: () {}),
     );
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
@@ -229,9 +210,7 @@ void main() {
   testWidgets('keyboard insets preserve alphabet size and position', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      _Host(adaptive: false, canDismiss: true, onDismiss: () {}),
-    );
+    await tester.pumpWidget(_Host(canDismiss: true, onDismiss: () {}));
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
     final rail = find.byKey(const ValueKey<String>('country_picker_alphabet'));
@@ -248,10 +227,9 @@ void main() {
   });
 }
 
-/// Runs the public picker API against both supported route presentations.
+/// Hosts the public picker for the sheet gesture tests.
 class _Host extends StatelessWidget {
   const _Host({
-    required this.adaptive,
     required this.canDismiss,
     required this.onDismiss,
     this.expand = true,
@@ -259,7 +237,6 @@ class _Host extends StatelessWidget {
     this.captureKey,
   });
 
-  final bool adaptive;
   final bool canDismiss;
   final VoidCallback onDismiss;
   final bool expand;
@@ -290,7 +267,6 @@ class _Host extends StatelessWidget {
           child: TextButton(
             onPressed: () => showCountryPicker(
               context: context,
-              adaptive: adaptive,
               expand: expand,
               showGroup: true,
               showSearch: true,

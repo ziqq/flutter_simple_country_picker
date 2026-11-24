@@ -378,11 +378,7 @@ void _$defaultCountryPhoneInputTest() {
           locale: const Locale('en'),
           builder: (_) => Scaffold(
             body: InheritedCountryPickerTheme(
-              data: CountryPickerTheme(
-                padding: 24,
-                // ignore: deprecated_member_use_from_same_package
-                indent: 40,
-              ),
+              data: CountryPickerTheme(padding: 24),
               child: const CountryPhoneInput(),
             ),
           ),
@@ -524,18 +520,14 @@ void _$defaultCountryPhoneInputTest() {
         },
       );
 
-      testWidgets('forwards the correctly spelled haptic feedback parameter', (
+      testWidgets('forwards disabled haptic feedback to the picker', (
         tester,
       ) async {
         await tester.pumpWidget(
           createWidgetUnderTest(
             locale: const Locale('en'),
             builder: (_) => const Scaffold(
-              body: CountryPhoneInput(
-                // ignore: deprecated_member_use
-                useHaptickFeedback: true,
-                useHapticFeedback: false,
-              ),
+              body: CountryPhoneInput(useHapticFeedback: false),
             ),
           ),
         );

@@ -180,7 +180,6 @@ class CountryPicker$Web extends StatefulWidget {
   /// {@macro county_input}
   const CountryPicker$Web({
     this.placeholder = 'Phone number',
-    this.onDone,
     this.onSelect,
     this.selected,
     this.exclude,
@@ -189,7 +188,6 @@ class CountryPicker$Web extends StatefulWidget {
     this.isScrollControlled = false,
     this.showPhoneCode = false,
     this.showWorldWide = false,
-    this.useAutofocus = false,
     this.useHapticFeedback = true,
     this.showSearch,
     super.key,
@@ -199,7 +197,6 @@ class CountryPicker$Web extends StatefulWidget {
   final String? placeholder;
 
   /// Called when the country was selected.
-  final VoidCallback? onDone;
 
   /// {@macro select_country_callback}
   final SelectCountryCallback? onSelect;
@@ -229,7 +226,6 @@ class CountryPicker$Web extends StatefulWidget {
   final bool? showSearch;
 
   /// Use autofocus for the search countryies input field.
-  final bool useAutofocus;
 
   /// Use haptic feedback?
   final bool useHapticFeedback;

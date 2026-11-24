@@ -17,7 +17,6 @@ class CountryPickerSheetGesture extends StatefulWidget {
     required this.canDismiss,
     required this.onDismiss,
     required this.builder,
-    this.canDismissFromHeader = false,
     super.key,
   });
 
@@ -41,9 +40,6 @@ class CountryPickerSheetGesture extends StatefulWidget {
   /// Whether a downward gesture started at the top may dismiss the route.
   final bool canDismiss;
 
-  /// Whether the Material header can dismiss even when the list cannot.
-  final bool canDismissFromHeader;
-
   /// Dismisses the enclosing route after a deliberate sheet drag.
   final VoidCallback onDismiss;
 
@@ -53,9 +49,7 @@ class CountryPickerSheetGesture extends StatefulWidget {
   /// Gives the header its own drag recognizer when only it can dismiss.
   static Widget headerDragOf(BuildContext context, Widget header) {
     final state = context.findAncestorStateOfType<_SheetGestureState>();
-    if (state == null ||
-        !state.widget.canDismissFromHeader ||
-        state.widget.canDismiss) {
+    if (state == null || state.widget.canDismiss) {
       return header;
     }
     return GestureDetector(

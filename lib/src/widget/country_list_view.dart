@@ -32,12 +32,7 @@ class CountryListView extends StatefulWidget {
     this.selected,
     this.onSelect,
     this.scrollController,
-    this.adaptive = false,
     this.autofocus = false,
-    @Deprecated(
-      'Use autofocus instead. This will be removed in v1.0.0 releases.',
-    )
-    this.useAutofocus = false,
     this.showPhoneCode = false,
     this.showWorldWide = false,
     this.useRootNavigator = true,
@@ -54,9 +49,6 @@ class CountryListView extends StatefulWidget {
 
   /// Whether the view paints its background or the modal shell supplies it.
   final bool paintBackground;
-
-  /// An optional argument for adaptive modal presentation.
-  final bool adaptive;
 
   /// An optional argument for autofocus the search bar.
   final bool autofocus;
@@ -75,10 +67,6 @@ class CountryListView extends StatefulWidget {
   /// An optional argument for showing "World Wide"
   /// option at the beginning of the list
   final bool showWorldWide;
-
-  /// An optional argument for autofocus the search bar.
-  @Deprecated('Use autofocus instead. This will be removed in v1.0.0 releases.')
-  final bool useAutofocus;
 
   /// Whether to use root navigator to display the bottom sheet.
   final bool useRootNavigator;
@@ -295,7 +283,7 @@ class _CountriesListViewState extends State<CountryListView>
                   child: CountryPickerSearchDock(
                     controller: search,
                     focusNode: _searchFocus,
-                    autofocus: widget.autofocus || widget.useAutofocus,
+                    autofocus: widget.autofocus,
                     surfaceBuilder: widget.surfaceBuilder,
                     onClose: _closePicker,
                   ),

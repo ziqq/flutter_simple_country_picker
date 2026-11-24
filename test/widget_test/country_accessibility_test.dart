@@ -248,50 +248,47 @@ void main() => group('Country accessibility -', () {
       );
     },
   );
-  for (final adaptive in [false, true]) {
-    testWidgets(
-      'modal large text safe area adaptive=$adaptive',
-      (tester) async {
-        tester.view.padding = const FakeViewPadding(top: 24, bottom: 34);
-        tester.view.viewPadding = const FakeViewPadding(top: 24, bottom: 34);
-        addTearDown(tester.view.resetPadding);
-        addTearDown(tester.view.resetViewPadding);
-        Country? selected;
-        await _pumpAccessible(
-          tester,
-          size: const Size(320, 568),
-          scale: 3.2,
-          child: Builder(
-            builder: (context) => TextButton(
-              onPressed: () => showCountryPicker(
-                context: context,
-                adaptive: adaptive,
-                showSearch: true,
-                showGroup: true,
-                filter: const ['BS', 'RU', 'ZW'],
-                showPhoneCode: true,
-                onSelect: (country) => selected = country,
-              ),
-              child: const Text('Open'),
+  testWidgets(
+    'modal large text safe area',
+    (tester) async {
+      tester.view.padding = const FakeViewPadding(top: 24, bottom: 34);
+      tester.view.viewPadding = const FakeViewPadding(top: 24, bottom: 34);
+      addTearDown(tester.view.resetPadding);
+      addTearDown(tester.view.resetViewPadding);
+      Country? selected;
+      await _pumpAccessible(
+        tester,
+        size: const Size(320, 568),
+        scale: 3.2,
+        child: Builder(
+          builder: (context) => TextButton(
+            onPressed: () => showCountryPicker(
+              context: context,
+              showSearch: true,
+              showGroup: true,
+              filter: const ['BS', 'RU', 'ZW'],
+              showPhoneCode: true,
+              onSelect: (country) => selected = country,
             ),
+            child: const Text('Open'),
           ),
-        );
-        await tester.tap(find.text('Open'));
-        await tester.pumpAndSettle();
-        expect(tester.takeException(), isNull);
-        await tester.enterText(find.byType(CupertinoSearchTextField), 'Russia');
-        await tester.pumpAndSettle();
-        expect(tester.takeException(), isNull);
-        await tester.tap(find.bySemanticsLabel('Russia, +7'));
-        await tester.pumpAndSettle();
-        expect(selected?.countryCode, 'RU');
-      },
-      variant: const TargetPlatformVariant({
-        TargetPlatform.android,
-        TargetPlatform.iOS,
-      }),
-    );
-  }
+        ),
+      );
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      await tester.enterText(find.byType(CupertinoSearchTextField), 'Russia');
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.bySemanticsLabel('Russia, +7'));
+      await tester.pumpAndSettle();
+      expect(selected?.countryCode, 'RU');
+    },
+    variant: const TargetPlatformVariant({
+      TargetPlatform.android,
+      TargetPlatform.iOS,
+    }),
+  );
 
   testWidgets(
     'font preferences update an existing list and support nonlinear scaling',
