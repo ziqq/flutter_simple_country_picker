@@ -47,6 +47,72 @@ void main() => group('CountryPickerTheme -', () {
     }
   });
 
+  test('a barrier-only theme change notifies dependents', () {
+    final first = CountryPickerTheme(barrierColor: Colors.black);
+    final second = first.copyWith(barrierColor: Colors.red);
+    const child = SizedBox.shrink();
+
+    expect(first, isNot(second));
+    expect(
+      InheritedCountryPickerTheme(
+        data: second,
+        child: child,
+      ).updateShouldNotify(
+        InheritedCountryPickerTheme(data: first, child: child),
+      ),
+      isTrue,
+    );
+  });
+
+  test('copyWith preserves the exact nullable values of a raw theme', () {
+    const theme = CountryPickerTheme.raw(
+      accentColor: null,
+      backgroundColor: Colors.white,
+      onBackgroundColor: null,
+      secondaryBackgroundColor: Colors.blue,
+      onSecondaryBackgroundColor: null,
+      barrierColor: null,
+      dividerColor: null,
+      inputDecoration: null,
+      inputHeight: 56,
+      secondaryTextStyle: null,
+      searchTextStyle: null,
+      textStyle: null,
+      flagSize: null,
+      padding: 16,
+      indent: 10,
+      radius: 12,
+    );
+
+    expect(theme.copyWith(), theme);
+  });
+
+  test('copyWith inherits newly supplied background colors when unset', () {
+    final theme = CountryPickerTheme().copyWith(
+      secondaryBackgroundColor: Colors.red,
+      backgroundColor: Colors.blue,
+    );
+
+    expect(theme.onBackgroundColor, Colors.red);
+    expect(theme.onSecondaryBackgroundColor, Colors.blue);
+  });
+
+  test('lerp keeps the closer inputDecoration', () {
+    const first = InputDecoration(hintText: 'First');
+    const second = InputDecoration(hintText: 'Second');
+    final a = CountryPickerTheme(inputDecoration: first);
+    final b = CountryPickerTheme(inputDecoration: second);
+
+    for (final (t, decoration) in [
+      (0.0, first),
+      (0.25, first),
+      (0.5, second),
+      (1.0, second),
+    ]) {
+      expect((a.lerp(b, t) as CountryPickerTheme).inputDecoration, decoration);
+    }
+  });
+
   test('constructs with default values', () {
     final theme = CountryPickerTheme(
       accentColor: CupertinoColors.systemRed,

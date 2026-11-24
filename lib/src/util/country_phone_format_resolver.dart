@@ -6,6 +6,7 @@
 import 'package:flutter_simple_country_picker/src/constant/country_phone_display_patterns.g.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_phone_rules.g.dart';
 import 'package:flutter_simple_country_picker/src/model/country.dart';
+import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 import 'package:meta/meta.dart';
 
 /// Resolves national formatting independently from input editing and validation.
@@ -86,16 +87,14 @@ class CountryPhoneFormatResolver {
     required bool allowImplicitCode,
   }) {
     var digits = text.replaceAll(_nonDigits, '');
-    final international =
-        text.trimLeft().startsWith('+') || text.trimLeft().startsWith('00');
+    final input = CountryUtil.trimPhoneInput(text);
+    final hasAccessCode = input.startsWith('00');
+    final international = input.startsWith('+') || hasAccessCode;
     final code = country.phoneCode;
-    if (stripCode &&
-        text.trimLeft().startsWith('00') &&
-        digits.startsWith('00$code') &&
-        digits.length > code.length + 2) {
+    if (stripCode && hasAccessCode && digits.startsWith('00$code')) {
       digits = digits.substring(2);
     }
-    if (stripCode && digits.startsWith(code) && digits.length > code.length) {
+    if (stripCode && digits.startsWith(code)) {
       final candidate = digits.substring(code.length);
       if (international ||
           (allowImplicitCode &&

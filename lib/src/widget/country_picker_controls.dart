@@ -668,7 +668,9 @@ class CountryPickerSearchDock extends StatelessWidget {
                   controller: controller,
                   onSuffixTap: controller.clear,
                   onSubmitted: (_) => focusNode.unfocus(),
-                  style: theme.textStyle?.copyWith(height: 1.3),
+                  style: theme.searchTextStyle?.copyWith(
+                    height: theme.searchTextStyle?.height ?? 1.3,
+                  ),
                   placeholderStyle: theme.searchTextStyle?.copyWith(
                     color: theme.searchTextStyle?.color?.withValues(alpha: .5),
                     height: 1.3,

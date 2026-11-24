@@ -13,6 +13,33 @@ import '../util/test_util.dart';
 const _key = Key('country_picker_theme');
 
 void main() => group('CountryPickerTheme -', () {
+  test('lerp preserves null raw background colors', () {
+    CountryPickerTheme theme(Color backgroundColor) => CountryPickerTheme.raw(
+      accentColor: null,
+      backgroundColor: backgroundColor,
+      onBackgroundColor: null,
+      secondaryBackgroundColor: backgroundColor,
+      onSecondaryBackgroundColor: null,
+      barrierColor: null,
+      dividerColor: null,
+      inputDecoration: null,
+      inputHeight: 56,
+      secondaryTextStyle: null,
+      searchTextStyle: null,
+      textStyle: null,
+      flagSize: null,
+      padding: 16,
+      indent: 8,
+      radius: 12,
+    );
+    final start = theme(Colors.red);
+    final end = theme(Colors.blue);
+    final middle = start.lerp(end, .5) as CountryPickerTheme;
+    expect(middle.onBackgroundColor, isNull);
+    expect(middle.onSecondaryBackgroundColor, isNull);
+    expect(middle.flagSize, isNull);
+  });
+
   testWidgets('provides theme data to children widgets', (tester) async {
     final themeData = CountryPickerTheme(
       accentColor: CupertinoColors.systemBlue,
@@ -235,6 +262,80 @@ void main() => group('CountryPickerTheme -', () {
       expect(rebuilds, greaterThan(countAfterFirst));
     },
   );
+
+  testWidgets('resolve inherits picker text style and the app text color', (
+    tester,
+  ) async {
+    const bodyColor = Colors.purple;
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        builder: (context) => Theme(
+          data: Theme.of(context).copyWith(
+            textTheme: Theme.of(
+              context,
+            ).textTheme.copyWith(bodyLarge: const TextStyle(color: bodyColor)),
+          ),
+          child: InheritedCountryPickerTheme(
+            data: CountryPickerTheme(
+              textStyle: const TextStyle(
+                color: Colors.green,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            child: Builder(
+              builder: (context) {
+                final resolved = CountryPickerTheme.resolve(
+                  context,
+                  CountryPickerTheme(textStyle: const TextStyle(fontSize: 18)),
+                );
+                expect(resolved.textStyle?.fontSize, 18);
+                expect(resolved.textStyle?.fontWeight, FontWeight.bold);
+                expect(resolved.textStyle?.color, Colors.green);
+
+                final fallback = CountryPickerTheme.resolve(
+                  context,
+                  CountryPickerTheme(
+                    textStyle: const TextStyle(inherit: false),
+                  ),
+                );
+                expect(fallback.textStyle?.color, bodyColor);
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  });
+
+  testWidgets('uses inherited text paint when bodyLarge has no paint', (
+    tester,
+  ) async {
+    const textColor = Colors.orange;
+    await tester.pumpWidget(
+      createWidgetUnderTest(
+        builder: (context) => Theme(
+          data: Theme.of(context).copyWith(
+            textTheme: Theme.of(
+              context,
+            ).textTheme.copyWith(bodyLarge: const TextStyle(fontSize: 17)),
+          ),
+          child: DefaultTextStyle(
+            style: const TextStyle(color: textColor),
+            child: Builder(
+              builder: (context) {
+                expect(
+                  CountryPickerTheme.resolve(context).textStyle?.color,
+                  textColor,
+                );
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  });
 
   testWidgets('InheritedCountryPickerTheme.wrap produces same-data wrapper', (
     tester,

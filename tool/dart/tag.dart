@@ -35,10 +35,9 @@ void main() => runZonedGuarded<void>(
     final aheadResult = await Process.run('git', [
       'rev-list',
       '--count',
-      '--left-only',
-      '@{u}...HEAD',
+      '@{u}..HEAD',
     ]);
-    if (_readStdout(aheadResult).trim() != '0') {
+    if (aheadResult.exitCode != 0 || _readStdout(aheadResult).trim() != '0') {
       l.e('There are unpushed changes.');
       exit(1);
     }

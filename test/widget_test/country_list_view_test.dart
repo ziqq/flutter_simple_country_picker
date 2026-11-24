@@ -43,6 +43,7 @@ void main() => group('CountryListView -', () {
                 searchTextStyle: const TextStyle(color: Colors.green),
               ),
               child: CountryListView(
+                showPhoneCode: true,
                 autofocus: autofocus,
                 showSearch: true,
                 showGroup: showGroup,

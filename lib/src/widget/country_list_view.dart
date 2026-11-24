@@ -216,10 +216,13 @@ class _CountriesListViewState extends State<CountryListView>
             : Colors.transparent,
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(headerHeight),
-          child: CountryPickerHeader(
-            onScrollToTop: handleStatusBarTap,
-            surfaceBuilder: widget.surfaceBuilder,
-            onClose: _closePicker,
+          child: CountryPickerSheetGesture.headerDragOf(
+            context,
+            CountryPickerHeader(
+              onScrollToTop: handleStatusBarTap,
+              surfaceBuilder: widget.surfaceBuilder,
+              onClose: _closePicker,
+            ),
           ),
         ),
         body: GestureDetector(
@@ -230,6 +233,7 @@ class _CountriesListViewState extends State<CountryListView>
             children: <Widget>[
               CustomScrollView(
                 controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
                 keyboardDismissBehavior:
                     ScrollViewKeyboardDismissBehavior.onDrag,
                 slivers: [
@@ -240,6 +244,7 @@ class _CountriesListViewState extends State<CountryListView>
                       controller: _controller,
                       groups: _groups,
                       favorites: widget.favorites,
+                      showPhoneCode: widget.showPhoneCode,
                       selected: widget.selected,
                       onSelect: widget.onSelect,
                     ),
@@ -310,6 +315,7 @@ class _CountriesList extends StatefulWidget {
   const _CountriesList({
     required this.controller,
     required this.groups,
+    required this.showPhoneCode,
     this.favorites,
     this.selected,
     this.onSelect,
@@ -322,6 +328,9 @@ class _CountriesList extends StatefulWidget {
 
   /// Favorite country codes (iso2) shown in a section above the letters.
   final List<String>? favorites;
+
+  /// Whether calling-code entries are distinguished in selection.
+  final bool showPhoneCode;
 
   /// {@macro select_country_notifier}
   final SelectedCountry? selected;
@@ -459,6 +468,11 @@ class _CountriesListState extends State<_CountriesList> {
     widget.selected?.value = country;
   }
 
+  /// Compares the displayed identity of a row with the selected country.
+  bool _isSelected(Country country, Country? selected) => widget.showPhoneCode
+      ? selected?.e164Key == country.e164Key
+      : selected?.countryCode == country.countryCode;
+
   /// Builds compact country rows in one lazy list.
   Widget _buildSection(List<Country> countries, Country? selected) {
     final theme = CountryPickerTheme.resolve(context);
@@ -472,7 +486,8 @@ class _CountriesListState extends State<_CountriesList> {
           _CountryListTile(
             key: ValueKey<String>(countries[index].e164Key),
             country: countries[index],
-            selected: selected?.countryCode == countries[index].countryCode,
+            showPhoneCode: widget.showPhoneCode,
+            selected: _isSelected(countries[index], selected),
             onSelect: _onSelect,
           ),
           Divider(
@@ -541,7 +556,8 @@ class _CountriesListState extends State<_CountriesList> {
           _CountryListTile(
             key: ValueKey<String>(country.e164Key),
             country: country,
-            selected: selected?.countryCode == country.countryCode,
+            showPhoneCode: widget.showPhoneCode,
+            selected: _isSelected(country, selected),
             onSelect: _onSelect,
             horizontalPadding: contentInset,
           ),
@@ -623,6 +639,7 @@ class _CountriesListState extends State<_CountriesList> {
 class _CountryListTile extends StatelessWidget {
   const _CountryListTile({
     required this.country,
+    required this.showPhoneCode,
     this.onSelect,
     this.selected = false,
     this.horizontalPadding,
@@ -634,6 +651,9 @@ class _CountryListTile extends StatelessWidget {
 
   /// Current country.
   final Country country;
+
+  /// Whether to show the dialing code in this tile.
+  final bool showPhoneCode;
 
   /// {@macro select_country_callback}
   final SelectCountryCallback? onSelect;
@@ -651,8 +671,9 @@ class _CountryListTile extends StatelessWidget {
     if (useHapticFeedback ?? true) {
       HapticFeedback.heavyImpact().ignore();
     }
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) navigator.pop<void>();
     onSelect?.call(country.copyWith(nameLocalized: nameLocalized));
-    Navigator.of(context).maybePop<void>();
   }
 
   /// Wraps [child] into an [InkWell] with the Cupertino-like highlight.
@@ -671,7 +692,7 @@ class _CountryListTile extends StatelessWidget {
     container: true,
     button: true,
     selected: semanticsSelected,
-    label: country.phoneCode.isEmpty
+    label: !showPhoneCode || country.phoneCode.isEmpty
         ? nameLocalized ?? country.name
         : '${nameLocalized ?? country.name}, +${country.phoneCode}',
     child: Material(
@@ -753,7 +774,7 @@ class _CountryListTile extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (large && country.phoneCode.isNotEmpty)
+                    if (large && showPhoneCode && country.phoneCode.isNotEmpty)
                       Text(
                         phone,
                         style: titleStyle?.copyWith(
@@ -765,7 +786,7 @@ class _CountryListTile extends StatelessWidget {
                   ],
                 ),
               ),
-              if (!large && country.phoneCode.isNotEmpty)
+              if (!large && showPhoneCode && country.phoneCode.isNotEmpty)
                 Text(
                   phone,
                   style: titleStyle?.copyWith(

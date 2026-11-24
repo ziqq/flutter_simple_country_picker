@@ -165,6 +165,7 @@ void main() => group('Country accessibility -', () {
           scale: 3.2,
           child: CountryListView(
             filter: const ['AU', 'RU', 'ZW'],
+            showPhoneCode: true,
             showGroup: true,
             selected: notifier,
             onSelect: (country) => selected = country,
@@ -268,6 +269,7 @@ void main() => group('Country accessibility -', () {
                 showSearch: true,
                 showGroup: true,
                 filter: const ['BS', 'RU', 'ZW'],
+                showPhoneCode: true,
                 onSelect: (country) => selected = country,
               ),
               child: const Text('Open'),
@@ -294,7 +296,11 @@ void main() => group('Country accessibility -', () {
   testWidgets(
     'font preferences update an existing list and support nonlinear scaling',
     (tester) async {
-      const list = CountryListView(filter: ['RU'], showGroup: true);
+      const list = CountryListView(
+        filter: ['RU'],
+        showGroup: true,
+        showPhoneCode: true,
+      );
       await _pumpAccessible(
         tester,
         size: const Size(320, 568),

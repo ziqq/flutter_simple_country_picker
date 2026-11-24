@@ -9,6 +9,7 @@ import 'package:flutter/material.dart'
     show
         BuildContext,
         VoidCallback,
+        Theme,
         BorderRadius,
         Radius,
         showModalBottomSheet,
@@ -23,7 +24,6 @@ import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart'
 import 'package:flutter_simple_country_picker/src/widget/country_picker_controls.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_picker_sheet_gesture.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_picker_surface.dart';
-import 'package:meta/meta.dart';
 
 /// {@template show_country_picker}
 /// Shows a bottom sheet containing a list of countries to select one.
@@ -67,9 +67,10 @@ import 'package:meta/meta.dart';
 /// country list is dragged down by a gesture that started at its beginning.
 /// A gesture started farther down only scrolls the list, including its inertia;
 /// reaching the beginning does not transfer that gesture to sheet dismissal.
+/// A downward drag on the Material sheet header can dismiss it independently.
 ///
 /// The [showPhoneCode] argument can be used
-/// to show phone code before the country name.
+/// to show dialing codes alongside country names.
 ///
 /// The [showWorldWide] argument argument can be used
 /// to show "World Wide" option.
@@ -111,6 +112,9 @@ void showCountryPicker({
   VoidCallback? onDone,
   VoidCallback? whenComplete,
   bool expand = true,
+  @Deprecated(
+    'Omit adaptive to use the Material sheet. Will be removed in 1.0.0.',
+  )
   bool adaptive = false,
   bool autofocus = false,
   bool isDismissible = true,
@@ -137,7 +141,8 @@ void showCountryPicker({
   CountryPickerSurfaceBuilder? surfaceBuilder,
 }) {
   final isiOS = defaultTargetPlatform == .iOS;
-  final effectiveExpand = expand || (adaptive && isiOS);
+  final useCupertinoSheet = adaptive && isiOS;
+  final effectiveExpand = expand || useCupertinoSheet;
   final effectiveMinChildSize =
       minChildSize ??
       initialChildSize ??
@@ -145,21 +150,20 @@ void showCountryPicker({
   final effectiveUseHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
 
   final pickerTheme = CountryPickerTheme.resolve(context);
-  final radius = Radius.circular(pickerTheme.sheetCornerRadius);
-  final borderRadius = BorderRadius.only(topLeft: radius, topRight: radius);
   void complete() => (whenComplete ?? onDone)?.call();
 
   Widget buildSheet(BuildContext context) => CountryPickerSheetGesture(
     initialSize: initialChildSize ?? (effectiveExpand ? 1.0 : .65),
     minSize: effectiveMinChildSize,
     canDismiss: shouldCloseOnSwipeDown,
+    canDismissFromHeader: !useCupertinoSheet,
     onDismiss: () =>
         Navigator.of(context, rootNavigator: useRootNavigator).pop<void>(),
     builder: (context, controller) {
-      final color = countryPickerSheetBackgroundColor(
-        context,
-        CountryPickerTheme.resolve(context),
-      );
+      final theme = CountryPickerTheme.resolve(context);
+      final radius = Radius.circular(theme.sheetCornerRadius);
+      final borderRadius = BorderRadius.only(topLeft: radius, topRight: radius);
+      final color = countryPickerSheetBackgroundColor(context, theme);
       final content = CountryListView(
         exclude: exclude,
         favorites: favorites,
@@ -206,13 +210,24 @@ void showCountryPicker({
   if (effectiveUseHapticFeedback) HapticFeedback.heavyImpact().ignore();
 
   /// Show adaptive bottom sheet for `iOS` platform, if [adaptive] is `true`.
-  if (adaptive && isiOS) {
+  if (useCupertinoSheet) {
     final navigator = Navigator.of(context, rootNavigator: useRootNavigator);
-    final themes = InheritedTheme.capture(from: context, to: navigator.context);
+    final themeOverride = _capturePickerTheme(
+      from: context,
+      to: navigator.context,
+    );
     navigator
         .push<void>(
           _CountryPickerCupertinoRoute(
-            contentBuilder: (context) => themes.wrap(builder(context)),
+            contentBuilder: (context) {
+              final sheet = builder(context);
+              return themeOverride == null
+                  ? sheet
+                  : InheritedCountryPickerTheme(
+                      data: themeOverride,
+                      child: sheet,
+                    );
+            },
           ),
         )
         .whenComplete(complete)
@@ -225,7 +240,7 @@ void showCountryPicker({
       backgroundColor: Colors.transparent,
       barrierColor: pickerTheme.barrierColor,
       isDismissible: isDismissible,
-      isScrollControlled: true,
+      isScrollControlled: isScrollControlled || expand,
       enableDrag: false,
       useRootNavigator: useRootNavigator,
       useSafeArea: useSafeArea,
@@ -258,133 +273,31 @@ class _CountryPickerCupertinoRoute extends CupertinoSheetRoute<void> {
   );
 }
 
-/// {@template country_picker_options}
-/// Country picker options.
-/// {@endtemplate}
-@immutable
-@experimental
-class CountryPickerOptions {
-  /// {@macro country_picker_options}
-  const CountryPickerOptions({
-    this.exclude,
-    this.favorites,
-    this.filter,
-    this.selected,
-    this.onSelect,
-    @Deprecated(
-      'Use whenComplete instead. This method will be removed in v1.0.0 releases.',
-    )
-    this.onDone,
-    this.whenComplete,
-    this.expand = true,
-    this.adaptive = false,
-    this.autofocus = false,
-    this.isDismissible = true,
-    this.isScrollControlled = true,
-    this.shouldCloseOnSwipeDown = false,
-    this.showPhoneCode = false,
-    this.showWorldWide = false,
-    @Deprecated(
-      'Use useHapticFeedback instead. This parameter will be removed in '
-      'v1.0.0 releases.',
-    )
-    bool useHaptickFeedback = true,
-    bool? useHapticFeedback,
-    this.useRootNavigator = false,
-    @Deprecated(
-      'Use autofocus instead. This propery will be removed in v1.0.0 releases.',
-    )
-    this.useAutofocus = false,
-    this.useSafeArea = true,
-    this.showGroup,
-    this.showSearch,
-    this.initialChildSize,
-    this.minChildSize,
-    this.surfaceBuilder,
-  }) : useHaptickFeedback = useHapticFeedback ?? useHaptickFeedback,
-       useHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
+// TODO(ziqq): Remove _capturePickerTheme in 1.0.0.
+/// Captures the picker theme between the opener and the route's navigator.
+CountryPickerTheme? _capturePickerTheme({
+  required BuildContext from,
+  required BuildContext to,
+}) {
+  if (from == to) return null;
 
-  /// List of country codes to exclude.
-  final List<String>? exclude;
+  if (from.getInheritedWidgetOfExactType<InheritedCountryPickerTheme>() !=
+      null) {
+    CountryPickerTheme? theme;
+    from.visitAncestorElements((ancestor) {
+      if (ancestor == to) return false;
+      if (ancestor.widget case InheritedCountryPickerTheme(:final data)) {
+        theme = data;
+        return false;
+      }
+      return true;
+    });
+    return theme;
+  }
 
-  /// List of favorites country codes.
-  final List<String>? favorites;
-
-  /// List of country codes to filter.
-  final List<String>? filter;
-
-  /// Initially selected country.
-  final SelectedCountry? selected;
-
-  /// Callback when a country is selected.
-  final SelectCountryCallback? onSelect;
-  @Deprecated(
-    'Use whenComplete instead. This method will be removed in v1.0.0 releases.',
-  )
-  /// Callback when the picker is dismissed.
-  final VoidCallback? onDone;
-
-  /// Callback when the picker is dismissed.
-  final VoidCallback? whenComplete;
-
-  /// Whether to open at full height. Defaults to `true`.
-  final bool expand;
-
-  /// Adaptive style?
-  /// Shows iOS style bottom sheet on iOS platform.
-  final bool adaptive;
-
-  /// Autofocus the search field?
-  final bool autofocus;
-
-  /// Used to make the bottom sheet dismissible.
-  final bool isDismissible;
-
-  /// Used to make the bottom sheet scrollable.
-  final bool isScrollControlled;
-
-  /// Close on swipe down gesture.
-  final bool shouldCloseOnSwipeDown;
-
-  /// Show phone code before the country name.
-  final bool showPhoneCode;
-
-  /// Show "World Wide" option.
-  final bool showWorldWide;
-  @Deprecated(
-    'Use autofocus instead. This propery will be removed in v1.0.0 releases.',
-  )
-  /// Initially expand virtual keyboard.
-  final bool useAutofocus;
-
-  /// Whether to use haptic feedback.
-  @Deprecated(
-    'Use useHapticFeedback instead. This property will be removed in '
-    'v1.0.0 releases.',
-  )
-  final bool useHaptickFeedback;
-
-  /// Whether to use haptic feedback.
-  final bool useHapticFeedback;
-
-  /// Use root navigator?
-  final bool useRootNavigator;
-
-  /// Use [SafeArea]?
-  final bool useSafeArea;
-
-  /// Show country groups.
-  final bool? showGroup;
-
-  /// Show/hide the search bar.
-  final bool? showSearch;
-
-  /// Initial child size for the modal bottom sheet.
-  final double? initialChildSize;
-
-  /// Min child size for the modal bottom sheet.
-  final double? minChildSize;
-
-  /// {@macro country_picker_surface_builder}
-  final CountryPickerSurfaceBuilder? surfaceBuilder;
+  final extensions = Theme.of(from).extensions;
+  if (identical(extensions, Theme.of(to).extensions)) return null;
+  if (extensions[CountryPickerTheme] case CountryPickerTheme theme)
+    return theme;
+  return null;
 }

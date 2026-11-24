@@ -13,9 +13,12 @@ import 'package:meta/meta.dart';
 @internal
 class CountryProvider {
   /// {@macro country_provider}
-  CountryProvider() : _countries = countries.map(Country.fromJson).toList();
+  CountryProvider();
 
-  final List<Country> _countries;
+  /// The parsed dataset, initialized on the first country lookup or fetch.
+  late final List<Country> _countries = countries
+      .map(Country.fromJson)
+      .toList();
 
   /// Return list with all countries
   Future<List<Country>> getCountries() async =>
