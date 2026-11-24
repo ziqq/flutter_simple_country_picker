@@ -7,13 +7,12 @@ import 'dart:developer' as developer;
 import 'dart:io';
 import 'dart:ui' show FramePhase, FrameTiming;
 
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized()
@@ -54,9 +53,7 @@ void main() {
               supportedLocales: CountryLocalizations.supportedLocales,
               localizationsDelegates: const [
                 CountryLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
+                ...GlobalMaterialLocalizations.delegates,
               ],
               theme: ThemeData(
                 brightness: brightness,

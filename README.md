@@ -27,21 +27,18 @@ An easy-to-use country selection widget for Flutter. Allows users to select a co
 
 ## Quick Start
 
-Requires Flutter 3.44.0 or newer.
+Requires Flutter 3.44.0 and Dart 3.12.0 or newer.
 
 Add the package and register the localization delegate, then open the picker:
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:material_ui/material_ui.dart';
 
 MaterialApp(
   localizationsDelegates: [
     CountryLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
+    ...GlobalMaterialLocalizations.delegates,
   ],
   // Pass the built-in list directly — no need to enumerate locales manually.
   supportedLocales: CountryLocalizations.supportedLocales,
@@ -63,8 +60,13 @@ showCountryPicker(
 Add the package to your project:
 
 ```sh
-flutter pub add flutter_simple_country_picker
+flutter pub add flutter_simple_country_picker material_ui
 ```
+
+Add `cupertino_ui` as a direct dependency when your application imports its
+Cupertino widgets or theme. Use the standalone design package imports in
+the application that hosts the picker. See the [migration guide](MIGRATION.md#to-100)
+for the complete upgrade steps.
 
 Import the library in your Dart file:
 
@@ -105,9 +107,7 @@ MaterialApp(
   ],
   localizationsDelegates: [
     CountryLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
+    ...GlobalMaterialLocalizations.delegates,
   ],
   home: const HomePage(),
 );
@@ -115,8 +115,8 @@ MaterialApp(
 
 > `CountryLocalizations.supportedLocales` lists all 75 picker locales. When
 > configuring `MaterialApp.supportedLocales`, make sure the app also provides
-> Flutter's widget localizations for the enabled locales. The SDK delegates
-> do not cover every picker locale.
+> widget localizations for the enabled locales. The Material, Cupertino,
+> and Widgets delegates do not cover every picker locale.
 
 Supported locales: `af`, `am`, `ar`, `az`, `be`, `bg`, `bn`, `ca`, `cs`, `da`, `de`,
 `el`, `en`, `eo`, `es`, `et`, `eu`, `fa`, `fi`, `fil`, `fr`, `ga`, `gl`, `gu`, `he`,
@@ -165,7 +165,7 @@ Register it in the delegate by creating your own `LocalizationsDelegate<CountryL
 
 Upgrade notes are documented in [MIGRATION.md](MIGRATION.md).
 
-- `0.12.0`: [Migrate to 0.12.0](MIGRATION.md#to-0120)
+- `1.0.0`: [Migrate to 1.0.0](MIGRATION.md#to-100)
 - `0.11.1`: [Migrate to 0.11.1](MIGRATION.md#to-0111)
 - `0.10.0`: [Migrate to 0.10.0](MIGRATION.md#to-0100)
 - `0.9.0`: [Migrate to 0.9.0](MIGRATION.md#to-090)
@@ -598,8 +598,7 @@ showCountryPicker(context: context, surfaceBuilder: glassSurface);
 The Windows emoji font has no country flags, so a flag emoji is shown as two
 letters there. On Windows the package loads a bundled flags-only font
 (about 180 KB). It is declared as a Windows-only asset, so iOS, Android,
-macOS, Linux and web builds do not include it. The package requires Flutter
-3.44 or newer for its Cupertino sheet API.
+macOS, Linux and web builds do not include it.
 
 The font is applied only to flag text, so custom package fonts and their
 fallbacks remain in use for country names and phone codes. The bundled

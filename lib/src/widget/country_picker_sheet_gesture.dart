@@ -5,7 +5,7 @@
 
 import 'package:flutter/foundation.dart' show internal;
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// Coordinates list scrolling and a separately started sheet-dismiss gesture.
 @internal

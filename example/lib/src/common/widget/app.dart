@@ -1,13 +1,12 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/router/example_navigator.dart';
 import 'package:example/src/common/theme/theme.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
 /// {@template app}
@@ -53,9 +52,7 @@ class _AppState extends State<App> {
 
     /// Add [CountriesLocalization] in app [localizationsDelegates]
     CountryLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
+    ...GlobalMaterialLocalizations.delegates,
   ];
 
   /// Current locale of the app.
@@ -113,9 +110,13 @@ class _AppState extends State<App> {
       builder: (context, _) => MediaQuery(
         key: _builderKey,
         data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
-        child: ExampleNavigator(
-          key: const ValueKey<String>('home'),
-          pages: <ExamplePage>[HomePage<Object?>(child: widget.home)],
+        // The example's pull_down_button still reads the SDK Material theme.
+        // ignore: deprecated_member_use
+        child: MaterialUiCompatibilityBridge(
+          child: ExampleNavigator(
+            key: const ValueKey<String>('home'),
+            pages: <ExamplePage>[HomePage<Object?>(child: widget.home)],
+          ),
         ),
       ),
     ),

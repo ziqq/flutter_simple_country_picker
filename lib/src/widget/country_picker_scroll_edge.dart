@@ -10,7 +10,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, internal, kReleaseMode;
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart'
     show
         BackdropFilterLayer,
@@ -29,6 +28,7 @@ import 'package:flutter/rendering.dart'
         PipelineOwner,
         RenderBackdropFilter,
         RenderClipRSuperellipse;
+import 'package:material_ui/material_ui.dart';
 
 // At DPR 3 this retains the backdrop filter while Impeller returns its input snapshot without Gaussian passes.
 const double _scrollEdgeIdentitySigma = .0003;

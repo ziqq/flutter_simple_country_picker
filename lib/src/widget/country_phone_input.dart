@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/rendering.dart'
     show
         PaintingContext,
@@ -16,6 +15,7 @@ import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart
 import 'package:flutter_simple_country_picker/src/constant/country_phone_rules.g.dart';
 import 'package:flutter_simple_country_picker/src/util/country_flag_font_util.dart';
 import 'package:flutter_simple_country_picker/src/util/country_util.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:meta/meta.dart';
 
 /// {@template country_phone_input}

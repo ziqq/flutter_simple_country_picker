@@ -7,15 +7,15 @@ import 'dart:async' show Timer;
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/src/constant/constants.dart';
 import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:flutter_simple_country_picker/src/model/country.dart';
 import 'package:flutter_simple_country_picker/src/theme/country_picker_theme.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_picker_scroll_edge.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_picker_surface.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Measures one text line using the same scale and direction as the list.
 double _ios26TextHeight(BuildContext context, TextStyle? style) {

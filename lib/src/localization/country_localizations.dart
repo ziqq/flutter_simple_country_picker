@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart' show SynchronousFuture;
-import 'package:flutter/material.dart' show Locale;
+import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter/widgets.dart'
     show BuildContext, Localizations, LocalizationsDelegate;
 import 'package:flutter_simple_country_picker/src/localization/translations/af.dart';

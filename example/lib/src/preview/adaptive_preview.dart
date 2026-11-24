@@ -1,7 +1,7 @@
 import 'package:example/src/common/util/screen_unit.dart';
 import 'package:example/src/preview/mobile_preview.dart';
 import 'package:example/src/preview/web_preview.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// {@template county_picker_adaptive_preview}
 /// AdaptivePreview widget.

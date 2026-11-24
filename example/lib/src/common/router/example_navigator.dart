@@ -3,7 +3,7 @@
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart' show listEquals, SynchronousFuture;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Typedefinition for the authentifation navigation state.
 typedef ExampleNavigatorState = List<ExamplePage>;

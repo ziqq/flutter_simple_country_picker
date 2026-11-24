@@ -5,12 +5,25 @@ behavior-changing API updates.
 
 ## Contents
 
-- [To 0.12.0](#to-0120)
+- [To 1.0.0](#to-100)
 - [To 0.11.1](#to-0111)
 - [To 0.10.0](#to-0100)
 - [To 0.9.0](#to-090)
 
-## To 0.12.0
+## To 1.0.0
+
+Version 1.0.0 requires Flutter 3.44.0 and Dart 3.12.0. The picker and
+`CountryPickerTheme` now use the standalone Flutter design packages.
+Import `MaterialApp`, `ThemeData`, and `ThemeExtension` from `material_ui`
+when configuring the picker. Use `cupertino_ui` for the Cupertino
+widgets and theme in the same widget tree. Add each package you import
+as a direct dependency of your app.
+
+Replace the old Material and Cupertino localization delegates with
+`GlobalMaterialLocalizations.delegates` from `material_ui` and keep
+`CountryLocalizations.delegate`. This also supplies the Cupertino and
+Widgets delegates. For a root `CupertinoApp`, use the same Material
+delegate list because the country picker opens a Material bottom sheet.
 
 The picker now has one interface. Remove `CountryPickerStyle` and the `style:`
 argument from `CountryPickerTheme`. Groups have scrolling letter headers;
@@ -41,8 +54,7 @@ Replace `Country.getTranslatedName` with `Country.toLocalizedString`. For
 formatted country names, use `CountryLocalizations.getFormatedCountryNameByCode`
 in place of `CountryLocalizations.countryNameRegExp`.
 
-The minimum Flutter version is 3.44.0. The package declares a Windows-only
-font asset for flags.
+The package declares a Windows-only font asset for flags.
 
 Behavior changes to be aware of:
 

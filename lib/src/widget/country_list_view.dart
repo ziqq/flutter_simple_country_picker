@@ -3,10 +3,9 @@
  * Date: 7 October 2024
  */
 
-import 'package:flutter/cupertino.dart'
+import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoDynamicColor, CupertinoColors, CupertinoIcons;
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/controller/country_controller.dart';
@@ -16,6 +15,7 @@ import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_flag_cache.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_picker_controls.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_picker_sheet_gesture.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// {@template country_list_view}
 /// CountryListView widget.

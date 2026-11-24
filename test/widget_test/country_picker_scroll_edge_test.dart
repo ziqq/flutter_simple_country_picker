@@ -6,10 +6,10 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_picker_scroll_edge.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   // Run the shader variant from example to bundle shaders as package assets.

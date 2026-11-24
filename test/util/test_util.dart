@@ -3,10 +3,9 @@
  * Date: 12 October 2024
  */
 
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Creates a widget for testing purposes.
 Widget createWidgetUnderTest({
@@ -23,9 +22,7 @@ Widget createWidgetUnderTest({
       ThemeData.light().copyWith(splashFactory: NoSplash.splashFactory),
   localizationsDelegates: const <LocalizationsDelegate<Object?>>[
     CountryLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
+    ...GlobalMaterialLocalizations.delegates,
   ],
   home: Builder(builder: (context) => builder(context)),
 );

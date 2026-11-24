@@ -3,7 +3,7 @@
  * Date: 7 October 2024
  */
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// {@template app_error}
 /// AppError widget

@@ -5,11 +5,11 @@
 
 import 'dart:ui' as ui;
 
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() => group('CountryPickerTheme -', () {
   testWidgets('resolves divider and badge colors from a partial theme', (

@@ -1,7 +1,7 @@
 import 'package:example/src/common/widget/common_app_bar.dart';
 import 'package:example/src/common/widget/common_padding.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// {@template county_phone_input_preview}
 /// ExperimentalPreview widget.

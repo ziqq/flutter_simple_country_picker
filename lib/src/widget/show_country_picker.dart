@@ -3,8 +3,15 @@
  * Date: 7 October 2024
  */
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart'
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:flutter/services.dart' show HapticFeedback;
+import 'package:flutter_simple_country_picker/src/constant/typedef.dart';
+import 'package:flutter_simple_country_picker/src/theme/country_picker_theme.dart';
+import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart';
+import 'package:flutter_simple_country_picker/src/widget/country_picker_controls.dart';
+import 'package:flutter_simple_country_picker/src/widget/country_picker_sheet_gesture.dart';
+import 'package:flutter_simple_country_picker/src/widget/country_picker_surface.dart';
+import 'package:material_ui/material_ui.dart'
     show
         BuildContext,
         VoidCallback,
@@ -15,13 +22,6 @@ import 'package:flutter/material.dart'
         RoundedSuperellipseBorder,
         DecoratedBox,
         Colors;
-import 'package:flutter/services.dart' show HapticFeedback;
-import 'package:flutter_simple_country_picker/src/constant/typedef.dart';
-import 'package:flutter_simple_country_picker/src/theme/country_picker_theme.dart';
-import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart';
-import 'package:flutter_simple_country_picker/src/widget/country_picker_controls.dart';
-import 'package:flutter_simple_country_picker/src/widget/country_picker_sheet_gesture.dart';
-import 'package:flutter_simple_country_picker/src/widget/country_picker_surface.dart';
 
 /// {@template show_country_picker}
 /// Shows a bottom sheet containing a list of countries to select one.

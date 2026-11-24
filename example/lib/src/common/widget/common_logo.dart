@@ -1,8 +1,8 @@
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:example/src/common/localization/localization.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart'
     show CountryPickerTheme;
+import 'package:material_ui/material_ui.dart';
 
 /// {@template common_logo}
 /// CommonLogo widget.
