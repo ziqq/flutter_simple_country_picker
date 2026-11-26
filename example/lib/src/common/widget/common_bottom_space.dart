@@ -3,13 +3,13 @@ import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart
 import 'package:material_ui/material_ui.dart';
 
 /// {@template common_bottom_space}
-/// CommonBottomSpacer widget.
+/// Leaves room below preview controls for the system bottom inset.
 /// {@endtemplate}
 class CommonBottomSpacer extends StatelessWidget {
   /// {@macro common_bottom_space}
   const CommonBottomSpacer({super.key});
 
-  /// Returns the height of the space box.
+  /// Returns the safe-area inset, the gesture inset, or the theme padding.
   static double heightOf(BuildContext context) {
     final gestureInsets = MediaQuery.systemGestureInsetsOf(context);
     final viewPadding = MediaQuery.viewPaddingOf(context);

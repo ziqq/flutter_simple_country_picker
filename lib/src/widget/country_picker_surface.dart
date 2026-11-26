@@ -6,10 +6,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-/// The kind of a [CountryPickerSurface].
+/// Identifies the control a [CountryPickerSurfaceBuilder] is painting.
 ///
-/// More kinds may be added in minor releases, so a `switch` over this enum
-/// should always have a fallback branch.
+/// Include a fallback when switching over these values. Future releases
+/// can add new control types.
 enum CountryPickerSurfaceType {
   /// The floating pill-shaped search field above the keyboard.
   searchField,
@@ -22,9 +22,8 @@ enum CountryPickerSurfaceType {
 /// Describes a control surface of the country picker
 /// that is passed to [CountryPickerSurfaceBuilder].
 ///
-/// The builder receives the control content **without** the background,
-/// so it can paint its own one (for example a shader-based liquid glass).
-/// Use [decoration] to reproduce the default background.
+/// Custom builders paint the control background and place its content on top.
+/// Use [decoration] to reproduce the default paint.
 /// {@endtemplate}
 @immutable
 class CountryPickerSurface {

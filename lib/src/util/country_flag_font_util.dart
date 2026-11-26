@@ -14,7 +14,7 @@ import 'package:flutter/services.dart';
 /// font (a flags-only subset of Twemoji, CC-BY 4.0), which is declared as a
 /// Windows-only asset, so other platforms do not ship it.
 ///
-/// Flutter web is not affected: it always falls back to Noto Color Emoji.
+/// This font is used only on native Windows.
 /// {@endtemplate}
 @internal
 abstract final class CountryFlagFontUtil {
@@ -31,6 +31,7 @@ abstract final class CountryFlagFontUtil {
       'packages/flutter_simple_country_picker/assets/fonts/'
       'TwemojiCountryFlags.ttf';
 
+  /// The in-flight or completed registration shared by all flag widgets.
   static Future<void>? _loading;
 
   /// Whether flags need the bundled font on the current platform.

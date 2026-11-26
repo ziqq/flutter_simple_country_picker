@@ -13,8 +13,8 @@
 /// | [CountryPhoneInput] | Phone-number input with embedded country selector. |
 /// | [CountryPhoneController] | ValueNotifier-based controller for phone value and status. |
 /// | [CountryPhoneEditingValue] | Immutable controller value with text, resolution, and status. |
-/// | [CountryInputFormatter] | Masks phone input according to a dial-format. |
-/// | [CountryScope] | Pre-loads the country list into the widget tree. |
+/// | [CountryInputFormatter] | Formats phone input with an explicit mask or country-specific rules. |
+/// | [CountryScope] | Shares a country controller and its list with descendants. |
 /// | [CountryPickerTheme] | Visual customization via `ThemeExtension`. |
 /// | [CountryPickerSurface] | Custom surfaces (e.g. liquid glass) for picker controls. |
 /// | [CountryLocalizations] | Localization delegate — 75 built-in locales. |

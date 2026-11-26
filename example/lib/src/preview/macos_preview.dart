@@ -17,33 +17,29 @@ import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Default height for [CountryPicker] for macOS.
+/// Default height of a country row in the macOS preview.
 const double _kDefaultCountyInputHeight = 44;
+
+/// Caps the search menu so it fits above the phone form.
 const double _kCountryMenuMaxHeight = 220;
 
+/// Resolves the field surface for the card preview.
 Color _cardFieldColor(BuildContext context) =>
     CupertinoTheme.brightnessOf(context) == Brightness.light
     ? const Color(0xFFF7F8FA)
     : CupertinoColors.tertiarySystemBackground.resolveFrom(context);
 
+/// Launches the macOS picker preview.
 void main() => appZone(() async => runApp(const App(home: MacOSPreview())));
 
 /// {@template county_picker_macos_preview}
-/// MacOSPreview widget.
+/// Demonstrates a country menu and a manually formatted phone field.
 ///
-/// This widget is showed another way how to use [CountryPicker] in macOS.
-///
-/// You can use [CountryPickerScope] widget to give a list of countries
-/// and use countries list how you want.
-///
-/// And more you can use search controller from [CountryPickerScope]
-/// to find a country by name or code.
+/// The menu reads the available countries from [CountryScope].
 /// {@endtemplate}
 class MacOSPreview extends StatefulWidget {
   /// {@macro county_picker_macos_preview}
-  const MacOSPreview({
-    super.key, // ignore: unused_element
-  });
+  const MacOSPreview({super.key});
 
   /// Title of the widget.
   static const String title = 'macOS';
@@ -57,54 +53,7 @@ class _MacOSPreviewState extends State<MacOSPreview>
     with CountryPickerPreviewStateMixin {
   bool _showCard = false;
 
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor:
-        _showCard && CupertinoTheme.brightnessOf(context) == Brightness.light
-        ? const Color(0xFFF1F3F6)
-        : null,
-    appBar: const CommonAppBar(title: MacOSPreview.title),
-    body: Padding(
-      padding: _showCard
-          ? const EdgeInsets.symmetric(horizontal: 16)
-          : CommonPadding.of(context),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: CupertinoSlidingSegmentedControl<bool>(
-              groupValue: _showCard,
-              children: const {false: Text('Grouped'), true: Text('Card')},
-              onValueChanged: (value) {
-                if (value == null) return;
-                setState(() => _showCard = value);
-              },
-            ),
-          ),
-          Expanded(
-            child: CustomScrollView(
-              slivers: [
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Center(
-                    child: _showCard
-                        ? Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 24),
-                            child: _CardPhoneForm(
-                              onSubmit: (phone) => onSubmit(phone: phone),
-                            ),
-                          )
-                        : _buildGroupedForm(context),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-
+  /// Builds the preview that groups the country selector and phone field.
   Widget _buildGroupedForm(BuildContext context) {
     final localization = ExampleLocalization.of(context);
     final pickerTheme = CountryPickerTheme.of(context);
@@ -112,7 +61,6 @@ class _MacOSPreviewState extends State<MacOSPreview>
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // --- Logo --- //
         const CommonLogo.text(),
         SizedBox(height: pickerTheme.padding * 2),
         ClipRRect(
@@ -162,8 +110,57 @@ class _MacOSPreviewState extends State<MacOSPreview>
       ],
     );
   }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor:
+        _showCard && CupertinoTheme.brightnessOf(context) == Brightness.light
+        ? const Color(0xFFF1F3F6)
+        : null,
+    appBar: const CommonAppBar(title: MacOSPreview.title),
+    body: Padding(
+      padding: _showCard
+          ? const EdgeInsets.symmetric(horizontal: 16)
+          : CommonPadding.of(context),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: CupertinoSlidingSegmentedControl<bool>(
+              groupValue: _showCard,
+              children: const {false: Text('Grouped'), true: Text('Card')},
+              onValueChanged: (value) {
+                if (value == null) return;
+                setState(() => _showCard = value);
+              },
+            ),
+          ),
+          Expanded(
+            child: CustomScrollView(
+              slivers: [
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: _showCard
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 24),
+                            child: _CardPhoneForm(
+                              onSubmit: (phone) => onSubmit(phone: phone),
+                            ),
+                          )
+                        : _buildGroupedForm(context),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
+/// Demonstrates automatic phone formatting inside the card layout.
 class _CardPhoneForm extends StatefulWidget {
   const _CardPhoneForm({required this.onSubmit});
 
@@ -335,6 +332,9 @@ class CountryInput$MacOS extends StatelessWidget {
     super.key, // ignore: unused_element
   });
 
+  /// Selected country.
+  final ValueNotifier<Country> selected;
+
   /// Controller for the phone number input field.
   final TextEditingController? controller;
 
@@ -349,9 +349,6 @@ class CountryInput$MacOS extends StatelessWidget {
 
   /// The height of the input row.
   final double rowHeight;
-
-  /// Selected country.
-  final ValueNotifier<Country> selected;
 
   @override
   Widget build(BuildContext context) {
@@ -408,58 +405,22 @@ class CountryInput$MacOS extends StatelessWidget {
 class CountryPicker$MacOS extends StatefulWidget {
   /// {@macro county_picker_macos}
   const CountryPicker$MacOS({
-    this.placeholder = 'Phone number', // ignore: unused_element
     this.onSelect,
     this.selected,
-    this.exclude, // ignore: unused_element
-    this.favorites, // ignore: unused_element
-    this.filter, // ignore: unused_element
-    this.isScrollControlled = false, // ignore: unused_element
-    this.showPhoneCode = false, // ignore: unused_element
-    this.showWorldWide = false, // ignore: unused_element
-    this.useHapticFeedback = true, // ignore: unused_element
-    this.showSearch, // ignore: unused_element
+    this.showSearch,
     this.rowHeight = _kDefaultCountyInputHeight,
     this.chevron = CupertinoIcons.chevron_right,
-    super.key, // ignore: unused_element
+    super.key,
   });
 
-  /// Placeholder text.
-  final String? placeholder;
-
-  /// Called when the country was selected.
-
-  /// {@macro select_country_callback}
+  /// Called when the user chooses a country.
   final SelectCountryCallback? onSelect;
 
-  /// {@macro select_country_notifier}
+  /// Notifies the control when the current selection changes.
   final SelectedCountry? selected;
 
-  /// List of country codes to exclude.
-  final List<String>? exclude;
-
-  /// List of favorites country codes.
-  final List<String>? favorites;
-
-  /// List of filtered country codes.
-  final List<String>? filter;
-
-  /// Controls the scrolling behavior of the modal window.
-  final bool isScrollControlled;
-
-  /// Show phone code in countires list.
-  final bool showPhoneCode;
-
-  /// Show "World Wide" in countires list.
-  final bool showWorldWide;
-
-  /// Show countryies search bar?
+  /// Whether to open a searchable menu instead of the country list.
   final bool? showSearch;
-
-  /// Use autofocus for the search countryies input field.
-
-  /// Use haptic feedback?
-  final bool useHapticFeedback;
 
   /// The height of the country row.
   final double rowHeight;
@@ -477,7 +438,7 @@ class _CountryPicker$MacOSState extends State<CountryPicker$MacOS> {
   final _searchController = TextEditingController();
   final _searchFocus = FocusNode();
 
-  // Fix corrent emoji flag for web.
+  /// Uses the bundled emoji font when running this preview in a browser.
   final String? _effectiveFontFamily = kIsWeb
       ? FontFamily.notoColorEmoji
       : null;
@@ -489,6 +450,7 @@ class _CountryPicker$MacOSState extends State<CountryPicker$MacOS> {
     super.dispose();
   }
 
+  /// Matches country queries and substrings of both display names.
   Iterable<Country> _matchingCountries(
     List<Country> countries,
     CountryLocalizations localization,
@@ -504,6 +466,7 @@ class _CountryPicker$MacOSState extends State<CountryPicker$MacOS> {
     );
   }
 
+  /// Closes the menu before forwarding the new selection.
   void _selectSearchResult(Country country) {
     _searchMenu.close();
     widget.onSelect?.call(country);
@@ -749,7 +712,6 @@ class _CountryPicker$MacOSState extends State<CountryPicker$MacOS> {
 
   @override
   Widget build(BuildContext context) {
-    // final isRtl = Directionality.of(context) == TextDirection.rtl;
     final localizations = CountryLocalizations.of(context);
 
     Widget scope({

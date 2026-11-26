@@ -54,11 +54,11 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     Color? onSecondaryBackgroundColor,
     Color? barrierColor,
     Color? dividerColor,
+    double? inputHeight,
     double? flagSize,
     double? padding,
     double? baseCornerRadius,
     double? sheetCornerRadius,
-    double? inputHeight,
     TextStyle? textStyle,
     TextStyle? secondaryTextStyle,
     TextStyle? searchTextStyle,
@@ -77,13 +77,13 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       barrierColor: barrierColor,
       dividerColor: dividerColor,
       inputHeight: inputHeight,
-      secondaryTextStyle: secondaryTextStyle,
-      searchTextStyle: searchTextStyle,
-      textStyle: textStyle,
       flagSize: flagSize,
       padding: padding,
       baseCornerRadius: baseCornerRadius,
       sheetCornerRadius: sheetCornerRadius,
+      textStyle: textStyle,
+      secondaryTextStyle: secondaryTextStyle,
+      searchTextStyle: searchTextStyle,
     );
   }
 
@@ -97,19 +97,17 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     required this.barrierColor,
     required this.dividerColor,
     required this.inputHeight,
-    required this.secondaryTextStyle,
-    required this.searchTextStyle,
-    required this.textStyle,
     required this.flagSize,
     required this.padding,
+    required this.textStyle,
+    required this.secondaryTextStyle,
+    required this.searchTextStyle,
     double? baseCornerRadius,
     this.sheetCornerRadius = kCountryPickerDefaultSheetCornerRadius,
   }) : baseCornerRadius =
            baseCornerRadius ?? kCountryPickerDefaultBaseCornerRadius;
 
-  /// The state from the closest instance of this class
-  /// that encloses the given context.
-  /// e.g. `CountryPickerTheme.of(context)`
+  /// Reads the nearest picker theme or creates defaults for [context].
   factory CountryPickerTheme.of(BuildContext context) =>
       maybeOf(context) ?? CountryPickerTheme.defaults(context);
 
@@ -186,17 +184,6 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     );
   }
 
-  /// Get [CountryPickerTheme] from [InheritedCountryPickerTheme].
-  ///
-  /// If that's null get [CountryPickerTheme] from [ThemeData.extensions]
-  /// property of the ambient [Theme].
-  static CountryPickerTheme? maybeOf(BuildContext context) =>
-      InheritedCountryPickerTheme.maybeOf(context) ??
-      switch (Theme.of(context).extensions[CountryPickerTheme]) {
-        CountryPickerTheme theme => theme,
-        _ => null,
-      };
-
   /// The accent color.
   final Color? accentColor;
 
@@ -212,31 +199,20 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   /// The background color for elements on top of the secondary background.
   final Color? onSecondaryBackgroundColor;
 
-  /// The barrierColor color.
+  /// The scrim color behind the modal sheet.
   final Color? barrierColor;
 
   /// The divider color.
   final Color? dividerColor;
 
-  /// Base text style.
-  final TextStyle? textStyle;
-
-  /// The style to use for country name text.
-  final TextStyle? secondaryTextStyle;
-
-  /// The style to use for search field text.
-  final TextStyle? searchTextStyle;
-
   /// The height of the phone input.
   /// Default is `56.0`.
   final double inputHeight;
 
-  /// The flag size.
-  /// If null, set to `22.0`
+  /// Flag size in logical pixels. The default is `22.0`.
   final double? flagSize;
 
-  /// The padding around elements.
-  /// If null, set to `16.0`
+  /// Base spacing for picker and phone input layouts. Defaults to `16.0`.
   final double padding;
 
   /// The corner radius of phone input fields. Defaults to `12.0`.
@@ -248,6 +224,25 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   /// Sheets use a superellipse; set this to zero for square corners.
   /// This property does not change the phone input [baseCornerRadius].
   final double sheetCornerRadius;
+
+  /// Base text style.
+  final TextStyle? textStyle;
+
+  /// The style for secondary country names and section labels.
+  final TextStyle? secondaryTextStyle;
+
+  /// The style to use for search field text.
+  final TextStyle? searchTextStyle;
+
+  /// Reads the nearest inherited picker theme or the ambient theme extension.
+  ///
+  /// Returns `null` when neither contains a picker theme.
+  static CountryPickerTheme? maybeOf(BuildContext context) =>
+      InheritedCountryPickerTheme.maybeOf(context) ??
+      switch (Theme.of(context).extensions[CountryPickerTheme]) {
+        CountryPickerTheme theme => theme,
+        _ => null,
+      };
 
   @override
   CountryPickerTheme copyWith({
@@ -263,9 +258,9 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     double? padding,
     double? baseCornerRadius,
     double? sheetCornerRadius,
+    TextStyle? textStyle,
     TextStyle? secondaryTextStyle,
     TextStyle? searchTextStyle,
-    TextStyle? textStyle,
   }) => CountryPickerTheme.raw(
     accentColor: accentColor ?? this.accentColor,
     backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -289,7 +284,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     textStyle: textStyle ?? this.textStyle,
   );
 
-  /// Controls how the properties change on theme changes
+  /// Interpolates colors, dimensions and text styles during theme transitions.
   @override
   ThemeExtension<CountryPickerTheme> lerp(
     ThemeExtension<CountryPickerTheme>? other,
@@ -496,14 +491,14 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   }
 }
 
-/// Alternative way of defining [CountryPickerTheme].
+/// Supplies a picker theme to a subtree, including picker routes it opens.
 ///
 /// Example:
 ///
 /// ```dart
 /// MaterialApp(
 ///    builder: (context, child) => InheritedCountryPickerTheme(
-///      data: const CountryPickerTheme(
+///      data: CountryPickerTheme(
 ///        ...
 ///      ),
 ///      child: child ?? const SizedBox.shrink(),

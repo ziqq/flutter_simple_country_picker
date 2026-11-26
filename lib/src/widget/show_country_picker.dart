@@ -24,98 +24,61 @@ import 'package:material_ui/material_ui.dart'
         Colors;
 
 /// {@template show_country_picker}
-/// Shows a bottom sheet containing a list of countries to select one.
+/// Opens a country picker in a modal bottom sheet.
 ///
-/// An optional [exclude] argument can be used to exclude(remove) one ore more
-/// country from the countries list. It takes a list of country code(iso2).
+/// Pass ISO 3166-1 alpha-2 country codes to [exclude] or [filter] to omit
+/// countries or restrict the list. These options are mutually exclusive.
+/// [favorites] places matching entries first. With [showGroup], the remaining
+/// entries are grouped by their first letter. [showSearch] defaults to
+/// [showGroup]. Enable [showPhoneCode] to display calling codes and
+/// [showWorldWide] to include the worldwide option.
 ///
-/// An optional [filter] argument can be used to filter the
-/// list of countries. It takes a list of country code(iso2).
-/// Note: Can't provide both [filter] and [exclude]
+/// [selected] supplies the current selection and is updated on a choice.
+/// [onSelect] receives the chosen country. [whenComplete] runs whenever the
+/// modal closes. [autofocus] focuses the search field when it is present.
 ///
-/// An optional [favorites] argument can be used to show countries
-/// at the top of the list. It takes a list of country code(iso2).
+/// [expand] opens the sheet at full height by default. [initialChildSize]
+/// and [minChildSize] override its starting and minimum height as fractions
+/// of the available space. [isScrollControlled] lets a partially expanded
+/// picker use a scroll-controlled modal route.
 ///
-/// An optional [selected] argument can be used to set the selected country.
+/// [isDismissible] controls dismissal by tapping the scrim.
+/// [shouldCloseOnSwipeDown] enables dismissal from a downward gesture started
+/// at the top of the country list. Scrolling to the top in an active gesture
+/// leaves the sheet open. A downward drag on the header can dismiss it
+/// independently.
 ///
-/// An optional callback function [onSelect]
-/// called when the country is selected.
-///
-/// An optional [whenComplete] callback which is called
-/// when country picker is dismissed, whether a country is selected or not.
-///
-/// The [expand] argument can be used
-/// to expand the bottom sheet to full height.
-/// Defaults to `true`; set it to `false` for a partial sheet.
-///
-/// The [autofocus] argument can be used to initially expand virtual keyboard.
-///
-/// The [isDismissible] argument can be used
-/// to make the bottom sheet dismissible.
-///
-/// The [isScrollControlled] argument can be used
-/// to make the bottom sheet scrollable.
-///
-/// The [shouldCloseOnSwipeDown] argument can be used
-/// to close the bottom sheet on swipe down gesture.
-/// It controls sheet dragging and dismissal when the
-/// country list is dragged down by a gesture that started at its beginning.
-/// A gesture started farther down only scrolls the list, including its inertia;
-/// reaching the beginning does not transfer that gesture to sheet dismissal.
-/// A downward drag on the Material sheet header can dismiss it independently.
-///
-/// The [showPhoneCode] argument can be used
-/// to show dialing codes alongside country names.
-///
-/// The [showWorldWide] argument argument can be used
-/// to show "World Wide" option.
-///
-/// The [useHapticFeedback] argument can be used
-/// to enable/disable haptic feedback.
-///
-/// The [useRootNavigator] argument ensures that the root navigator is used to
-/// display the [BottomSheet] when set to `true`. This is useful in the case
-/// that a modal [BottomSheet] needs to be displayed above all other content
-/// but the caller is inside another [Navigator].
-///
-/// An optional [useSafeArea] argument can be used
-/// to wrap the bottom sheet with SafeArea.
-///
-/// An optional [showGroup] argument can be used to show country groups.
-///
-/// An optional [showSearch] argument can be used to show/hide the search bar.
-///
-/// An optional [initialChildSize] argument can be used
-/// to set the initial size of the bottom sheet.
-///
-/// An optional [minChildSize] argument can be used
-/// to set the minimum size of the bottom sheet.
-///
-/// An optional [surfaceBuilder] argument can be used to paint custom
-/// surfaces behind the search field and the close button.
+/// [useRootNavigator] places the sheet above nested navigator content.
+/// [useSafeArea] keeps the modal outside system intrusions at its top and sides.
+/// [useHapticFeedback] defaults to true. [surfaceBuilder] can paint custom
+/// backgrounds behind the search field and close buttons.
 /// {@endtemplate}
 void showCountryPicker({
   required BuildContext context,
-  List<String>? exclude,
-  List<String>? favorites,
-  List<String>? filter,
   SelectedCountry? selected,
   SelectCountryCallback? onSelect,
   VoidCallback? whenComplete,
-  bool expand = true,
-  bool autofocus = false,
-  bool isDismissible = true,
-  bool isScrollControlled = true,
-  bool shouldCloseOnSwipeDown = false,
-  bool showPhoneCode = false,
-  bool showWorldWide = false,
-  bool? useHapticFeedback,
-  bool useRootNavigator = true,
-  bool useSafeArea = true,
+
+  // Country list.
+  List<String>? exclude,
+  List<String>? favorites,
+  List<String>? filter,
   bool? showGroup,
   bool? showSearch,
+  bool showPhoneCode = false,
+  bool showWorldWide = false,
+  bool autofocus = false,
+
+  // Sheet presentation.
+  bool expand = true,
+  bool isScrollControlled = true,
   double? initialChildSize,
   double? minChildSize,
+  bool isDismissible = true,
+  bool shouldCloseOnSwipeDown = false,
+  bool useRootNavigator = true,
+  bool useSafeArea = true,
+  bool? useHapticFeedback,
   CountryPickerSurfaceBuilder? surfaceBuilder,
 }) {
   final effectiveMinChildSize =

@@ -10,14 +10,14 @@ import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart
 import 'package:material_ui/material_ui.dart';
 
 /// {@template common_app_bar}
-/// CommonAppBar widget.
+/// Shows the preview title, app version, and theme and language controls.
 /// {@endtemplate}
 class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// {@macro common_app_bar}
   const CommonAppBar({
+    this.title,
     this.backgroundColor,
     this.bottom,
-    this.title,
     super.key,
   });
 
@@ -32,14 +32,6 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-
-  /// {@macro scaffold_padding}
-  static Widget sliver(String title, [Widget? child]) => SliverAppBar(
-    pinned: true,
-    title: _Header(title),
-    leading: const AppLocaleSwitcherButton(),
-    actions: const [AppThemeModeSwitcherButton()],
-  );
 
   @override
   Widget build(BuildContext context) => AppBar(
@@ -65,10 +57,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
 /// {@macro common_app_bar}
 class _Header extends StatelessWidget {
   /// {@macro common_app_bar}
-  const _Header(
-    this.title, {
-    super.key, // ignore: unused_element_parameter
-  });
+  const _Header(this.title);
 
   /// Title of the header.
   final String title;

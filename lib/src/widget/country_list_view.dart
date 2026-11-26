@@ -18,9 +18,7 @@ import 'package:flutter_simple_country_picker/src/widget/country_picker_sheet_ge
 import 'package:material_ui/material_ui.dart';
 
 /// {@template country_list_view}
-/// CountryListView widget.
-///
-/// This widget is used to display a list of countries.
+/// A scrollable country list with optional search and alphabet navigation.
 /// {@endtemplate}
 @internal
 class CountryListView extends StatefulWidget {
@@ -47,58 +45,50 @@ class CountryListView extends StatefulWidget {
          'Cannot provide both filter and exclude',
        );
 
-  /// Whether the view paints its background or the modal shell supplies it.
-  final bool paintBackground;
+  /// ISO alpha-2 codes omitted from the list. Mutually exclusive with [filter].
+  final List<String>? exclude;
 
-  /// An optional argument for autofocus the search bar.
-  final bool autofocus;
+  /// ISO alpha-2 codes placed first in the list.
+  final List<String>? favorites;
 
-  /// Group countries by their first letter.
-  /// Default is `null`.
-  final bool? showGroup;
-
-  /// An optional [showSearch] argument can be used to show/hide the search bar.
-  /// Default is `null`.
-  final bool? showSearch;
-
-  /// An optional [showPhoneCode] argument can be used to show phone code.
-  final bool showPhoneCode;
-
-  /// An optional argument for showing "World Wide"
-  /// option at the beginning of the list
-  final bool showWorldWide;
-
-  /// Whether to use root navigator to display the bottom sheet.
-  final bool useRootNavigator;
-
-  /// Whether to use haptic feedback on user interactions.
-  final bool useHapticFeedback;
-
-  /// Scroll controller.
-  final ScrollController? scrollController;
-
-  /// {@macro country_picker_surface_builder}
-  final CountryPickerSurfaceBuilder? surfaceBuilder;
-
-  /// {@macro select_country_callback}
-  final SelectCountryCallback? onSelect;
+  /// ISO alpha-2 codes permitted in the list. Mutually exclusive with [exclude].
+  final List<String>? filter;
 
   /// {@macro select_country_notifier}
   final SelectedCountry? selected;
 
-  /// An optional [exclude] argument can be used to exclude(remove) one ore more
-  /// country from the countries list. It takes a list of country code(iso2).
-  /// Note: Can't provide both [exclude] and [filter]
-  final List<String>? exclude;
+  /// {@macro select_country_callback}
+  final SelectCountryCallback? onSelect;
 
-  /// An optional [favorites] argument can be used to show countries
-  /// at the top of the list. It takes a list of country code(iso2).
-  final List<String>? favorites;
+  /// Scroll controller shared with the sheet when supplied.
+  final ScrollController? scrollController;
 
-  /// An optional [filter] argument can be used to filter the
-  /// list of countries. It takes a list of country code(iso2).
-  /// Note: Can't provide both [filter] and [exclude]
-  final List<String>? filter;
+  /// Whether to focus the search field when it appears.
+  final bool autofocus;
+
+  /// Whether to show calling codes next to country names.
+  final bool showPhoneCode;
+
+  /// Whether to include the worldwide option before the country list.
+  final bool showWorldWide;
+
+  /// Whether to use the root navigator when dismissing the picker.
+  final bool useRootNavigator;
+
+  /// Whether saving a selection or dismissing the sheet triggers haptics.
+  final bool useHapticFeedback;
+
+  /// Whether to group countries by their first letter.
+  final bool? showGroup;
+
+  /// Whether to show the search field. Defaults to [showGroup].
+  final bool? showSearch;
+
+  /// {@macro country_picker_surface_builder}
+  final CountryPickerSurfaceBuilder? surfaceBuilder;
+
+  /// Whether the view paints its background or the sheet supplies it.
+  final bool paintBackground;
 
   @override
   State<CountryListView> createState() => _CountriesListViewState();
@@ -107,9 +97,12 @@ class CountryListView extends StatefulWidget {
 /// State for [CountryListView].
 class _CountriesListViewState extends State<CountryListView>
     with WidgetsBindingObserver {
+  /// Uses the sheet scroll controller when the list is presented in a modal.
   late final ScrollController _scrollController;
   late final CountryController _controller;
   final FocusNode _searchFocus = FocusNode();
+
+  /// Publishes the groups used by the list and the alphabet index.
   final ValueNotifier<List<(String, List<Country>)>> _groups =
       ValueNotifier<List<(String, List<Country>)>>([]);
 
@@ -137,16 +130,6 @@ class _CountriesListViewState extends State<CountryListView>
   }
 
   @override
-  void handleStatusBarTap() {
-    if (!_scrollController.hasClients) return;
-    _scrollController.animateTo(
-      _scrollController.position.minScrollExtent,
-      curve: Curves.easeOutCirc,
-      duration: const Duration(milliseconds: 1000),
-    );
-  }
-
-  @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _searchFocus.dispose();
@@ -156,13 +139,23 @@ class _CountriesListViewState extends State<CountryListView>
     super.dispose();
   }
 
+  @override
+  void handleStatusBarTap() {
+    if (!_scrollController.hasClients) return;
+    _scrollController.animateTo(
+      _scrollController.position.minScrollExtent,
+      curve: Curves.easeOutCirc,
+      duration: const Duration(milliseconds: 1000),
+    );
+  }
+
+  /// Dismisses the keyboard when an editor in this sheet has focus.
   void _unfocus() {
     if (!mounted) return;
     final currentFocus = FocusScope.of(context);
     if (currentFocus.hasPrimaryFocus) return;
     if (currentFocus.focusedChild == null) return;
     FocusManager.instance.primaryFocus?.unfocus();
-    // if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {}
   }
 
   /// Expands the sheet before the keyboard occupies the lower viewport.
@@ -504,6 +497,7 @@ class _CountriesListState extends State<_CountriesList> {
     final light = Theme.of(context).brightness == Brightness.light;
     final dividerHeight = 1 / MediaQuery.devicePixelRatioOf(context);
 
+    // Group labels and rows use the same delegate so they scroll together.
     Widget? itemBuilder(BuildContext context, int entry) {
       final (group, index) = entries[entry];
       final (letter, countries) = groups[group];

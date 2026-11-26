@@ -5,24 +5,10 @@ import 'package:flutter_simple_country_picker/src/controller/country_controller.
 import 'package:flutter_simple_country_picker/src/data/country_provider.dart';
 
 /// {@template country_scope}
-/// CountryScope widget.
+/// Makes a shared country controller and its list available to descendants.
 ///
-/// This widget is used to provide a [CountryController] to its descendants.
-///
-/// The [CountryScope] arguments:
-///
-/// The [lazy] argument can be used to initialize the controller lazily.
-///
-/// The [exclude] argument can be used to exclude(remove) one ore more
-/// country from the countries list. It takes a list of country code(iso2).
-///
-/// The [favorites] argument can be used to show countries
-/// at the top of the list. It takes a list of country code(iso2).
-///
-/// The [filter] argument can be used to filter the
-/// list of countries. It takes a list of country code(iso2).
-///
-/// The [showPhoneCode] argument can be used to show phone code.
+/// Use [of] for direct controller access and [countriesOf] to watch list changes.
+/// Set [lazy] to load the list on demand.
 /// {@endtemplate}
 class CountryScope extends StatefulWidget {
   /// {@macro country_scope}
@@ -126,7 +112,7 @@ class _CountriesScopeState extends State<CountryScope> {
       exclude: widget.exclude,
       filter: widget.filter,
       showPhoneCode: widget.showPhoneCode,
-    )..addListener(_onStateChanded);
+    )..addListener(_onStateChanged);
     _state = _controller.state;
     if (!widget.lazy) _controller.getCountries().ignore();
   }
@@ -159,12 +145,13 @@ class _CountriesScopeState extends State<CountryScope> {
   @override
   void dispose() {
     _controller
-      ..removeListener(_onStateChanded)
+      ..removeListener(_onStateChanged)
       ..dispose();
     super.dispose();
   }
 
-  void _onStateChanded() {
+  /// Keeps the last stable country list while the controller reloads.
+  void _onStateChanged() {
     final state = _controller.state;
     if (!mounted || state.isLoading || identical(state, _state)) return;
     setState(() {
@@ -179,13 +166,10 @@ class _CountriesScopeState extends State<CountryScope> {
 
 /// Aspect for country scope.
 enum _CountryScopeAspect {
-  /// Notify when a countries is changed.
+  /// Notify when the country list changes.
   countries,
 
-  /// Notify when a state is changed.
-  state,
-
-  /// Do not notify.
+  /// Look up the scope without registering a dependency.
   none,
 }
 
@@ -197,6 +181,7 @@ class _InheritedCountries extends InheritedModel<_CountryScopeAspect> {
     required super.child,
   });
 
+  /// The latest non-loading state.
   final CountryState state;
 
   /// The list of countries.
@@ -207,8 +192,7 @@ class _InheritedCountries extends InheritedModel<_CountryScopeAspect> {
     for (final country in countries) country.countryCode: country,
   };
 
-  /// This country scope state.
-  /// This is the state of the country scope.
+  /// Owns the controller for this inherited widget.
   final _CountriesScopeState scope;
 
   /// Returns the country associated with [countryCode].
@@ -224,13 +208,6 @@ class _InheritedCountries extends InheritedModel<_CountryScopeAspect> {
     // Do not notify about changes.
     _CountryScopeAspect.none =>
       context.getInheritedWidgetOfExactType<_InheritedCountries>(),
-
-    // Notify about every change.
-    // No CountryScope API currently subscribes to the state aspect.
-    _CountryScopeAspect.state =>
-      // coverage:ignore-start
-      context.dependOnInheritedWidgetOfExactType<_InheritedCountries>(),
-    // coverage:ignore-end
 
     // Notify about countries list changes.
     _CountryScopeAspect.countries =>
@@ -263,26 +240,11 @@ class _InheritedCountries extends InheritedModel<_CountryScopeAspect> {
   bool updateShouldNotifyDependent(
     covariant _InheritedCountries oldWidget,
     Set<_CountryScopeAspect> dependencies,
-  ) {
-    for (final d in dependencies) {
-      switch (d) {
-        case _CountryScopeAspect.countries
-            when _countriesChanged(oldWidget.countries):
-          // Notify about changes in countries list.
-          return true;
-        // No CountryScope API currently subscribes to the state aspect.
-        // coverage:ignore-start
-        case _CountryScopeAspect.state when !identical(oldWidget.state, state):
-          // coverage:ignore-end
-          // Notify about changes in countries state.
-          return true;
-        default:
-          continue;
-      }
-    }
-    return false;
-  }
+  ) =>
+      dependencies.contains(_CountryScopeAspect.countries) &&
+      _countriesChanged(oldWidget.countries);
 
+  /// Compares the displayed lists, including translations on locale changes.
   bool _countriesChanged(List<Country> previous) {
     final current = countries;
     if (identical(previous, current)) return false;

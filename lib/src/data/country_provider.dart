@@ -1,14 +1,12 @@
 import 'dart:async';
 
 import 'package:collection/collection.dart';
-import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
+import 'package:flutter_simple_country_picker/src/model/country.dart';
 import 'package:meta/meta.dart';
 
 /// {@template country_provider}
-/// CountryProvider
-///
-/// This class provides a list of countries.
+/// Provides access to the bundled country dataset.
 /// {@endtemplate}
 @internal
 class CountryProvider {
@@ -20,21 +18,21 @@ class CountryProvider {
       .map(Country.fromJson)
       .toList();
 
-  /// Return list with all countries
+  /// Returns all bundled countries in dataset order.
   Future<List<Country>> getCountries() async =>
       Future<List<Country>>.value(_countries);
 
-  /// Returns the first country that mach the given code.
+  /// Returns the first country matching [code], ignoring case.
   Country? findByCode(String? code) {
     final uppercaseCode = code?.toUpperCase();
     return _countries.firstWhereOrNull((c) => c.countryCode == uppercaseCode);
   }
 
-  /// Returns the first country that mach the given name.
+  /// Returns the first country with the exact English [name].
   Country? findByName(String? name) =>
       _countries.firstWhereOrNull((c) => c.name == name);
 
-  /// Returns a list with all the countries that mach the given codes list.
+  /// Looks up each of [codes] in order, skipping unmatched codes.
   List<Country> findCountriesByCode(List<String> codes) {
     final $codes = codes.map((c) => c.toUpperCase()).toList();
     final countries = <Country>[];

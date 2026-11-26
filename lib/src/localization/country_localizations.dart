@@ -123,8 +123,6 @@ abstract class CountryLocalizations {
   /// {@macro country_localizations}
   const CountryLocalizations();
 
-  // ── UI strings ─────────────────────────────────────────────────────────────
-
   /// Label for the "Cancel" button.
   String get cancelButton;
 
@@ -136,8 +134,6 @@ abstract class CountryLocalizations {
 
   /// Heading label of the country picker sheet.
   String get selectCountryLabel;
-
-  // ── Country names ───────────────────────────────────────────────────────────
 
   /// Returns the localized country name for [countryCode] (ISO 3166-1 alpha-2),
   /// or `null` if the code is not found in this locale's data.
@@ -156,8 +152,7 @@ abstract class CountryLocalizations {
     return name.replaceAll(_whitespaceRegExp, ' ');
   }
 
-  // ── Static members (SDK-style) ──────────────────────────────────────────────
-
+  /// Matches whitespace runs shared by the formatted country names.
   static final RegExp _whitespaceRegExp = RegExp(r'\s+');
 
   /// Returns the [CountryLocalizations] from the nearest [Localizations]
@@ -173,7 +168,7 @@ abstract class CountryLocalizations {
   static const LocalizationsDelegate<CountryLocalizations> delegate =
       _CountryLocalizationsDelegate();
 
-  /// All locales supported by the built-in translations.
+  /// All locales supported by the built-in translations, with English first.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
     Locale('af'),

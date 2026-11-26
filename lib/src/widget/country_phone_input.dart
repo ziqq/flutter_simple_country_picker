@@ -50,9 +50,9 @@ class CountryPhoneInput extends StatefulWidget {
     bool? useHapticFeedback,
 
     // Country list.
-    this.filter,
     this.exclude,
     this.favorites,
+    this.filter,
     this.showGroup,
     this.showSearch,
     this.showPhoneCode = false,
@@ -87,9 +87,9 @@ class CountryPhoneInput extends StatefulWidget {
     bool? useHapticFeedback,
 
     // Country list.
-    List<String>? filter,
     List<String>? exclude,
     List<String>? favorites,
+    List<String>? filter,
     bool? showGroup,
     bool? showSearch,
     bool showPhoneCode,
@@ -108,6 +108,7 @@ class CountryPhoneInput extends StatefulWidget {
 
   /// Called after the user selects a different country.
   final ValueChanged<Country>? onCountryChanged;
+
   // Phone editing.
 
   /// An external controller for the full phone number and its status.
@@ -134,6 +135,7 @@ class CountryPhoneInput extends StatefulWidget {
   /// Automatic formatting uses the country's supported lengths for completion.
   /// Manual formatting uses [Country.mask].
   final bool useCountryFormatting;
+
   // Picker presentation.
 
   /// Whether tapping the country selector opens the picker.
@@ -161,16 +163,17 @@ class CountryPhoneInput extends StatefulWidget {
 
   /// Whether picker interactions provide haptic feedback.
   final bool useHapticFeedback;
-  // Country list.
 
-  /// The country codes allowed in the picker.
-  final List<String>? filter;
+  // Country list.
 
   /// The country codes omitted from the picker.
   final List<String>? exclude;
 
   /// The country codes shown first in the picker.
   final List<String>? favorites;
+
+  /// The country codes allowed in the picker.
+  final List<String>? filter;
 
   /// Whether to group countries by their first letter.
   final bool? showGroup;
@@ -1126,9 +1129,9 @@ class CountryPhoneInput$Extended extends CountryPhoneInput {
     super.useHapticFeedback,
 
     // Country list.
-    super.filter,
     super.exclude,
     super.favorites,
+    super.filter,
     super.showGroup,
     super.showSearch,
     super.showPhoneCode,
@@ -1404,6 +1407,7 @@ class _RenderPhoneMask extends RenderProxyBox {
     _scrollController.removeListener(markNeedsPaint);
   }
 
+  /// Locates the editable so its scroll and caret geometry can position the hint.
   static RenderEditable? _findEditable(RenderObject object) {
     if (object is RenderEditable) return object;
     RenderEditable? editable;

@@ -5,15 +5,14 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart' show listEquals, SynchronousFuture;
 import 'package:material_ui/material_ui.dart';
 
-/// Typedefinition for the authentifation navigation state.
+/// An ordered stack of pages shown by [ExampleNavigator].
 typedef ExampleNavigatorState = List<ExamplePage>;
 
-/// {@template authentication_navigator}
-/// ExampleNavigator widget.
+/// {@template example_navigator}
+/// Maintains the page stack for the example app.
 /// {@endtemplate}
 class ExampleNavigator extends StatefulWidget {
-  /// Default constructor: uncontrolled by external controller.
-  /// {@macro authentication_navigator}
+  /// Creates a navigator that owns its page stack.
   ExampleNavigator({
     required this.pages,
     this.guards = const [],
@@ -25,8 +24,7 @@ class ExampleNavigator extends StatefulWidget {
   }) : assert(pages.isNotEmpty, 'pages cannot be empty'),
        controller = null;
 
-  /// Controlled constructor: driven by an external ValueNotifier.
-  /// {@macro navigator}
+  /// Creates a navigator whose page stack is driven by [controller].
   ExampleNavigator.controlled({
     required ValueNotifier<ExampleNavigatorState> this.controller,
     this.guards = const [],
@@ -38,51 +36,13 @@ class ExampleNavigator extends StatefulWidget {
   }) : assert(controller.value.isNotEmpty, 'controller cannot be empty'),
        pages = controller.value;
 
-  /// The [AuthenticationNavigatorState] from the closest instance of this class
-  /// that encloses the given context, if any.
-  static AuthenticationNavigatorState? maybeOf(BuildContext context) =>
-      context.findAncestorStateOfType<AuthenticationNavigatorState>();
-
-  /// The [ExampleNavigatorState] from the closest instance of this class
-  /// that encloses the given context, if any.
-  static ExampleNavigatorState? stateOf(BuildContext context) =>
-      maybeOf(context)?.state;
-
-  /// The [NavigatorState] from the closest instance of this class
-  /// that encloses the given context, if any.
-  static NavigatorState? navigatorOf(BuildContext context) =>
-      maybeOf(context)?.navigator;
-
-  /// Change the pages.
-  static void change(
-    BuildContext context,
-    ExampleNavigatorState Function(ExampleNavigatorState pages) fn,
-  ) => maybeOf(context)?.change(fn);
-
-  /// Add a new page onto the stack.
-  static void push(BuildContext context, ExamplePage page) =>
-      change(context, (state) => [...state, page]);
-
-  /// Pop the top(last) page off the stack.
-  static void pop(BuildContext context) => change(context, (state) {
-    if (state.isNotEmpty) state.removeLast();
-    return state;
-  });
-
-  /// Reset to the initial pages.
-  static void reset(BuildContext context) {
-    final navigator = maybeOf(context);
-    if (navigator == null) return;
-    navigator.change((_) => navigator.widget.pages);
-  }
-
   /// Initial pages to display.
   final ExampleNavigatorState pages;
 
   /// Optional external controller.
   final ValueNotifier<ExampleNavigatorState>? controller;
 
-  /// Guard to apply to the pages.
+  /// Functions that can filter or redirect a proposed page stack.
   final List<
     ExampleNavigatorState Function(
       BuildContext context,
@@ -94,7 +54,7 @@ class ExampleNavigator extends StatefulWidget {
   /// Observers to attach to the Navigator.
   final List<NavigatorObserver> observers;
 
-  /// TransitionDelegate to use for page transitions.
+  /// The delegate that determines how page additions and removals animate.
   final TransitionDelegate<Object?> transitionDelegate;
 
   /// Optional external signal to re-run guards.
@@ -112,6 +72,44 @@ class ExampleNavigator extends StatefulWidget {
   )?
   onBackButtonPressed;
 
+  /// The [AuthenticationNavigatorState] from the closest instance of this class
+  /// that encloses the given context, if any.
+  static AuthenticationNavigatorState? maybeOf(BuildContext context) =>
+      context.findAncestorStateOfType<AuthenticationNavigatorState>();
+
+  /// The [ExampleNavigatorState] from the closest instance of this class
+  /// that encloses the given context, if any.
+  static ExampleNavigatorState? stateOf(BuildContext context) =>
+      maybeOf(context)?.state;
+
+  /// The [NavigatorState] from the closest instance of this class
+  /// that encloses the given context, if any.
+  static NavigatorState? navigatorOf(BuildContext context) =>
+      maybeOf(context)?.navigator;
+
+  /// Applies a transformation to the nearest navigator’s page stack.
+  static void change(
+    BuildContext context,
+    ExampleNavigatorState Function(ExampleNavigatorState pages) fn,
+  ) => maybeOf(context)?.change(fn);
+
+  /// Add a new page onto the stack.
+  static void push(BuildContext context, ExamplePage page) =>
+      change(context, (state) => [...state, page]);
+
+  /// Removes the top page from the stack.
+  static void pop(BuildContext context) => change(context, (state) {
+    if (state.isNotEmpty) state.removeLast();
+    return state;
+  });
+
+  /// Reset to the initial pages.
+  static void reset(BuildContext context) {
+    final navigator = maybeOf(context);
+    if (navigator == null) return;
+    navigator.change((_) => navigator.widget.pages);
+  }
+
   @override
   AuthenticationNavigatorState createState() => AuthenticationNavigatorState();
 }
@@ -119,16 +117,16 @@ class ExampleNavigator extends StatefulWidget {
 /// State for the [ExampleNavigator] widget.
 class AuthenticationNavigatorState extends State<ExampleNavigator>
     with WidgetsBindingObserver {
-  /// Internal observer to get the NavigatorState.
+  /// The navigator observed by this widget, once it has been mounted.
   NavigatorState? get navigator => _observer.navigator;
   final NavigatorObserver _observer = NavigatorObserver();
 
-  /// Current pages list.
+  /// The current stack of example pages.
   ExampleNavigatorState get state => _state.value;
 
   late final ValueNotifier<ExampleNavigatorState> _state;
 
-  /// Combined observers (including internal one).
+  /// The internal observer followed by the observers supplied by the app.
   late List<NavigatorObserver> _observers;
 
   @override
@@ -176,7 +174,6 @@ class AuthenticationNavigatorState extends State<ExampleNavigator>
 
   @override
   Future<bool> didPopRoute() {
-    // If the back button handler is defined, call it.
     final backButtonHandler = widget.onBackButtonPressed;
     if (backButtonHandler != null) {
       final result = backButtonHandler(_state.value.toList());
@@ -184,39 +181,13 @@ class AuthenticationNavigatorState extends State<ExampleNavigator>
       return SynchronousFuture(result.handled);
     }
 
-    // Otherwise, handle the back button press with the default behavior.
+    // Let the host handle back when the example is already at its root.
     if (_state.value.length < 2) return SynchronousFuture(false);
     _onDidRemovePage(_state.value.last);
     return SynchronousFuture(true);
   }
 
-  void _setStateToController() {
-    if (widget.controller
-        case ValueNotifier<ExampleNavigatorState> controller) {
-      controller
-        ..removeListener(_controllerListener)
-        ..value = _state.value
-        ..addListener(_controllerListener);
-    }
-  }
-
-  void _controllerListener() {
-    final controller = widget.controller;
-    if (controller == null || !mounted) return;
-    final newValue = controller.value;
-    if (identical(newValue, _state.value)) return;
-    final ctx = context;
-    final next = widget.guards.fold(newValue.toList(), (s, g) => g(ctx, s));
-    if (next.isEmpty || listEquals(next, _state.value)) {
-      _setStateToController(); // Revert the controller value
-    } else {
-      _state.value = UnmodifiableListView<ExamplePage>(next);
-      _setStateToController();
-      // setState(() {});
-    }
-  }
-
-  /// Revalidate the pages.
+  /// Reruns guards on the current stack after dependencies change.
   void revalidate() {
     if (!mounted) return;
     final ctx = context;
@@ -239,6 +210,32 @@ class AuthenticationNavigatorState extends State<ExampleNavigator>
     _setStateToController();
   }
 
+  /// Writes the guarded stack back without notifying its own listener.
+  void _setStateToController() {
+    if (widget.controller
+        case ValueNotifier<ExampleNavigatorState> controller) {
+      controller
+        ..removeListener(_controllerListener)
+        ..value = _state.value
+        ..addListener(_controllerListener);
+    }
+  }
+
+  void _controllerListener() {
+    final controller = widget.controller;
+    if (controller == null || !mounted) return;
+    final newValue = controller.value;
+    if (identical(newValue, _state.value)) return;
+    final ctx = context;
+    final next = widget.guards.fold(newValue.toList(), (s, g) => g(ctx, s));
+    if (next.isEmpty || listEquals(next, _state.value)) {
+      _setStateToController();
+    } else {
+      _state.value = UnmodifiableListView<ExamplePage>(next);
+      _setStateToController();
+    }
+  }
+
   void _onDidRemovePage(Page<Object?> page) {
     change((pages) => pages..removeWhere((p) => p.key == page.key));
   }
@@ -256,14 +253,12 @@ class AuthenticationNavigatorState extends State<ExampleNavigator>
   );
 }
 
-/// {@template auth_page}
-/// A custom authentication page class that extends [MaterialPage]
-/// to represent a page in the app's navigation stack.
+/// {@template example_page}
+/// A page whose stable key identifies it in the example navigation stack.
 /// {@endtemplate}
 @immutable
 sealed class ExamplePage extends MaterialPage<Object?> {
-  /// Creates a new instance of [ExamplePage].
-  /// {@macro auth_page}
+  /// Creates a page with a route name, arguments, and stable key.
   const ExamplePage({
     required String super.name,
     required Map<String, Object?>? super.arguments,
@@ -290,7 +285,7 @@ sealed class ExamplePage extends MaterialPage<Object?> {
 
 /// Home page of the example app.
 final class HomePage<T> extends ExamplePage {
-  /// Creates a new instance of [HomePage].
+  /// Wraps the example’s root screen in the initial page.
   const HomePage({required super.child})
     : super(
         name: 'home',

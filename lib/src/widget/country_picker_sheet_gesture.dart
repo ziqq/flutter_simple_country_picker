@@ -26,6 +26,15 @@ class CountryPickerSheetGesture extends StatefulWidget {
   /// Minimum height of the sheet detents.
   final double minSize;
 
+  /// Whether a downward gesture started at the top may dismiss the route.
+  final bool canDismiss;
+
+  /// Dismisses the enclosing route after a deliberate sheet drag.
+  final VoidCallback onDismiss;
+
+  /// Builds the sheet using the single coordinated list controller.
+  final ScrollableWidgetBuilder builder;
+
   /// Expands the enclosing picker for search without exposing a public API.
   static bool expandOf(BuildContext context) {
     final state = context.findAncestorStateOfType<_SheetGestureState>();
@@ -36,15 +45,6 @@ class CountryPickerSheetGesture extends StatefulWidget {
     state._size.animateTo(1, curve: Curves.easeOutCubic).ignore();
     return true;
   }
-
-  /// Whether a downward gesture started at the top may dismiss the route.
-  final bool canDismiss;
-
-  /// Dismisses the enclosing route after a deliberate sheet drag.
-  final VoidCallback onDismiss;
-
-  /// Builds the sheet using the single coordinated list controller.
-  final ScrollableWidgetBuilder builder;
 
   /// Gives the header its own drag recognizer when only it can dismiss.
   static Widget headerDragOf(BuildContext context, Widget header) {
@@ -70,18 +70,31 @@ class CountryPickerSheetGesture extends StatefulWidget {
 /// Owns the translation animation; the sheet subtree stays stable while moving.
 class _SheetGestureState extends State<CountryPickerSheetGesture>
     with TickerProviderStateMixin {
+  /// Translates the sheet during a pull that starts at the top.
   late final AnimationController _offset = AnimationController.unbounded(
     vsync: this,
     duration: const Duration(milliseconds: 250),
   );
+
+  /// Resizes the sheet between its minimum and full-height detents.
   late final AnimationController _size = AnimationController(
     vsync: this,
     value: widget.initialSize,
     lowerBound: widget.minSize,
     duration: const Duration(milliseconds: 250),
   );
+
+  /// Used to convert fractional detents to the drag distance in pixels.
   double _availableHeight = 1;
   late final _SheetScrollController _scroll = _SheetScrollController(this);
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    _offset.dispose();
+    _size.dispose();
+    super.dispose();
+  }
 
   /// Consumes only the portion of a top-started gesture moving the sheet.
   void pull(double delta) {
@@ -114,14 +127,6 @@ class _SheetGestureState extends State<CountryPickerSheetGesture>
           curve: Curves.easeOutCubic,
         )
         .ignore();
-  }
-
-  @override
-  void dispose() {
-    _scroll.dispose();
-    _offset.dispose();
-    _size.dispose();
-    super.dispose();
   }
 
   @override

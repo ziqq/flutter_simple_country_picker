@@ -61,6 +61,15 @@ final class CountryPhoneResolution {
   bool get isResolved => status != CountryPhoneResolutionStatus.unresolved;
 
   @override
+  int get hashCode => Object.hash(
+    phone,
+    phoneCode,
+    nationalNumber,
+    status,
+    Object.hashAll(countryCodes),
+  );
+
+  @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is CountryPhoneResolution &&
@@ -69,21 +78,12 @@ final class CountryPhoneResolution {
           other.nationalNumber == nationalNumber &&
           other.status == status &&
           listEquals(other.countryCodes, countryCodes);
-
-  @override
-  int get hashCode => Object.hash(
-    phone,
-    phoneCode,
-    nationalNumber,
-    status,
-    Object.hashAll(countryCodes),
-  );
 }
 
 /// Status of the current phone input value.
 ///
 /// This status describes the national digits and their expected length for the
-/// currently selected country in [CountryPhoneInput].
+/// currently selected country in a phone input.
 @immutable
 final class CountryPhoneValueStatus {
   /// Creates a phone-value status.
@@ -148,6 +148,10 @@ final class CountryPhoneValueStatus {
   );
 
   @override
+  int get hashCode =>
+      Object.hash(currentLength, expectedLength, isOverflow, isAllZeros);
+
+  @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is CountryPhoneValueStatus &&
@@ -155,10 +159,6 @@ final class CountryPhoneValueStatus {
           other.expectedLength == expectedLength &&
           other.isOverflow == isOverflow &&
           other.isAllZeros == isAllZeros;
-
-  @override
-  int get hashCode =>
-      Object.hash(currentLength, expectedLength, isOverflow, isAllZeros);
 }
 
 /// Immutable controller value, similar in role to Flutter's editing values.
@@ -267,15 +267,15 @@ final class CountryPhoneEditingValue {
   }
 
   @override
+  int get hashCode => Object.hash(text, resolution, valueStatus);
+
+  @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is CountryPhoneEditingValue &&
           other.text == text &&
           other.resolution == resolution &&
           other.valueStatus == valueStatus;
-
-  @override
-  int get hashCode => Object.hash(text, resolution, valueStatus);
 }
 
 /// Country phone controller.
@@ -306,26 +306,17 @@ final class CountryPhoneController
   CountryPhoneController.fromValue(CountryPhoneEditingValue value)
     : super(_normalizeValue(value));
 
-  /// Regular expression to remove non-digit characters from phone number.
+  /// Matches characters outside the ASCII digits used by the bundled data.
   static final _nonDigitsRegExp = RegExp('[^0-9]');
+
+  /// Matches a non-empty national number made entirely of zeros.
   static final _allZerosRegExp = RegExp(r'^0+$');
 
-  /// Regular expression to remove spaces from phone number.
+  /// Matches whitespace removed by [CountryPhoneEditingValue.phone].
   static final _regExp = RegExp(r'\s+');
 
-  /// List of unique phone codes from the country codes.
+  /// Distinct bundled calling codes, longest first.
   static final List<String> _phoneCodes = _buildPhoneCodes();
-
-  /// Build a list of unique phone codes from the country codes.
-  static List<String> _buildPhoneCodes() {
-    final codes = <String>{};
-    for (final country in countries) {
-      final code = country['e164_cc'];
-      if (code case String _ when code.isNotEmpty) codes.add(code);
-    }
-    final list = codes.toList(growable: false);
-    return list..sort((a, b) => b.length.compareTo(a.length));
-  }
 
   /// Returns the raw controller text.
   ///
@@ -373,6 +364,18 @@ final class CountryPhoneController
     value = value.copyWith(text: '');
   }
 
+  /// Builds the calling code list once, in prefix matching order.
+  static List<String> _buildPhoneCodes() {
+    final codes = <String>{};
+    for (final country in countries) {
+      final code = country['e164_cc'];
+      if (code case String _ when code.isNotEmpty) codes.add(code);
+    }
+    final list = codes.toList(growable: false);
+    return list..sort((a, b) => b.length.compareTo(a.length));
+  }
+
+  /// Counts the leading digits shared by two ASCII digit strings.
   static int _commonPrefixLength(String a, String b) {
     final max = a.length < b.length ? a.length : b.length;
     for (var i = 0; i < max; i++) {
@@ -381,6 +384,7 @@ final class CountryPhoneController
     return max;
   }
 
+  /// Returns the longest calling code that leaves at least one national digit.
   static String _extractCallingCode(String e164) {
     if (e164.isEmpty) return '';
     for (final code in _phoneCodes) {
@@ -389,12 +393,14 @@ final class CountryPhoneController
     return '';
   }
 
+  /// Derives the length status when no selected-country length is available.
   static CountryPhoneValueStatus _defaultValueStatus(String value) =>
       _updatedValueStatus(
         text: value,
         previous: const CountryPhoneValueStatus.empty(),
       );
 
+  /// Refreshes the resolution from the text and preserves the supplied status.
   static CountryPhoneEditingValue _normalizeValue(
     CountryPhoneEditingValue value,
   ) => CountryPhoneEditingValue(
@@ -402,6 +408,7 @@ final class CountryPhoneController
     valueStatus: value.valueStatus,
   );
 
+  /// Updates the observed digits while retaining the previous expected length.
   static CountryPhoneValueStatus _updatedValueStatus({
     required String text,
     required CountryPhoneValueStatus previous,
@@ -416,12 +423,14 @@ final class CountryPhoneController
     );
   }
 
+  /// Returns the digits after the recognized calling code, if present.
   static String _nationalDigits(String value) {
     final e164 = _toE164Digits(value);
     final code = _extractCallingCode(e164);
     return e164.substring(code.length);
   }
 
+  /// Removes the international marker and formatting from a phone number.
   static String _toE164Digits(String value) {
     final trimmed = value.trim();
     if (trimmed.isEmpty) return '';
@@ -481,6 +490,7 @@ final class CountryPhoneController
     );
   }
 
+  /// Preserves the known parts of a phone number with no country candidates.
   static CountryPhoneResolution _unresolvedResolution({
     String phone = '',
     String phoneCode = '',
@@ -493,7 +503,7 @@ final class CountryPhoneController
     countryCodes: const <String>[],
   );
 
-  /// Returns heuristic candidates from the bundled dataset.
+  /// Returns countries tied for the best match to their bundled example number.
   static List<_CountryCodeMatch> _resolveCountryMatches({
     required String callingCode,
     required String national,
@@ -524,16 +534,12 @@ final class CountryPhoneController
         bestPrefix = prefix;
         bestMatches
           ..clear()
-          ..add(
-            _CountryCodeMatch(iso2: iso2, level: level, prefixLength: prefix),
-          );
+          ..add(_CountryCodeMatch(iso2: iso2, level: level));
         continue;
       }
 
       if (prefix == bestPrefix) {
-        bestMatches.add(
-          _CountryCodeMatch(iso2: iso2, level: level, prefixLength: prefix),
-        );
+        bestMatches.add(_CountryCodeMatch(iso2: iso2, level: level));
       }
     }
 
@@ -541,10 +547,6 @@ final class CountryPhoneController
       // Lower levels win because they represent the main region in this dataset.
       final levelComparison = a.level.compareTo(b.level);
       if (levelComparison != 0) return levelComparison;
-
-      final prefixComparison = b.prefixLength.compareTo(a.prefixLength);
-      if (prefixComparison != 0) return prefixComparison;
-
       return a.iso2.compareTo(b.iso2);
     });
 
@@ -558,14 +560,10 @@ final class CountryPhoneController
   }
 }
 
+/// A bundled region tied for the longest matching example prefix.
 final class _CountryCodeMatch {
-  const _CountryCodeMatch({
-    required this.iso2,
-    required this.level,
-    required this.prefixLength,
-  });
+  const _CountryCodeMatch({required this.iso2, required this.level});
 
   final String iso2;
   final int level;
-  final int prefixLength;
 }

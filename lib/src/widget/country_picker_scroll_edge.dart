@@ -55,12 +55,6 @@ class CountryPickerScrollEdgeEffect extends StatefulWidget {
     super.key,
   });
 
-  /// Background shade resolved by the picker theme.
-  final Color color;
-
-  /// Fade distance below the compact navigation bar.
-  final double extent;
-
   /// The asset path of the scroll edge shader.
   static const String _shaderAsset =
       'packages/flutter_simple_country_picker/assets/shaders/scroll_edge.frag';
@@ -72,6 +66,12 @@ class CountryPickerScrollEdgeEffect extends StatefulWidget {
       'packages/flutter_simple_country_picker/assets/shaders/scroll_edge_windows.frag';
   static const String _windowsSeparatedShaderAsset =
       'packages/flutter_simple_country_picker/assets/shaders/scroll_edge_windows_separated.frag';
+
+  /// Background shade resolved by the picker theme.
+  final Color color;
+
+  /// Fade distance below the compact navigation bar.
+  final double extent;
 
   @override
   State<CountryPickerScrollEdgeEffect> createState() =>
@@ -429,20 +429,30 @@ class _ScrollEdgeShadeLayer extends PictureLayer {
 
 /// Owns shader handles and publishes readiness to the filter's render object.
 final class _ScrollEdgeShaders extends ChangeNotifier {
+  /// Passes used to render separable contributions when geometry permits it.
   ui.FragmentShader? horizontal;
   ui.FragmentShader? vertical;
+
+  /// A transparent sampler for contributions whose input gets bound later.
   ui.Image? _sampling;
   final BackdropKey backdropKey = BackdropKey();
   final BackdropKey rawBackdropKey = BackdropKey();
   final BackdropKey gaussianBackdropKey = BackdropKey();
   final List<ui.FragmentShader> contributions = <ui.FragmentShader>[];
+
+  /// Uses the SDK blur passes when custom resampling is unsuitable.
   final List<ui.FragmentShader> sdkContributions = <ui.FragmentShader>[];
   bool _disposed = false;
   Future<void>? _$initialization;
   Future<void>? _$genericInitialization;
   bool _genericReady = false;
 
+  /// The width already installed in the shader uniforms.
   double? _kernelSigma;
+
+  /// Whether every shader needed for separable contributions is ready.
+  bool get isReady =>
+      horizontal != null && vertical != null && contributions.length == 10;
 
   /// Pairs adjacent Gaussian samples while preserving their combined weights.
   void configureKernels(double sigma) {
@@ -532,10 +542,6 @@ final class _ScrollEdgeShaders extends ChangeNotifier {
     for (final count in counts) shader.setFloat(index++, count.toDouble());
     _kernelSigma = sigma;
   }
-
-  /// Whether every shader needed for separable contributions is ready.
-  bool get isReady =>
-      horizontal != null && vertical != null && contributions.length == 10;
 
   /// Starts one shared initialization operation for this effect instance.
   void initialize() => unawaited(_$initialization ??= _initialize());
@@ -1126,9 +1132,10 @@ final class _ScrollEdgeShaderLoader {
   ui.FragmentProgram? get program => _program;
   ui.FragmentProgram? _program;
 
-  /// Ensures that the shader program is loaded and returns it.
-  Future<bool> ensureLoaded() => _$load ??= _load();
   Future<bool>? _$load;
+
+  /// Starts loading once and reports whether the program is available.
+  Future<bool> ensureLoaded() => _$load ??= _load();
 
   Future<bool> _load() async {
     try {

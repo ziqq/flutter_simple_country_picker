@@ -835,11 +835,9 @@ class _CountryPickerAlphabetState extends State<CountryPickerAlphabet> {
   }
 }
 
-/// A control surface of the Cupertino-style style.
+/// Connects a picker control to its stock or custom surface painter.
 ///
-/// Delegates painting to [builder] and handles
-/// taps, the pressed state and accessibility itself, so a custom builder
-/// only has to draw the surface.
+/// Owns taps, pressed state and accessibility so custom painters only draw.
 class _Surface extends StatefulWidget {
   const _Surface({
     required this.type,
@@ -854,14 +852,23 @@ class _Surface extends StatefulWidget {
     super.key, // ignore: unused_element_parameter
   });
 
-  final CountryPickerSurfaceBuilder? builder;
-
+  /// Identifies the control for custom surface builders.
   final CountryPickerSurfaceType type;
-  final ShapeDecoration decoration;
+
+  /// The control outline and its default paint.
   final ShapeBorder shape;
+  final ShapeDecoration decoration;
+
+  /// The content painted in front of the surface.
   final Widget child;
 
+  /// Overrides the stock surface painter when provided.
+  final CountryPickerSurfaceBuilder? builder;
+
+  /// Handles the control action directly when the surface is interactive.
   final VoidCallback? onPressed;
+
+  /// Names an interactive surface for assistive technologies.
   final String? semanticsLabel;
 
   /// Origin of the stock surface's press transform.
@@ -876,6 +883,7 @@ class _Surface extends StatefulWidget {
 
 /// Exposes one shared pressed state to stock and custom surface painters.
 class _SurfaceState extends State<_Surface> {
+  /// Both pointer feedback and the painter read this shared press state.
   final ValueNotifier<bool> _pressed = ValueNotifier<bool>(false);
 
   @override

@@ -12,46 +12,24 @@ import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// CountryPickerPreviewStateMixin.
-///
-/// Provide:
-///
-/// - [controller] - phone controller.
-/// - [selected] - selected country.
-/// - [country] - selected country name.
-/// - [countryCode] - selected country code.
-/// - [countryFlag] - selected country flag.
-/// - [mask] - selected country mask.
-/// - [completedPhoneNumber] - completed phone number.
-/// - [onSelect] - select the country.
-/// - [onSubmit] - submit the form.
-///
-/// {@macro county_picker_form_preview}
+/// Owns the phone text, manual formatter, and country selection for previews.
 mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
-  // TODO(ziqq): Fix 78881234567 format
-  String? _phone = '+7 888 123 4567'; // ignore: prefer_final_fields
+  /// The sample international number used by the manual formatter previews.
+  static const String _phone = '+7 888 123 4567';
 
-  /// Country phone controller
+  /// The controller used by previews built with [CountryPhoneInput].
   final countryPhoneController = CountryPhoneController.empty();
 
-  /// Phone controller
+  /// The text controller used by standalone phone fields.
   late final TextEditingController controller;
 
-  /// Country input formater
+  /// Applies the selected country's manual mask to standalone phone fields.
   late final CountryInputFormatter formater;
 
-  /// Selected country
+  /// The country selected in the preview.
   late ValueNotifier<Country> selected;
 
-  /// Snackbar manager
   ScaffoldMessengerState? _messenger;
-
-  /// Selected country
-  Country get _selectedCountry => selected.value;
-
-  /// Completed phone number
-  String? get completedPhoneNumber =>
-      '+${_selectedCountry.phoneCode}${controller.text.replaceAll(" ", "")}';
 
   @override
   void initState() {
@@ -69,26 +47,17 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
     selected = ValueNotifier(initialCountry);
     selected.addListener(_onSelectedChanged);
 
-    // If the controller has an initial value
-    if (_phone case String phone when phone.isNotEmpty) {
-      final oldValue = controller.value;
-      var text = phone;
-
-      // Check if the phone code is not removed from the text
-      if (text.startsWith('+')) {
-        text = text.replaceFirst('+${selected.value.phoneCode} ', '');
-      }
-
-      controller.text = formater.maskText(text);
-
-      // Apply formatting to the new value
-      formater.formatEditUpdate(oldValue, controller.value);
-
-      // Update the cursor position
-      controller.selection = TextSelection.collapsed(
-        offset: controller.text.length,
-      );
-    }
+    final oldValue = controller.value;
+    // The country selector displays the dialing code separately.
+    final nationalNumber = _phone.replaceFirst(
+      '+${selected.value.phoneCode} ',
+      '',
+    );
+    controller.text = formater.maskText(nationalNumber);
+    formater.formatEditUpdate(oldValue, controller.value);
+    controller.selection = TextSelection.collapsed(
+      offset: controller.text.length,
+    );
   }
 
   @override
@@ -109,39 +78,14 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
     super.dispose();
   }
 
-  void _onPhoneChanged() {
-    if (!mounted) return;
-    if (controller.text == formater.getMaskedText()) return;
-    final phone = '+${selected.value.phoneCode} ${controller.text}';
-    dev.log('phone: $phone');
-    // Update the external controller if it is present
-    // widget.controller?.value = phone;
-  }
-
-  void _onSelectedChanged() {
-    if (!mounted) return;
-
-    // Check if the mask is present
-    final mask = selected.value.mask;
-    if (mask == null || mask.isEmpty) return;
-
-    // Update the formatter mask
-    formater.updateMask(mask: mask);
-
-    // Format the current text in the controller after changing the mask
-    final oldValue = controller.value;
-    controller.text = formater.maskText(controller.text);
-    formater.formatEditUpdate(oldValue, controller.value);
-  }
-
-  /// Select the country.
+  /// Clears the number before changing to [newCountry].
   void onSelect(Country newCountry) {
     dev.log('Selected country $newCountry');
     controller.clear();
     selected.value = newCountry;
   }
 
-  /// Submit the form.
+  /// Shows the number in a snackbar as a demonstration of form submission.
   void onSubmit({String? phone}) {
     HapticFeedback.heavyImpact().ignore();
     _messenger
@@ -160,5 +104,27 @@ mixin CountryPickerPreviewStateMixin<T extends StatefulWidget> on State<T> {
           ),
         ),
       );
+  }
+
+  void _onPhoneChanged() {
+    if (!mounted) return;
+    if (controller.text == formater.getMaskedText()) return;
+    final phone = '+${selected.value.phoneCode} ${controller.text}';
+    dev.log('phone: $phone');
+  }
+
+  void _onSelectedChanged() {
+    if (!mounted) return;
+
+    // Keep the current format when the new country supplies no manual mask.
+    final mask = selected.value.mask;
+    if (mask == null || mask.isEmpty) return;
+
+    formater.updateMask(mask: mask);
+
+    // Reformat the existing text with the new country’s mask.
+    final oldValue = controller.value;
+    controller.text = formater.maskText(controller.text);
+    formater.formatEditUpdate(oldValue, controller.value);
   }
 }

@@ -4,22 +4,23 @@ import 'package:example/src/common/localization/generated/l10n.dart'
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
-/// ExampleLocalization.
+/// Adapts the generated translations to the example app’s localization scope.
 final class ExampleLocalization extends generated.ExampleGeneratedLocalization {
   ExampleLocalization._(this.locale);
 
-  ///
+  /// The locale that was used to load the generated translations.
   final Locale locale;
 
-  /// ExampleLocalization delegate.
+  /// Loads the generated translations and publishes them to the widget tree.
   static const LocalizationsDelegate<ExampleLocalization> delegate =
       _ExampleLocalizationDelegate(generated.AppLocalizationDelegate());
 
-  /// Current localization instance.
-  static ExampleLocalization get current => _current;
   static late ExampleLocalization _current;
 
-  /// Get localization instance for the widget structure.
+  /// The last localization loaded by [delegate].
+  static ExampleLocalization get current => _current;
+
+  /// Returns the localization of the nearest enclosing [Localizations].
   static ExampleLocalization of(BuildContext context) =>
       switch (Localizations.of<ExampleLocalization>(
         context,
@@ -33,18 +34,18 @@ final class ExampleLocalization extends generated.ExampleGeneratedLocalization {
         ),
       };
 
-  /// Get language by code.
+  /// Returns the English and native names for an ISO language [code].
   static ({String name, String nativeName})? getLanguageByCode(String code) =>
       switch (_isoLangs[code.toLowerCase()]) {
         (String, String) lang => (name: lang.$1, nativeName: lang.$2),
         _ => null,
       };
 
-  /// Get supported locales.
+  /// The locales supplied by the generated translation catalog.
   static List<Locale> get supportedLocales =>
       const generated.AppLocalizationDelegate().supportedLocales;
 
-  /// Loads the [locale].
+  /// Loads the translations for [locale] outside the widget tree.
   static Future<ExampleLocalization> load(Locale locale) =>
       ExampleLocalization.delegate.load(locale);
 }

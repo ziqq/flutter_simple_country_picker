@@ -31,6 +31,20 @@ class CountryFlagCache extends SingleChildRenderObjectWidget {
 class _RenderCountryFlagCache extends RenderProxyBox {
   _RenderCountryFlagCache(this._devicePixelRatio);
 
+  /// Invalidates cached rasterizations when the system reports a font change.
+  static int _fontRevision = 0;
+  static final Listenable _fonts = PaintingBinding.instance.systemFonts
+    ..addListener(_onFontsChanged);
+
+  /// Limits work shared by all visible flags to the current frame.
+  static int _rasterizedThisFrame = 0;
+  static Duration? _rasterFrame;
+
+  static void _onFontsChanged() => _fontRevision++;
+
+  /// The key last painted by this render object.
+  Object? _paintedKey;
+
   /// The device pixel ratio used for rendering the cached flag image.
   double get devicePixelRatio => _devicePixelRatio;
 
@@ -43,15 +57,7 @@ class _RenderCountryFlagCache extends RenderProxyBox {
 
   double _devicePixelRatio;
 
-  static int _fontRevision = 0;
-  static void _onFontsChanged() => _fontRevision++;
-  static final Listenable _fonts = PaintingBinding.instance.systemFonts
-    ..addListener(_onFontsChanged);
-
-  static int _rasterizedThisFrame = 0;
-  static Duration? _rasterFrame;
-  Object? _paintedKey;
-
+  /// Paints the live text until another frame can rasterize the flag.
   void _paintTextAndRetry(PaintingContext context, Offset offset) {
     super.paint(context, offset);
     WidgetsBinding.instance.addPostFrameCallback((_) {

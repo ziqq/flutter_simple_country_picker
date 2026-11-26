@@ -11,7 +11,7 @@ import 'package:flutter_simple_country_picker/src/model/country.dart';
 import 'package:flutter_simple_country_picker/src/util/country_util.dart';
 
 /// {@template country_state}
-/// Countries state.
+/// A snapshot of the countries displayed by the picker.
 /// {@endtemplate}
 @immutable
 abstract base class CountryState {
@@ -23,7 +23,7 @@ abstract base class CountryState {
     this.stackTrace,
   }) : countries = List<Country>.unmodifiable(countries);
 
-  /// Create a [CountryState] in loading state.
+  /// Creates a [CountryState] while countries are loading.
   ///
   /// {@macro country_state}
   factory CountryState.loading({
@@ -33,7 +33,7 @@ abstract base class CountryState {
     StackTrace? stackTrace,
   }) = CountryState$Loading;
 
-  /// Create a [CountryState] in idle state.
+  /// Creates a [CountryState] with the current results.
   ///
   /// {@macro country_state}
   factory CountryState.idle({
@@ -43,7 +43,7 @@ abstract base class CountryState {
     StackTrace? stackTrace,
   }) = CountryState$Idle;
 
-  /// Create a [CountryState] in error state.
+  /// Creates a [CountryState] after a country operation fails.
   ///
   /// {@macro country_state}
   factory CountryState.error({
@@ -53,28 +53,19 @@ abstract base class CountryState {
     StackTrace? stackTrace,
   }) = CountryState$Error;
 
-  /// Type of state
+  /// A stable name for this state.
   abstract final String type;
-
-  /// Check if is Processing.
-  bool get isLoading => this is CountryState$Loading;
-
-  /// Check if is Failed.
-  bool get isError => this is CountryState$Error;
-
-  /// Check if is Idle.
-  bool get isIdle => this is CountryState$Idle;
 
   /// An unmodifiable snapshot of the countries in this state.
   final List<Country> countries;
 
-  /// Show grouped countries by initial letter.
+  /// Whether the picker groups countries by their initial letter.
   final bool showGroup;
 
-  /// Error object, if any.
+  /// The error from the failed operation, if available.
   final Object? error;
 
-  /// Stack trace of the error.
+  /// The stack trace of [error], if available.
   final StackTrace? stackTrace;
 
   /// A cached table of countries by country code.
@@ -82,7 +73,16 @@ abstract base class CountryState {
     for (final country in countries) country.countryCode: country,
   };
 
-  /// Get country by [countryCode]
+  /// Whether an operation is in progress.
+  bool get isLoading => this is CountryState$Loading;
+
+  /// Whether the current results are ready.
+  bool get isIdle => this is CountryState$Idle;
+
+  /// Whether an operation failed.
+  bool get isError => this is CountryState$Error;
+
+  /// Returns the last entry with this [countryCode], or `null` if absent.
   Country? getCountryByCode(String countryCode) => _table[countryCode];
 
   @override
@@ -155,22 +155,20 @@ final class CountryState$Error extends CountryState {
 }
 
 /// {@template country_controller}
-/// Countries controller.
-/// Manages the state of countries
-/// and provides methods to fetch and search countries.
+/// Loads, filters, and searches countries for the picker.
 /// {@endtemplate}
 @internal
 final class CountryController extends ValueNotifier<CountryState> {
   /// {@macro country_controller}
   CountryController({
     required CountryProvider provider,
-    bool showPhoneCode = true,
-    bool showWorldWide = false,
-    bool? showGroup,
     List<Country>? countries,
     List<String>? exclude,
     List<String>? favorites,
     List<String>? filter,
+    bool showPhoneCode = true,
+    bool showWorldWide = false,
+    bool? showGroup,
   }) : _provider = provider,
        _exclude = exclude,
        _favorites = favorites,
@@ -185,51 +183,48 @@ final class CountryController extends ValueNotifier<CountryState> {
          ),
        );
 
-  /// Countries provider.
+  /// Search text controller owned by this country controller.
+  TextEditingController? search;
+
+  /// Provides the bundled countries.
   final CountryProvider _provider;
 
-  /// An optional [exclude] argument can be used to exclude(remove) one ore more
-  /// country from the countries list. It takes a list of country code(iso2).
-  /// Note: Can't provide both [exclude] and [countryFilter]
+  /// ISO alpha-2 codes to omit from the country list.
   List<String>? _exclude;
 
-  /// An optional [favorites] argument can be used to show countries
-  /// at the top of the list. It takes a list of country code(iso2).
+  /// ISO alpha-2 codes to place before the other countries.
   List<String>? _favorites;
 
-  /// An optional [filter] argument can be used to filter the
-  /// list of countries. It takes a list of country code(iso2).
-  /// Note: Can't provide both [filter] and [exclude]
+  /// ISO alpha-2 codes to include in the country list, if restricted.
   List<String>? _filter;
 
-  /// Used to show phone code.
+  /// Whether to retain distinct dialing entries for the same country.
   bool _showPhoneCode;
 
   /// Used to show the "World Wide" option at the beginning of the list.
   final bool _showWorldWide;
 
-  /// Search controller.
-  TextEditingController? search;
-
-  /// Current localization.
+  /// The localization used for search and display.
   CountryLocalizations? _localization;
 
-  /// Cached countries list.
+  /// The prepared country list before applying the search query.
   List<Country> _cache = <Country>[];
 
   /// The most recent fetch, or null before the first load.
   Future<List<Country>>? _countriesLoad;
 
-  /// Current state.
-  CountryState get state => value;
-
-  /// Check if the controller is disposed.
-  bool get isDisposed => _$isDisposed;
+  /// Whether this controller has finished disposal.
   bool _$isDisposed = false;
 
-  /// Add listener to search controller and provide localization.
+  /// The current picker state.
+  CountryState get state => value;
+
+  /// Whether the controller has been disposed.
+  bool get isDisposed => _$isDisposed;
+
+  /// Installs [localization] and listens for search text changes.
   ///
-  /// Localization is used to search countries by localized name.
+  /// Rebuilds the cached results when the active localization changes.
   @mustCallSuper
   void initLocalization(CountryLocalizations? localization) {
     if (isDisposed) return;
@@ -242,6 +237,9 @@ final class CountryController extends ValueNotifier<CountryState> {
   }
 
   /// Applies the selection options of a mounted country scope.
+  ///
+  /// With [lazy], updates an existing load or cache without fetching for an
+  /// uninitialized scope.
   void apply({
     required List<String>? exclude,
     required List<String>? favorites,
@@ -256,13 +254,29 @@ final class CountryController extends ValueNotifier<CountryState> {
     if (!lazy || _countriesLoad != null) getCountries().ignore();
   }
 
-  /// Get countries
+  /// Refreshes the country list and returns it before search filtering.
+  ///
+  /// Returns `null` if loading fails.
   Future<List<Country>?> getCountries() {
     final load = Future<List<Country>>.microtask(_provider.getCountries);
     _countriesLoad = load;
     return _handle(() => _getCountries(load));
   }
 
+  @override
+  void dispose() {
+    if (isDisposed) return;
+    search
+      ?..removeListener(_onSearch)
+      ..dispose();
+    _cache = <Country>[];
+    _countriesLoad = null;
+    _localization = null;
+    _$isDisposed = true;
+    super.dispose();
+  }
+
+  /// Prepares a load and publishes it only if it is still current.
   Future<List<Country>?> _getCountries(Future<List<Country>> load) async {
     String normalize(String value) => value.trim().toUpperCase();
     final stopwatch = Stopwatch()..start();
@@ -273,6 +287,8 @@ final class CountryController extends ValueNotifier<CountryState> {
       final favoriteCodes = _favorites?.map(normalize).toList(growable: false);
       final showPhoneCode = _showPhoneCode;
 
+      // Use the same identity for favorites and regular entries so a favorite
+      // cannot appear a second time in the regular list.
       final seenCountries = <(String, String?)>{};
 
       final byCode = <String, List<Country>>{};
@@ -310,6 +326,7 @@ final class CountryController extends ValueNotifier<CountryState> {
         final country = countries[i];
         final countryCode = normalize(country.countryCode);
 
+        // Yield during long refreshes so input and rendering can proceed.
         if (stopwatch.elapsedMilliseconds > 8) {
           await Future<void>.delayed(.zero);
           stopwatch
@@ -355,7 +372,7 @@ final class CountryController extends ValueNotifier<CountryState> {
     }
   }
 
-  /// Search countries by query.
+  /// Publishes the results for the current search query.
   Future<void> _onSearch() => _handle(() async {
     _setState(
       CountryState.idle(
@@ -365,6 +382,7 @@ final class CountryController extends ValueNotifier<CountryState> {
     );
   });
 
+  /// Applies the current query to the prepared country list.
   List<Country> _resolveFilteredCountries() {
     final query = search?.text ?? '';
     if (query.isEmpty) return _cache;
@@ -373,13 +391,11 @@ final class CountryController extends ValueNotifier<CountryState> {
         .toList(growable: false);
   }
 
-  /// Localize country names using the current localization.
+  /// Localizes and sorts one section independently of the other sections.
   List<Country> _localize(List<Country> countries) {
     final l = _localization;
 
-    // Important to tests and performance,
-    // if localization is null,
-    // we can skip localizing and sorting.
+    // Preserve the provider order when no localization has been set.
     if (l == null) return countries.toList(growable: false);
 
     final result = <({Country country, String name, String sortKey})>[];
@@ -405,9 +421,7 @@ final class CountryController extends ValueNotifier<CountryState> {
     return result.map((entry) => entry.country).toList(growable: false);
   }
 
-  /// Handles a given operation with error handling and completion tracking.
-  ///
-  /// [handler] - The is the $countries operation to be executed.
+  /// Runs [handler] while exposing loading and failure states to listeners.
   Future<T?> _handle<T>(Future<T?> Function() handler) async {
     try {
       _setState(
@@ -430,23 +444,10 @@ final class CountryController extends ValueNotifier<CountryState> {
     }
   }
 
-  /// Handle state update.
+  /// Notifies listeners only when an active controller changes state.
   void _setState(CountryState state) {
     if (isDisposed) return;
     if (state == value) return;
     value = state;
-  }
-
-  @override
-  void dispose() {
-    if (isDisposed) return;
-    search
-      ?..removeListener(_onSearch)
-      ..dispose();
-    _cache = <Country>[];
-    _countriesLoad = null;
-    _localization = null;
-    _$isDisposed = true;
-    super.dispose();
   }
 }

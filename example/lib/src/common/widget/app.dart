@@ -9,7 +9,7 @@ import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart
 import 'package:material_ui/material_ui.dart';
 
 /// {@template app}
-/// App widget.
+/// Provides the example themes, localizations, and root navigator.
 /// {@endtemplate}
 class App extends StatefulWidget {
   /// {@macro app}
@@ -18,38 +18,32 @@ class App extends StatefulWidget {
   /// Home widget.
   final Widget home;
 
-  @override
-  State<App> createState() => _AppState();
-
-  /// The state from the closest instance of this class
-  /// that encloses the given context, if any.
-  /// e.g. `AppState.maybeOf(context)`.
+  /// Returns the nearest example app state, if one exists.
   static _AppState? maybeOf(BuildContext context) =>
       context.findAncestorStateOfType<_AppState>();
+
+  /// Returns the nearest example app state or throws an [ArgumentError].
+  static _AppState? of(BuildContext context) =>
+      maybeOf(context) ?? _notFoundStateOfType();
 
   static Never _notFoundStateOfType() => throw ArgumentError(
     'Out of scope, not found state of type _AppState',
     'out_of_scope',
   );
 
-  /// The state from the closest instance of this class
-  /// that encloses the given context.
-  /// e.g. `AppState.of(context)`
-  static _AppState? of(BuildContext context) =>
-      maybeOf(context) ?? _notFoundStateOfType();
+  @override
+  State<App> createState() => _AppState();
 }
 
 /// State for [App] widget.
 class _AppState extends State<App> {
-  /// Disable recreate widget tree
+  /// Keeps the navigator mounted when changing the app locale.
   final Key _builderKey = GlobalKey(debugLabel: 'AppBuilderKey');
 
-  /// Localization delegates
+  /// Loads the example, country, and Material widget translations.
   final localizationsDelegates = const <LocalizationsDelegate<Object?>>[
-    /// Example localization
     ExampleLocalization.delegate,
 
-    /// Add [CountriesLocalization] in app [localizationsDelegates]
     CountryLocalizations.delegate,
     ...GlobalMaterialLocalizations.delegates,
   ];
@@ -57,10 +51,10 @@ class _AppState extends State<App> {
   /// Current locale of the app.
   final ValueNotifier<Locale> locale = ValueNotifier(const Locale('en'));
 
-  /// App theme mode
+  /// The current theme mode, initially inherited from the platform.
   final ValueNotifier<ThemeMode> themeMode = ValueNotifier(ThemeMode.system);
 
-  /// Combined listenable
+  /// Rebuilds the Material app when its locale or theme changes.
   late final Listenable _listenable = Listenable.merge([themeMode, locale]);
 
   @override
@@ -95,17 +89,6 @@ class _AppState extends State<App> {
       locale: locale.value,
       localizationsDelegates: localizationsDelegates,
       supportedLocales: ExampleLocalization.supportedLocales,
-      /* localeResolutionCallback: (locale, supportedLocales) {
-        if (locale == null) {
-          return supportedLocales.first;
-        }
-        for (final supportedLocale in supportedLocales) {
-          if (supportedLocale.languageCode == locale.languageCode) {
-            return supportedLocale;
-          }
-        }
-        return supportedLocales.first;
-      }, */
       builder: (context, _) => MediaQuery(
         key: _builderKey,
         data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
@@ -118,9 +101,9 @@ class _AppState extends State<App> {
   );
 }
 
-/// AppThemeModeSwitcherButton widget.
+/// Switches the example between light and dark themes.
 class AppThemeModeSwitcherButton extends StatelessWidget {
-  /// {@macro app}
+  /// Creates the theme switcher.
   const AppThemeModeSwitcherButton({super.key});
 
   ThemeMode _themeModeFromBrightness(Brightness brightness) =>
@@ -141,14 +124,10 @@ class AppThemeModeSwitcherButton extends StatelessWidget {
   }
 }
 
-/// AppLocaleSwitcherButton widget.
-///
-/// Switch app locale.
+/// Opens a menu of supported example languages.
 class AppLocaleSwitcherButton extends StatelessWidget {
-  /// {@macro app}
-  const AppLocaleSwitcherButton({
-    super.key, // ignore: unused_element
-  });
+  /// Creates the language switcher.
+  const AppLocaleSwitcherButton({super.key});
 
   @override
   Widget build(BuildContext context) {

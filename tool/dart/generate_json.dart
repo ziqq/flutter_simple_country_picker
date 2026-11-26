@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-/// Generate `country_codes.g.json` from `country_codes.dart`.
-/// Usage: fvm dart --disable-analytics run tool/dart/generate_json.dart
+/// Generates the JSON mirror of the bundled country data.
+///
+/// Run with `mise exec -- dart run tool/dart/generate_json.dart`.
+/// Pass `--validate-only` to check the source without writing a file.
 void main(List<String> args) {
   final options = _Options.parse(args);
 
@@ -43,6 +45,7 @@ void main(List<String> args) {
   stdout.writeln('Wrote ${options.outputPath} (${value.length} countries).');
 }
 
+/// Finds the list assigned to `countries` in the bundled Dart source.
 String _extractCountriesListLiteral(String source) {
   final anchorIndex = source.indexOf('countries');
   if (anchorIndex == -1) {
@@ -59,11 +62,13 @@ String _extractCountriesListLiteral(String source) {
     throw const FormatException('Could not find list literal start `[`');
   }
 
-  final scanner = _Scanner(source, startOffset: listStart);
-  final literal = scanner.readBalancedBrackets(open: '[', close: ']');
-  return literal;
+  return _Scanner(
+    source,
+    startOffset: listStart,
+  ).readBalancedBrackets(open: '[', close: ']');
 }
 
+/// Input, output, and encoding options for the country JSON mirror.
 final class _Options {
   const _Options({
     required this.inputPath,
@@ -72,13 +77,8 @@ final class _Options {
     required this.validateOnly,
   });
 
-  final String inputPath;
-  final String outputPath;
-  final bool minify;
-  final bool validateOnly;
-
-  // ignore: prefer_constructors_over_static_methods
-  static _Options parse(List<String> args) {
+  /// Parses command-line flags, exiting with usage on help or invalid input.
+  factory _Options.parse(List<String> args) {
     var inputPath = 'lib/src/constant/country_codes.dart';
     var outputPath = 'lib/src/constant/country_codes.g.json';
     var minify = false;
@@ -115,6 +115,11 @@ final class _Options {
     );
   }
 
+  final String inputPath;
+  final String outputPath;
+  final bool minify;
+  final bool validateOnly;
+
   static Never _usageAndExit(String? error, {int exitCode = 64}) {
     if (error != null) {
       stderr
@@ -137,12 +142,14 @@ final class _Options {
   }
 }
 
+/// Locates the end of a bracketed value in Dart source.
 final class _Scanner {
   _Scanner(this._source, {required int startOffset}) : _i = startOffset;
 
   final String _source;
   int _i;
 
+  /// Reads through the matching delimiter, ignoring strings and comments.
   String readBalancedBrackets({required String open, required String close}) {
     var depth = 0;
     final start = _i;
@@ -240,12 +247,14 @@ final class _Scanner {
   }
 }
 
+/// Parses the subset of Dart literals used in the country dataset.
 final class _DartLiteralParser {
   _DartLiteralParser(this._text);
 
   final String _text;
   int _i = 0;
 
+  /// Reads the next literal, skipping whitespace and comments.
   Object? parseValue() {
     _skipWhitespaceAndComments();
     if (_i >= _text.length) {
@@ -272,6 +281,7 @@ final class _DartLiteralParser {
     };
   }
 
+  /// Rejects any source still present after the parsed literal.
   void expectEnd() {
     _skipWhitespaceAndComments();
     if (_i != _text.length) {
@@ -284,13 +294,11 @@ final class _DartLiteralParser {
     final result = <Object?>[];
 
     while (true) {
-      _skipWhitespaceAndComments();
       if (_tryConsume(']')) break;
 
       final value = parseValue();
       result.add(value);
 
-      _skipWhitespaceAndComments();
       if (_tryConsume(',')) {
         continue;
       }
@@ -307,17 +315,14 @@ final class _DartLiteralParser {
     final result = <String, Object?>{};
 
     while (true) {
-      _skipWhitespaceAndComments();
       if (_tryConsume('}')) break;
 
-      final key = _parseMapKey();
-      _skipWhitespaceAndComments();
+      final key = _parseString();
       _expect(':');
 
       final value = parseValue();
       result[key] = value;
 
-      _skipWhitespaceAndComments();
       if (_tryConsume(',')) {
         continue;
       }
@@ -327,12 +332,6 @@ final class _DartLiteralParser {
     }
 
     return result;
-  }
-
-  String _parseMapKey() {
-    _skipWhitespaceAndComments();
-    final key = _parseString();
-    return key;
   }
 
   String _parseString() {
@@ -386,6 +385,7 @@ final class _DartLiteralParser {
     throw const FormatException('Unterminated string literal.');
   }
 
+  /// Decodes both fixed-width and braced Dart Unicode escapes.
   String _parseUnicodeEscape() {
     if (_i < _text.length && _text[_i] == '{') {
       _i++;
