@@ -71,6 +71,7 @@ log.pana.json
 .coverage/
 coverage/
 reports/
+/docs/performance-data/
 /test/**/*.json
 /test/.test_coverage.dart
 !/test/**/fixtures/*.json
