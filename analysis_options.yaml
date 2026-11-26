@@ -9,6 +9,8 @@ analyzer:
     - ".test_coverage.dart"
     - ".coverage/**"
     - "coverage/**"
+    # Local benchmark captures and source snapshots.
+    - "reports/**"
     # Assets
     - "assets/**"
     # Generated
