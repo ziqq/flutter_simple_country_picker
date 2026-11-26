@@ -1,7 +1,12 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 25 October 2024
+ */
+
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../util/test_util.dart';
 
@@ -17,15 +22,13 @@ void main() => group('CountryPickerTheme -', () {
       onSecondaryBackgroundColor: null,
       barrierColor: null,
       dividerColor: null,
-      inputDecoration: null,
       inputHeight: 56,
       secondaryTextStyle: null,
       searchTextStyle: null,
       textStyle: null,
       flagSize: null,
       padding: 16,
-      indent: 8,
-      radius: 12,
+      baseCornerRadius: 12,
     );
     final start = theme(Colors.red);
     final end = theme(Colors.blue);
@@ -46,9 +49,7 @@ void main() => group('CountryPickerTheme -', () {
       searchTextStyle: const TextStyle(fontSize: 14),
       flagSize: 25,
       padding: 10,
-      indent: 10,
-      radius: 10,
-      inputDecoration: const InputDecoration(),
+      baseCornerRadius: 10,
     );
 
     await tester.pumpWidget(
@@ -104,9 +105,7 @@ void main() => group('CountryPickerTheme -', () {
       searchTextStyle: const TextStyle(fontSize: 15),
       flagSize: 24,
       padding: 8,
-      indent: 12,
-      radius: 15,
-      inputDecoration: const InputDecoration(hintText: 'Search...'),
+      baseCornerRadius: 15,
     );
 
     await tester.pumpWidget(
@@ -134,9 +133,7 @@ void main() => group('CountryPickerTheme -', () {
     expect(inheritedTheme.searchTextStyle?.fontSize, 15);
     expect(inheritedTheme.flagSize, 24.0);
     expect(inheritedTheme.padding, 8.0);
-    expect(inheritedTheme.indent, 12.0);
-    expect(inheritedTheme.radius, 15.0);
-    expect(inheritedTheme.inputDecoration?.hintText, 'Search...');
+    expect(inheritedTheme.baseCornerRadius, 15.0);
   });
 
   testWidgets('with fallback to defaults', (tester) async {
@@ -195,9 +192,7 @@ void main() => group('CountryPickerTheme -', () {
               searchTextStyle: const TextStyle(fontSize: 13),
               flagSize: 28,
               padding: 12,
-              indent: 8,
-              radius: 16,
-              inputDecoration: const InputDecoration(),
+              baseCornerRadius: 16,
             );
             resolved = CountryPickerTheme.resolve(context, other);
             return const Scaffold(body: SizedBox.shrink(key: _key));
@@ -225,9 +220,7 @@ void main() => group('CountryPickerTheme -', () {
         searchTextStyle: const TextStyle(fontSize: 14),
         flagSize: 25,
         padding: 10,
-        indent: 10,
-        radius: 10,
-        inputDecoration: const InputDecoration(),
+        baseCornerRadius: 10,
       );
       final theme2 = theme1.copyWith(flagSize: 30);
 
@@ -345,9 +338,7 @@ void main() => group('CountryPickerTheme -', () {
       searchTextStyle: const TextStyle(fontSize: 14),
       flagSize: 25,
       padding: 10,
-      indent: 10,
-      radius: 10,
-      inputDecoration: const InputDecoration(),
+      baseCornerRadius: 10,
     );
 
     late BuildContext capturedCtx;
@@ -384,9 +375,7 @@ void main() => group('CountryPickerTheme -', () {
       searchTextStyle: const TextStyle(fontSize: 14),
       flagSize: 26,
       padding: 10,
-      indent: 10,
-      radius: 10,
-      inputDecoration: const InputDecoration(),
+      baseCornerRadius: 10,
     );
 
     late CountryPickerTheme? resolved;

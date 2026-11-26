@@ -4,19 +4,18 @@
  */
 
 import 'package:flutter/widgets.dart' show BuildContext, Locale;
-import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart'
     show countries;
 import 'package:flutter_simple_country_picker/src/constant/country_region_aliases.dart'
     show countryRegionAliases;
 import 'package:flutter_simple_country_picker/src/data/country_parser.dart';
+import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart';
 import 'package:flutter_simple_country_picker/src/util/country_util.dart'
     show CountryUtil;
 import 'package:meta/meta.dart';
 
 /// {@template country}
-/// The country entity that has all the country
-/// information needed from the [flutter_simple_country_picker]
+/// A country and its dialing and display metadata.
 /// {@endtemplate}
 @immutable
 class Country {
@@ -37,17 +36,17 @@ class Country {
     this.mask,
   });
 
-  /// Create a `RU` country.
+  /// Creates the bundled entry for Russia.
   /// {@macro country}
   factory Country.ru() =>
       Country.fromJson(countries.firstWhere((c) => c['e164_key'] == '7-RU-0'));
 
-  /// Create a `United States` country.
+  /// Creates the bundled entry for the United States.
   /// {@macro country}
   factory Country.us() =>
       Country.fromJson(countries.firstWhere((c) => c['e164_key'] == '1-US-0'));
 
-  /// Create a country from a JSON object
+  /// Creates a country from an entry in the bundled dataset format.
   /// {@macro country}
   Country.fromJson(Map<String, Object?> json)
     : e164Key = json['e164_key'].toString(),
@@ -79,7 +78,7 @@ class Country {
       fullExampleWithPlusSign = json['full_example_with_plus_sign']?.toString(),
       displayNameNoCountryCode = json['display_name_no_e164_cc'].toString();
 
-  /// The world wide country
+  /// The sentinel entry for numbers without a selected country.
   /// {@macro country}
   static const Country worldWide = Country(
     phoneCode: '',
@@ -94,116 +93,59 @@ class Country {
     e164Key: '',
   );
 
-  /// The country phone code
+  /// The international calling code without the leading plus sign.
   final String phoneCode;
 
-  /// The country code, ISO (iso2_cc / alpha-2)
+  /// The country code, usually an ISO 3166-1 alpha-2 code.
   final String countryCode;
 
-  /// The country e164Sc
+  /// The dataset sub-code, or zero when no extra identifier is needed.
   final int e164Sc;
 
-  /// Is geographic?
+  /// Whether the numbering plan identifies a geographic region.
   final bool geographic;
 
-  /// The country level
+  /// Priority among entries that share a calling code and prefix match.
   final int level;
 
-  /// The country phone mask, whitout [countryCode]
-  final String? mask;
-
-  /// The country name in English
+  /// The country name in English.
   final String name;
 
-  /// The country name localized
-  final String? nameLocalized;
-
-  /// An example of a telephone number without the phone code
+  /// An example national number without the calling code.
   final String example;
 
-  /// Country name (country code)
+  /// The dataset display label including the calling code.
   final String displayName;
 
-  /// An example of a telephone number with the phone code and plus sign
-  final String? fullExampleWithPlusSign;
-
-  /// Country name (country code)
+  /// The dataset display label without the calling code.
   final String displayNameNoCountryCode;
 
-  /// The country e164 key
+  /// The stable dataset key for this dialing entry.
   final String e164Key;
 
-  /// Provides country flag as emoji.
-  /// Can be displayed using:
-  ///```dart
+  /// The localized country name when available.
+  final String? nameLocalized;
+
+  /// An example number with its calling code and a leading plus sign.
+  final String? fullExampleWithPlusSign;
+
+  /// The display mask for the national number, without the calling code.
+  final String? mask;
+
+  /// The emoji flag for this country.
+  ///
+  /// ```dart
   /// Text(country.flagEmoji)
   /// ```
   String get flagEmoji =>
       iswWorldWide ? '🌍' : CountryUtil.countryCodeToEmoji(countryCode);
 
-  /// Check to world wide
+  /// Whether this is the [worldWide] sentinel.
   bool get iswWorldWide => countryCode == Country.worldWide.countryCode;
 
-  /// Get the localized country name
-  String? toLocalizedString(BuildContext context) =>
-      CountryLocalizations.of(context).getCountryNameByCode(countryCode);
-
-  /// Get the localized country name
-  @Deprecated(
-    'Use [toLocalizedString] instead. '
-    'This method will be removed in next releases.',
-  )
-  String? getTranslatedName(BuildContext context) => toLocalizedString(context);
-
-  /// Check if the country starts with a query
-  bool startsWith(String query, CountryLocalizations? localization) {
-    var $query = query.toLowerCase();
-    if (query.startsWith('+')) $query = query.replaceAll('+', '').trim();
-    return phoneCode.startsWith($query) ||
-        name.toLowerCase().startsWith($query) ||
-        countryCode.toLowerCase().startsWith($query) ||
-        (localization
-                ?.getCountryNameByCode(countryCode)
-                ?.toLowerCase()
-                .startsWith($query) ??
-            false);
-  }
-
-  /// Copy the country with new values
-  @useResult
-  Country copyWith({
-    String? phoneCode,
-    String? countryCode,
-    int? e164Sc,
-    String? e164Key,
-    bool? geographic,
-    int? level,
-    String? displayName,
-    String? displayNameNoCountryCode,
-    String? example,
-    String? fullExampleWithPlusSign,
-    String? mask,
-    String? name,
-    String? nameLocalized,
-  }) => Country(
-    phoneCode: phoneCode ?? this.phoneCode,
-    countryCode: countryCode ?? this.countryCode,
-    e164Sc: e164Sc ?? this.e164Sc,
-    e164Key: e164Key ?? this.e164Key,
-    geographic: geographic ?? this.geographic,
-    level: level ?? this.level,
-    displayName: displayName ?? this.displayName,
-    displayNameNoCountryCode:
-        displayNameNoCountryCode ?? this.displayNameNoCountryCode,
-    example: example ?? this.example,
-    fullExampleWithPlusSign:
-        fullExampleWithPlusSign ?? this.fullExampleWithPlusSign,
-    mask: mask ?? this.mask,
-    name: name ?? this.name,
-    nameLocalized: nameLocalized ?? this.nameLocalized,
-  );
-
-  /// Parse a country from a string
+  /// Resolves a country by code or name.
+  ///
+  /// Throws an [ArgumentError] if [country] has no match.
   @useResult
   static Country parse(String country) {
     if (country == worldWide.countryCode) {
@@ -213,7 +155,7 @@ class Country {
     }
   }
 
-  /// Try to parse a country from a string
+  /// Resolves a country by code or name, or returns `null` if unmatched.
   @useResult
   static Country? tryParse(String country) {
     if (country == worldWide.countryCode) {
@@ -251,7 +193,9 @@ class Country {
     return fromCountryCode(countryCode);
   }
 
-  /// Resolves a country from [countryCode], applying bundled region aliases.
+  /// Resolves a country from [countryCode], or returns `null` if unmatched.
+  ///
+  /// Applies the bundled region aliases before lookup.
   @useResult
   static Country? fromCountryCodeOrNull(String countryCode) {
     final normalized = normalizeRegionCode(countryCode);
@@ -295,7 +239,61 @@ class Country {
     return countryRegionAliases[normalized] ?? normalized;
   }
 
-  /// Convert the country to a JSON object
+  /// Returns the translated name using the localization in [context].
+  String? toLocalizedString(BuildContext context) =>
+      CountryLocalizations.of(context).getCountryNameByCode(countryCode);
+
+  /// Whether an identifier or name for this country starts with [query].
+  ///
+  /// Matches the calling code, ISO code, English name, or localized name.
+  /// Diacritics and case are ignored for names.
+  bool startsWith(String query, CountryLocalizations? localization) {
+    String normalize(String value) =>
+        CountryUtil.foldDiacritics(value).toLowerCase();
+    var $query = normalize(query);
+    if (query.startsWith('+')) $query = query.replaceAll('+', '').trim();
+    final localized = localization?.getCountryNameByCode(countryCode);
+    return phoneCode.startsWith($query) ||
+        normalize(name).startsWith($query) ||
+        countryCode.toLowerCase().startsWith($query) ||
+        (localized != null && normalize(localized).startsWith($query));
+  }
+
+  /// Creates a copy with the supplied non-null values.
+  @useResult
+  Country copyWith({
+    String? phoneCode,
+    String? countryCode,
+    int? e164Sc,
+    bool? geographic,
+    int? level,
+    String? name,
+    String? example,
+    String? displayName,
+    String? displayNameNoCountryCode,
+    String? e164Key,
+    String? nameLocalized,
+    String? fullExampleWithPlusSign,
+    String? mask,
+  }) => Country(
+    phoneCode: phoneCode ?? this.phoneCode,
+    countryCode: countryCode ?? this.countryCode,
+    e164Sc: e164Sc ?? this.e164Sc,
+    e164Key: e164Key ?? this.e164Key,
+    geographic: geographic ?? this.geographic,
+    level: level ?? this.level,
+    displayName: displayName ?? this.displayName,
+    displayNameNoCountryCode:
+        displayNameNoCountryCode ?? this.displayNameNoCountryCode,
+    example: example ?? this.example,
+    fullExampleWithPlusSign:
+        fullExampleWithPlusSign ?? this.fullExampleWithPlusSign,
+    mask: mask ?? this.mask,
+    name: name ?? this.name,
+    nameLocalized: nameLocalized ?? this.nameLocalized,
+  );
+
+  /// Returns the country metadata in the bundled dataset format.
   Map<String, Object?> toJson() {
     final data = <String, Object?>{};
     data['iso2_cc'] = countryCode;

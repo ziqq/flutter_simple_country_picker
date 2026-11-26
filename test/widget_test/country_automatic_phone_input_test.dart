@@ -5,10 +5,11 @@
 
 import 'dart:ui' as ui;
 
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show RenderRepaintBoundary;
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:flutter_simple_country_picker/src/widget/country_picker_sheet_gesture.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../util/test_util.dart';
 
@@ -643,10 +644,10 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        final sheet = tester.widget<DraggableScrollableSheet>(
-          find.byType(DraggableScrollableSheet),
+        final sheet = tester.widget<CountryPickerSheetGesture>(
+          find.byType(CountryPickerSheetGesture),
         );
-        expect(sheet.initialChildSize, 1);
+        expect(sheet.initialSize, 1);
       },
     );
 

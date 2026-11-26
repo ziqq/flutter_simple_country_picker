@@ -10,6 +10,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:xml/xml.dart';
 
+/// Upstream revision and checksum used to reproduce the committed rules.
 const _metadataCommit = '8593ab70fa4fadffc042b2714034f4c52bef7daf';
 const _metadataSha256 =
     'b6491939ddaeb9d585a34fe0f0ebd096e83c5ac9a1c5d6dddf38ba4b162b28ca';
@@ -30,8 +31,9 @@ const _typeTags = <String>[
 
 /// Generates pinned, internal formatting rules without changing the country data.
 ///
-/// Run with fvm dart run tool/dart/generate_phone_rules.dart.
-/// --metadata accepts an offline XML copy; --check never writes the output.
+/// Run with `mise exec -- dart run tool/dart/generate_phone_rules.dart`.
+/// Pass `--metadata` to use an offline XML copy and `--check` to verify the
+/// destination without replacing it.
 Future<void> main(List<String> arguments) async {
   final options = _Options(arguments);
   if (options.help) {
@@ -63,6 +65,7 @@ Future<void> main(List<String> arguments) async {
   try {
     final formatted = File('${temporary.path}/country_phone_rules.g.dart');
     await formatted.writeAsString(generated.source);
+    // Use a fixed formatter language version even if the package constraint changes.
     final process = await Process.run(Platform.resolvedExecutable, <String>[
       'format',
       '--language-version',
@@ -225,12 +228,15 @@ Set<int> _declaredLengths(String? value) {
   return result;
 }
 
-/// Computes exact lengths for the restricted regex grammar used by this pin.
+/// Computes exact lengths for the restricted regex grammar in the pinned XML.
 ///
-/// Unknown operations and unbounded repetitions fail rather than approximate
-/// new upstream rules. This replaces Python's private regular-expression AST.
+/// Rejects unknown operations and unbounded repetitions so a metadata update
+/// cannot silently introduce an approximation.
 final class _PatternLengths {
   _PatternLengths(this.pattern);
+
+  /// Upper bound for repetition counts and total digit lengths.
+  static const int _maxLength = 32;
 
   /// Whitespace-free expression from the verified metadata revision.
   final String pattern;
@@ -243,13 +249,6 @@ final class _PatternLengths {
     if (_offset != pattern.length) _unsupported();
     return result;
   }
-
-  /// Adds possible lengths of consecutive atoms, bounded by the old generator.
-  Set<int> _combine(Set<int> left, Set<int> right) => <int>{
-    for (final a in left)
-      for (final b in right)
-        if (a + b <= 32) a + b,
-  };
 
   /// Unions each branch without losing lengths accepted by another branch.
   Set<int> _alternatives() {
@@ -272,7 +271,7 @@ final class _PatternLengths {
       } else if (_consume('{')) {
         low = _number();
         high = _consume(',') ? _number() : low;
-        if (!_consume('}') || high < low || high > 32) _unsupported();
+        if (!_consume('}') || high < low || high > _maxLength) _unsupported();
       } else if (_offset < pattern.length && '*+'.contains(pattern[_offset])) {
         _unsupported();
       }
@@ -340,6 +339,13 @@ final class _PatternLengths {
   Never _unsupported() => throw FormatException(
     'Unsupported regular expression at $_offset: $pattern',
   );
+
+  /// Adds the possible lengths of consecutive atoms within the parser bound.
+  static Set<int> _combine(Set<int> left, Set<int> right) => <int>{
+    for (final a in left)
+      for (final b in right)
+        if (a + b <= _maxLength) a + b,
+  };
 }
 
 /// Resolves effective fixed/mobile lengths, including general-description limits.
@@ -413,6 +419,7 @@ Map<int, List<int>> _captureWidthsByLength(String pattern, List<int> lengths) {
   void visit(int index, List<int> groups) {
     if (index < options.length) {
       final (low, high) = options[index];
+      // Visit longer captures first to match the order of greedy quantifiers.
       for (var count = high; count >= low; count--)
         visit(index + 1, <int>[...groups, count]);
       return;
@@ -432,9 +439,10 @@ Map<int, List<int>> _captureWidthsByLength(String pattern, List<int> lengths) {
   }
 
   visit(0, <int>[]);
+  final byLength = result.entries.toList()
+    ..sort((left, right) => left.key.compareTo(right.key));
   return <int, List<int>>{
-    for (final size in result.keys.toList()..sort())
-      size: result[size] ?? const <int>[],
+    for (final MapEntry(key: length, value: widths) in byLength) length: widths,
   };
 }
 
@@ -598,6 +606,8 @@ String? _nationalPrefixPattern(XmlElement territory) {
         .isNotEmpty)
       transforms.add(iso);
   }
+  final fallbackByRegion = fallback.entries.toList()
+    ..sort((left, right) => left.key.compareTo(right.key));
   return (
     source: _render(rows),
     report: <String, Object?>{
@@ -610,8 +620,8 @@ String? _nationalPrefixPattern(XmlElement territory) {
         (count, row) => count + row.formats.length,
       ),
       'fallback': <String, String>{
-        for (final key in fallback.keys.toList()..sort())
-          key: fallback[key] ?? '',
+        for (final MapEntry(key: region, value: reason) in fallbackByRegion)
+          region: reason,
       },
       'strip_only_prefix_transform_exclusions': transforms..sort(),
     },
@@ -629,9 +639,9 @@ String _dartString(String? value) {
 /// Renders a stable source order before the pinned Dart formatter is applied.
 String _render(Map<String, _PhoneRules> rows) {
   final output = StringBuffer(_header);
-  for (final iso in rows.keys.toList()..sort()) {
-    final row = rows[iso];
-    if (row == null) throw StateError('Missing generated rules for $iso');
+  final byRegion = rows.entries.toList()
+    ..sort((left, right) => left.key.compareTo(right.key));
+  for (final MapEntry(key: iso, value: row) in byRegion) {
     output
       ..writeln("  '$iso': CountryPhoneRules(")
       ..writeln('    callingCode: ${_dartString(row.callingCode)},')

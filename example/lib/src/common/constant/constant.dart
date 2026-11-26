@@ -1,7 +1,6 @@
-/// Filtered countries
+/// The country codes available in the filtered picker demos.
 final List<String> kFilteredCountries = List<String>.unmodifiable([
   'RU', // Russia
-  // 'AB', // Abkhazia
   'AZ', // Azerbaijan
   'AM', // Armenia
   'AT', // Austria
@@ -23,7 +22,7 @@ final List<String> kFilteredCountries = List<String>.unmodifiable([
   'UZ', // Uzbekistan
 ]);
 
-/// Favorites countries
+/// The country codes pinned above the full list in the main demo.
 final List<String> kFavoritesCountries = List<String>.unmodifiable([
   'RU', // Russia
 ]);

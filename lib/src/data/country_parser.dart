@@ -1,13 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart'
-    show resolveCountryLocalizations;
+    show CountryLocalizations, resolveCountryLocalizations;
+import 'package:flutter_simple_country_picker/src/model/country.dart';
 import 'package:meta/meta.dart';
 
 /// {@template country_parser}
-/// Used to parse simple string representations of countries, commonly used in
-/// databases and other forms of storage, to a Country object.
+/// Looks up a [Country] by a stored code or name.
 /// {@endtemplate}
 @internal
 abstract final class CountryParser {
@@ -22,25 +21,17 @@ abstract final class CountryParser {
 
   /// Returns a single country if [country] matches a country code or name.
   ///
-  /// returns null if no matching element is found.
+  /// Returns `null` if no match is found.
   static Country? tryParse(String country) =>
       tryParseCountryCode(country) ?? tryParseCountryName(country);
 
-  /// Returns a single country if it matches the given [countryCode] (iso2_cc).
+  /// Returns the country matching [countryCode], ignoring case.
   ///
   /// Throws a [StateError] if no matching element is found.
   static Country parseCountryCode(String countryCode) =>
       _getFromCode(countryCode.toUpperCase());
 
-  /// Returns a single country if it matches the given [phoneCode] (e164_cc).
-  ///
-  /// Throws a [StateError] if no matching element is found.
-  static Country parsePhoneCode(String phoneCode, String e164Key) =>
-      _getFromPhoneCode(phoneCode, e164Key);
-
-  /// Returns a single country that matches the given [countryCode] (iso2_cc).
-  ///
-  /// Returns null if no matching element is found.
+  /// Returns the country matching [countryCode], or `null` if unmatched.
   static Country? tryParseCountryCode(String countryCode) {
     try {
       return parseCountryCode(countryCode);
@@ -49,9 +40,13 @@ abstract final class CountryParser {
     }
   }
 
-  /// Returns a single country that matches the given [phoneCode] (e164_cc).
+  /// Returns the country matching [phoneCode] and the dialing entry [e164Key].
   ///
-  /// Returns null if no matching element is found.
+  /// Throws a [StateError] if there is no matching entry.
+  static Country parsePhoneCode(String phoneCode, String e164Key) =>
+      _getFromPhoneCode(phoneCode, e164Key);
+
+  /// Returns the country matching [phoneCode] and [e164Key], or `null`.
   static Country? tryParsePhoneCode(String phoneCode, String e164Key) {
     try {
       return parsePhoneCode(phoneCode, e164Key);
@@ -60,14 +55,11 @@ abstract final class CountryParser {
     }
   }
 
-  /// Returns a single country if it matches the given [countryName].
+  /// Returns the country matching [countryName], ignoring case.
   ///
-  /// Uses the application [context] to determine what language is used in the
-  /// app, if provided, and checks the country names for this locale if any.
-  /// If no match is found and no [locales] are given, the default language is
-  /// checked (english), followed by the rest of the available translations. If
-  /// any [locales] are given, only those supported languages are used, in
-  /// addition to the [context] language.
+  /// Tries the locale from [context] first, when supplied. Then tries the given
+  /// [locales] in order. Without [locales], tries English before the remaining
+  /// available translations.
   ///
   /// Throws an [ArgumentError] if no matching element is found.
   static Country parseCountryName(
@@ -77,18 +69,18 @@ abstract final class CountryParser {
   }) {
     final countryNameLower = countryName.toLowerCase();
 
-    final languageCode = _anyLocalizedNameToCode(
+    final countryCode = _anyLocalizedNameToCode(
       countryNameLower,
       context != null ? Localizations.localeOf(context) : null,
       locales,
     );
 
-    return _getFromCode(languageCode);
+    return _getFromCode(countryCode);
   }
 
-  /// Returns a single country if it matches the given [countryName].
+  /// Returns the country matching [countryName], or `null` if unmatched.
   ///
-  /// Returns null if no matching element is found.
+  /// Uses the same locale order as [parseCountryName].
   static Country? tryParseCountryName(
     String countryName, {
     BuildContext? context,
@@ -101,8 +93,7 @@ abstract final class CountryParser {
     }
   }
 
-  /// Returns a country that matches
-  /// the [countryCode] (e164_cc) and [e164Key] (e164Key)
+  /// Identifies one dialing entry even when several share a calling code.
   static Country _getFromPhoneCode(String phoneCode, String e164Key) =>
       Country.fromJson(
         countries.singleWhere(
@@ -110,15 +101,12 @@ abstract final class CountryParser {
         ),
       );
 
-  /// Returns a country that matches the [countryCode] (iso2_cc).
+  /// Resolves an exact lookup against the stored ISO code.
   static Country _getFromCode(String countryCode) => Country.fromJson(
     countries.singleWhere((j) => j['iso2_cc'] == countryCode),
   );
 
-  /// Returns a country code that matches a country with the given [name] for
-  /// any language, or the ones given by [locales]. If no locale list is given,
-  /// the language for the [locale] is prioritized, followed by the default
-  /// language, english.
+  /// Resolves [name] in [locale] before checking the fallback locales.
   static String _anyLocalizedNameToCode(
     String name,
     Locale? locale,
@@ -161,8 +149,7 @@ abstract final class CountryParser {
     return code;
   }
 
-  /// Returns the code for the country that matches the given [name] in the
-  /// language given by the [locale]. Defaults to english.
+  /// Returns the code for [name] using the available translation for [locale].
   ///
   /// Returns null if no match is found.
   static String? _localizedNameToCode(String name, Locale locale) {

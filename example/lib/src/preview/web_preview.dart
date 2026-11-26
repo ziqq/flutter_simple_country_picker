@@ -1,6 +1,7 @@
 // Anton Ustinoff <a.a.ustinoff@gmail.com>, 14 October 2024
 
 import 'package:collection/collection.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:example/src/common/constant/fonts.gen.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/theme/styles.dart';
@@ -10,24 +11,18 @@ import 'package:example/src/common/widget/app.dart';
 import 'package:example/src/common/widget/common_app_bar.dart';
 import 'package:example/src/common/widget/common_logo.dart';
 import 'package:example/src/common/widget/common_padding.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:material_ui/material_ui.dart';
 
+/// Launches the Web picker preview.
 void main() => appZone(() async => runApp(const App(home: WebPreview())));
 
 /// {@template county_picker_web_preview}
-/// WebPreview widget.
+/// Demonstrates a country drop-down and a manually formatted phone field.
 ///
-/// This widget is showed another way how to use [CountryPicker].
-///
-/// You can use [CountryPickerScope] widget to give a list of countries
-/// and use countries list how you want.
-///
-/// And more you can use search controller from [CountryPickerScope]
-/// to find a country by name or code.
+/// The drop-down reads the available countries from [CountryScope].
 /// {@endtemplate}
 class WebPreview extends StatefulWidget {
   /// {@macro county_picker_web_preview}
@@ -47,7 +42,6 @@ class _WebPreviewState extends State<WebPreview>
   Widget build(BuildContext context) {
     final localization = ExampleLocalization.of(context);
     final pickerTheme = CountryPickerTheme.of(context);
-    // final mediaQuery = MediaQuery.of(context);
     return Scaffold(
       backgroundColor: AppStyles.of(context).backgroundColor,
       appBar: CommonAppBar(
@@ -61,15 +55,12 @@ class _WebPreviewState extends State<WebPreview>
           children: [
             const Spacer(),
 
-            // --- Logo --- //
             const CommonLogo.text(),
             SizedBox(height: pickerTheme.padding * 2),
 
-            // --- Country picker --- //
             CountryPicker$Web(onSelect: onSelect, selected: selected),
             SizedBox(height: pickerTheme.padding),
 
-            // --- Country phone number input --- //
             CountryInput$Web(
               inputFormatters: [formater],
               controller: controller,
@@ -106,21 +97,21 @@ class CountryInput$Web extends StatelessWidget {
     super.key, // ignore: unused_element
   });
 
+  /// Selected country.
+  final ValueNotifier<Country> selected;
+
   /// Controller for the phone number input field.
   final TextEditingController? controller;
 
   /// Input formatters for the phone number input field.
   final List<TextInputFormatter>? inputFormatters;
 
-  /// Selected country.
-  final ValueNotifier<Country> selected;
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final textStyle = textTheme.bodyLarge;
-    final secodaryTextStyle = textStyle?.copyWith(
+    final secondaryTextStyle = textStyle?.copyWith(
       fontSize: 14,
       color: CupertinoDynamicColor.resolve(
         CupertinoColors.secondaryLabel,
@@ -143,7 +134,7 @@ class CountryInput$Web extends StatelessWidget {
       builder: (context, selectedCountry, _) => TextFormField(
         inputFormatters: inputFormatters,
         decoration: InputDecoration(
-          labelStyle: secodaryTextStyle?.copyWith(
+          labelStyle: secondaryTextStyle?.copyWith(
             fontSize: 16,
             fontWeight: FontWeight.normal,
           ),
@@ -156,7 +147,7 @@ class CountryInput$Web extends StatelessWidget {
           ),
           label: Text(
             'CountryLocalizations.of(context).phonePlaceholder',
-            style: secodaryTextStyle?.copyWith(fontSize: 16),
+            style: secondaryTextStyle?.copyWith(fontSize: 16),
           ),
           prefix: Text('+${selectedCountry.phoneCode} ', style: textStyle),
           hintText: selectedCountry.mask,
@@ -178,61 +169,13 @@ class CountryInput$Web extends StatelessWidget {
 /// {@endtemplate}
 class CountryPicker$Web extends StatefulWidget {
   /// {@macro county_input}
-  const CountryPicker$Web({
-    this.placeholder = 'Phone number',
-    this.onDone,
-    this.onSelect,
-    this.selected,
-    this.exclude,
-    this.favorites,
-    this.filter,
-    this.isScrollControlled = false,
-    this.showPhoneCode = false,
-    this.showWorldWide = false,
-    this.useAutofocus = false,
-    this.useHapticFeedback = true,
-    this.showSearch,
-    super.key,
-  });
+  const CountryPicker$Web({this.onSelect, this.selected, super.key});
 
-  /// Placeholder text.
-  final String? placeholder;
-
-  /// Called when the country was selected.
-  final VoidCallback? onDone;
-
-  /// {@macro select_country_callback}
+  /// Called when the user chooses a country.
   final SelectCountryCallback? onSelect;
 
-  /// {@macro select_country_notifier}
+  /// Notifies the control when the current selection changes.
   final SelectedCountry? selected;
-
-  /// List of country codes to exclude.
-  final List<String>? exclude;
-
-  /// List of favorites country codes.
-  final List<String>? favorites;
-
-  /// List of filtered country codes.
-  final List<String>? filter;
-
-  /// Controls the scrolling behavior of the modal window.
-  final bool isScrollControlled;
-
-  /// Show phone code in countires list.
-  final bool showPhoneCode;
-
-  /// Show "World Wide" in countires list.
-  final bool showWorldWide;
-
-  /// Show countryies search bar?
-  final bool? showSearch;
-
-  /// Use autofocus for the search countryies input field.
-  final bool useAutofocus;
-
-  /// Use haptic feedback?
-  final bool useHapticFeedback;
 
   @override
   State<CountryPicker$Web> createState() => _CountryPicker$DesktopState();
@@ -240,17 +183,16 @@ class CountryPicker$Web extends StatefulWidget {
 
 /// State for widget [CountryPicker$Web].
 class _CountryPicker$DesktopState extends State<CountryPicker$Web> {
-  // Fix displaing emoji flag for web.
+  /// Uses the bundled emoji font when running this preview in a browser.
   final String? _fontFamily = kIsWeb ? FontFamily.notoColorEmoji : null;
 
   @override
   Widget build(BuildContext context) {
-    // final isRtl = Directionality.of(context) == TextDirection.rtl;
     final localizations = CountryLocalizations.of(context);
     final pickerTheme = CountryPickerTheme.of(context);
     final theme = Theme.of(context);
     final textStyle = theme.textTheme.bodyLarge?.copyWith(fontSize: 14);
-    final secodaryTextStyle = textStyle?.copyWith(
+    final secondaryTextStyle = textStyle?.copyWith(
       color: CupertinoDynamicColor.resolve(
         CupertinoColors.secondaryLabel,
         context,
@@ -304,7 +246,7 @@ class _CountryPicker$DesktopState extends State<CountryPicker$Web> {
 
           return DropdownMenu(
             inputDecorationTheme: InputDecorationTheme(
-              labelStyle: secodaryTextStyle?.copyWith(
+              labelStyle: secondaryTextStyle?.copyWith(
                 fontSize: 16,
                 fontWeight: FontWeight.normal,
               ),
@@ -348,13 +290,12 @@ class _CountryPicker$DesktopState extends State<CountryPicker$Web> {
                     label: label.toString(),
                     trailingIcon: Text(
                       '+${e.phoneCode}',
-                      style: secodaryTextStyle,
+                      style: secondaryTextStyle,
                     ),
                     leadingIcon: Text(
                       e.flagEmoji,
                       style: textStyle?.copyWith(fontFamily: _fontFamily),
                     ),
-                    // onTap: () => widget.onSelect?.call(e),
                   );
                 })
                 .toList(growable: false),

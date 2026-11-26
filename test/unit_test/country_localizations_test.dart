@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_dynamic_calls
 
-import 'package:flutter/material.dart' show Locale;
+import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:flutter_simple_country_picker/src/localization/country_localizations.dart'
     show CountryLocalizations;

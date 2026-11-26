@@ -1,7 +1,13 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 14 October 2024
+ */
+
 // Anton Ustinoff <a.a.ustinoff@gmail.com>, 14 October 2024
 
 import 'dart:developer' as dev show log;
 
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:example/src/common/constant/constant.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/util/app_zone.dart';
@@ -10,14 +16,14 @@ import 'package:example/src/common/widget/app.dart';
 import 'package:example/src/common/widget/common_app_bar.dart';
 import 'package:example/src/common/widget/common_bottom_space.dart';
 import 'package:example/src/common/widget/common_padding.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:material_ui/material_ui.dart';
 
+/// Launches the mobile picker preview.
 void main() => appZone(() async => runApp(const App(home: MobilePreview())));
 
 /// {@template county_picker_mobile_preview}
-/// MobilePreview widget.
+/// Shows modal pickers and the current phone input validation state.
 /// {@endtemplate}
 class MobilePreview extends StatefulWidget {
   /// {@macro county_picker_mobile_preview}
@@ -33,9 +39,8 @@ class MobilePreview extends StatefulWidget {
 /// State for [MobilePreview].
 class _MobilePreviewState extends State<MobilePreview>
     with CountryPickerPreviewStateMixin {
-  final _countryPhoneController = CountryPhoneController.apply(
-    '88881234567',
-  ) /* 78881234567 */ /* +78881234567 */;
+  /// Starts with an ambiguous national number to show the parsed state.
+  final _countryPhoneController = CountryPhoneController.apply('88881234567');
 
   @override
   void dispose() {
@@ -62,13 +67,10 @@ class _MobilePreviewState extends State<MobilePreview>
                 sizeStyle: CupertinoButtonSize.medium,
                 onPressed: () => showCountryPicker(
                   context: context,
-                  // Can be used to exclude one ore more country
-                  // from the countries list. Optional.
+                  onSelect: onSelect,
                   exclude: ['KN', 'MF'],
                   favorites: ['RU'],
-                  // Shows phone code before the country name. Optional.
                   showPhoneCode: true,
-                  onSelect: onSelect,
                 ),
                 child: const Text('Show picker'),
               ),
@@ -78,13 +80,10 @@ class _MobilePreviewState extends State<MobilePreview>
                 sizeStyle: CupertinoButtonSize.medium,
                 onPressed: () => showCountryPicker(
                   context: context,
-                  isScrollControlled: false,
-                  // Can be used to exclude one ore more country
-                  // from the countries list. Optional.
-                  filter: kFilteredCountries,
-                  // Shows phone code before the country name. Optional.
-                  showPhoneCode: true,
                   onSelect: onSelect,
+                  isScrollControlled: false,
+                  filter: kFilteredCountries,
+                  showPhoneCode: true,
                 ),
                 child: const Text('Show picker (filtered)'),
               ),
@@ -104,7 +103,6 @@ class _MobilePreviewState extends State<MobilePreview>
                 controller: _countryPhoneController,
                 filter: kFilteredCountries,
                 onCountryChanged: (c) => dev.log('Country changed: $c'),
-                // isScrollControlled: true,
               ),
 
               ValueListenableBuilder<CountryPhoneEditingValue>(
@@ -131,7 +129,7 @@ class _MobilePreviewState extends State<MobilePreview>
                         context,
                       ),
                       borderRadius: BorderRadius.all(
-                        Radius.circular(pickerTheme.radius),
+                        Radius.circular(pickerTheme.baseCornerRadius),
                       ),
                     ),
                     child: Padding(
@@ -167,7 +165,6 @@ class _MobilePreviewState extends State<MobilePreview>
                 },
               ),
 
-              // --- Password input --- //
               DecoratedBox(
                 decoration: BoxDecoration(
                   color: CupertinoDynamicColor.resolve(
@@ -175,7 +172,7 @@ class _MobilePreviewState extends State<MobilePreview>
                     context,
                   ),
                   borderRadius: BorderRadius.all(
-                    Radius.circular(pickerTheme.radius),
+                    Radius.circular(pickerTheme.baseCornerRadius),
                   ),
                 ),
                 child: ConstrainedBox(
@@ -200,7 +197,6 @@ class _MobilePreviewState extends State<MobilePreview>
                 ),
               ),
 
-              // --- Submit button --- //
               SizedBox(
                 width: double.infinity,
                 child: CupertinoButton.filled(
@@ -210,7 +206,6 @@ class _MobilePreviewState extends State<MobilePreview>
                 ),
               ),
 
-              // --- Withe space --- //
               const CommonBottomSpacer(),
             ],
           ),

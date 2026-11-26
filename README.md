@@ -11,36 +11,34 @@
 <!-- [![GitHub stars](https://img.shields.io/github/stars/ziqq/flutter_simple_country_picker?style=social)](https://github.com/ziqq/flutter_simple_country_picker/) -->
 
 
-<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_full_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_full_dark.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_adaptive_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_adaptive_dark.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_filtered_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/mobile_preview_filtered_dark.png" width="385px">
+<img src=".github/images/mobile_preview_full_light.png" alt="iOS full country list in light mode" width="50%"><img src=".github/images/mobile_preview_full_dark.png" alt="iOS full country list in dark mode" width="50%">
 
-<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/macos_preview_light.png" width="770px">
-<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/macos_preview_dark.png" width="770px">
-<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/web_preview_light.png" width="770px">
-<img src="https://raw.githubusercontent.com/ziqq/flutter_simple_country_picker/refs/heads/main/.github/images/web_preview_dark.png" width="770px">
+<img src=".github/images/mobile_preview_filtered_light.png" alt="iOS filtered country list in light mode" width="50%"><img src=".github/images/mobile_preview_filtered_dark.png" alt="iOS filtered country list in dark mode" width="50%">
+
+<img src=".github/images/macos_preview_full_light.png" alt="macOS phone input preview in light mode" width="50%"><img src=".github/images/macos_preview_full_dark.png" alt="macOS phone input preview in dark mode" width="50%">
+
+<img src=".github/images/web_preview_full_light.png" alt="Web phone input preview in light mode" width="50%"><img src=".github/images/web_preview_full_dark.png" alt="Web phone input preview in dark mode" width="50%">
 
 
 ## Description
 
-An easy-to-use country selection widget for Flutter. Allows users to select a country from a comprehensive list. Supports **Android**, **iOS**, **macOS**, **Web**, **Windows** and **Linux** platforms. Includes a phone-number input widget with automatic mask formatting, adaptive bottom sheet, theme customization, and 35+ locales.
+An easy-to-use country selection widget for Flutter. Allows users to select a country from a comprehensive list. Supports **Android**, **iOS**, **macOS**, **Web**, **Windows** and **Linux** platforms. Includes a phone-number input widget with automatic mask formatting, country picker bottom sheet, theme customization, and 35+ locales.
 
 
 ## Quick Start
 
-Requires Flutter 3.44.0 or newer.
+Requires Flutter 3.44.0 and Dart 3.12.0 or newer.
 
 Add the package and register the localization delegate, then open the picker:
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:material_ui/material_ui.dart';
 
 MaterialApp(
   localizationsDelegates: [
     CountryLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
+    ...GlobalMaterialLocalizations.delegates,
   ],
   // Pass the built-in list directly — no need to enumerate locales manually.
   supportedLocales: CountryLocalizations.supportedLocales,
@@ -62,8 +60,13 @@ showCountryPicker(
 Add the package to your project:
 
 ```sh
-flutter pub add flutter_simple_country_picker
+flutter pub add flutter_simple_country_picker material_ui
 ```
+
+Add `cupertino_ui` as a direct dependency when your application imports its
+Cupertino widgets or theme. Use the standalone design package imports in
+the application that hosts the picker. See the [migration guide](MIGRATION.md#to-100)
+for the complete upgrade steps.
 
 Import the library in your Dart file:
 
@@ -104,9 +107,7 @@ MaterialApp(
   ],
   localizationsDelegates: [
     CountryLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
+    ...GlobalMaterialLocalizations.delegates,
   ],
   home: const HomePage(),
 );
@@ -114,8 +115,8 @@ MaterialApp(
 
 > `CountryLocalizations.supportedLocales` lists all 75 picker locales. When
 > configuring `MaterialApp.supportedLocales`, make sure the app also provides
-> Flutter's widget localizations for the enabled locales. The SDK delegates
-> do not cover every picker locale.
+> widget localizations for the enabled locales. The Material, Cupertino,
+> and Widgets delegates do not cover every picker locale.
 
 Supported locales: `af`, `am`, `ar`, `az`, `be`, `bg`, `bn`, `ca`, `cs`, `da`, `de`,
 `el`, `en`, `eo`, `es`, `et`, `eu`, `fa`, `fi`, `fil`, `fr`, `ga`, `gl`, `gu`, `he`,
@@ -164,6 +165,7 @@ Register it in the delegate by creating your own `LocalizationsDelegate<CountryL
 
 Upgrade notes are documented in [MIGRATION.md](MIGRATION.md).
 
+- `1.0.0`: [Migrate to 1.0.0](MIGRATION.md#to-100)
 - `0.11.1`: [Migrate to 0.11.1](MIGRATION.md#to-0111)
 - `0.10.0`: [Migrate to 0.10.0](MIGRATION.md#to-0100)
 - `0.9.0`: [Migrate to 0.9.0](MIGRATION.md#to-090)
@@ -198,7 +200,6 @@ showCountryPicker(
 | `filter`               | `List<String>?`         | `null`  | ISO2 codes to show exclusively. Cannot be combined with `exclude`.                  |
 | `selected`             | `SelectedCountry?`      | `null`  | Notifier holding the pre-selected country.                                          |
 | `expand`               | `bool`                  | `false` | Expand the bottom sheet to full height.                                             |
-| `adaptive`             | `bool`                  | `false` | **Deprecated.** Uses a Cupertino-style modal on iOS until removal in `1.0.0`. Omit to use the Material sheet. |
 | `autofocus`            | `bool`                  | `false` | Automatically focuses the search field.                                             |
 | `isDismissible`        | `bool`                  | `true`  | Whether the sheet can be dismissed by tapping the barrier.                          |
 | `isScrollControlled`   | `bool`                  | `true`  | Enables the Material route's scroll-controlled layout. `expand: true` also enables it. |
@@ -384,7 +385,6 @@ debugPrint('${formatter.valueStatus.currentLength}/${formatter.valueStatus.expec
 | `#`    | digit `[0-9]` |
 | `A`    | digit `[0-9]` |
 
-
 For automatic country and prefix rules with a soft tail, opt in explicitly:
 
 ```dart
@@ -469,7 +469,8 @@ bundled templates offline.
 - Shared calling codes such as `+1`, `+7`, and `+44` can legitimately produce
   multiple candidates.
 - `filter` and `exclude` should not be used together in `showCountryPicker`.
-- The manual `CountryInputFormatter` switches to flat mode when input exceeds the mask.
+- Manual `CountryInputFormatter` switches to flat mode when input exceeds the mask;
+  automatic country formatting keeps the soft tail instead.
 - `mask` describes the national number only. It should not include the calling
   code.
 
@@ -536,14 +537,72 @@ MaterialApp(
         flagSize: 22,
         inputHeight: 56,
         padding: 16,
-        indent: 10,
-        radius: 12,
+        baseCornerRadius: 12,
       ),
     ],
   ),
 );
 ```
 
+#### Country picker appearance
+
+The package uses one interface: compact native emoji flags beside localized country names, English subtitles and trailing phone codes. Enable `showGroup: true` for scrolling letter headers and alphabet navigation. In light mode, white rounded groups have equal horizontal theme padding on the secondary background; dark mode keeps a continuous dark list. A transparent, compact `CupertinoNavigationBar` floats above the list, with progressive blur and a soft shade tail adapted from `tetradka_app`'s `UIScrollEdgeEffect`. Renderers without shader-filter support retain the shade. A floating search field and round glass close button sit above the keyboard; another close button appears beside the title. A checkmark marks the selected row.
+
+`CountryPickerStyle` and `CountryPickerTheme.style` have been removed. Remove `style:` from existing theme configuration; the new interface is always used.
+
+Sheet corners use superellipse geometry with a default radius of 38 logical pixels, matching the native UIKit sheet measured on iOS 26.5. Override it through the theme independently of phone input corners:
+
+```dart
+CountryPickerTheme(sheetCornerRadius: 24, baseCornerRadius: 12)
+```
+
+Use `sheetCornerRadius: 0` for square sheet corners. Phone inputs retain their default `baseCornerRadius: 12`. At the default `padding: 16`, the header close button has 16 logical pixels above and beside it, with 8 below the navigation bar.
+
+Leave the colors unset to let the list resolve them from the ambient Cupertino theme, with a black list background in dark mode.
+
+Pickers open at full available height by default. Set `expand: false` for a partial sheet; scrolling the list or focusing search then expands it. Search results hide the alphabet index and letter headers; dragging the list dismisses the keyboard. The default close-button treatment is adapted from `tetradka_app`'s glass controls, using Flutter backdrop blur and press feedback without an app dependency. Reduced motion disables this feedback and high contrast uses opaque close buttons.
+
+With `shouldCloseOnSwipeDown: true`, a gesture started inside the scrolled list returns it to the beginning without dismissing the sheet, including during inertia. A new downward gesture started at the beginning can dismiss it. Tapping the compact app bar or the native iOS status bar scrolls the list to the beginning.
+
+The search field shares the close buttons' press and hover feedback while retaining native text editing, selection and focus. A custom `surfaceBuilder` can observe these search presses through `CountryPickerSurface.pressed`.
+
+The bottom search gap uses the bottom safe area when it is nonzero; otherwise it uses `padding / 2`. Horizontal insets are `padding * 0.75`. The controls are at least 44 logical pixels high and grow with text scaling.
+
+List spacing is the same on Android and iOS: light group surfaces have `padding`
+outside and inside, while dark rows use `padding * 2`. With the default theme,
+these are 16 + 16 logical pixels. Alphabet glyphs are centered in the outer
+padding, with a wider hit target for dragging. The header close button has
+`padding` above and beside it and `padding / 2` below the navigation bar.
+
+The Material sheet header can be dragged down to dismiss. Pass `shouldCloseOnSwipeDown: true` to also allow dismissal from the beginning of the country list. The grouped example enables this option. Stock controls take their fill, outline and foreground colors from `CountryPickerTheme`, with the ambient Material theme as a fallback.
+
+To paint your own surfaces behind the search field and the close button (for example a shader-based liquid glass), pass a `surfaceBuilder` to `showCountryPicker`, `CountryPhoneInput` or `CountryPhoneInput.extended`, like `TextField.contextMenuBuilder`. It receives the control content without the background; taps and accessibility stay handled by the picker.
+
+```dart
+Widget glassSurface(
+  BuildContext context,
+  CountryPickerSurface surface,
+  Widget child,
+) => GlassWidget(
+  shape: surface.shape,
+  pressed: surface.pressed, // ValueListenable<bool> for press animations
+  child: child,
+);
+
+showCountryPicker(context: context, surfaceBuilder: glassSurface);
+```
+
+
+## Flags on Windows
+
+The Windows emoji font has no country flags, so a flag emoji is shown as two
+letters there. On Windows the package loads a bundled flags-only font
+(about 180 KB). It is declared as a Windows-only asset, so iOS, Android,
+macOS, Linux and web builds do not include it.
+
+The font is applied only to flag text, so custom package fonts and their
+fallbacks remain in use for country names and phone codes. The bundled
+font's license notices are included in Flutter's application license list.
 
 ## All Countries List
 
@@ -553,7 +612,7 @@ See the [All Countries List](https://github.com/ziqq/flutter_simple_country_pick
 ## Maintainer Notes
 
 For bundled dataset maintenance, shared calling-code caveats, and a copy-paste
-template for new entries, see [docs/country_codes.md](docs/country_codes.md).
+template for new entries, see [docs/country-codes.md](docs/country-codes.md).
 
 
 ## Changelog
@@ -576,6 +635,12 @@ If you want to support the development of this library:
 ## License
 
 [MIT](https://github.com/ziqq/flutter_simple_country_picker/blob/main/LICENSE)
+
+Flags on Windows use the bundled "Twemoji Country Flags" font from
+[country-flag-emoji-polyfill](https://github.com/talkjs/country-flag-emoji-polyfill) (MIT).
+The flag artwork comes from [Twemoji](https://github.com/jdecked/twemoji) and is licensed under
+[CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/). See
+[assets/fonts/TwemojiCountryFlags.LICENSE.md](assets/fonts/TwemojiCountryFlags.LICENSE.md).
 
 
 ## Coverage

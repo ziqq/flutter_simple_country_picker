@@ -1,10 +1,9 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_codes.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../util/test_util.dart';
 
@@ -257,6 +256,35 @@ void main() => group('CountryScope -', () {
       );
       expect(country, isNotNull);
       expect(country!.countryCode, 'RU');
+    },
+  );
+  testWidgets(
+    'rebuilding a scope without state changes does not notify readers',
+    (tester) async {
+      var builds = 0;
+      late StateSetter rebuild;
+      final child = Builder(
+        builder: (context) {
+          CountryScope.countriesOf(context);
+          builds++;
+          return const SizedBox();
+        },
+      );
+      await tester.pumpWidget(
+        createWidgetUnderTest(
+          builder: (_) => StatefulBuilder(
+            builder: (context, setState) {
+              rebuild = setState;
+              return CountryScope(child: child);
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final before = builds;
+      rebuild(() {});
+      await tester.pumpAndSettle();
+      expect(builds, before);
     },
   );
 });

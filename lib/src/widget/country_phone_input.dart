@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/rendering.dart'
     show
         PaintingContext,
@@ -14,7 +13,9 @@ import 'package:flutter/scheduler.dart' show SchedulerPhase;
 import 'package:flutter/services.dart' show TextInputFormatter;
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/constant/country_phone_rules.g.dart';
+import 'package:flutter_simple_country_picker/src/util/country_flag_font_util.dart';
 import 'package:flutter_simple_country_picker/src/util/country_util.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:meta/meta.dart';
 
 /// {@template country_phone_input}
@@ -40,30 +41,25 @@ class CountryPhoneInput extends StatefulWidget {
 
     // Picker presentation.
     this.enableOpenPicker = true,
-    this.expand = false,
+    this.expand = true,
     this.isScrollControlled = true,
     this.shouldCloseOnSwipeDown = false,
     this.initialChildSize,
     this.minChildSize,
+    this.surfaceBuilder,
     bool? useHapticFeedback,
 
     // Country list.
-    this.filter,
     this.exclude,
     this.favorites,
+    this.filter,
     this.showGroup,
     this.showSearch,
     this.showPhoneCode = false,
     this.showWorldWide = false,
 
-    // Deprecated options.
-    this.useAutofocus = false,
-    @Deprecated('Use useHapticFeedback instead. Will be removed in 1.0.0.')
-    bool useHaptickFeedback = true,
-
     super.key,
-  }) : useHaptickFeedback = useHapticFeedback ?? useHaptickFeedback,
-       useHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
+  }) : useHapticFeedback = useHapticFeedback ?? true;
 
   /// Creates a phone input with a country selector above the number field.
   const factory CountryPhoneInput.extended({
@@ -87,22 +83,17 @@ class CountryPhoneInput extends StatefulWidget {
     bool shouldCloseOnSwipeDown,
     double? initialChildSize,
     double? minChildSize,
+    CountryPickerSurfaceBuilder? surfaceBuilder,
     bool? useHapticFeedback,
 
     // Country list.
-    List<String>? filter,
     List<String>? exclude,
     List<String>? favorites,
+    List<String>? filter,
     bool? showGroup,
     bool? showSearch,
     bool showPhoneCode,
     bool showWorldWide,
-
-    // Deprecated options.
-    @Deprecated('Use autofocus instead. Will be removed in 1.0.0.')
-    bool useAutofocus,
-    @Deprecated('Use useHapticFeedback instead. Will be removed in 1.0.0.')
-    bool useHaptickFeedback,
 
     Key? key,
   }) = CountryPhoneInput$Extended;
@@ -117,6 +108,7 @@ class CountryPhoneInput extends StatefulWidget {
 
   /// Called after the user selects a different country.
   final ValueChanged<Country>? onCountryChanged;
+
   // Phone editing.
 
   /// An external controller for the full phone number and its status.
@@ -143,6 +135,7 @@ class CountryPhoneInput extends StatefulWidget {
   /// Automatic formatting uses the country's supported lengths for completion.
   /// Manual formatting uses [Country.mask].
   final bool useCountryFormatting;
+
   // Picker presentation.
 
   /// Whether tapping the country selector opens the picker.
@@ -165,18 +158,22 @@ class CountryPhoneInput extends StatefulWidget {
   /// The minimum fraction of available height occupied by the picker sheet.
   final double? minChildSize;
 
+  /// {@macro country_picker_surface_builder}
+  final CountryPickerSurfaceBuilder? surfaceBuilder;
+
   /// Whether picker interactions provide haptic feedback.
   final bool useHapticFeedback;
-  // Country list.
 
-  /// The country codes allowed in the picker.
-  final List<String>? filter;
+  // Country list.
 
   /// The country codes omitted from the picker.
   final List<String>? exclude;
 
   /// The country codes shown first in the picker.
   final List<String>? favorites;
+
+  /// The country codes allowed in the picker.
+  final List<String>? filter;
 
   /// Whether to group countries by their first letter.
   final bool? showGroup;
@@ -189,15 +186,6 @@ class CountryPhoneInput extends StatefulWidget {
 
   /// Whether to include the [Country.worldWide] option in the picker.
   final bool showWorldWide;
-  // Deprecated options.
-
-  /// Whether to autofocus the country search field.
-  @Deprecated('Use autofocus instead. Will be removed in 1.0.0.')
-  final bool useAutofocus;
-
-  /// Whether picker interactions provide haptic feedback.
-  @Deprecated('Use useHapticFeedback instead. Will be removed in 1.0.0.')
-  final bool useHaptickFeedback;
 
   @override
   State<CountryPhoneInput> createState() => _CountryPhoneInputState();
@@ -707,6 +695,37 @@ mixin _CountryPhoneInputStateMixin<T extends CountryPhoneInput> on State<T> {
       widget.onChanged?.call(_controller.text);
     }
   }
+
+  /// Accessibility label of the country button.
+  String _semanticsLabelOf(CountryLocalizations localization, Country country) {
+    final name =
+        localization.getFormatedCountryNameByCode(country.countryCode) ??
+        country.name;
+    return country.phoneCode.isEmpty ? name : '$name, +${country.phoneCode}';
+  }
+
+  Widget _buildPhoneField({
+    required Key key,
+    required Country country,
+    required CountryPickerTheme pickerTheme,
+    required TextStyle? textStyle,
+    EdgeInsets? contentPadding,
+  }) => _PhoneField(
+    fieldKey: key,
+    country: country,
+    pickerTheme: pickerTheme,
+    textStyle: textStyle,
+    contentPadding: contentPadding,
+    controller: _phoneController,
+    focusNode: _phoneFocusNode,
+    scrollController: _phoneScrollController,
+    autofocus: widget.autofocus,
+    onChanged: _handleTextChanged,
+    useCountryFormatting: widget.useCountryFormatting,
+    formatter: _formatter,
+    inputFormatter: _inputFormatter,
+    placeholder: widget.placeholder,
+  );
 }
 
 /// Applies the country selection and IME rules to edits from the phone field.
@@ -883,13 +902,12 @@ class _PhoneField extends StatelessWidget {
       scrollController: showMask ? scrollController : null,
       onChanged: onChanged,
       cursorColor: textStyle?.color,
-      cursorHeight: textStyle?.fontSize,
       style: textStyle,
       decoration: decoration,
       textDirection: showMask ? TextDirection.ltr : null,
     );
     return Semantics(
-      label: showMask ? localization.phonePlaceholder : null,
+      label: localization.phonePlaceholder,
       child: _PhoneMask(
         color: showMask ? hintColor : null,
         scrollController: scrollController,
@@ -930,99 +948,154 @@ class _CountryPhoneInputState extends State<CountryPhoneInput>
   @override
   Widget build(BuildContext context) {
     final pickerTheme = CountryPickerTheme.resolve(context);
+    final localization = CountryLocalizations.of(context);
     final textStyle = pickerTheme.textStyle;
-    final constraints = BoxConstraints(
-      minHeight: pickerTheme.inputHeight,
-      maxHeight: pickerTheme.inputHeight,
-      minWidth: pickerTheme.inputHeight,
+    final measuredStyle = MediaQuery.boldTextOf(context)
+        ? textStyle?.merge(const TextStyle(fontWeight: FontWeight.bold))
+        : textStyle;
+    final painter = TextPainter(
+      text: TextSpan(text: 'Mg', style: measuredStyle),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout();
+    final height = painter.height + pickerTheme.padding;
+    painter.dispose();
+    final constraints = BoxConstraints.tightFor(
+      height: height > pickerTheme.inputHeight
+          ? height
+          : pickerTheme.inputHeight,
     );
     return ValueListenableBuilder(
       valueListenable: _countryController,
-      builder: (context, selected, _) => Row(
-        spacing: pickerTheme.indent,
-        children: <Widget>[
-          ConstrainedBox(
-            constraints: constraints,
-            child: CupertinoButton(
-              key: const ValueKey<String>('country_picker_phone_code'),
-              padding: .symmetric(horizontal: pickerTheme.padding),
-              borderRadius: .all(.circular(pickerTheme.radius)),
-              color: pickerTheme.onBackgroundColor,
-              pressedOpacity: .6,
-              onPressed: () => widget.enableOpenPicker
-                  ? showCountryPicker(
-                      context: context,
-                      exclude: widget.exclude,
-                      favorites: widget.favorites,
-                      filter: widget.filter,
-                      expand: widget.expand,
-                      autofocus: widget.autofocus || widget.useAutofocus,
-                      showGroup: widget.showGroup,
-                      showSearch: widget.showSearch,
-                      showPhoneCode: widget.showPhoneCode,
-                      showWorldWide: widget.showWorldWide,
-                      shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
-                      useHapticFeedback: widget.useHapticFeedback,
-                      isScrollControlled: widget.isScrollControlled,
-                      initialChildSize: widget.initialChildSize,
-                      minChildSize: widget.minChildSize,
-                      selected: _countryController,
-                      onSelect: _handleCountrySelected,
-                    )
-                  : null,
-              child: Center(
-                child: Row(
-                  spacing: 3,
-                  mainAxisSize: .min,
-                  children: <Widget>[
-                    if (selected.flagEmoji.isNotEmpty) ...<Widget>[
-                      Text(
-                        selected.flagEmoji,
-                        style: textStyle?.copyWith(letterSpacing: 0),
-                      ),
-                    ],
-                    if (selected.phoneCode.isNotEmpty) ...<Widget>[
-                      Text('+${selected.phoneCode}', style: textStyle),
-                    ],
-                  ],
+      builder: (context, selected, _) => LayoutBuilder(
+        builder: (context, available) {
+          final label = TextPainter(
+            text: TextSpan(
+              style: measuredStyle,
+              children: [
+                TextSpan(
+                  text: selected.flagEmoji,
+                  style: TextStyle(fontFamily: CountryFlagFontUtil.fontFamily),
                 ),
-              ),
+                if (selected.phoneCode.isNotEmpty)
+                  TextSpan(text: ' +${selected.phoneCode}'),
+              ],
             ),
-          ),
-          Flexible(
-            child: ConstrainedBox(
-              constraints: constraints,
-              child: RepaintBoundary(
-                key: const ValueKey<String>('country_phone_number_background'),
-                child: CustomPaint(
-                  painter: _painter,
-                  child: Center(
-                    child: _PhoneField(
-                      fieldKey: const ValueKey<String>('country_phone_number'),
-                      useCountryFormatting: widget.useCountryFormatting,
-                      placeholder: widget.placeholder,
-                      autofocus: widget.autofocus,
-                      country: selected,
-                      textStyle: textStyle,
-                      pickerTheme: pickerTheme,
-                      formatter: _formatter,
-                      focusNode: _phoneFocusNode,
-                      controller: _phoneController,
-                      onChanged: _handleTextChanged,
-                      inputFormatter: _inputFormatter,
-                      scrollController: _phoneScrollController,
-                      contentPadding: .symmetric(
-                        horizontal: pickerTheme.padding,
+            textDirection: Directionality.of(context),
+            textScaler: MediaQuery.textScalerOf(context),
+          )..layout();
+          // Keep a useful number field instead of squeezing it beside a large code.
+          final stacked =
+              available.maxWidth <
+              label.width +
+                  pickerTheme.padding * 2 +
+                  pickerTheme.padding / 1.6 +
+                  pickerTheme.inputHeight * 2;
+          label.dispose();
+          final button = ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.minHeight),
+            child: Semantics(
+              enabled: widget.enableOpenPicker,
+              child: CupertinoButton(
+                key: const ValueKey<String>('country_picker_phone_code'),
+                padding: EdgeInsets.symmetric(horizontal: pickerTheme.padding),
+                color: pickerTheme.onBackgroundColor,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(pickerTheme.baseCornerRadius),
+                ),
+                pressedOpacity: .6,
+                onPressed: widget.enableOpenPicker
+                    ? () => showCountryPicker(
+                        context: context,
+                        exclude: widget.exclude,
+                        favorites: widget.favorites,
+                        filter: widget.filter,
+                        expand: widget.expand,
+                        autofocus: widget.autofocus,
+                        showGroup: widget.showGroup,
+                        showSearch: widget.showSearch,
+                        showPhoneCode: widget.showPhoneCode,
+                        showWorldWide: widget.showWorldWide,
+                        shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
+                        useHapticFeedback: widget.useHapticFeedback,
+                        isScrollControlled: widget.isScrollControlled,
+                        initialChildSize: widget.initialChildSize,
+                        minChildSize: widget.minChildSize,
+                        surfaceBuilder: widget.surfaceBuilder,
+                        selected: _countryController,
+                        onSelect: _handleCountrySelected,
+                      )
+                    : null,
+                child: Semantics(
+                  // Announce the country instead of the emoji flag name.
+                  label: _semanticsLabelOf(localization, selected),
+                  child: ExcludeSemantics(
+                    child: Center(
+                      heightFactor: 1,
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 3,
+                        children: <Widget>[
+                          if (selected.flagEmoji.isNotEmpty) ...[
+                            Text.rich(
+                              TextSpan(
+                                text: selected.flagEmoji,
+                                style: TextStyle(
+                                  fontFamily: CountryFlagFontUtil.fontFamily,
+                                ),
+                              ),
+                              style: textStyle?.copyWith(letterSpacing: 0),
+                            ),
+                          ],
+                          if (selected.phoneCode.isNotEmpty)
+                            Text('+${selected.phoneCode}', style: textStyle),
+                        ],
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          );
+          final field = ConstrainedBox(
+            constraints: constraints,
+            child: RepaintBoundary(
+              key: const ValueKey<String>('country_phone_number_background'),
+              child: CustomPaint(
+                painter: _painter,
+                child: Center(
+                  child: _buildPhoneField(
+                    key: const ValueKey<String>('country_phone_number'),
+                    country: selected,
+                    pickerTheme: pickerTheme,
+                    textStyle: textStyle,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: pickerTheme.padding,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+          if (stacked) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: pickerTheme.padding / 1.6,
+              children: [button, field],
+            );
+          }
+          return Row(
+            spacing: pickerTheme.padding / 1.6,
+            children: [
+              button,
+              Flexible(child: field),
+            ],
+          );
+        },
       ),
-    ); // +79378032888
+    );
   }
 }
 
@@ -1052,20 +1125,17 @@ class CountryPhoneInput$Extended extends CountryPhoneInput {
     super.shouldCloseOnSwipeDown,
     super.initialChildSize,
     super.minChildSize,
+    super.surfaceBuilder,
     super.useHapticFeedback,
 
     // Country list.
-    super.filter,
     super.exclude,
     super.favorites,
+    super.filter,
     super.showGroup,
     super.showSearch,
     super.showPhoneCode,
     super.showWorldWide,
-
-    // Deprecated options.
-    super.useAutofocus,
-    super.useHaptickFeedback,
 
     super.key,
   });
@@ -1084,11 +1154,10 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
     final localization = CountryLocalizations.of(context);
     final padding = EdgeInsets.symmetric(
       horizontal: pickerTheme.padding / 2,
-      vertical: pickerTheme.indent,
+      vertical: pickerTheme.padding / 1.6,
     );
-    final textStyle = CountryPickerTheme.maybeOf(context)?.textStyle;
-    final effectiveTextStyle = pickerTheme.textStyle?.copyWith(
-      fontSize: textStyle?.fontSize ?? 20,
+    final textStyle = pickerTheme.textStyle?.copyWith(
+      fontSize: CountryPickerTheme.maybeOf(context)?.textStyle?.fontSize ?? 20,
     );
     final divider = Divider(
       height: 1,
@@ -1100,46 +1169,64 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
       child: ValueListenableBuilder(
         valueListenable: _countryController,
         builder: (_, selected, _) => Column(
-          crossAxisAlignment: .start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             divider,
 
             // --- Country name with flag --- //
-            CupertinoButton(
-              key: const ValueKey<String>('country_picker_button_extended'),
-              padding: EdgeInsets.only(
-                top: pickerTheme.indent,
-                left: pickerTheme.padding,
-                bottom: pickerTheme.indent,
-                right: pickerTheme.padding / 2,
-              ),
-              onPressed: widget.enableOpenPicker
-                  ? () => showCountryPicker(
-                      context: context,
-                      selected: _countryController,
-                      onSelect: _handleCountrySelected,
-                      expand: widget.expand,
-                      filter: widget.filter,
-                      exclude: widget.exclude,
-                      favorites: widget.favorites,
-                      autofocus: widget.autofocus || widget.useAutofocus,
-                      showGroup: widget.showGroup,
-                      showSearch: widget.showSearch,
-                      showPhoneCode: widget.showPhoneCode,
-                      showWorldWide: widget.showWorldWide,
-                      useHapticFeedback: widget.useHapticFeedback,
-                      isScrollControlled: widget.isScrollControlled,
-                      shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
-                      initialChildSize: widget.initialChildSize,
-                      minChildSize: widget.minChildSize,
-                    )
-                  : null,
-              child: SizedBox(
-                width: double.infinity,
-                child: Text(
-                  '${selected.flagEmoji} '
-                  '${localization.getFormatedCountryNameByCode(selected.countryCode) ?? selected.name}',
-                  style: effectiveTextStyle?.copyWith(fontWeight: .w500),
+            Semantics(
+              enabled: widget.enableOpenPicker,
+              child: CupertinoButton(
+                key: const ValueKey<String>('country_picker_button_extended'),
+                padding: EdgeInsets.only(
+                  top: pickerTheme.padding / 1.6,
+                  left: pickerTheme.padding,
+                  bottom: pickerTheme.padding / 1.6,
+                  right: pickerTheme.padding / 2,
+                ),
+                onPressed: widget.enableOpenPicker
+                    ? () => showCountryPicker(
+                        context: context,
+                        exclude: widget.exclude,
+                        favorites: widget.favorites,
+                        filter: widget.filter,
+                        expand: widget.expand,
+                        autofocus: widget.autofocus,
+                        showGroup: widget.showGroup,
+                        showSearch: widget.showSearch,
+                        showPhoneCode: widget.showPhoneCode,
+                        showWorldWide: widget.showWorldWide,
+                        isScrollControlled: widget.isScrollControlled,
+                        useHapticFeedback: widget.useHapticFeedback,
+                        shouldCloseOnSwipeDown: widget.shouldCloseOnSwipeDown,
+                        initialChildSize: widget.initialChildSize,
+                        minChildSize: widget.minChildSize,
+                        surfaceBuilder: widget.surfaceBuilder,
+                        selected: _countryController,
+                        onSelect: _handleCountrySelected,
+                      )
+                    : null,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Text.rich(
+                    TextSpan(
+                      children: <InlineSpan>[
+                        TextSpan(
+                          text: selected.flagEmoji,
+                          style: TextStyle(
+                            fontFamily: CountryFlagFontUtil.fontFamily,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              ' ${localization.getFormatedCountryNameByCode(selected.countryCode) ?? selected.name}',
+                        ),
+                      ],
+                    ),
+                    // Announce the country instead of the emoji flag name.
+                    semanticsLabel: _semanticsLabelOf(localization, selected),
+                    style: textStyle?.copyWith(fontWeight: FontWeight.w500),
+                  ),
                 ),
               ),
             ),
@@ -1154,55 +1241,54 @@ class _CountryPhoneInput$ExtendedState extends State<CountryPhoneInput$Extended>
             ),
 
             // --- Input with mask --- //
-            Row(
-              children: <Widget>[
-                if (selected.phoneCode.isNotEmpty) ...<Widget>[
-                  // --- Phone code --- //
-                  Padding(
-                    padding: padding,
-                    child: Text(
-                      '+${selected.phoneCode}',
-                      textAlign: .center,
-                      style: effectiveTextStyle,
+            LayoutBuilder(
+              builder: (context, constraints) => Row(
+                children: <Widget>[
+                  if (selected.phoneCode.isNotEmpty) ...[
+                    // --- Phone code --- //
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: constraints.maxWidth / 2,
+                      ),
+                      child: Padding(
+                        padding: padding,
+                        child: Text(
+                          '+${selected.phoneCode}',
+                          style: textStyle,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ),
-                  ),
 
-                  // --- Divider --- //
-                  SizedBox(
-                    height: 30,
-                    child: VerticalDivider(
-                      color: pickerTheme.dividerColor,
-                      thickness: 1,
+                    // --- Divider --- //
+                    SizedBox(
+                      height: 30,
+                      child: VerticalDivider(
+                        color: pickerTheme.dividerColor,
+                        thickness: 1,
+                      ),
+                    ),
+                  ],
+                  // --- Phone input --- //
+                  Flexible(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: padding.horizontal / 2.5,
+                      ),
+                      child: _buildPhoneField(
+                        key: const ValueKey<String>(
+                          'country_phone_input_extended',
+                        ),
+                        country: selected,
+                        pickerTheme: pickerTheme,
+                        textStyle: textStyle,
+                      ),
                     ),
                   ),
                 ],
-
-                // --- Phone input --- //
-                Flexible(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: padding.horizontal / 2.5,
-                    ),
-                    child: _PhoneField(
-                      fieldKey: const ValueKey<String>(
-                        'country_phone_input_extended',
-                      ),
-                      autofocus: widget.autofocus,
-                      placeholder: widget.placeholder,
-                      country: selected,
-                      pickerTheme: pickerTheme,
-                      textStyle: effectiveTextStyle,
-                      formatter: _formatter,
-                      focusNode: _phoneFocusNode,
-                      controller: _phoneController,
-                      onChanged: _handleTextChanged,
-                      inputFormatter: _inputFormatter,
-                      scrollController: _phoneScrollController,
-                      useCountryFormatting: widget.useCountryFormatting,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
             divider,
           ],
@@ -1321,6 +1407,7 @@ class _RenderPhoneMask extends RenderProxyBox {
     _scrollController.removeListener(markNeedsPaint);
   }
 
+  /// Locates the editable so its scroll and caret geometry can position the hint.
   static RenderEditable? _findEditable(RenderObject object) {
     if (object is RenderEditable) return object;
     RenderEditable? editable;
@@ -1444,7 +1531,7 @@ class _BackgroundPainter extends CustomPainter {
   Color? get color => pickerTheme.value?.onBackgroundColor;
 
   /// The radius of the rounded corners of the rectangle.
-  double? get radius => pickerTheme.value?.radius;
+  double? get radius => pickerTheme.value?.baseCornerRadius;
 
   @override
   void paint(Canvas canvas, Size size) {

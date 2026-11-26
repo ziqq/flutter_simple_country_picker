@@ -1,6 +1,7 @@
 // Anton Ustinoff <a.a.ustinoff@gmail.com>, 14 October 2024
 
 import 'package:collection/collection.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:example/src/common/constant/fonts.gen.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/util/app_zone.dart';
@@ -9,34 +10,25 @@ import 'package:example/src/common/widget/app.dart';
 import 'package:example/src/common/widget/common_app_bar.dart';
 import 'package:example/src/common/widget/common_logo.dart';
 import 'package:example/src/common/widget/common_padding.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
-import 'package:pull_down_button/pull_down_button.dart';
+import 'package:material_ui/material_ui.dart';
 
-/// Default height for [CountryPicker] for Linux.
+/// Default height of a country row in the Linux preview.
 const double _kDefaultCountyInputHeight = 44;
 
+/// Launches the Linux picker preview.
 void main() => appZone(() async => runApp(const App(home: LinuxPreview())));
 
 /// {@template county_picker_linux_preview}
-/// LinuxPreview widget.
+/// Demonstrates a country menu and a manually formatted phone field.
 ///
-/// This widget is showed another way how to use [CountryPicker] in Linux.
-///
-/// You can use [CountryPickerScope] widget to give a list of countries
-/// and use countries list how you want.
-///
-/// And more you can use search controller from [CountryPickerScope]
-/// to find a country by name or code.
+/// The menu reads the available countries from [CountryScope].
 /// {@endtemplate}
 class LinuxPreview extends StatefulWidget {
   /// {@macro county_picker_linux_preview}
-  const LinuxPreview({
-    super.key, // ignore: unused_element
-  });
+  const LinuxPreview({super.key});
 
   /// Title of the widget.
   static const String title = 'Linux';
@@ -60,7 +52,6 @@ class _LinuxPreviewState extends State<LinuxPreview>
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // --- Logo --- //
             const CommonLogo.text(),
             SizedBox(height: pickerTheme.padding * 2),
             ClipRRect(
@@ -124,14 +115,14 @@ class CountryInput$Linux extends StatelessWidget {
     super.key, // ignore: unused_element
   });
 
+  /// Selected country.
+  final ValueNotifier<Country> selected;
+
   /// Controller for the phone number input field.
   final TextEditingController? controller;
 
   /// Input formatters for the phone number input field.
   final List<TextInputFormatter>? inputFormatters;
-
-  /// Selected country.
-  final ValueNotifier<Country> selected;
 
   @override
   Widget build(BuildContext context) {
@@ -178,61 +169,13 @@ class CountryInput$Linux extends StatelessWidget {
 /// {@endtemplate}
 class CountryPicker$Linux extends StatefulWidget {
   /// {@macro county_picker_macos}
-  const CountryPicker$Linux({
-    this.placeholder = 'Phone number', // ignore: unused_element
-    this.onDone, // ignore: unused_element
-    this.onSelect,
-    this.selected,
-    this.exclude, // ignore: unused_element
-    this.favorites, // ignore: unused_element
-    this.filter, // ignore: unused_element
-    this.isScrollControlled = false, // ignore: unused_element
-    this.showPhoneCode = false, // ignore: unused_element
-    this.showWorldWide = false, // ignore: unused_element
-    this.useAutofocus = false, // ignore: unused_element
-    this.useHapticFeedback = true, // ignore: unused_element
-    this.showSearch, // ignore: unused_element
-    super.key, // ignore: unused_element
-  });
+  const CountryPicker$Linux({this.onSelect, this.selected, super.key});
 
-  /// Placeholder text.
-  final String? placeholder;
-
-  /// Called when the country was selected.
-  final VoidCallback? onDone;
-
-  /// {@macro select_country_callback}
+  /// Called when the user chooses a country.
   final SelectCountryCallback? onSelect;
 
-  /// {@macro select_country_notifier}
+  /// Notifies the control when the current selection changes.
   final SelectedCountry? selected;
-
-  /// List of country codes to exclude.
-  final List<String>? exclude;
-
-  /// List of favorites country codes.
-  final List<String>? favorites;
-
-  /// List of filtered country codes.
-  final List<String>? filter;
-
-  /// Controls the scrolling behavior of the modal window.
-  final bool isScrollControlled;
-
-  /// Show phone code in countires list.
-  final bool showPhoneCode;
-
-  /// Show "World Wide" in countires list.
-  final bool showWorldWide;
-
-  /// Show countryies search bar?
-  final bool? showSearch;
-
-  /// Use autofocus for the search countryies input field.
-  final bool useAutofocus;
-
-  /// Use haptic feedback?
-  final bool useHapticFeedback;
 
   @override
   State<CountryPicker$Linux> createState() => _CountryPicker$LinuxState();
@@ -240,43 +183,38 @@ class CountryPicker$Linux extends StatefulWidget {
 
 /// State for widget [CountryPicker$Linux].
 class _CountryPicker$LinuxState extends State<CountryPicker$Linux> {
-  // Fix corrent emoji flag for web.
+  /// Uses the bundled emoji font when running this preview in a browser.
   final String? _effectiveFontFamily = kIsWeb
       ? FontFamily.notoColorEmoji
       : null;
 
-  List<PullDownMenuItem> _itemBuilder(
-    List<Country> countries, [
-    Country? selected,
-  ]) {
+  /// Builds country menu items with each flag and dialing code.
+  List<CupertinoMenuItem> _itemBuilder(List<Country> countries) {
     final localization = CountryLocalizations.of(context);
-    final itemTheme = PullDownMenuItemTheme(
-      textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 14),
-    );
-    return countries
-        .map<PullDownMenuItem>((e) {
-          final title = localization.getFormatedCountryNameByCode(
-            e.countryCode,
-          );
-          return PullDownMenuItem(
-            itemTheme: itemTheme,
-            iconWidget: Text(
-              e.flagEmoji,
-              style: itemTheme.textStyle?.copyWith(
-                fontSize: 14,
-                fontFamily: _effectiveFontFamily,
-              ),
-            ),
-            title: '$title +${e.phoneCode}',
-            onTap: () => widget.onSelect?.call(e),
-          );
-        })
-        .toList(growable: false);
+    final textStyle = Theme.of(
+      context,
+    ).textTheme.bodyLarge?.copyWith(fontSize: 14);
+    return [
+      for (final country in countries)
+        CupertinoMenuItem(
+          leading: Text(
+            country.flagEmoji,
+            style: textStyle?.copyWith(fontFamily: _effectiveFontFamily),
+          ),
+          onPressed: () => widget.onSelect?.call(country),
+          child: Text(
+            '${localization.getFormatedCountryNameByCode(country.countryCode)}'
+            ' +${country.phoneCode}',
+            style: textStyle,
+          ),
+        ),
+    ];
   }
 
+  /// Builds the country row that opens the preview menu.
   Widget _buttonBuilder(
     BuildContext context,
-    Future<void> Function() showMenu,
+    VoidCallback showMenu,
     Country selected,
   ) {
     final textStyle = Theme.of(context).textTheme.bodyLarge;
@@ -332,9 +270,7 @@ class _CountryPicker$LinuxState extends State<CountryPicker$Linux> {
 
   @override
   Widget build(BuildContext context) {
-    // final isRtl = Directionality.of(context) == TextDirection.rtl;
     final localizations = CountryLocalizations.of(context);
-    final pickerTheme = CountryPickerTheme.of(context);
 
     Widget scope({
       required Widget Function(BuildContext context, CountryState state)
@@ -370,11 +306,12 @@ class _CountryPicker$LinuxState extends State<CountryPicker$Linux> {
               ) ??
               state.countries[0];
 
-          return PullDownButton(
-            menuOffset: pickerTheme.padding,
-            itemBuilder: (_) => _itemBuilder(state.countries, $selected),
-            buttonBuilder: (_, showMenu) =>
-                _buttonBuilder(context, showMenu, $selected),
+          return CupertinoMenuAnchor(
+            consumeOutsideTaps: true,
+            constrainCrossAxis: true,
+            menuChildren: _itemBuilder(state.countries),
+            builder: (context, controller, child) =>
+                _buttonBuilder(context, controller.open, $selected),
           );
         },
       ),

@@ -5,24 +5,10 @@
 
 import 'dart:ui' as ui;
 
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-
-/// Default height for [CountryPhoneInput].
-const double _kDefaultInputHeight = 56.0;
-
-/// Default flag size
-const double _kDefaultFlagSize = 22.0;
-
-/// Default padding
-const double _kDefaultPadding = 16.0;
-
-/// Default indent
-const double _kDefaultIndent = 10.0;
-
-/// Default radius
-const double _kDefaultRadius = 12.0;
+import 'package:flutter_simple_country_picker/src/constant/constants.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// {@template country_picker_theme}
 /// Visual configuration for all `flutter_simple_country_picker` widgets.
@@ -36,8 +22,8 @@ const double _kDefaultRadius = 12.0;
 ///       CountryPickerTheme(
 ///         backgroundColor: Colors.white,
 ///         accentColor: Colors.blue,
-///         radius: 16,
-///         flagSize: 24,
+///         baseCornerRadius: 16,
+///         flagSize: 22,
 ///         textStyle: const TextStyle(fontSize: 16),
 ///       ),
 ///     ],
@@ -53,6 +39,8 @@ const double _kDefaultRadius = 12.0;
 ///
 /// All properties are optional — omitted values fall back to the ambient
 /// [Theme]'s color scheme and text styles.
+///
+/// [baseCornerRadius] controls input fields; [sheetCornerRadius] controls sheets.
 /// {@endtemplate}
 @immutable
 class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
@@ -66,22 +54,20 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     Color? onSecondaryBackgroundColor,
     Color? barrierColor,
     Color? dividerColor,
+    double? inputHeight,
     double? flagSize,
     double? padding,
-    double? indent,
-    double? radius,
-    double? inputHeight,
-    @Deprecated('This property will be removed in v1.0.0 releases.')
-    InputDecoration? inputDecoration,
+    double? baseCornerRadius,
+    double? sheetCornerRadius,
     TextStyle? textStyle,
     TextStyle? secondaryTextStyle,
     TextStyle? searchTextStyle,
   }) {
-    inputHeight ??= _kDefaultInputHeight;
-    flagSize ??= _kDefaultFlagSize;
-    padding ??= _kDefaultPadding;
-    indent ??= _kDefaultIndent;
-    radius ??= _kDefaultRadius;
+    inputHeight ??= kCountryPickerDefaultInputHeight;
+    flagSize ??= kCountryPickerDefaultFlagSize;
+    padding ??= kCountryPickerDefaultPadding;
+    baseCornerRadius ??= kCountryPickerDefaultBaseCornerRadius;
+    sheetCornerRadius ??= kCountryPickerDefaultSheetCornerRadius;
     return CountryPickerTheme.raw(
       accentColor: accentColor,
       backgroundColor: backgroundColor,
@@ -90,15 +76,14 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       onSecondaryBackgroundColor: onSecondaryBackgroundColor ?? backgroundColor,
       barrierColor: barrierColor,
       dividerColor: dividerColor,
-      inputDecoration: inputDecoration,
       inputHeight: inputHeight,
-      secondaryTextStyle: secondaryTextStyle,
-      searchTextStyle: searchTextStyle,
-      textStyle: textStyle,
       flagSize: flagSize,
       padding: padding,
-      indent: indent,
-      radius: radius,
+      baseCornerRadius: baseCornerRadius,
+      sheetCornerRadius: sheetCornerRadius,
+      textStyle: textStyle,
+      secondaryTextStyle: secondaryTextStyle,
+      searchTextStyle: searchTextStyle,
     );
   }
 
@@ -111,21 +96,18 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     required this.onSecondaryBackgroundColor,
     required this.barrierColor,
     required this.dividerColor,
-    @Deprecated('This property will be removed in v1.0.0 releases.')
-    required this.inputDecoration,
     required this.inputHeight,
-    required this.secondaryTextStyle,
-    required this.searchTextStyle,
-    required this.textStyle,
     required this.flagSize,
     required this.padding,
-    required this.indent,
-    required this.radius,
-  });
+    required this.textStyle,
+    required this.secondaryTextStyle,
+    required this.searchTextStyle,
+    double? baseCornerRadius,
+    this.sheetCornerRadius = kCountryPickerDefaultSheetCornerRadius,
+  }) : baseCornerRadius =
+           baseCornerRadius ?? kCountryPickerDefaultBaseCornerRadius;
 
-  /// The state from the closest instance of this class
-  /// that encloses the given context.
-  /// e.g. `CountryPickerTheme.of(context)`
+  /// Reads the nearest picker theme or creates defaults for [context].
   factory CountryPickerTheme.of(BuildContext context) =>
       maybeOf(context) ?? CountryPickerTheme.defaults(context);
 
@@ -180,10 +162,6 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
           other?.barrierColor ?? theme?.barrierColor ?? defaults.barrierColor,
       dividerColor:
           other?.dividerColor ?? theme?.dividerColor ?? defaults.dividerColor,
-      inputDecoration:
-          other?.inputDecoration ??
-          theme?.inputDecoration ??
-          defaults.inputDecoration,
       inputHeight:
           other?.inputHeight ?? theme?.inputHeight ?? defaults.inputHeight,
       secondaryTextStyle: defaults.secondaryTextStyle
@@ -195,18 +173,16 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       textStyle: textStyle,
       flagSize: other?.flagSize ?? theme?.flagSize ?? defaults.flagSize,
       padding: other?.padding ?? theme?.padding ?? defaults.padding,
-      indent: other?.indent ?? theme?.indent ?? defaults.indent,
-      radius: other?.radius ?? theme?.radius ?? defaults.radius,
+      baseCornerRadius:
+          other?.baseCornerRadius ??
+          theme?.baseCornerRadius ??
+          defaults.baseCornerRadius,
+      sheetCornerRadius:
+          other?.sheetCornerRadius ??
+          theme?.sheetCornerRadius ??
+          defaults.sheetCornerRadius,
     );
   }
-
-  /// Get [CountryPickerTheme] from [InheritedCountryPickerTheme].
-  ///
-  /// If that's null get [CountryPickerTheme] from [ThemeData.extensions]
-  /// property of the ambient [Theme].
-  static CountryPickerTheme? maybeOf(BuildContext context) =>
-      InheritedCountryPickerTheme.maybeOf(context) ??
-      Theme.of(context).extensions[CountryPickerTheme] as CountryPickerTheme?;
 
   /// The accent color.
   final Color? accentColor;
@@ -223,44 +199,50 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
   /// The background color for elements on top of the secondary background.
   final Color? onSecondaryBackgroundColor;
 
-  /// The barrierColor color.
+  /// The scrim color behind the modal sheet.
   final Color? barrierColor;
 
   /// The divider color.
   final Color? dividerColor;
 
+  /// The height of the phone input.
+  /// Default is `56.0`.
+  final double inputHeight;
+
+  /// Flag size in logical pixels. The default is `22.0`.
+  final double? flagSize;
+
+  /// Base spacing for picker and phone input layouts. Defaults to `16.0`.
+  final double padding;
+
+  /// The corner radius of phone input fields. Defaults to `12.0`.
+  final double baseCornerRadius;
+
+  /// The corner radius of the picker sheet.
+  ///
+  /// Defaults to `38.0`, matching the native UIKit sheet measured on iOS 26.5.
+  /// Sheets use a superellipse; set this to zero for square corners.
+  /// This property does not change the phone input [baseCornerRadius].
+  final double sheetCornerRadius;
+
   /// Base text style.
   final TextStyle? textStyle;
 
-  /// The style to use for country name text.
+  /// The style for secondary country names and section labels.
   final TextStyle? secondaryTextStyle;
 
   /// The style to use for search field text.
   final TextStyle? searchTextStyle;
 
-  @Deprecated('This property will be removed in v1.0.0 releases.')
-  /// The decoration used for the inputs.
-  final InputDecoration? inputDecoration;
-
-  /// The height of the phone input.
-  /// Default is `56.0`.
-  final double inputHeight;
-
-  /// The flag size.
-  /// If null, set to `22.0`
-  final double? flagSize;
-
-  /// The padding around elements.
-  /// If null, set to `16.0`
-  final double padding;
-
-  /// The indent of the divider.
-  /// If null, set to `10.0`
-  final double indent;
-
-  /// The border radius of elements.
-  /// If null, set to `12.0`
-  final double radius;
+  /// Reads the nearest inherited picker theme or the ambient theme extension.
+  ///
+  /// Returns `null` when neither contains a picker theme.
+  static CountryPickerTheme? maybeOf(BuildContext context) =>
+      InheritedCountryPickerTheme.maybeOf(context) ??
+      switch (Theme.of(context).extensions[CountryPickerTheme]) {
+        CountryPickerTheme theme => theme,
+        _ => null,
+      };
 
   @override
   CountryPickerTheme copyWith({
@@ -271,16 +253,14 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     Color? onSecondaryBackgroundColor,
     Color? barrierColor,
     Color? dividerColor,
-    @Deprecated('This property will be removed in v1.0.0 releases.')
-    InputDecoration? inputDecoration,
     double? inputHeight,
     double? flagSize,
     double? padding,
-    double? indent,
-    double? radius,
+    double? baseCornerRadius,
+    double? sheetCornerRadius,
+    TextStyle? textStyle,
     TextStyle? secondaryTextStyle,
     TextStyle? searchTextStyle,
-    TextStyle? textStyle,
   }) => CountryPickerTheme.raw(
     accentColor: accentColor ?? this.accentColor,
     backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -294,18 +274,17 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         backgroundColor,
     barrierColor: barrierColor ?? this.barrierColor,
     dividerColor: dividerColor ?? this.dividerColor,
-    inputDecoration: inputDecoration ?? this.inputDecoration,
     inputHeight: inputHeight ?? this.inputHeight,
     flagSize: flagSize ?? this.flagSize,
     padding: padding ?? this.padding,
-    indent: indent ?? this.indent,
-    radius: radius ?? this.radius,
+    baseCornerRadius: baseCornerRadius ?? this.baseCornerRadius,
+    sheetCornerRadius: sheetCornerRadius ?? this.sheetCornerRadius,
     secondaryTextStyle: secondaryTextStyle ?? this.secondaryTextStyle,
     searchTextStyle: searchTextStyle ?? this.searchTextStyle,
     textStyle: textStyle ?? this.textStyle,
   );
 
-  /// Controls how the properties change on theme changes
+  /// Interpolates colors, dimensions and text styles during theme transitions.
   @override
   ThemeExtension<CountryPickerTheme> lerp(
     ThemeExtension<CountryPickerTheme>? other,
@@ -332,7 +311,6 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
       ),
       barrierColor: Color.lerp(barrierColor, other.barrierColor, t),
       dividerColor: Color.lerp(dividerColor, other.dividerColor, t),
-      inputDecoration: t < 0.5 ? inputDecoration : other.inputDecoration,
       secondaryTextStyle: TextStyle.lerp(
         secondaryTextStyle,
         other.secondaryTextStyle,
@@ -343,12 +321,20 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         other.searchTextStyle,
         t,
       ),
-      inputHeight: ui.lerpDouble(inputHeight, other.inputHeight, t)!,
+      inputHeight:
+          ui.lerpDouble(inputHeight, other.inputHeight, t) ?? inputHeight,
       textStyle: TextStyle.lerp(textStyle, other.textStyle, t),
       flagSize: ui.lerpDouble(flagSize, other.flagSize, t),
-      padding: ui.lerpDouble(padding, other.padding, t)!,
-      indent: ui.lerpDouble(indent, other.indent, t)!,
-      radius: ui.lerpDouble(radius, other.radius, t)!,
+      padding: ui.lerpDouble(padding, other.padding, t) ?? padding,
+      baseCornerRadius: ui.lerpDouble(
+        baseCornerRadius,
+        other.baseCornerRadius,
+        t,
+      ),
+      // lerpDouble returns null only when both inputs are null.
+      sheetCornerRadius:
+          ui.lerpDouble(sheetCornerRadius, other.sheetCornerRadius, t) ??
+          sheetCornerRadius, // coverage:ignore-line
     );
   }
 
@@ -361,15 +347,14 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     onSecondaryBackgroundColor,
     barrierColor,
     dividerColor,
-    inputDecoration,
     inputHeight,
     secondaryTextStyle,
     searchTextStyle,
     textStyle,
     flagSize,
     padding,
-    indent,
-    radius,
+    baseCornerRadius,
+    sheetCornerRadius,
   ]);
 
   @override
@@ -386,13 +371,12 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         other.dividerColor == dividerColor &&
         other.secondaryTextStyle == secondaryTextStyle &&
         other.searchTextStyle == searchTextStyle &&
-        other.inputDecoration == inputDecoration &&
         other.inputHeight == inputHeight &&
         other.textStyle == textStyle &&
         other.flagSize == flagSize &&
         other.padding == padding &&
-        other.indent == indent &&
-        other.radius == radius;
+        other.baseCornerRadius == baseCornerRadius &&
+        other.sheetCornerRadius == sheetCornerRadius;
   }
 
   @override
@@ -449,17 +433,10 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         ),
       )
       ..add(
-        DiagnosticsProperty<InputDecoration?>(
-          'inputDecoration',
-          inputDecoration,
-          defaultValue: const InputDecoration(),
-        ),
-      )
-      ..add(
         DiagnosticsProperty<double>(
           'inputHeight',
           inputHeight,
-          defaultValue: _kDefaultInputHeight,
+          defaultValue: kCountryPickerDefaultInputHeight,
         ),
       )
       ..add(
@@ -487,41 +464,41 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         DiagnosticsProperty<double>(
           'flagSize',
           flagSize,
-          defaultValue: _kDefaultFlagSize,
+          defaultValue: kCountryPickerDefaultFlagSize,
         ),
       )
       ..add(
         DiagnosticsProperty<double>(
           'padding',
           padding,
-          defaultValue: _kDefaultPadding,
+          defaultValue: kCountryPickerDefaultPadding,
         ),
       )
       ..add(
         DiagnosticsProperty<double>(
-          'indent',
-          indent,
-          defaultValue: _kDefaultIndent,
+          'baseCornerRadius',
+          baseCornerRadius,
+          defaultValue: kCountryPickerDefaultBaseCornerRadius,
         ),
       )
       ..add(
         DiagnosticsProperty<double>(
-          'radius',
-          radius,
-          defaultValue: _kDefaultRadius,
+          'sheetCornerRadius',
+          sheetCornerRadius,
+          defaultValue: kCountryPickerDefaultSheetCornerRadius,
         ),
       );
   }
 }
 
-/// Alternative way of defining [CountryPickerTheme].
+/// Supplies a picker theme to a subtree, including picker routes it opens.
 ///
 /// Example:
 ///
 /// ```dart
 /// MaterialApp(
 ///    builder: (context, child) => InheritedCountryPickerTheme(
-///      data: const CountryPickerTheme(
+///      data: CountryPickerTheme(
 ///        ...
 ///      ),
 ///      child: child ?? const SizedBox.shrink(),
@@ -572,11 +549,10 @@ final class _CountryPickerTheme$Default extends CountryPickerTheme {
     Color? dividerColor,
     Color? secondaryBackgroundColor,
     Color? onSecondaryBackgroundColor,
-    InputDecoration? inputDecoration,
     double? inputHeight,
-    double? radius,
+    double? baseCornerRadius,
+    double? sheetCornerRadius,
     double? padding,
-    double? indent,
     double? flagSize,
     TextStyle? textStyle,
     TextStyle? secondaryTextStyle,
@@ -618,12 +594,13 @@ final class _CountryPickerTheme$Default extends CountryPickerTheme {
                CupertinoColors.opaqueSeparator,
                context,
              ),
-         inputDecoration: inputDecoration ?? const InputDecoration(),
-         inputHeight: inputHeight ?? _kDefaultInputHeight,
-         radius: radius ?? _kDefaultRadius,
-         indent: indent ?? _kDefaultIndent,
-         padding: padding ?? _kDefaultPadding,
-         flagSize: flagSize ?? _kDefaultFlagSize,
+         inputHeight: inputHeight ?? kCountryPickerDefaultInputHeight,
+         baseCornerRadius:
+             baseCornerRadius ?? kCountryPickerDefaultBaseCornerRadius,
+         sheetCornerRadius:
+             sheetCornerRadius ?? kCountryPickerDefaultSheetCornerRadius,
+         padding: padding ?? kCountryPickerDefaultPadding,
+         flagSize: flagSize ?? kCountryPickerDefaultFlagSize,
          textStyle:
              textStyle ??
              Theme.of(context).textTheme.bodyLarge?.copyWith(

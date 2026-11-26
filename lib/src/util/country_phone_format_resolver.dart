@@ -22,28 +22,25 @@ class CountryPhoneFormatResolver {
           )
           .toList(growable: false);
 
+  static final RegExp _nonDigits = RegExp(r'\D');
+  static final RegExp _digit = RegExp(r'\d');
+
   /// Selected country, including any region prefix embedded in its calling code.
   final Country country;
 
   /// Pinned metadata, or null for a region without compatible numbering data.
   final CountryPhoneRules? rules;
 
+  /// Region-specific templates, or `null` to use the country's legacy mask.
   final List<({String prefix, String pattern})>? _displayPatterns;
+
+  /// Prefix expressions compiled on demand and reused while the user types.
   final Map<String, RegExp> _prefixes = <String, RegExp>{};
-  static final RegExp _nonDigits = RegExp(r'\D');
-  static final RegExp _digit = RegExp(r'\d');
 
-  /// Matches prefix rules without compiling expressions on every keystroke.
-  int _leadingDigitsMatchLength(CountryPhoneFormat format, String digits) {
-    if (format.leadingDigits.isEmpty) return 0;
-    final expression = _prefixes.putIfAbsent(
-      format.leadingDigits,
-      () => RegExp('^(?:${format.leadingDigits})'),
-    );
-    return expression.matchAsPrefix(digits)?.end ?? -1;
-  }
-
-  /// Supported local lengths; presentation capacity does not limit the input.
+  /// Returns supported lengths for the supplied local [digits].
+  ///
+  /// Uses the region prefix for matching and excludes it from returned lengths.
+  /// A display template does not limit how many digits the input accepts.
   List<int> supportedLengths(String digits) {
     final data = rules;
     if (data == null) return const <int>[];
@@ -67,19 +64,12 @@ class CountryPhoneFormatResolver {
     return result;
   }
 
-  /// Whether a full local input has a supported length and recognized prefix.
-  bool _hasSupportedPrefixAndLength(String digits) {
-    final data = rules;
-    if (data == null) return false;
-    final national = '${data.regionPrefix}$digits';
-    return supportedLengths(digits).contains(digits.length) &&
-        (data.formats.isEmpty ||
-            data.formats.any(
-              (f) => _leadingDigitsMatchLength(f, national) >= 0,
-            ));
-  }
-
-  /// Removes calling/trunk prefixes only when their interpretation is supported.
+  /// Removes formatting and optionally strips the calling code and trunk prefix.
+  ///
+  /// [stripCode] allows removal of an explicit calling code. With
+  /// [allowImplicitCode], unmarked digits can also be stripped when doing so
+  /// turns an unsupported number into a supported one. [stripTrunk] applies
+  /// the same check to the national trunk prefix.
   String normalize(
     String text, {
     required bool stripCode,
@@ -118,23 +108,6 @@ class CountryPhoneFormatResolver {
     return digits;
   }
 
-  String? _selectDisplayPattern(String digits) {
-    final patterns = _displayPatterns;
-    if (patterns == null) return country.mask;
-    if (patterns.isEmpty) return null;
-    var selected = patterns.first.pattern;
-    var bestPrefixMatchLength = -1;
-    for (final candidate in patterns) {
-      if (candidate.prefix.length >= bestPrefixMatchLength &&
-          digits.startsWith(candidate.prefix)) {
-        // The last template for a duplicate prefix takes precedence.
-        selected = candidate.pattern;
-        bestPrefixMatchLength = candidate.prefix.length;
-      }
-    }
-    return selected;
-  }
-
   /// Applies the selected pattern and appends all digits beyond the template.
   String format(String digits) => formatWithHint(digits).text;
 
@@ -168,5 +141,45 @@ class CountryPhoneFormatResolver {
         ? remaining.replaceAll('#', '0').replaceAll('A', '0')
         : remaining.replaceAll('X', '0');
     return (text: result.toString(), hint: hint);
+  }
+
+  /// Matches prefix rules without compiling expressions on every keystroke.
+  int _leadingDigitsMatchLength(CountryPhoneFormat format, String digits) {
+    if (format.leadingDigits.isEmpty) return 0;
+    final expression = _prefixes.putIfAbsent(
+      format.leadingDigits,
+      () => RegExp('^(?:${format.leadingDigits})'),
+    );
+    return expression.matchAsPrefix(digits)?.end ?? -1;
+  }
+
+  /// Whether a full local input has a supported length and recognized prefix.
+  bool _hasSupportedPrefixAndLength(String digits) {
+    final data = rules;
+    if (data == null) return false;
+    final national = '${data.regionPrefix}$digits';
+    return supportedLengths(digits).contains(digits.length) &&
+        (data.formats.isEmpty ||
+            data.formats.any(
+              (f) => _leadingDigitsMatchLength(f, national) >= 0,
+            ));
+  }
+
+  /// Chooses the longest matching prefix, falling back to the first template.
+  String? _selectDisplayPattern(String digits) {
+    final patterns = _displayPatterns;
+    if (patterns == null) return country.mask;
+    if (patterns.isEmpty) return null;
+    var selected = patterns.first.pattern;
+    var bestPrefixMatchLength = -1;
+    for (final candidate in patterns) {
+      if (candidate.prefix.length >= bestPrefixMatchLength &&
+          digits.startsWith(candidate.prefix)) {
+        // The last template for a duplicate prefix takes precedence.
+        selected = candidate.pattern;
+        bestPrefixMatchLength = candidate.prefix.length;
+      }
+    }
+    return selected;
   }
 }

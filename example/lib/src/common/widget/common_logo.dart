@@ -1,23 +1,23 @@
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:example/src/common/localization/localization.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart'
     show CountryPickerTheme;
+import 'package:material_ui/material_ui.dart';
 
 /// {@template common_logo}
-/// CommonLogo widget.
+/// Displays the package icon with an optional localized introduction.
 /// {@endtemplate}
 class CommonLogo extends StatelessWidget {
-  /// {@macro common_logo}
+  /// Displays the icon by itself.
   const CommonLogo({this.size = 76, super.key}) : _useText = false;
 
-  /// {@macro common_logo}
+  /// Displays the icon followed by the localized title and description.
   const CommonLogo.text({this.size = 76, super.key}) : _useText = true;
 
   /// The diameter of the logo.
   final double size;
 
-  /// Use text?
+  /// Whether to include the localized labels below the icon.
   final bool _useText;
 
   @override

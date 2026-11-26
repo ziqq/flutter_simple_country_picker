@@ -1,118 +1,94 @@
-import 'package:flutter/cupertino.dart'
-    show
-        CupertinoSearchTextField,
-        CupertinoDynamicColor,
-        CupertinoButtonSize,
-        CupertinoColors,
-        CupertinoButton,
-        CupertinoIcons;
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 7 October 2024
+ */
+
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show CupertinoDynamicColor, CupertinoColors, CupertinoIcons;
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
 import 'package:flutter_simple_country_picker/src/controller/country_controller.dart';
 import 'package:flutter_simple_country_picker/src/data/country_provider.dart';
+import 'package:flutter_simple_country_picker/src/util/country_flag_font_util.dart';
 import 'package:flutter_simple_country_picker/src/util/country_util.dart';
+import 'package:flutter_simple_country_picker/src/widget/country_flag_cache.dart';
+import 'package:flutter_simple_country_picker/src/widget/country_picker_controls.dart';
+import 'package:flutter_simple_country_picker/src/widget/country_picker_sheet_gesture.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// {@template country_list_view}
-/// CountryListView widget.
-///
-/// This widget is used to display a list of countries.
+/// A scrollable country list with optional search and alphabet navigation.
 /// {@endtemplate}
 @internal
 class CountryListView extends StatefulWidget {
   /// {@macro country_list_view}
   const CountryListView({
-    // Selection.
-    this.selected,
-    this.onSelect,
-
-    // Country list.
     this.exclude,
     this.favorites,
     this.filter,
-    this.showGroup,
+    this.selected,
+    this.onSelect,
+    this.scrollController,
+    this.autofocus = false,
     this.showPhoneCode = false,
     this.showWorldWide = false,
-
-    // Search.
-    this.showSearch,
-    this.autofocus = false,
-    @Deprecated('Use autofocus instead. Will be removed in 1.0.0.')
-    this.useAutofocus = false,
-
-    // Sheet presentation.
-    this.scrollController,
-    // TODO(ziqq): Remove the adaptive constructor argument in 1.0.0.
-    this.adaptive = false,
     this.useRootNavigator = true,
     this.useHapticFeedback = true,
-
+    this.showGroup,
+    this.showSearch,
+    this.surfaceBuilder,
+    this.paintBackground = true,
     super.key,
   }) : assert(
          filter == null || exclude == null,
          'Cannot provide both filter and exclude',
        );
 
-  // Selection.
+  /// ISO alpha-2 codes omitted from the list. Mutually exclusive with [filter].
+  final List<String>? exclude;
+
+  /// ISO alpha-2 codes placed first in the list.
+  final List<String>? favorites;
+
+  /// ISO alpha-2 codes permitted in the list. Mutually exclusive with [exclude].
+  final List<String>? filter;
 
   /// {@macro select_country_notifier}
   final SelectedCountry? selected;
 
   /// {@macro select_country_callback}
   final SelectCountryCallback? onSelect;
-  // Country list.
 
-  /// An optional [exclude] argument can be used to exclude(remove) one ore more
-  /// country from the countries list. It takes a list of country code(iso2).
-  /// Note: Can't provide both [exclude] and [filter]
-  final List<String>? exclude;
-
-  /// An optional [favorites] argument can be used to show countries
-  /// at the top of the list. It takes a list of country code(iso2).
-  final List<String>? favorites;
-
-  /// An optional [filter] argument can be used to filter the
-  /// list of countries. It takes a list of country code(iso2).
-  /// Note: Can't provide both [filter] and [exclude]
-  final List<String>? filter;
-
-  /// Group countries by their first letter.
-  /// Default is `null`.
-  final bool? showGroup;
-
-  /// An optional [showPhoneCode] argument can be used to show phone code.
-  final bool showPhoneCode;
-
-  /// An optional argument for showing "World Wide"
-  /// option at the beginning of the list
-  final bool showWorldWide;
-  // Search.
-
-  /// An optional [showSearch] argument can be used to show/hide the search bar.
-  /// Default is `null`.
-  final bool? showSearch;
-
-  /// An optional argument for autofocus the search bar.
-  final bool autofocus;
-
-  /// An optional argument for autofocus the search bar.
-  @Deprecated('Use autofocus instead. Will be removed in 1.0.0.')
-  final bool useAutofocus;
-  // Sheet presentation.
-
-  /// Scroll controller.
+  /// Scroll controller shared with the sheet when supplied.
   final ScrollController? scrollController;
 
-  // TODO(ziqq): Remove the adaptive field in 1.0.0.
-  /// An optional argument for adaptive modal presentation.
-  final bool adaptive;
+  /// Whether to focus the search field when it appears.
+  final bool autofocus;
 
-  /// Whether to use root navigator to display the bottom sheet.
+  /// Whether to show calling codes next to country names.
+  final bool showPhoneCode;
+
+  /// Whether to include the worldwide option before the country list.
+  final bool showWorldWide;
+
+  /// Whether to use the root navigator when dismissing the picker.
   final bool useRootNavigator;
 
-  /// Whether to use haptic feedback on user interactions.
+  /// Whether saving a selection or dismissing the sheet triggers haptics.
   final bool useHapticFeedback;
+
+  /// Whether to group countries by their first letter.
+  final bool? showGroup;
+
+  /// Whether to show the search field. Defaults to [showGroup].
+  final bool? showSearch;
+
+  /// {@macro country_picker_surface_builder}
+  final CountryPickerSurfaceBuilder? surfaceBuilder;
+
+  /// Whether the view paints its background or the sheet supplies it.
+  final bool paintBackground;
 
   @override
   State<CountryListView> createState() => _CountriesListViewState();
@@ -121,13 +97,20 @@ class CountryListView extends StatefulWidget {
 /// State for [CountryListView].
 class _CountriesListViewState extends State<CountryListView>
     with WidgetsBindingObserver {
+  /// Uses the sheet scroll controller when the list is presented in a modal.
   late final ScrollController _scrollController;
   late final CountryController _controller;
+  final FocusNode _searchFocus = FocusNode();
+
+  /// Publishes the groups used by the list and the alphabet index.
+  final ValueNotifier<List<(String, List<Country>)>> _groups =
+      ValueNotifier<List<(String, List<Country>)>>([]);
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _searchFocus.addListener(_expandForSearch);
     _scrollController = widget.scrollController ?? ScrollController();
     _controller = CountryController(
       provider: CountryProvider(),
@@ -136,6 +119,7 @@ class _CountriesListViewState extends State<CountryListView>
       filter: widget.filter,
       showGroup: widget.showGroup,
       showPhoneCode: widget.showPhoneCode,
+      showWorldWide: widget.showWorldWide,
     )..getCountries();
   }
 
@@ -146,225 +130,159 @@ class _CountriesListViewState extends State<CountryListView>
   }
 
   @override
-  void handleStatusBarTap() {
-    _scrollController.animateTo(
-      .0,
-      curve: Curves.easeOutCirc,
-      duration: const Duration(milliseconds: 1000),
-    );
-  }
-
-  @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _searchFocus.dispose();
+    _groups.dispose();
     if (widget.scrollController == null) _scrollController.dispose();
     _controller.dispose();
     super.dispose();
   }
 
+  @override
+  void handleStatusBarTap() {
+    if (!_scrollController.hasClients) return;
+    _scrollController.animateTo(
+      _scrollController.position.minScrollExtent,
+      curve: Curves.easeOutCirc,
+      duration: const Duration(milliseconds: 1000),
+    );
+  }
+
+  /// Dismisses the keyboard when an editor in this sheet has focus.
   void _unfocus() {
     if (!mounted) return;
     final currentFocus = FocusScope.of(context);
     if (currentFocus.hasPrimaryFocus) return;
     if (currentFocus.focusedChild == null) return;
     FocusManager.instance.primaryFocus?.unfocus();
-    // if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {}
   }
 
-  /// Build divider widget.
-  Widget _buildDivider() {
-    final pickerTheme = CountryPickerTheme.resolve(context);
-    return Padding(
-      padding: const .only(top: 5),
-      child: Align(
-        heightFactor: 2,
-        child: SizedBox(
-          width: 36,
-          height: 5,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: pickerTheme.dividerColor,
-              borderRadius: const .all(.circular(30)),
-            ),
-          ),
-        ),
-      ),
-    );
+  /// Expands the sheet before the keyboard occupies the lower viewport.
+  void _expandForSearch() {
+    if (_searchFocus.hasFocus) CountryPickerSheetGesture.expandOf(context);
   }
 
-  /// Build search bar widget.
-  Widget _buildSearchBar() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final pickerTheme = CountryPickerTheme.resolve(context);
-    final localization = CountryLocalizations.of(context);
-    final searchTextStyle = pickerTheme.searchTextStyle?.copyWith(
-      height: pickerTheme.searchTextStyle?.height ?? 1.3,
-    );
-    void pop() {
-      if (widget.useHapticFeedback) HapticFeedback.heavyImpact().ignore();
-      Navigator.of(context, rootNavigator: widget.useRootNavigator).pop<void>();
-    }
-
-    return Column(
-      mainAxisSize: .min,
-      children: <Widget>[
-        // --- Search bar --- //
-        ConstrainedBox(
-          constraints: const BoxConstraints(
-            minHeight: kToolbarHeight - 1, // Fix on border height
-            maxHeight: kToolbarHeight - 1, // Fix on border height
-          ),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: pickerTheme.secondaryBackgroundColor,
-            ),
-            child: Padding(
-              padding: .symmetric(horizontal: pickerTheme.padding),
-              child: Row(
-                spacing: pickerTheme.indent,
-                mainAxisSize: .min,
-                children: <Widget>[
-                  // --- Search field --- //
-                  Expanded(
-                    child: CupertinoSearchTextField(
-                      autofocus: widget.autofocus || widget.useAutofocus,
-                      borderRadius: .all(.circular(pickerTheme.radius)),
-                      placeholder: localization.searchPlaceholder,
-                      placeholderStyle: searchTextStyle?.copyWith(
-                        color: searchTextStyle.color?.withValues(alpha: .5),
-                      ),
-                      onSuffixTap: _controller.search?.clear,
-                      controller: _controller.search,
-                      style: searchTextStyle,
-                      backgroundColor: isDark
-                          ? pickerTheme.backgroundColor?.withValues(
-                              // TODO(ziqq): Use .5 directly in 1.0.0.
-                              alpha: widget.adaptive ? 1 : .5,
-                            )
-                          : null,
-                      suffixInsets: EdgeInsetsDirectional.only(
-                        end: pickerTheme.indent / 2,
-                      ),
-                      prefixInsets: EdgeInsetsDirectional.only(
-                        start: pickerTheme.padding / 2,
-                      ),
-                    ),
-                  ),
-
-                  // --- Cancel button --- //
-                  CupertinoButton(
-                    sizeStyle: CupertinoButtonSize.small,
-                    padding: .zero,
-                    onPressed: pop,
-                    child: Text(
-                      localization.cancelButton,
-                      style: pickerTheme.textStyle?.copyWith(
-                        color: pickerTheme.accentColor,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-
-        // --- Bottom border --- //
-        SizedBox(
-          width: double.infinity,
-          height: 1,
-          child: ColoredBox(
-            color:
-                pickerTheme.dividerColor ??
-                CupertinoDynamicColor.resolve(
-                  CupertinoColors.opaqueSeparator,
-                  context,
-                ),
-          ),
-        ),
-      ],
-    );
+  /// Dismisses the picker through its configured navigator.
+  void _closePicker() {
+    if (widget.useHapticFeedback) HapticFeedback.heavyImpact().ignore();
+    Navigator.of(context, rootNavigator: widget.useRootNavigator).pop<void>();
   }
 
   @override
   Widget build(BuildContext context) {
-    final gestureInsets = MediaQuery.systemGestureInsetsOf(context);
-    final pickerTheme = CountryPickerTheme.resolve(context);
-    final localization = CountryLocalizations.of(context);
-    final viewPadding = MediaQuery.viewPaddingOf(context);
-    return Scaffold(
-      backgroundColor: pickerTheme.backgroundColor,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: ValueListenableBuilder(
-          valueListenable: _controller,
-          builder: (_, state, _) => widget.showSearch ?? state.showGroup
-              ? _buildSearchBar()
-              : _buildDivider(),
+    final theme = CountryPickerTheme.resolve(context);
+    final controls = countryPickerControlHeight(context, theme);
+    final headerHeight =
+        countryPickerMinimumControlHeight(context) +
+        countryPickerHeaderPadding(theme).vertical;
+    final headerExtent = MediaQuery.paddingOf(context).top + headerHeight;
+    final showSearch = widget.showSearch ?? widget.showGroup ?? false;
+    final bottom = MediaQuery.paddingOf(context).bottom;
+    final dockBottom = bottom > 0 ? bottom : theme.padding / 2;
+    final dockExtent = showSearch
+        ? controls + dockBottom + theme.padding / 2
+        : bottom;
+    final viewBottom = MediaQuery.viewPaddingOf(context).bottom;
+    final railBottom = showSearch
+        ? controls +
+              (viewBottom > 0 ? viewBottom : theme.padding / 2) +
+              theme.padding / 2
+        : viewBottom;
+    return BackdropGroup(
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        backgroundColor: widget.paintBackground
+            ? countryPickerSheetBackgroundColor(context, theme)
+            : Colors.transparent,
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(headerHeight),
+          child: CountryPickerSheetGesture.headerDragOf(
+            context,
+            CountryPickerHeader(
+              onScrollToTop: handleStatusBarTap,
+              surfaceBuilder: widget.surfaceBuilder,
+              onClose: _closePicker,
+            ),
+          ),
         ),
-      ),
-      body: GestureDetector(
-        onTap: _unfocus,
-        child: CustomScrollView(
-          controller: _scrollController,
-          // Keep list gestures on short lists with their own controller.
-          physics: widget.scrollController == null
-              ? const AlwaysScrollableScrollPhysics()
-              : null,
-          slivers: <Widget>[
-            // --- Title --- //
-            ValueListenableBuilder(
-              valueListenable: _controller,
-              builder: (context, state, _) {
-                if (state.showGroup) {
-                  return const SliverToBoxAdapter(child: SizedBox.shrink());
-                }
-                return SliverToBoxAdapter(
-                  child: Padding(
-                    padding: .symmetric(
-                      horizontal: pickerTheme.padding,
-                      vertical: pickerTheme.padding / 2,
-                    ),
-                    child: Text(
-                      localization.selectCountryLabel,
-                      style: pickerTheme.textStyle?.copyWith(fontWeight: .w700),
+        body: GestureDetector(
+          onTap: _unfocus,
+          excludeFromSemantics: true,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: <Widget>[
+              CustomScrollView(
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                slivers: [
+                  // Keep initial rows below the header while allowing scroll-under.
+                  SliverPadding(
+                    padding: EdgeInsets.only(top: headerExtent),
+                    sliver: _CountriesList(
+                      controller: _controller,
+                      groups: _groups,
+                      favorites: widget.favorites,
+                      showPhoneCode: widget.showPhoneCode,
+                      selected: widget.selected,
+                      onSelect: widget.onSelect,
                     ),
                   ),
-                );
-              },
-            ),
-
-            // --- Countries list --- //
-            if (widget.showWorldWide)
-              SliverToBoxAdapter(
-                child: _CountryListTile.simple(
-                  country: Country.worldWide,
-                  showPhoneCode: false,
-                  selected: widget.selected?.value == Country.worldWide,
-                  onSelect: (country) {
-                    widget.onSelect?.call(country);
-                    widget.selected?.value = country;
+                  SliverToBoxAdapter(child: SizedBox(height: dockExtent)),
+                ],
+              ),
+              PositionedDirectional(
+                top: headerExtent,
+                // Keep the rail's full-height geometry behind the keyboard.
+                bottom: railBottom - MediaQuery.viewInsetsOf(context).bottom,
+                end: 0,
+                child: ValueListenableBuilder(
+                  valueListenable: _groups,
+                  builder: (context, groups, _) {
+                    if (_controller.search?.text.isNotEmpty ?? false) {
+                      return const SizedBox.shrink();
+                    }
+                    return CountryPickerAlphabet(
+                      groups: groups,
+                      onSelect: (letter) {
+                        if (!_scrollController.hasClients) return;
+                        final offset = countryPickerGroupOffset(
+                          context,
+                          theme,
+                          groups,
+                          letter,
+                        );
+                        _scrollController.jumpTo(
+                          offset.clamp(
+                            _scrollController.position.minScrollExtent,
+                            _scrollController.position.maxScrollExtent,
+                          ),
+                        );
+                      },
+                    );
                   },
                 ),
               ),
-            _CountriesList(
-              showPhoneCode: widget.showPhoneCode,
-              selected: widget.selected,
-              onSelect: widget.onSelect,
-              controller: _controller,
-            ),
-
-            // --- Bottom spacer --- //
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: viewPadding.bottom > 0
-                    ? viewPadding.bottom
-                    : gestureInsets.bottom > 0
-                    ? gestureInsets.bottom
-                    : pickerTheme.padding,
-              ),
-            ),
-          ],
+              if ((showSearch, _controller.search) case (
+                true,
+                TextEditingController search,
+              ))
+                PositionedDirectional(
+                  start: theme.padding * .75,
+                  end: theme.padding * .75,
+                  bottom: dockBottom,
+                  child: CountryPickerSearchDock(
+                    controller: search,
+                    focusNode: _searchFocus,
+                    autofocus: widget.autofocus,
+                    surfaceBuilder: widget.surfaceBuilder,
+                    onClose: _closePicker,
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -377,16 +295,22 @@ class _CountriesList extends StatefulWidget {
   /// {@macro countries_list_view}
   const _CountriesList({
     required this.controller,
+    required this.groups,
     required this.showPhoneCode,
+    this.favorites,
     this.selected,
     this.onSelect,
     super.key, // ignore: unused_element_parameter
   });
 
-  /// Provides the sorted and filtered countries for this list.
+  /// Countries controller.
   final CountryController controller;
+  final ValueNotifier<List<(String, List<Country>)>> groups;
 
-  /// Whether each row displays a calling code.
+  /// Favorite country codes (iso2) shown in a section above the letters.
+  final List<String>? favorites;
+
+  /// Whether calling-code entries are distinguished in selection.
   final bool showPhoneCode;
 
   /// {@macro select_country_notifier}
@@ -401,10 +325,16 @@ class _CountriesList extends StatefulWidget {
 
 /// State for widget [_CountriesList].
 class _CountriesListState extends State<_CountriesList> {
-  final ValueNotifier<List<(String, List<Country>)>> _groups =
-      ValueNotifier<List<(String, List<Country>)>>([]);
+  ValueNotifier<List<(String, List<Country>)>> get _groups => widget.groups;
+  List<(int, int)> _entries = <(int, int)>[];
   List<Country>? _countries;
   bool? _showGroup;
+
+  /// Fallback notifier used when [_CountriesList.selected] is not provided.
+  final ValueNotifier<Country?> _fallback = ValueNotifier<Country?>(null);
+
+  /// The effective selected country notifier.
+  ValueListenable<Country?> get _selected => widget.selected ?? _fallback;
 
   @override
   void initState() {
@@ -416,17 +346,20 @@ class _CountriesListState extends State<_CountriesList> {
   @override
   void didUpdateWidget(covariant _CountriesList oldWidget) {
     super.didUpdateWidget(oldWidget);
+    // The parent owns a late final controller, so it cannot be replaced.
     if (oldWidget.controller != widget.controller) {
+      // coverage:ignore-start
       oldWidget.controller.removeListener(_groupByName);
       widget.controller.addListener(_groupByName);
       _groupByName();
+      // coverage:ignore-end
     }
   }
 
   @override
   void dispose() {
     widget.controller.removeListener(_groupByName);
-    _groups.dispose();
+    _fallback.dispose();
     super.dispose();
   }
 
@@ -434,41 +367,224 @@ class _CountriesListState extends State<_CountriesList> {
   void _groupByName() {
     if (!mounted) return;
     final state = widget.controller.state;
+    // An empty list is grouped too, so a search without results
+    // does not keep showing the previous groups.
     if (!state.showGroup || !state.isIdle) return;
 
-    if (_showGroup == state.showGroup &&
-        identical(_countries, state.countries)) {
+    // The initial frame sees the asynchronous load in progress. Subsequent
+    // notifications come from new states with distinct country snapshots.
+    if (identical(_countries, state.countries) &&
+        // coverage:ignore-start
+        _showGroup == state.showGroup) {
       return;
+      // coverage:ignore-end
     }
 
     _countries = state.countries;
     _showGroup = state.showGroup;
-    _groups.value = _buildGroups(state.countries);
+
+    final groups = _buildGroups(state.countries);
+    final entries = <(int, int)>[];
+    for (var group = 0; group < groups.length; group++) {
+      final (key, countries) = groups[group];
+      if (key.isNotEmpty) {
+        entries.add((group, -1));
+      }
+      for (var index = 0; index < countries.length; index++) {
+        entries.add((group, index));
+      }
+    }
+    _entries = entries;
+    _groups.value = groups;
   }
 
   /// Build groups of countries.
+  ///
+  /// The leading "World Wide" option and favorites form a section with an
+  /// empty key, which is rendered without a letter header. The rest is
+  /// grouped by the first letter of the localized name. Equal letters are
+  /// merged even when not adjacent, so a letter header never repeats.
   List<(String, List<Country>)> _buildGroups(List<Country> countries) {
-    final result = <(String, List<Country>)>[];
-    List<Country>? bucket;
-    String? currentKey;
+    final favorites =
+        widget.favorites?.map((code) => code.trim().toUpperCase()).toSet() ??
+        const <String>{};
 
-    for (final country in countries) {
-      final name = switch (country.nameLocalized) {
-        String nameLocalized when nameLocalized.isNotEmpty => nameLocalized,
-        _ => country.name,
-      };
-      if (name.isEmpty) continue;
-
-      final key = name.characters.first.toUpperCase();
-      if (key != currentKey) {
-        currentKey = key;
-        bucket = <Country>[];
-        result.add((key, bucket));
-      }
-      bucket?.add(country);
+    // The controller puts the pinned countries first. The block ends at the
+    // first country that is not pinned or is repeated, because favorites
+    // are listed again among all countries when phone codes are shown.
+    final pinned = <Country>[];
+    final seen = <String>{};
+    var index = 0;
+    while (index < countries.length) {
+      final country = countries[index];
+      final isPinned =
+          country.iswWorldWide ||
+          favorites.contains(country.countryCode.toUpperCase());
+      if (!isPinned || !seen.add(country.e164Key)) break;
+      pinned.add(country);
+      index++;
     }
 
-    return result;
+    final letters = <String, List<Country>>{};
+    for (final country in countries.skip(index)) {
+      final name = country.nameLocalized ?? country.name;
+      if (name.isEmpty) continue;
+      // Accented letters are grouped with their base letter,
+      // e.g. `Österreich` under `O`.
+      final key = CountryUtil.foldDiacritics(
+        name.characters.first,
+      ).toUpperCase();
+      (letters[key] ??= <Country>[]).add(country);
+    }
+
+    return <(String, List<Country>)>[
+      if (pinned.isNotEmpty) ('', pinned),
+      for (final MapEntry(:key, :value) in letters.entries) (key, value),
+    ];
+  }
+
+  /// Notifies [_CountriesList.onSelect] and updates
+  /// [_CountriesList.selected].
+  void _onSelect(Country country) {
+    // Notify external listeners first so they can compare
+    // against the previous SelectedCountry value,
+    // then update the notifier itself.
+    widget.onSelect?.call(country);
+    widget.selected?.value = country;
+  }
+
+  /// Compares the displayed identity of a row with the selected country.
+  bool _isSelected(Country country, Country? selected) => widget.showPhoneCode
+      ? selected?.e164Key == country.e164Key
+      : selected?.countryCode == country.countryCode;
+
+  /// Builds compact country rows in one lazy list.
+  Widget _buildSection(List<Country> countries, Country? selected) {
+    final theme = CountryPickerTheme.resolve(context);
+    final rowHeight = countryPickerCountryHeight(context, theme);
+    final divider = 1 / MediaQuery.devicePixelRatioOf(context);
+    return SliverFixedExtentList.builder(
+      itemExtent: rowHeight + divider,
+      itemCount: countries.length,
+      itemBuilder: (context, index) => Column(
+        children: <Widget>[
+          _CountryListTile(
+            key: ValueKey<String>(countries[index].e164Key),
+            country: countries[index],
+            showPhoneCode: widget.showPhoneCode,
+            selected: _isSelected(countries[index], selected),
+            onSelect: _onSelect,
+          ),
+          Divider(
+            height: divider,
+            thickness: divider,
+            color: theme.dividerColor,
+            indent: theme.padding * 2,
+            endIndent: theme.padding * 2,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Keeps section headers and country rows in one lazy delegate.
+  Widget _buildGroupedList(
+    List<(String, List<Country>)> groups,
+    CountryPickerTheme theme,
+    Country? selected,
+  ) {
+    final entries = _entries;
+    final light = Theme.of(context).brightness == Brightness.light;
+    final dividerHeight = 1 / MediaQuery.devicePixelRatioOf(context);
+
+    // Group labels and rows use the same delegate so they scroll together.
+    Widget? itemBuilder(BuildContext context, int entry) {
+      final (group, index) = entries[entry];
+      final (letter, countries) = groups[group];
+      if (index < 0) {
+        return Semantics(
+          key: ValueKey<String>('header_$letter'),
+          header: true,
+          child: SizedBox(
+            height: countryPickerGroupHeight(context, theme, first: group == 0),
+            child: ColoredBox(
+              key: ValueKey<String>('header_child_$letter'),
+              color: countryPickerSheetBackgroundColor(context, theme),
+              child: Padding(
+                padding: EdgeInsetsDirectional.symmetric(
+                  horizontal: theme.padding * 2,
+                ).add(EdgeInsets.only(bottom: theme.padding / 2)),
+                child: Align(
+                  alignment: AlignmentDirectional.bottomStart,
+                  child: Text(
+                    letter,
+                    style: TextStyle(
+                      height: 1,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: theme.secondaryTextStyle?.color,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+      final country = countries[index];
+      final inset = theme.padding * 2;
+      final contentInset = light
+          ? (inset - theme.padding).clamp(0.0, double.infinity)
+          : inset;
+      final row = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          _CountryListTile(
+            key: ValueKey<String>(country.e164Key),
+            country: country,
+            showPhoneCode: widget.showPhoneCode,
+            selected: _isSelected(country, selected),
+            onSelect: _onSelect,
+            horizontalPadding: contentInset,
+          ),
+          if (index < countries.length - 1)
+            Divider(
+              height: dividerHeight,
+              thickness: dividerHeight,
+              indent: contentInset,
+              endIndent: contentInset,
+              color: theme.dividerColor,
+            ),
+        ],
+      );
+      if (!light) return row;
+      // First and last rows draw the group's outline without building the
+      // intervening countries eagerly. Each row remains a lazy sliver child.
+      const radius = Radius.circular(24);
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: theme.padding),
+        child: ClipRSuperellipse(
+          borderRadius: BorderRadius.vertical(
+            top: index == 0 ? radius : Radius.zero,
+            bottom: index == countries.length - 1 ? radius : Radius.zero,
+          ),
+          child: ColoredBox(
+            color:
+                theme.backgroundColor ?? Theme.of(context).colorScheme.surface,
+            child: row,
+          ),
+        ),
+      );
+    }
+
+    final sliver = SliverList(
+      delegate: CountryPickerExtentDelegate(
+        itemBuilder,
+        childCount: entries.length,
+        extent: countryPickerGroupOffset(context, theme, groups, null),
+      ),
+    );
+    return sliver;
   }
 
   @override
@@ -484,106 +600,20 @@ class _CountriesListState extends State<_CountriesList> {
           );
         }
 
-        // --- Grouped countries --- //
-        if (state.showGroup) {
+        if (state.showGroup &&
+            (widget.controller.search?.text.isEmpty ?? true)) {
           return ValueListenableBuilder(
             valueListenable: _groups,
-            builder: (_, groups, _) {
-              final slivers = <Widget>[
-                for (final (key, countries) in groups) ...<Widget>[
-                  SliverMainAxisGroup(
-                    slivers: <Widget>[
-                      SliverPersistentHeader(
-                        key: ValueKey<String>('header_$key'),
-                        floating: true,
-                        pinned: true,
-                        delegate: _SliverHeaderDelegate(
-                          maxHeight: 26,
-                          minHeight: 26,
-                          child: DecoratedBox(
-                            key: ValueKey('header_child_$key'),
-                            decoration: BoxDecoration(
-                              color: pickerTheme.secondaryBackgroundColor,
-                            ),
-                            child: Padding(
-                              padding: .symmetric(
-                                horizontal: pickerTheme.padding,
-                              ),
-                              child: Align(
-                                alignment: .centerLeft,
-                                child: Text(
-                                  key,
-                                  style: TextStyle(
-                                    height: 1,
-                                    fontSize: 15,
-                                    fontWeight: switch (defaultTargetPlatform) {
-                                      .iOS => .w700,
-                                      _ => .w600,
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SliverList.separated(
-                        itemCount: countries.length,
-                        itemBuilder: (_, index) {
-                          final country = countries[index];
-                          return _CountryListTile(
-                            key: ValueKey<String>(country.e164Key),
-                            showPhoneCode: widget.showPhoneCode,
-                            onSelect: (country) {
-                              // Notify external listeners first so they can
-                              // compare against the previous SelectedCountry
-                              // value, then update the notifier itself.
-                              widget.onSelect?.call(country);
-                              widget.selected?.value = country;
-                            },
-                            country: country,
-                          );
-                        },
-                        separatorBuilder: (_, _) => Divider(
-                          height: 1,
-                          thickness: 1,
-                          indent: pickerTheme.padding,
-                          endIndent: pickerTheme.padding,
-                          color: pickerTheme.dividerColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ];
-
-              return SliverMainAxisGroup(slivers: slivers);
-            },
+            builder: (_, groups, _) => ValueListenableBuilder(
+              valueListenable: _selected,
+              builder: (_, selected, _) =>
+                  _buildGroupedList(groups, pickerTheme, selected),
+            ),
           );
         }
-
-        // --- Plain countries list --- //
         return ValueListenableBuilder(
-          valueListenable: widget.selected ?? ValueNotifier<Country?>(null),
-          builder: (_, selected, _) => SliverList.builder(
-            itemCount: state.countries.length,
-            itemBuilder: (_, index) {
-              final country = state.countries[index];
-              return _CountryListTile.simple(
-                key: ValueKey<String>(country.e164Key),
-                showPhoneCode: widget.showPhoneCode,
-                country: country,
-                selected: selected == country,
-                onSelect: (country) {
-                  // Notify external listeners first so they can
-                  // compare against the previous SelectedCountry
-                  // value, then update the notifier itself.
-                  widget.onSelect?.call(country);
-                  widget.selected?.value = country;
-                },
-              );
-            },
-          ),
+          valueListenable: _selected,
+          builder: (_, selected, _) => _buildSection(state.countries, selected),
         );
       },
     );
@@ -597,104 +627,69 @@ class _CountryListTile extends StatelessWidget {
     required this.country,
     required this.showPhoneCode,
     this.onSelect,
-    this.simple = false,
     this.selected = false,
+    this.horizontalPadding,
     super.key, // ignore: unused_element
   });
 
-  const factory _CountryListTile.simple({
-    required Country country,
-    required bool showPhoneCode,
-    SelectCountryCallback? onSelect,
-    bool selected,
-    Key? key,
-  }) = _CountryListTile$Simple;
+  /// Is selected?
+  final bool selected;
 
-  /// The country displayed and returned when the row is tapped.
+  /// Current country.
   final Country country;
 
-  /// Whether the row displays a calling code.
+  /// Whether to show the dialing code in this tile.
   final bool showPhoneCode;
 
   /// {@macro select_country_callback}
   final SelectCountryCallback? onSelect;
 
-  /// Whether to use the single-line layout.
-  final bool simple;
+  /// Insets content inside an already inset light group surface.
+  final double? horizontalPadding;
 
-  /// Whether the single-line layout displays a selection checkmark.
-  final bool selected;
+  /// Handles a tap on the tile.
+  void _onTap(BuildContext context, String? nameLocalized) {
+    final useHapticFeedback = context
+        .findAncestorStateOfType<_CountriesListViewState>()
+        ?.widget
+        .useHapticFeedback;
 
-  @override
-  Widget build(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
-    final pickerTheme = CountryPickerTheme.resolve(context);
-    final l = CountryLocalizations.of(context);
+    if (useHapticFeedback ?? true) {
+      HapticFeedback.heavyImpact().ignore();
+    }
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) navigator.pop<void>();
+    onSelect?.call(country.copyWith(nameLocalized: nameLocalized));
+  }
 
-    final nameLocalized = l.getFormatedCountryNameByCode(country.countryCode);
-    final effectiveTextStyle = pickerTheme.textStyle?.copyWith(height: 1.2);
-    final name = switch (nameLocalized) {
-      String localized when localized.isNotEmpty => localized,
-      _ => country.name,
-    };
-    final title = Text(
-      name,
-      maxLines: 1,
-      overflow: .ellipsis,
-      style: effectiveTextStyle,
-    );
-
-    final effectiveTitle = switch (simple) {
-      false => Row(
-        spacing: pickerTheme.padding / 4,
-        crossAxisAlignment: .center,
-        children: <Widget>[
-          _Flag(country),
-          Flexible(child: title),
-        ],
-      ),
-      true => Row(
-        crossAxisAlignment: .center,
-        children: <Widget>[
-          _Flag(country),
-          SizedBox(width: pickerTheme.padding / 4),
-          Flexible(child: title),
-          if (showPhoneCode) ...<Widget>[
-            Text(
-              ' (${isRtl ? '' : '+'}${country.phoneCode}${isRtl ? '+' : ''})',
-              style: effectiveTextStyle,
-            ),
-          ],
-        ],
-      ),
-    };
-
-    final effectiveTrailing = switch ((simple, selected, showPhoneCode)) {
-      (true, true, _) => Icon(
-        CupertinoIcons.checkmark_circle_fill,
-        color: pickerTheme.accentColor,
-      ),
-      (false, _, true) => Padding(
-        padding: .only(top: pickerTheme.padding / 5),
-        child: Text(
-          '${isRtl ? '' : '+'}${country.phoneCode}${isRtl ? '+' : ''}',
-          style: effectiveTextStyle?.copyWith(
-            color: CupertinoDynamicColor.resolve(
-              CupertinoColors.secondaryLabel,
-              context,
-            ),
-            height: 1,
-          ),
-        ),
-      ),
-      _ => null,
-    };
-
-    return Material(
+  /// Wraps [child] into an [InkWell] with the Cupertino-like highlight.
+  ///
+  /// The tile is exposed to accessibility services as a single button
+  /// labelled with the country name and phone code, so decorative parts
+  /// such as the emoji flag are not announced.
+  ///
+  /// [semanticsSelected] is `null` when the tile does not track selection.
+  /// The sole caller passes a name that already falls back to the original.
+  Widget _buildInkWell(
+    BuildContext context, {
+    required String? nameLocalized,
+    required Widget child,
+    bool? semanticsSelected,
+  }) => Semantics(
+    container: true,
+    button: true,
+    selected: semanticsSelected,
+    label: !showPhoneCode || country.phoneCode.isEmpty
+        ? nameLocalized ??
+              // coverage:ignore-start
+              country.name
+        // coverage:ignore-end
+        : '${nameLocalized ?? country.name}, +${country.phoneCode}',
+    child: Material(
       // Add Material Widget with transparent color
       // so the ripple effect of InkWell will show on tap
       color: Colors.transparent,
-      type: .card,
+      type: MaterialType.card,
       child: Theme(
         data: Theme.of(context).copyWith(
           highlightColor: CupertinoDynamicColor.resolve(
@@ -705,53 +700,99 @@ class _CountryListTile extends StatelessWidget {
           splashColor: Colors.transparent,
         ),
         child: InkWell(
-          onTap: () {
-            final useHapticFeedback =
-                context
-                    .findAncestorStateOfType<_CountriesListViewState>()
-                    ?.widget
-                    .useHapticFeedback ??
-                true;
+          splashFactory:
+              Theme.of(context).splashFactory == InkSparkle.splashFactory
+              ? NoSplash.splashFactory
+              : null,
+          onTap: () => _onTap(context, nameLocalized),
+          child: ExcludeSemantics(child: child),
+        ),
+      ),
+    ),
+  );
 
-            if (useHapticFeedback) HapticFeedback.heavyImpact().ignore();
-            final navigator = Navigator.of(context);
-            if (navigator.canPop()) navigator.pop<void>();
-            onSelect?.call(country.copyWith(nameLocalized: nameLocalized));
-          },
-          child: Padding(
-            padding: .only(
-              top: simple
-                  ? pickerTheme.padding / 1.25
-                  : pickerTheme.padding / 2,
-              bottom: simple
-                  ? pickerTheme.padding / 1.25
-                  : pickerTheme.padding / 1.35,
-              left: pickerTheme.padding,
-              right: pickerTheme.padding,
-            ),
-            child: Row(
-              mainAxisAlignment: .spaceBetween,
-              children: <Widget>[
-                Flexible(
-                  child: Column(
-                    crossAxisAlignment: .start,
-                    children: <Widget>[
-                      // --- Title of the country --- //
-                      effectiveTitle,
-
-                      // --- Country name --- //
-                      if (!simple && name != country.name) ...<Widget>[
-                        Text(
-                          country.name,
-                          style: pickerTheme.secondaryTextStyle,
+  @override
+  Widget build(BuildContext context) {
+    final theme = CountryPickerTheme.resolve(context);
+    final localization = CountryLocalizations.of(context);
+    final localized = localization.getFormatedCountryNameByCode(
+      country.countryCode,
+    );
+    final name = localized == null || localized.isEmpty
+        ? country.name
+        : localized;
+    final titleStyle = theme.textStyle?.copyWith(height: 1.2);
+    final large = countryPickerUsesLargeRows(context, theme);
+    final phone = Directionality.of(context) == TextDirection.rtl
+        ? '${country.phoneCode}+'
+        : '+${country.phoneCode}';
+    return SizedBox(
+      height: countryPickerCountryHeight(context, theme),
+      child: _buildInkWell(
+        context,
+        nameLocalized: name,
+        semanticsSelected: selected,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding ?? theme.padding * 2,
+          ),
+          child: Row(
+            spacing: theme.padding / 2,
+            children: <Widget>[
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      spacing: theme.padding / 3.2,
+                      children: <Widget>[
+                        _CountryFlag(country),
+                        Expanded(
+                          child: Text(
+                            name,
+                            style: titleStyle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
-                    ],
+                    ),
+                    Text(
+                      country.name,
+                      style: theme.secondaryTextStyle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (large && showPhoneCode && country.phoneCode.isNotEmpty)
+                      Text(
+                        phone,
+                        style: titleStyle?.copyWith(
+                          color: theme.secondaryTextStyle?.color,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                  ],
+                ),
+              ),
+              if (!large && showPhoneCode && country.phoneCode.isNotEmpty)
+                Text(
+                  phone,
+                  style: titleStyle?.copyWith(
+                    color: theme.secondaryTextStyle?.color?.withValues(
+                      alpha: .6,
+                    ),
                   ),
                 ),
-                ?effectiveTrailing,
-              ],
-            ),
+              if (selected)
+                Icon(
+                  CupertinoIcons.checkmark_alt,
+                  key: const ValueKey<String>('country_picker_selected_badge'),
+                  size: 18,
+                  color: theme.accentColor,
+                ),
+            ],
           ),
         ),
       ),
@@ -759,23 +800,11 @@ class _CountryListTile extends StatelessWidget {
   }
 }
 
+/// Compact platform emoji used in country rows.
 /// {@macro countries_list_view}
-class _CountryListTile$Simple extends _CountryListTile {
+class _CountryFlag extends StatelessWidget {
   /// {@macro countries_list_view}
-  const _CountryListTile$Simple({
-    required super.country,
-    required super.showPhoneCode,
-    super.selected = false,
-    super.onSelect,
-    super.key, // ignore: unused_element_parameter
-  }) : super(simple: true);
-}
-
-/// Flag widget.
-/// {@macro countries_list_view}
-class _Flag extends StatelessWidget {
-  /// {@macro countries_list_view}
-  const _Flag(
+  const _CountryFlag(
     this.country, {
     super.key, // ignore: unused_element_parameter
   });
@@ -785,50 +814,21 @@ class _Flag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
-    final pickerTheme = CountryPickerTheme.resolve(context);
-    return SizedBox(
-      // The conditional 50 prevents irregularities
-      // caused by the flags in RTL mode
-      width: isRtl ? 44 : null,
-      child: Text(
-        country.iswWorldWide
-            ? '\uD83C\uDF0D'
-            : CountryUtil.countryCodeToEmoji(country.countryCode),
-        style: TextStyle(fontSize: pickerTheme.flagSize ?? 22, height: 1),
+    final theme = CountryPickerTheme.resolve(context);
+    return CountryFlagCache(
+      child: Text.rich(
+        TextSpan(
+          text: country.iswWorldWide
+              ? '\uD83C\uDF0D'
+              : CountryUtil.countryCodeToEmoji(country.countryCode),
+          style: TextStyle(
+            fontFamily: country.iswWorldWide
+                ? null
+                : CountryFlagFontUtil.fontFamily,
+          ),
+        ),
+        style: TextStyle(fontSize: theme.flagSize, height: 1),
       ),
     );
   }
-}
-
-class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
-  /// {@macro countries_list_view}
-  _SliverHeaderDelegate({
-    required this.child,
-    required this.minHeight,
-    required this.maxHeight,
-  });
-
-  final Widget child;
-  final double minHeight;
-  final double maxHeight;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) => SizedBox.expand(child: child);
-
-  @override
-  double get minExtent => minHeight;
-
-  @override
-  double get maxExtent => maxHeight;
-
-  @override
-  bool shouldRebuild(covariant _SliverHeaderDelegate oldDelegate) =>
-      oldDelegate.minHeight != minHeight ||
-      oldDelegate.maxHeight != maxHeight ||
-      oldDelegate.child != child;
 }

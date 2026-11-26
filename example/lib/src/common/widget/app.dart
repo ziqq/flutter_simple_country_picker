@@ -1,17 +1,15 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/router/example_navigator.dart';
 import 'package:example/src/common/theme/theme.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
-import 'package:pull_down_button/pull_down_button.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// {@template app}
-/// App widget.
+/// Provides the example themes, localizations, and root navigator.
 /// {@endtemplate}
 class App extends StatefulWidget {
   /// {@macro app}
@@ -20,51 +18,43 @@ class App extends StatefulWidget {
   /// Home widget.
   final Widget home;
 
-  @override
-  State<App> createState() => _AppState();
-
-  /// The state from the closest instance of this class
-  /// that encloses the given context, if any.
-  /// e.g. `AppState.maybeOf(context)`.
+  /// Returns the nearest example app state, if one exists.
   static _AppState? maybeOf(BuildContext context) =>
       context.findAncestorStateOfType<_AppState>();
+
+  /// Returns the nearest example app state or throws an [ArgumentError].
+  static _AppState? of(BuildContext context) =>
+      maybeOf(context) ?? _notFoundStateOfType();
 
   static Never _notFoundStateOfType() => throw ArgumentError(
     'Out of scope, not found state of type _AppState',
     'out_of_scope',
   );
 
-  /// The state from the closest instance of this class
-  /// that encloses the given context.
-  /// e.g. `AppState.of(context)`
-  static _AppState? of(BuildContext context) =>
-      maybeOf(context) ?? _notFoundStateOfType();
+  @override
+  State<App> createState() => _AppState();
 }
 
 /// State for [App] widget.
 class _AppState extends State<App> {
-  /// Disable recreate widget tree
+  /// Keeps the navigator mounted when changing the app locale.
   final Key _builderKey = GlobalKey(debugLabel: 'AppBuilderKey');
 
-  /// Localization delegates
+  /// Loads the example, country, and Material widget translations.
   final localizationsDelegates = const <LocalizationsDelegate<Object?>>[
-    /// Example localization
     ExampleLocalization.delegate,
 
-    /// Add [CountriesLocalization] in app [localizationsDelegates]
     CountryLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
+    ...GlobalMaterialLocalizations.delegates,
   ];
 
   /// Current locale of the app.
   final ValueNotifier<Locale> locale = ValueNotifier(const Locale('en'));
 
-  /// App theme mode
+  /// The current theme mode, initially inherited from the platform.
   final ValueNotifier<ThemeMode> themeMode = ValueNotifier(ThemeMode.system);
 
-  /// Combined listenable
+  /// Rebuilds the Material app when its locale or theme changes.
   late final Listenable _listenable = Listenable.merge([themeMode, locale]);
 
   @override
@@ -99,17 +89,6 @@ class _AppState extends State<App> {
       locale: locale.value,
       localizationsDelegates: localizationsDelegates,
       supportedLocales: ExampleLocalization.supportedLocales,
-      /* localeResolutionCallback: (locale, supportedLocales) {
-        if (locale == null) {
-          return supportedLocales.first;
-        }
-        for (final supportedLocale in supportedLocales) {
-          if (supportedLocale.languageCode == locale.languageCode) {
-            return supportedLocale;
-          }
-        }
-        return supportedLocales.first;
-      }, */
       builder: (context, _) => MediaQuery(
         key: _builderKey,
         data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
@@ -122,9 +101,9 @@ class _AppState extends State<App> {
   );
 }
 
-/// AppThemeModeSwitcherButton widget.
+/// Switches the example between light and dark themes.
 class AppThemeModeSwitcherButton extends StatelessWidget {
-  /// {@macro app}
+  /// Creates the theme switcher.
   const AppThemeModeSwitcherButton({super.key});
 
   ThemeMode _themeModeFromBrightness(Brightness brightness) =>
@@ -145,74 +124,53 @@ class AppThemeModeSwitcherButton extends StatelessWidget {
   }
 }
 
-/// AppLocaleSwitcherButton widget.
-///
-/// Switch app locale.
+/// Opens a menu of supported example languages.
 class AppLocaleSwitcherButton extends StatelessWidget {
-  /// {@macro app}
-  const AppLocaleSwitcherButton({
-    super.key, // ignore: unused_element
-  });
-
-  List<PullDownMenuItem> _itemBuilder(BuildContext context) {
-    final itemTheme = PullDownMenuItemTheme(
-      textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 14),
-    );
-    final locale = App.of(context)?.locale;
-    return ExampleLocalization.supportedLocales
-        .map<PullDownMenuItem>(
-          (e) => PullDownMenuItem.selectable(
-            selected: locale?.value == e,
-            title: e.languageCode,
-            itemTheme: itemTheme,
-            onTap: () {
-              HapticFeedback.mediumImpact().ignore();
-              locale?.value = e;
-            },
-          ),
-        )
-        .toList(growable: false);
-  }
-
-  Widget _buttonBuilder(
-    BuildContext context,
-    Future<void> Function() showMenu,
-  ) {
-    final locale = Localizations.localeOf(context);
-    return SizedBox(
-      width: 40,
-      height: 28,
-      child: CupertinoButton(
-        color: CupertinoDynamicColor.resolve(
-          CupertinoColors.secondarySystemFill,
-          context,
-        ),
-        minimumSize: Size.zero,
-        padding: EdgeInsets.zero,
-        onPressed: () {
-          HapticFeedback.heavyImpact().ignore();
-          showMenu.call();
-        },
-        child: Text(
-          locale.languageCode.toUpperCase(),
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-        ),
-      ),
-    );
-  }
+  /// Creates the language switcher.
+  const AppLocaleSwitcherButton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final pickerTheme = CountryPickerTheme.of(context);
-    return SizedBox(
-      width: 40,
-      height: 28,
-      child: PullDownButton(
-        buttonBuilder: _buttonBuilder,
-        menuOffset: pickerTheme.padding,
-        itemBuilder: (_) => _itemBuilder(context),
+    final locale = App.of(context)?.locale;
+    final languageCode = Localizations.localeOf(context).languageCode;
+    final textTheme = Theme.of(context).textTheme;
+    return CupertinoMenuAnchor(
+      consumeOutsideTaps: true,
+      menuChildren: [
+        for (final option in ExampleLocalization.supportedLocales)
+          CupertinoMenuItem(
+            trailing: locale?.value == option
+                ? const Icon(CupertinoIcons.check_mark)
+                : null,
+            onPressed: () {
+              HapticFeedback.mediumImpact().ignore();
+              locale?.value = option;
+            },
+            child: Text(
+              option.languageCode,
+              style: textTheme.bodyLarge?.copyWith(fontSize: 14),
+            ),
+          ),
+      ],
+      builder: (context, controller, child) => SizedBox(
+        width: 40,
+        height: 28,
+        child: CupertinoButton(
+          color: CupertinoDynamicColor.resolve(
+            CupertinoColors.secondarySystemFill,
+            context,
+          ),
+          minimumSize: Size.zero,
+          padding: EdgeInsets.zero,
+          onPressed: () {
+            HapticFeedback.heavyImpact().ignore();
+            controller.open();
+          },
+          child: Text(
+            languageCode.toUpperCase(),
+            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+          ),
+        ),
       ),
     );
   }

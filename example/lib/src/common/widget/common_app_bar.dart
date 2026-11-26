@@ -1,18 +1,23 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 11 October 2024
+ */
+
 import 'package:example/src/common/constant/pubspec.yaml.g.dart';
 import 'package:example/src/common/widget/app.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart'
     show CountryPickerTheme;
+import 'package:material_ui/material_ui.dart';
 
 /// {@template common_app_bar}
-/// CommonAppBar widget.
+/// Shows the preview title, app version, and theme and language controls.
 /// {@endtemplate}
 class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// {@macro common_app_bar}
   const CommonAppBar({
+    this.title,
     this.backgroundColor,
     this.bottom,
-    this.title,
     super.key,
   });
 
@@ -28,20 +33,15 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
-  /// {@macro scaffold_padding}
-  static Widget sliver(String title, [Widget? child]) => SliverAppBar(
-    pinned: true,
-    title: _Header(title),
-    leading: const AppLocaleSwitcherButton(),
-    actions: const [AppThemeModeSwitcherButton()],
-  );
-
   @override
   Widget build(BuildContext context) => AppBar(
     centerTitle: true,
     bottom: bottom,
     backgroundColor: backgroundColor,
-    title: title != null && title!.isNotEmpty ? _Header(title!) : null,
+    title: switch (title) {
+      String title when title.isNotEmpty => _Header(title),
+      _ => null,
+    },
     leading: Row(
       children: [
         SizedBox(width: CountryPickerTheme.of(context).padding),
@@ -57,10 +57,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
 /// {@macro common_app_bar}
 class _Header extends StatelessWidget {
   /// {@macro common_app_bar}
-  const _Header(
-    this.title, {
-    super.key, // ignore: unused_element_parameter
-  });
+  const _Header(this.title);
 
   /// Title of the header.
   final String title;

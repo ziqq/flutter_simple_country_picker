@@ -1,5 +1,11 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 7 October 2024
+ */
+
 import 'dart:developer' show log;
 
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:example/src/common/constant/constant.dart';
 import 'package:example/src/common/localization/localization.dart';
 import 'package:example/src/common/util/app_zone.dart';
@@ -8,19 +14,18 @@ import 'package:example/src/common/widget/app.dart';
 import 'package:example/src/common/widget/common_app_bar.dart';
 import 'package:example/src/common/widget/common_bottom_space.dart';
 import 'package:example/src/common/widget/common_padding.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:material_ui/material_ui.dart';
 
-/// This file includes basic example for [CountryPhoneInput]
-/// that uses of [CountryPicker].
+/// Launches the example for the standard and extended [CountryPhoneInput].
 ///
-/// For more platform examples (android, ios, macOS, web, windows) check on
-/// [GitHub](https://github.com/ziqq/flutter_simple_country_picker/tree/master/example/lib/src/preview)
+/// Platform-specific demos are in [the previews directory][previews].
+///
+/// [previews]: https://github.com/ziqq/flutter_simple_country_picker/tree/main/example/lib/src/preview
 void main() => appZone(() async => runApp(const App(home: Preview())));
 
 /// {@template county_picker_preview}
-/// Preview widget.
+/// Shows two phone input layouts and standalone picker configurations.
 /// {@endtemplate}
 class Preview extends StatefulWidget {
   /// {@macro county_picker_preview}
@@ -44,6 +49,7 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
     super.dispose();
   }
 
+  /// Shows a compact phone input alongside a second form field.
   Widget _buildPreview(BuildContext context) {
     final pickerTheme = CountryPickerTheme.of(context);
     final theme = Theme.of(context);
@@ -52,6 +58,7 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
       mainAxisAlignment: .center,
       children: <Widget>[
         CountryPhoneInput(
+          useCountryFormatting: true,
           key: const ValueKey<String>('country_phone_input'),
           controller: countryPhoneController,
           favorites: kFavoritesCountries,
@@ -59,10 +66,9 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
           showGroup: true,
         ),
 
-        // --- Password input --- //
         DecoratedBox(
           decoration: BoxDecoration(
-            borderRadius: .all(.circular(pickerTheme.radius)),
+            borderRadius: .all(.circular(pickerTheme.baseCornerRadius)),
             color: pickerTheme.onBackgroundColor,
           ),
           child: ConstrainedBox(
@@ -86,7 +92,6 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
           ),
         ),
 
-        // --- Submit button --- //
         SizedBox(
           width: double.infinity,
           child: CupertinoButton.filled(
@@ -96,12 +101,12 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
           ),
         ),
 
-        // --- Withe space --- //
         const CommonBottomSpacer(),
       ],
     );
   }
 
+  /// Shows the extended phone input with a separate country selector.
   Widget _buildPreviewExtended(BuildContext context) {
     final pickerTheme = CountryPickerTheme.of(context);
     return Column(
@@ -109,12 +114,11 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
       spacing: pickerTheme.padding,
       children: <Widget>[
         CountryPhoneInput.extended(
+          useCountryFormatting: true,
           onChanged: (phone) => log('Phone changed: $phone'),
           filter: kFilteredCountries,
-          // isScrollControlled: true,
         ),
 
-        // --- Submit button --- //
         SizedBox(
           width: double.infinity,
           child: CupertinoButton.filled(
@@ -147,13 +151,10 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
                 onPressed: () => showCountryPicker(
                   context: context,
                   onSelect: onSelect,
-                  // Can be used to exclude one ore more country
-                  // from the countries list. Optional.
                   exclude: ['AT'],
                   favorites: kFavoritesCountries,
                   expand: true,
                   showGroup: true,
-                  // Shows phone code before the country name. Optional.
                   showPhoneCode: true,
                   shouldCloseOnSwipeDown: true,
                 ),
@@ -165,31 +166,28 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
                 sizeStyle: .medium,
                 onPressed: () => showCountryPicker(
                   context: context,
+                  onSelect: onSelect,
                   favorites: ['RU'],
-                  // Can be used to exclude one ore more country
-                  // from the countries list. Optional.
                   filter: kFilteredCountries,
                   isScrollControlled: false,
-                  // Shows phone code before the country name. Optional.
                   showPhoneCode: true,
                   showGroup: true,
-                  onSelect: onSelect,
                 ),
                 child: const Text('Show picker (filtered)'),
               ),
-              // TODO(ziqq): Remove the adaptive picker demo in 1.0.0.
               CupertinoButton(
-                key: const ValueKey<String>('adaptive_picker_button'),
+                key: const ValueKey<String>('country_picker_button'),
                 padding: .symmetric(horizontal: pickerTheme.padding),
                 sizeStyle: .medium,
                 onPressed: () => showCountryPicker(
                   context: context,
-                  // ignore: deprecated_member_use
-                  adaptive: true,
-                  showGroup: true,
                   onSelect: onSelect,
+                  selected: selected,
+                  showGroup: true,
+                  showSearch: true,
+                  shouldCloseOnSwipeDown: true,
                 ),
-                child: const Text('Show picker (adaptive)'),
+                child: const Text('Show grouped picker'),
               ),
             ],
           ),
@@ -203,7 +201,6 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
             builder: (_, groupValue, _) => Column(
               mainAxisAlignment: .center,
               children: <Widget>[
-                // --- Tabs --- //
                 SizedBox(
                   width: double.infinity,
                   child: CupertinoSlidingSegmentedControl(
@@ -213,7 +210,6 @@ class _PreviewState extends State<Preview> with CountryPickerPreviewStateMixin {
                   ),
                 ),
 
-                // --- Content --- //
                 Expanded(
                   child: switch (groupValue) {
                     0 => _buildPreview(context),

@@ -1,17 +1,18 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// {@template theme}
-/// App theme data.
+/// The light and dark Material themes used by the example app.
 /// {@endtemplate}
 extension type AppThemeData._(ThemeData data) implements ThemeData {
-  /// {@macro theme}
+  /// Returns the light theme with a light Cupertino override.
   factory AppThemeData.light() => AppThemeData._(_appLightTheme);
 
-  /// {@macro theme}
+  /// Returns the dark theme with a dark Cupertino override.
   factory AppThemeData.dark() => AppThemeData._(_appDarkTheme);
 }
 
+/// Uses the example primary color at different opacities for Material swatches.
 MaterialColor _$getMaterialColor(Color color) {
   final red = color.r.toInt();
   final green = color.g.toInt();
@@ -47,12 +48,7 @@ final ThemeData _appLightTheme = ThemeData.light().copyWith(
     backgroundColor: CupertinoColors.systemBackground,
   ),
   colorScheme: ColorScheme.fromSwatch(
-    // primarySwatch: _$getMaterialColor(const Color(0xFF8673e0)),
-    // primarySwatch: _$getMaterialColor(const Color(0xFF66c5ff)),
-    // primarySwatch: _$getMaterialColor(const Color(0xFF8fad43)),
     primarySwatch: _$getMaterialColor(_primaryColor),
-    // primarySwatch: _$getMaterialColor(const Color(0xFF16b5e4)),
-    // primarySwatch: _$getMaterialColor(const Color(0xFF71f5cb)),
     accentColor: _$getMaterialColor(const Color(0xFF16b5e4)),
     brightness: Brightness.light,
   ),
@@ -94,12 +90,7 @@ final ThemeData _appDarkTheme = ThemeData.dark().copyWith(
     backgroundColor: CupertinoColors.systemBackground.darkColor,
   ),
   colorScheme: ColorScheme.fromSwatch(
-    // primarySwatch: _$getMaterialColor(const Color(0xFF8673e0)),
-    // primarySwatch: _$getMaterialColor(const Color(0xFF66c5ff)),
-    // primarySwatch: _$getMaterialColor(const Color(0xFF8fad43)),
     primarySwatch: _$getMaterialColor(_primaryColor),
-    // primarySwatch: _$getMaterialColor(const Color(0xFF16b5e4)),
-    // primarySwatch: _$getMaterialColor(const Color(0xFF71f5cb)),
     accentColor: _$getMaterialColor(const Color(0xFF16b5e4)),
     brightness: Brightness.dark,
   ),

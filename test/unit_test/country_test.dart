@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_simple_country_picker/flutter_simple_country_picker.dart';
+import 'package:flutter_simple_country_picker/src/localization/translations/de.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 final class _FakeCountryLocalizations extends CountryLocalizations {
@@ -192,6 +193,16 @@ void main() => group('Country -', () {
       expect(country.startsWith('rossiya', null), isFalse);
     },
   );
+
+  test('startsWith ignores diacritics in the query and the names', () {
+    final country = Country.fromCountryCode('AT');
+    const localization = CountryLocalizationsDe();
+
+    expect(country.startsWith('Öster', localization), isTrue);
+    expect(country.startsWith('oster', localization), isTrue);
+    expect(country.startsWith('ÖSTER', localization), isTrue);
+    expect(country.startsWith('ägypten', localization), isFalse);
+  });
 
   test('copyWith should override all supported fields', () {
     final updated = original.copyWith(

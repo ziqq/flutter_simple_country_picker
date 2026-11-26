@@ -1,103 +1,65 @@
-import 'dart:math' as math;
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 7 October 2024
+ */
 
-import 'package:flutter/cupertino.dart';
-// TODO(ziqq): Remove the platform check import in 1.0.0.
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart'
-    show
-        BuildContext,
-        VoidCallback,
-        BorderRadius,
-        ClipRRect,
-        Radius,
-        showModalBottomSheet,
-        BoxDecoration,
-        DecoratedBox,
-        DraggableScrollableSheet,
-        // TODO(ziqq): Remove Theme with _capturePickerTheme in 1.0.0.
-        Theme,
-        Colors;
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_simple_country_picker/src/constant/typedef.dart';
 import 'package:flutter_simple_country_picker/src/theme/country_picker_theme.dart';
 import 'package:flutter_simple_country_picker/src/widget/country_list_view.dart';
+import 'package:flutter_simple_country_picker/src/widget/country_picker_controls.dart';
+import 'package:flutter_simple_country_picker/src/widget/country_picker_sheet_gesture.dart';
+import 'package:flutter_simple_country_picker/src/widget/country_picker_surface.dart';
+import 'package:material_ui/material_ui.dart'
+    show
+        BuildContext,
+        VoidCallback,
+        BorderRadius,
+        Radius,
+        showModalBottomSheet,
+        ShapeDecoration,
+        RoundedSuperellipseBorder,
+        DecoratedBox,
+        Colors;
 
 /// {@template show_country_picker}
-/// Shows a bottom sheet containing a list of countries to select one.
+/// Opens a country picker in a modal bottom sheet.
 ///
-/// An optional [exclude] argument can be used to exclude(remove) one ore more
-/// country from the countries list. It takes a list of country code(iso2).
+/// Pass ISO 3166-1 alpha-2 country codes to [exclude] or [filter] to omit
+/// countries or restrict the list. These options are mutually exclusive.
+/// [favorites] places matching entries first. With [showGroup], the remaining
+/// entries are grouped by their first letter. [showSearch] defaults to
+/// [showGroup]. Enable [showPhoneCode] to display calling codes and
+/// [showWorldWide] to include the worldwide option.
 ///
-/// An optional [filter] argument can be used to filter the
-/// list of countries. It takes a list of country code(iso2).
-/// Note: Can't provide both [filter] and [exclude]
+/// [selected] supplies the current selection and is updated on a choice.
+/// [onSelect] receives the chosen country. [whenComplete] runs whenever the
+/// modal closes. [autofocus] focuses the search field when it is present.
 ///
-/// An optional [favorites] argument can be used to show countries
-/// at the top of the list. It takes a list of country code(iso2).
+/// [expand] opens the sheet at full height by default. [initialChildSize]
+/// and [minChildSize] override its starting and minimum height as fractions
+/// of the available space. [isScrollControlled] lets a partially expanded
+/// picker use a scroll-controlled modal route.
 ///
-/// An optional [selected] argument can be used to set the selected country.
+/// [isDismissible] controls dismissal by tapping the scrim.
+/// [shouldCloseOnSwipeDown] enables dismissal from a downward gesture started
+/// at the top of the country list. Scrolling to the top in an active gesture
+/// leaves the sheet open. A downward drag on the header can dismiss it
+/// independently.
 ///
-/// An optional callback function [onSelect]
-/// called when the country is selected.
-///
-/// An optional [whenComplete] callback which is called
-/// when country picker is dismissed, whether a country is selected or not.
-///
-/// The [expand] argument can be used
-/// to expand the bottom sheet to full height.
-///
-/// The [adaptive] argument can be used
-/// to show an iOS-style bottom sheet on iOS. Deprecated for removal in 1.0.0.
-///
-/// The [autofocus] argument can be used to initially expand virtual keyboard.
-///
-/// The [isDismissible] argument can be used
-/// to make the bottom sheet dismissible.
-///
-/// The [isScrollControlled] argument can be used
-/// to make the bottom sheet scrollable.
-///
-/// The [shouldCloseOnSwipeDown] argument controls dismissal when dragging the
-/// country list brings the sheet to its minimum height. The Material sheet
-/// uses a slightly lower minimum if it opens at that height, so the list can
-/// trigger dismissal. Its header also supports drag dismissal.
-///
-/// The [showPhoneCode] argument can be used
-/// to show phone code before the country name.
-///
-/// The [showWorldWide] argument argument can be used
-/// to show "World Wide" option.
-///
-/// The [useHapticFeedback] argument can be used
-/// to enable/disable haptic feedback.
-///
-/// The [useRootNavigator] argument ensures that the root navigator is used to
-/// display the [BottomSheet] when set to `true`. This is useful in the case
-/// that a modal [BottomSheet] needs to be displayed above all other content
-/// but the caller is inside another [Navigator].
-///
-/// An optional [useSafeArea] argument can be used
-/// to wrap the bottom sheet with SafeArea.
-///
-/// An optional [showGroup] argument can be used to show country groups.
-///
-/// An optional [showSearch] argument can be used to show/hide the search bar.
-///
-/// An optional [initialChildSize] argument can be used
-/// to set the initial size of the bottom sheet.
-///
-/// An optional [minChildSize] argument can be used
-/// to set the minimum size of the bottom sheet.
+/// [useRootNavigator] places the sheet above nested navigator content.
+/// [useSafeArea] keeps the modal outside system intrusions at its top and sides.
+/// [useHapticFeedback] defaults to true. [surfaceBuilder] can paint custom
+/// backgrounds behind the search field and close buttons.
 /// {@endtemplate}
 void showCountryPicker({
   required BuildContext context,
-
-  // Selection and dismissal callbacks.
   SelectedCountry? selected,
   SelectCountryCallback? onSelect,
   VoidCallback? whenComplete,
 
-  // Country list and search.
+  // Country list.
   List<String>? exclude,
   List<String>? favorites,
   List<String>? filter,
@@ -108,156 +70,84 @@ void showCountryPicker({
   bool autofocus = false,
 
   // Sheet presentation.
-  bool expand = false,
-  bool isDismissible = true,
+  bool expand = true,
   bool isScrollControlled = true,
+  double? initialChildSize,
+  double? minChildSize,
+  bool isDismissible = true,
   bool shouldCloseOnSwipeDown = false,
   bool useRootNavigator = true,
   bool useSafeArea = true,
-  double? initialChildSize,
-  double? minChildSize,
   bool? useHapticFeedback,
-
-  // Deprecated options.
-  // TODO(ziqq): Remove the adaptive parameter and its dartdoc in 1.0.0.
-  @Deprecated(
-    'Omit adaptive to use the Material sheet. Will be removed in 1.0.0.',
-  )
-  bool adaptive = false,
-  @Deprecated('Use whenComplete instead. Will be removed in 1.0.0.')
-  VoidCallback? onDone,
-  @Deprecated('Use autofocus instead. Will be removed in 1.0.0.')
-  bool useAutofocus = false,
-  @Deprecated('Use useHapticFeedback instead. Will be removed in 1.0.0.')
-  bool useHaptickFeedback = true,
+  CountryPickerSurfaceBuilder? surfaceBuilder,
 }) {
-  // TODO(ziqq): Remove the Cupertino route check in 1.0.0.
-  final isIOS = defaultTargetPlatform == TargetPlatform.iOS;
-  final useCupertinoSheet = adaptive && isIOS;
-  // TODO(ziqq): Use expand directly in 1.0.0.
-  final effectiveExpand = expand || useCupertinoSheet;
-  final effectiveUseHapticFeedback = useHapticFeedback ?? useHaptickFeedback;
+  final effectiveMinChildSize =
+      minChildSize ??
+      initialChildSize ??
+      (expand ? (shouldCloseOnSwipeDown ? .99 : 1.0) : .65);
 
-  // TODO(ziqq): Remove the Cupertino theme override in 1.0.0.
-  final themeOverride = useCupertinoSheet
-      ? _capturePickerTheme(
-          from: context,
-          to: Navigator.of(context, rootNavigator: true).context,
-        )
-      : null;
+  final pickerTheme = CountryPickerTheme.resolve(context);
+  final hapticFeedbackEnabled = useHapticFeedback ?? true;
 
-  // TODO(ziqq): Remove the route scrollController parameter in 1.0.0.
-  Widget builder(BuildContext context, [ScrollController? scrollController]) {
-    final defaultSize = effectiveExpand ? 1.0 : .65;
-    final initialSize = initialChildSize ?? defaultSize;
-    // Flutter only notifies the route if the sheet's extent changes.
-    final minimumForDrag = shouldCloseOnSwipeDown
-        ? initialSize * .99
-        : initialSize;
-    final minSize = !useCupertinoSheet && minChildSize == initialSize
-        ? minimumForDrag
-        : minChildSize ?? math.min(defaultSize, minimumForDrag);
-    final sheet = DraggableScrollableSheet(
-      expand: effectiveExpand,
-      initialChildSize: initialSize,
-      minChildSize: minSize,
-      shouldCloseOnMinExtent: shouldCloseOnSwipeDown,
-      builder: (context, sheetScrollController) {
-        final pickerTheme = CountryPickerTheme.resolve(context);
-        final radius = Radius.circular(pickerTheme.radius);
-        final borderRadius = BorderRadius.only(
-          topLeft: radius,
-          topRight: radius,
-        );
-        return ClipRRect(
-          borderRadius: borderRadius,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: borderRadius,
-              color: pickerTheme.backgroundColor,
-            ),
-            child: CountryListView(
-              exclude: exclude,
-              favorites: favorites,
-              filter: filter,
-              selected: selected,
-              onSelect: onSelect,
-              // TODO(ziqq): Stop forwarding adaptive in 1.0.0.
-              adaptive: adaptive,
-              autofocus: autofocus || useAutofocus,
-              showGroup: showGroup,
-              showSearch: showSearch,
-              showPhoneCode: showPhoneCode,
-              showWorldWide: showWorldWide,
-              useRootNavigator: useRootNavigator,
-              useHapticFeedback: effectiveUseHapticFeedback,
-              // A sheet fixed at full height cannot resize to handle a drag.
-              // TODO(ziqq): Remove the route scrollController in 1.0.0.
-              scrollController:
-                  scrollController ??
-                  (minSize == 1.0 ? null : sheetScrollController),
-            ),
+  Widget buildSheet(BuildContext context) => CountryPickerSheetGesture(
+    initialSize: initialChildSize ?? (expand ? 1.0 : .65),
+    minSize: effectiveMinChildSize,
+    canDismiss: shouldCloseOnSwipeDown,
+    onDismiss: () =>
+        Navigator.of(context, rootNavigator: useRootNavigator).pop<void>(),
+    builder: (context, controller) {
+      final theme = CountryPickerTheme.resolve(context);
+      final radius = Radius.circular(theme.sheetCornerRadius);
+      final borderRadius = BorderRadius.only(topLeft: radius, topRight: radius);
+      final color = countryPickerSheetBackgroundColor(context, theme);
+      final content = CountryListView(
+        exclude: exclude,
+        favorites: favorites,
+        filter: filter,
+        selected: selected,
+        onSelect: onSelect,
+        autofocus: autofocus,
+        showGroup: showGroup,
+        showSearch: showSearch,
+        showPhoneCode: showPhoneCode,
+        showWorldWide: showWorldWide,
+        useRootNavigator: useRootNavigator,
+        useHapticFeedback: hapticFeedbackEnabled,
+        surfaceBuilder: surfaceBuilder,
+        scrollController: controller,
+      );
+      // The full-width scroll edge paints into the corners too. Clip the whole
+      // surface once so its shade cannot reveal a rectangular sheet beneath it.
+      return ClipRSuperellipse(
+        // Keep backdrop filters inside the sheet's alpha outline. A plain
+        // antialiased clip lets their input restore a rectangular corner.
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        borderRadius: borderRadius,
+        child: DecoratedBox(
+          decoration: ShapeDecoration(
+            shape: RoundedSuperellipseBorder(borderRadius: borderRadius),
+            color: color,
           ),
-        );
-      },
-    );
-    // TODO(ziqq): Return sheet directly in 1.0.0.
-    return themeOverride == null
-        ? sheet
-        : InheritedCountryPickerTheme(data: themeOverride, child: sheet);
-  }
+          child: content,
+        ),
+      );
+    },
+  );
 
-  /// Provide haptic feedback on opening the picker, if enabled.
-  if (effectiveUseHapticFeedback) HapticFeedback.heavyImpact().ignore();
+  if (hapticFeedbackEnabled) HapticFeedback.heavyImpact().ignore();
 
-  // TODO(ziqq): Remove the Cupertino branch and call showModalBottomSheet
-  // directly in 1.0.0.
-  /// Show adaptive bottom sheet for `iOS` platform, if [adaptive] is `true`.
-  if (useCupertinoSheet) {
-    showCupertinoSheet<void>(
-      context: context,
-      scrollableBuilder: builder,
-    ).whenComplete(() => (whenComplete ?? onDone)?.call()).ignore();
-
-    /// Show material bottom sheet for other platforms.
-  } else {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      barrierColor: CountryPickerTheme.resolve(context).barrierColor,
-      isDismissible: isDismissible,
-      isScrollControlled: isScrollControlled || expand,
-      useRootNavigator: useRootNavigator,
-      useSafeArea: useSafeArea,
-      builder: builder,
-    ).whenComplete(() => (whenComplete ?? onDone)?.call()).ignore();
-  }
-}
-
-// TODO(ziqq): Remove _capturePickerTheme in 1.0.0.
-/// Captures the picker theme between the opener and the route's navigator.
-CountryPickerTheme? _capturePickerTheme({
-  required BuildContext from,
-  required BuildContext to,
-}) {
-  if (from == to) return null;
-
-  if (from.getInheritedWidgetOfExactType<InheritedCountryPickerTheme>() !=
-      null) {
-    CountryPickerTheme? theme;
-    from.visitAncestorElements((ancestor) {
-      if (ancestor == to) return false;
-      if (ancestor.widget case InheritedCountryPickerTheme(:final data)) {
-        theme = data;
-        return false;
-      }
-      return true;
-    });
-    return theme;
-  }
-
-  final extensions = Theme.of(from).extensions;
-  if (identical(extensions, Theme.of(to).extensions)) return null;
-  if (extensions[CountryPickerTheme] case CountryPickerTheme? t) return t;
-  return null;
+  showModalBottomSheet<void>(
+    context: context,
+    backgroundColor: Colors.transparent,
+    barrierColor: pickerTheme.barrierColor,
+    isDismissible: isDismissible,
+    isScrollControlled: isScrollControlled || expand,
+    enableDrag: false,
+    useRootNavigator: useRootNavigator,
+    useSafeArea: useSafeArea,
+    builder: (_) => CupertinoUserInterfaceLevel(
+      data: .base,
+      child: Builder(builder: buildSheet),
+    ),
+  ).whenComplete(() => whenComplete?.call()).ignore();
 }

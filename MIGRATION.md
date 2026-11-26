@@ -5,9 +5,64 @@ behavior-changing API updates.
 
 ## Contents
 
+- [To 1.0.0](#to-100)
 - [To 0.11.1](#to-0111)
 - [To 0.10.0](#to-0100)
 - [To 0.9.0](#to-090)
+
+## To 1.0.0
+
+Version 1.0.0 requires Flutter 3.44.0 and Dart 3.12.0. The picker and
+`CountryPickerTheme` now use the standalone Flutter design packages.
+Import `MaterialApp`, `ThemeData`, and `ThemeExtension` from `material_ui`
+when configuring the picker. Use `cupertino_ui` for the Cupertino
+widgets and theme in the same widget tree. Add each package you import
+as a direct dependency of your app.
+
+Replace the old Material and Cupertino localization delegates with
+`GlobalMaterialLocalizations.delegates` from `material_ui` and keep
+`CountryLocalizations.delegate`. This also supplies the Cupertino and
+Widgets delegates. For a root `CupertinoApp`, use the same Material
+delegate list because the country picker opens a Material bottom sheet.
+
+The picker now has one interface. Remove `CountryPickerStyle` and the `style:`
+argument from `CountryPickerTheme`. Groups have scrolling letter headers;
+the alphabet index and floating search remain available through `showGroup`
+and `showSearch`. Light mode uses inset white groups and dark mode uses a
+continuous dark list. Flags retain their native, uncropped glyphs.
+
+Use `baseCornerRadius` for input fields and `sheetCornerRadius` for picker sheets.
+Remove the old `radius` argument and replace `indent` with `padding` if you
+need to adjust spacing. Remove `inputDecoration` from the picker theme.
+
+```dart
+CountryPickerTheme(baseCornerRadius: 12, sheetCornerRadius: 38);
+```
+
+An explicit `sheetCornerRadius: 0` permits square sheet corners.
+
+Remove `adaptive` from `showCountryPicker`. It now uses the Material modal on
+all platforms. Pickers open at full available height by default. Use
+`expand: false` for a partial sheet, or supply an explicit `initialChildSize`.
+Both phone input variants forward their `expand` setting to the picker.
+
+Use `whenComplete` in place of `onDone`, `autofocus` in place of
+`useAutofocus`, and `useHapticFeedback` in place of `useHaptickFeedback`.
+Omit `useHapticFeedback` to keep feedback enabled.
+
+Replace `Country.getTranslatedName` with `Country.toLocalizedString`. For
+formatted country names, use `CountryLocalizations.getFormatedCountryNameByCode`
+in place of `CountryLocalizations.countryNameRegExp`.
+
+The package declares a Windows-only font asset for flags.
+
+Behavior changes to be aware of:
+
+- `showWorldWide` now adds the World Wide option; it was ignored before.
+- In grouped mode favorites are shown in a leading section without a letter
+  header.
+- Names with diacritics are sorted with their base letter, and search ignores
+  diacritics.
 
 ## To 0.11.1
 
