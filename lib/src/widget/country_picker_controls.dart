@@ -86,10 +86,6 @@ Color countryPickerSheetBackgroundColor(
         : theme.backgroundColor) ??
     Theme.of(context).colorScheme.surface; // coverage:ignore-line
 
-/// Aligns country content and dividers equally on every platform.
-@internal
-double countryPickerListInset(CountryPickerTheme theme) => theme.padding * 2;
-
 /// Insets header controls below the rounded edge with space before the list.
 @internal
 EdgeInsets countryPickerHeaderPadding(CountryPickerTheme theme) =>

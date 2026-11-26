@@ -385,9 +385,10 @@ final class CountryController extends ValueNotifier<CountryState> {
     final result = <({Country country, String name, String sortKey})>[];
     for (final country in countries) {
       final formatted = l.getFormatedCountryNameByCode(country.countryCode);
-      final name = formatted == null || formatted.isEmpty
-          ? country.name
-          : formatted;
+      final name = switch (formatted) {
+        String name when name.isNotEmpty => name,
+        _ => country.name,
+      };
       result.add((
         country: country.copyWith(nameLocalized: name),
         name: name,

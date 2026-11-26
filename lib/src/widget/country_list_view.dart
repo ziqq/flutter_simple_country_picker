@@ -486,8 +486,8 @@ class _CountriesListState extends State<_CountriesList> {
             height: divider,
             thickness: divider,
             color: theme.dividerColor,
-            indent: countryPickerListInset(theme),
-            endIndent: countryPickerListInset(theme),
+            indent: theme.padding * 2,
+            endIndent: theme.padding * 2,
           ),
         ],
       ),
@@ -518,7 +518,7 @@ class _CountriesListState extends State<_CountriesList> {
               color: countryPickerSheetBackgroundColor(context, theme),
               child: Padding(
                 padding: EdgeInsetsDirectional.symmetric(
-                  horizontal: countryPickerListInset(theme),
+                  horizontal: theme.padding * 2,
                 ).add(EdgeInsets.only(bottom: theme.padding / 2)),
                 child: Align(
                   alignment: AlignmentDirectional.bottomStart,
@@ -538,7 +538,7 @@ class _CountriesListState extends State<_CountriesList> {
         );
       }
       final country = countries[index];
-      final inset = countryPickerListInset(theme);
+      final inset = theme.padding * 2;
       final contentInset = light
           ? (inset - theme.padding).clamp(0.0, double.infinity)
           : inset;
@@ -740,7 +740,7 @@ class _CountryListTile extends StatelessWidget {
         semanticsSelected: selected,
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: horizontalPadding ?? countryPickerListInset(theme),
+            horizontal: horizontalPadding ?? theme.padding * 2,
           ),
           child: Row(
             spacing: theme.padding / 2,

@@ -7,22 +7,8 @@ import 'dart:ui' as ui;
 
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_simple_country_picker/src/constant/constants.dart';
 import 'package:material_ui/material_ui.dart';
-
-/// Default height for [CountryPhoneInput].
-const double _kDefaultInputHeight = 56.0;
-
-/// Default flag size
-const double _kDefaultFlagSize = 22.0;
-
-/// Default padding
-const double _kDefaultPadding = 16.0;
-
-/// Default corner radius for phone input fields.
-const double _kDefaultBaseCornerRadius = 12.0;
-
-/// Matches the measured native UIKit sheet corners on iOS 26.5.
-const double _kDefaultSheetCornerRadius = 38.0;
 
 /// {@template country_picker_theme}
 /// Visual configuration for all `flutter_simple_country_picker` widgets.
@@ -77,11 +63,11 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     TextStyle? secondaryTextStyle,
     TextStyle? searchTextStyle,
   }) {
-    inputHeight ??= _kDefaultInputHeight;
-    flagSize ??= _kDefaultFlagSize;
-    padding ??= _kDefaultPadding;
-    baseCornerRadius ??= _kDefaultBaseCornerRadius;
-    sheetCornerRadius ??= _kDefaultSheetCornerRadius;
+    inputHeight ??= kCountryPickerDefaultInputHeight;
+    flagSize ??= kCountryPickerDefaultFlagSize;
+    padding ??= kCountryPickerDefaultPadding;
+    baseCornerRadius ??= kCountryPickerDefaultBaseCornerRadius;
+    sheetCornerRadius ??= kCountryPickerDefaultSheetCornerRadius;
     return CountryPickerTheme.raw(
       accentColor: accentColor,
       backgroundColor: backgroundColor,
@@ -117,8 +103,9 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
     required this.flagSize,
     required this.padding,
     double? baseCornerRadius,
-    this.sheetCornerRadius = _kDefaultSheetCornerRadius,
-  }) : baseCornerRadius = baseCornerRadius ?? _kDefaultBaseCornerRadius;
+    this.sheetCornerRadius = kCountryPickerDefaultSheetCornerRadius,
+  }) : baseCornerRadius =
+           baseCornerRadius ?? kCountryPickerDefaultBaseCornerRadius;
 
   /// The state from the closest instance of this class
   /// that encloses the given context.
@@ -454,7 +441,7 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         DiagnosticsProperty<double>(
           'inputHeight',
           inputHeight,
-          defaultValue: _kDefaultInputHeight,
+          defaultValue: kCountryPickerDefaultInputHeight,
         ),
       )
       ..add(
@@ -482,28 +469,28 @@ class CountryPickerTheme extends ThemeExtension<CountryPickerTheme>
         DiagnosticsProperty<double>(
           'flagSize',
           flagSize,
-          defaultValue: _kDefaultFlagSize,
+          defaultValue: kCountryPickerDefaultFlagSize,
         ),
       )
       ..add(
         DiagnosticsProperty<double>(
           'padding',
           padding,
-          defaultValue: _kDefaultPadding,
+          defaultValue: kCountryPickerDefaultPadding,
         ),
       )
       ..add(
         DiagnosticsProperty<double>(
           'baseCornerRadius',
           baseCornerRadius,
-          defaultValue: _kDefaultBaseCornerRadius,
+          defaultValue: kCountryPickerDefaultBaseCornerRadius,
         ),
       )
       ..add(
         DiagnosticsProperty<double>(
           'sheetCornerRadius',
           sheetCornerRadius,
-          defaultValue: _kDefaultSheetCornerRadius,
+          defaultValue: kCountryPickerDefaultSheetCornerRadius,
         ),
       );
   }
@@ -612,11 +599,13 @@ final class _CountryPickerTheme$Default extends CountryPickerTheme {
                CupertinoColors.opaqueSeparator,
                context,
              ),
-         inputHeight: inputHeight ?? _kDefaultInputHeight,
-         baseCornerRadius: baseCornerRadius ?? _kDefaultBaseCornerRadius,
-         sheetCornerRadius: sheetCornerRadius ?? _kDefaultSheetCornerRadius,
-         padding: padding ?? _kDefaultPadding,
-         flagSize: flagSize ?? _kDefaultFlagSize,
+         inputHeight: inputHeight ?? kCountryPickerDefaultInputHeight,
+         baseCornerRadius:
+             baseCornerRadius ?? kCountryPickerDefaultBaseCornerRadius,
+         sheetCornerRadius:
+             sheetCornerRadius ?? kCountryPickerDefaultSheetCornerRadius,
+         padding: padding ?? kCountryPickerDefaultPadding,
+         flagSize: flagSize ?? kCountryPickerDefaultFlagSize,
          textStyle:
              textStyle ??
              Theme.of(context).textTheme.bodyLarge?.copyWith(
